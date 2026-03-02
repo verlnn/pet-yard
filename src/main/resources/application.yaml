@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: pet-yard
+
+auth:
+  jwt:
+    secret: dev-secret-change-me-please-32bytes-minimum
+    exp-seconds: 3600
