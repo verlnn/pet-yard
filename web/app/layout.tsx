@@ -1,0 +1,23 @@
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
+import "./globals.css";
+import { Providers } from "./providers";
+
+export const metadata: Metadata = {
+  title: "멍냥마당 | 반려동물 성장과 이웃 매칭",
+  description: "반려동물 성장 기록, 동네 산책/위탁 매칭, 초보 반려인을 위한 지식까지."
+};
+
+export default function RootLayout({
+  children
+}: {
+  children: ReactNode;
+}) {
+  return (
+    <html lang="ko">
+      <body>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  );
+}
