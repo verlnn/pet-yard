@@ -1,8 +1,6 @@
-package io.pet.petyard.auth.filter;
+package io.pet.petyard.auth.security;
 
 import io.jsonwebtoken.JwtException;
-import io.pet.petyard.auth.context.AuthContext;
-import io.pet.petyard.auth.context.AuthContextHolder;
 import io.pet.petyard.auth.jwt.AuthTokenPayload;
 import io.pet.petyard.auth.jwt.JwtTokenProvider;
 
@@ -12,38 +10,47 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-@Component
-public class JwtAuthFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider tokenProvider;
 
-    public JwtAuthFilter(JwtTokenProvider tokenProvider) {
+    public JwtAuthenticationFilter(JwtTokenProvider tokenProvider) {
         this.tokenProvider = tokenProvider;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException {
+        String header = request.getHeader("Authorization");
+        if (header == null || !header.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        String token = header.substring(7);
         try {
-            String header = request.getHeader("Authorization");
-            if (header != null && header.startsWith("Bearer ")) {
-                String token = header.substring(7);
-                AuthTokenPayload payload = tokenProvider.parseToken(token);
-                AuthContext context = AuthContext.of(payload.userId(), payload.tier());
-                AuthContextHolder.set(context);
-                request.setAttribute(AuthContext.REQUEST_ATTRIBUTE, context);
-            }
+            AuthTokenPayload payload = tokenProvider.parseAndValidate(token);
+            AuthPrincipal principal = new AuthPrincipal(payload.userId(), payload.tier());
+
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                principal,
+                null,
+                Collections.emptyList()
+            );
+            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
             filterChain.doFilter(request, response);
         } catch (JwtException ex) {
             writeUnauthorized(response, "AUTH_INVALID_TOKEN", "Invalid or expired token");
-        } finally {
-            AuthContextHolder.clear();
         }
     }
 

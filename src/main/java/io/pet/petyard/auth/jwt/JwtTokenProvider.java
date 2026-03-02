@@ -40,7 +40,7 @@ public class JwtTokenProvider {
             .compact();
     }
 
-    public AuthTokenPayload parseToken(String token) {
+    public AuthTokenPayload parseAndValidate(String token) {
         try {
             Jws<Claims> jws = Jwts.parserBuilder()
                 .setSigningKey(key)
