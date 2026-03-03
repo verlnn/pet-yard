@@ -19,7 +19,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class AuthService {
 
     private static final int OTP_TTL_MINUTES = 10;
@@ -68,7 +71,7 @@ public class AuthService {
         verificationRepository.save(verification);
 
         // TODO: 실제 이메일 발송 연동
-        System.out.println("[OTP] " + email + " -> " + code);
+        log.info("[OTP] {} -> {}", email, code);
 
         return new SignupResult(user.getId(), email);
     }
