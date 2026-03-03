@@ -1,0 +1,8 @@
+package io.pet.petyard.auth.web;
+
+import jakarta.validation.constraints.NotBlank;
+
+public record RefreshRequest(
+    @NotBlank String refreshToken
+) {
+}

@@ -1,7 +1,7 @@
 package io.pet.petyard.auth.security;
 
 import io.jsonwebtoken.JwtException;
-import io.pet.petyard.auth.jwt.AuthTokenPayload;
+import io.pet.petyard.auth.jwt.AccessClaims;
 import io.pet.petyard.auth.jwt.JwtTokenProvider;
 
 import jakarta.servlet.FilterChain;
@@ -37,7 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token = header.substring(7);
         try {
-            AuthTokenPayload payload = tokenProvider.parseAndValidate(token);
+            AccessClaims payload = tokenProvider.validateAndParseAccessToken(token);
             AuthPrincipal principal = new AuthPrincipal(payload.userId(), payload.tier());
 
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(

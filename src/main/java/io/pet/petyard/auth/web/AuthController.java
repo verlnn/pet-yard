@@ -1,11 +1,11 @@
 package io.pet.petyard.auth.web;
 
-import io.pet.petyard.auth.domain.UserTier;
-import io.pet.petyard.auth.jwt.JwtTokenProvider;
 import io.pet.petyard.auth.security.AuthPrincipal;
+import io.pet.petyard.auth.service.AuthService;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Set;
+
+import jakarta.validation.Valid;
 
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,36 +19,47 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final JwtTokenProvider tokenProvider;
-    private final AuthUserStore userStore;
+    private final AuthService authService;
 
-    public AuthController(JwtTokenProvider tokenProvider, AuthUserStore userStore) {
-        this.tokenProvider = tokenProvider;
-        this.userStore = userStore;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
+
+    @PostMapping("/signup")
+    public void signup(@Valid @RequestBody SignupRequest request) {
+        authService.signup(request.email(), request.password());
+    }
+
+    @PostMapping("/verify-email")
+    public void verifyEmail(@Valid @RequestBody VerifyEmailRequest request) {
+        authService.verifyEmail(request.email(), request.code());
     }
 
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody LoginRequest request) {
-        UserTier tier = userStore.findTier(request.userId())
-            .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("Invalid credentials"));
+    public TokenResponse login(@Valid @RequestBody LoginRequest request) {
+        AuthService.TokenPair tokens = authService.login(request.email(), request.password());
+        return new TokenResponse(tokens.accessToken(), tokens.refreshToken());
+    }
 
-        String token = tokenProvider.createAccessToken(request.userId(), tier);
+    @PostMapping("/refresh")
+    public TokenResponse refresh(@Valid @RequestBody RefreshRequest request) {
+        AuthService.TokenPair tokens = authService.refresh(request.refreshToken());
+        return new TokenResponse(tokens.accessToken(), tokens.refreshToken());
+    }
 
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("accessToken", token);
-        return body;
+    @PostMapping("/logout")
+    public void logout(@Valid @RequestBody LogoutRequest request) {
+        authService.logout(request.refreshToken());
     }
 
     @GetMapping("/me")
-    public Map<String, Object> me(@AuthenticationPrincipal AuthPrincipal principal) {
+    public MeResponse me(@AuthenticationPrincipal AuthPrincipal principal) {
         if (principal == null) {
             throw new AuthenticationCredentialsNotFoundException("Authentication required");
         }
-
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("userId", principal.userId());
-        body.put("tier", principal.tier().name());
-        body.put("permissions", principal.permissions());
-        return body;
+        Set<String> permissions = principal.permissions().stream()
+            .map(Enum::name)
+            .collect(java.util.stream.Collectors.toCollection(java.util.LinkedHashSet::new));
+        return new MeResponse(principal.userId(), principal.tier().name(), permissions);
     }
 }

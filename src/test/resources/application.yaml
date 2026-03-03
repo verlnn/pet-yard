@@ -1,20 +1,17 @@
 spring:
-  application:
-    name: pet-yard
   datasource:
-    url: jdbc:h2:mem:petyard;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    url: jdbc:h2:mem:petyard-test;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     driver-class-name: org.h2.Driver
     username: sa
     password:
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
 
 jwt:
-  # TODO: 운영 환경에서는 반드시 안전한 랜덤 키로 교체
   secret: dev-secret-change-me-please-32bytes-minimum
   access-ttl-seconds: 3600
   refresh-ttl-seconds: 1209600
