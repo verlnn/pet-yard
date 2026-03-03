@@ -17,8 +17,8 @@ public enum Permission {
     KNOWLEDGE_READ,
 
     // WALK
-    WALK_POST_READ,
-    WALK_POST_CREATE,
+    WALK_READ,
+    WALK_CREATE,
     WALK_RECRUIT_READ,
     WALK_APPLY,
     WALK_MATCH,

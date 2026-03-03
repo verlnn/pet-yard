@@ -33,17 +33,17 @@ public Map<String, Object> applyWalk() {
 
 401 Unauthorized (토큰 오류/만료)
 ```json
-{"code":"AUTH_INVALID_TOKEN","message":"Invalid or expired token"}
+{"code":"UNAUTHORIZED","message":"Invalid or expired token","path":"/api/feeds","timestamp":"2026-03-02T12:00:00Z"}
 ```
 
 401 Unauthorized (인증 필요)
 ```json
-{"code":"AUTH_REQUIRED","message":"Authentication required"}
+{"code":"UNAUTHORIZED","message":"Authentication required","path":"/api/feeds","timestamp":"2026-03-02T12:00:00Z"}
 ```
 
 403 Forbidden
 ```json
-{"code":"PERMISSION_DENIED","message":"Permission denied"}
+{"code":"FORBIDDEN","message":"Permission denied","path":"/api/feeds","timestamp":"2026-03-02T12:00:00Z"}
 ```
 
 ## 향후 Tier 정책 연결 위치

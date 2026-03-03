@@ -27,7 +27,16 @@ class AuthGuardIntegrationTest {
     void tier0CannotAccessTier1Api() throws Exception {
         String token = tokenProvider.createAccessToken(1L, UserTier.TIER_0);
 
-        mockMvc.perform(post("/api/demo/feed")
+        mockMvc.perform(post("/api/feeds")
+                .header("Authorization", "Bearer " + token))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void tier1CannotApplyWalk() throws Exception {
+        String token = tokenProvider.createAccessToken(2L, UserTier.TIER_1);
+
+        mockMvc.perform(post("/api/walk/apply")
                 .header("Authorization", "Bearer " + token))
             .andExpect(status().isForbidden());
     }
@@ -36,12 +45,18 @@ class AuthGuardIntegrationTest {
     void tier2CanAccessLowerTierApis() throws Exception {
         String token = tokenProvider.createAccessToken(2L, UserTier.TIER_2);
 
-        mockMvc.perform(get("/api/demo/feed")
+        mockMvc.perform(get("/api/feeds")
                 .header("Authorization", "Bearer " + token))
             .andExpect(status().isOk());
 
-        mockMvc.perform(post("/api/demo/walk/apply")
+        mockMvc.perform(post("/api/walk/apply")
                 .header("Authorization", "Bearer " + token))
             .andExpect(status().isOk());
+    }
+
+    @Test
+    void anonymousCannotAccessProtectedApi() throws Exception {
+        mockMvc.perform(get("/api/feeds"))
+            .andExpect(status().isUnauthorized());
     }
 }

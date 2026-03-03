@@ -11,8 +11,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.Collections;
-
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -21,9 +19,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider tokenProvider;
+    private final ErrorResponseWriter errorResponseWriter;
 
-    public JwtAuthenticationFilter(JwtTokenProvider tokenProvider) {
+    public JwtAuthenticationFilter(JwtTokenProvider tokenProvider, ErrorResponseWriter errorResponseWriter) {
         this.tokenProvider = tokenProvider;
+        this.errorResponseWriter = errorResponseWriter;
     }
 
     @Override
@@ -50,13 +50,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
         } catch (JwtException ex) {
-            writeUnauthorized(response, "AUTH_INVALID_TOKEN", "Invalid or expired token");
+            errorResponseWriter.write(request, response, HttpServletResponse.SC_UNAUTHORIZED,
+                "UNAUTHORIZED", "Invalid or expired token");
         }
-    }
-
-    private void writeUnauthorized(HttpServletResponse response, String code, String message) throws IOException {
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.getWriter().write("{\"code\":\"" + code + "\",\"message\":\"" + message + "\"}");
     }
 }

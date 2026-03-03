@@ -15,8 +15,8 @@ public enum UserTier {
     ),
     TIER_1(1,
         Permission.FEED_CREATE,
-        Permission.WALK_POST_READ,
-        Permission.WALK_POST_CREATE,
+        Permission.WALK_READ,
+        Permission.WALK_CREATE,
         Permission.WALK_RECRUIT_READ
     ),
     TIER_2(2,

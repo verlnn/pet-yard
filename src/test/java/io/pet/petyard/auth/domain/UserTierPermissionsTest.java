@@ -29,16 +29,16 @@ class UserTierPermissionsTest {
             Permission.FEED_READ,
             Permission.KNOWLEDGE_READ,
             Permission.FEED_CREATE,
-            Permission.WALK_POST_READ,
-            Permission.WALK_POST_CREATE,
+            Permission.WALK_READ,
+            Permission.WALK_CREATE,
             Permission.WALK_RECRUIT_READ
         );
         EnumSet<Permission> tier2Expected = EnumSet.of(
             Permission.FEED_READ,
             Permission.KNOWLEDGE_READ,
             Permission.FEED_CREATE,
-            Permission.WALK_POST_READ,
-            Permission.WALK_POST_CREATE,
+            Permission.WALK_READ,
+            Permission.WALK_CREATE,
             Permission.WALK_RECRUIT_READ,
             Permission.WALK_APPLY,
             Permission.WALK_MATCH,
