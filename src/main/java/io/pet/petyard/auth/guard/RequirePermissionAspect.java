@@ -2,6 +2,7 @@ package io.pet.petyard.auth.guard;
 
 import io.pet.petyard.auth.domain.Permission;
 import io.pet.petyard.auth.security.AuthPrincipal;
+import io.pet.petyard.common.ErrorCode;
 
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -29,12 +30,12 @@ public class RequirePermissionAspect {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
-            throw new AuthenticationCredentialsNotFoundException("Authentication required");
+            throw new AuthenticationCredentialsNotFoundException(ErrorCode.UNAUTHORIZED.message());
         }
 
         Object principalObj = authentication.getPrincipal();
         if (!(principalObj instanceof AuthPrincipal principal)) {
-            throw new AuthenticationCredentialsNotFoundException("Authentication required");
+            throw new AuthenticationCredentialsNotFoundException(ErrorCode.UNAUTHORIZED.message());
         }
 
         EnumSet<Permission> granted = principal.permissions();
@@ -46,7 +47,7 @@ public class RequirePermissionAspect {
         };
 
         if (!allowed) {
-            throw new AccessDeniedException("Permission denied");
+            throw new AccessDeniedException(ErrorCode.FORBIDDEN.message());
         }
 
         return joinPoint.proceed();

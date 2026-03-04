@@ -3,6 +3,7 @@ package io.pet.petyard.auth.security;
 import io.jsonwebtoken.JwtException;
 import io.pet.petyard.auth.jwt.AccessClaims;
 import io.pet.petyard.auth.jwt.JwtTokenProvider;
+import io.pet.petyard.common.ErrorCode;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -51,7 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } catch (JwtException ex) {
             errorResponseWriter.write(request, response, HttpServletResponse.SC_UNAUTHORIZED,
-                "UNAUTHORIZED", "Invalid or expired token");
+                ErrorCode.INVALID_TOKEN);
         }
     }
 }

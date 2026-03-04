@@ -2,6 +2,7 @@ package io.pet.petyard.auth.web;
 
 import io.pet.petyard.auth.security.AuthPrincipal;
 import io.pet.petyard.auth.service.AuthService;
+import io.pet.petyard.common.ErrorCode;
 
 import java.util.Set;
 
@@ -55,7 +56,7 @@ public class AuthController {
     @GetMapping("/me")
     public MeResponse me(@AuthenticationPrincipal AuthPrincipal principal) {
         if (principal == null) {
-            throw new AuthenticationCredentialsNotFoundException("Authentication required");
+            throw new AuthenticationCredentialsNotFoundException(ErrorCode.UNAUTHORIZED.message());
         }
         Set<String> permissions = principal.permissions().stream()
             .map(Enum::name)

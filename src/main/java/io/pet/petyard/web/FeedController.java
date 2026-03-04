@@ -2,6 +2,7 @@ package io.pet.petyard.web;
 
 import io.pet.petyard.auth.domain.Permission;
 import io.pet.petyard.auth.guard.RequirePermission;
+import io.pet.petyard.common.ApiMessage;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -19,7 +20,7 @@ public class FeedController {
     @GetMapping
     public Map<String, Object> listFeeds() {
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("result", "ok");
+        body.put("result", ApiMessage.OK.message());
         return body;
     }
 
@@ -27,7 +28,7 @@ public class FeedController {
     @PostMapping
     public Map<String, Object> createFeed() {
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("result", "created");
+        body.put("result", ApiMessage.CREATED.message());
         return body;
     }
 }

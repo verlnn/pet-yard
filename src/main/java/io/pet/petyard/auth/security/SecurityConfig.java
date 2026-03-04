@@ -1,6 +1,7 @@
 package io.pet.petyard.auth.security;
 
 import io.pet.petyard.auth.jwt.JwtTokenProvider;
+import io.pet.petyard.common.ErrorCode;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,12 +42,12 @@ public class SecurityConfig {
     @Bean
     public AuthenticationEntryPoint authenticationEntryPoint(ErrorResponseWriter errorResponseWriter) {
         return (request, response, authException) ->
-            errorResponseWriter.write(request, response, 401, "UNAUTHORIZED", "Authentication required");
+            errorResponseWriter.write(request, response, 401, ErrorCode.UNAUTHORIZED);
     }
 
     @Bean
     public AccessDeniedHandler accessDeniedHandler(ErrorResponseWriter errorResponseWriter) {
         return (request, response, accessDeniedException) ->
-            errorResponseWriter.write(request, response, 403, "FORBIDDEN", "Permission denied");
+            errorResponseWriter.write(request, response, 403, ErrorCode.FORBIDDEN);
     }
 }

@@ -2,6 +2,7 @@ package io.pet.petyard.web;
 
 import io.pet.petyard.auth.domain.Permission;
 import io.pet.petyard.auth.guard.RequirePermission;
+import io.pet.petyard.common.ApiMessage;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -20,7 +21,7 @@ public class WalkController {
     @GetMapping("/posts")
     public Map<String, Object> listWalkPosts() {
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("result", "ok");
+        body.put("result", ApiMessage.OK.message());
         return body;
     }
 
@@ -28,7 +29,7 @@ public class WalkController {
     @PostMapping("/posts")
     public Map<String, Object> createWalkPost() {
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("result", "created");
+        body.put("result", ApiMessage.CREATED.message());
         return body;
     }
 
@@ -36,7 +37,7 @@ public class WalkController {
     @PostMapping("/apply")
     public Map<String, Object> applyWalk() {
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("result", "applied");
+        body.put("result", ApiMessage.APPLIED.message());
         return body;
     }
 
@@ -45,7 +46,7 @@ public class WalkController {
     public Map<String, Object> chat(@PathVariable String roomId) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("roomId", roomId);
-        body.put("result", "ok");
+        body.put("result", ApiMessage.OK.message());
         return body;
     }
 }

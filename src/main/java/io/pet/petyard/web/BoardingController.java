@@ -2,6 +2,7 @@ package io.pet.petyard.web;
 
 import io.pet.petyard.auth.domain.Permission;
 import io.pet.petyard.auth.guard.RequirePermission;
+import io.pet.petyard.common.ApiMessage;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -18,7 +19,7 @@ public class BoardingController {
     @PostMapping("/apply")
     public Map<String, Object> applyBoarding() {
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("result", "applied");
+        body.put("result", ApiMessage.APPLIED.message());
         return body;
     }
 }

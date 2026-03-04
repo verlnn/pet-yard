@@ -7,6 +7,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import io.pet.petyard.auth.domain.UserTier;
+import io.pet.petyard.common.ErrorCode;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -60,13 +61,13 @@ public class JwtTokenProvider {
             String tierName = claims.get("tier", String.class);
 
             if (uid == null || tierName == null) {
-                throw new JwtException("Missing required claims");
+            throw new JwtException(ErrorCode.INVALID_TOKEN.message());
             }
 
             UserTier tier = UserTier.valueOf(tierName);
             return new AccessClaims(uid.longValue(), tier);
         } catch (IllegalArgumentException ex) {
-            throw new JwtException("Invalid token", ex);
+            throw new JwtException(ErrorCode.INVALID_TOKEN.message(), ex);
         }
     }
 
@@ -83,7 +84,7 @@ public class JwtTokenProvider {
             // TODO: salt 적용 고려 (운영 환경)
             return Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
         } catch (NoSuchAlgorithmException ex) {
-            throw new IllegalStateException("SHA-256 not supported", ex);
+            throw new IllegalStateException(ErrorCode.CRYPTO_NOT_SUPPORTED.message(), ex);
         }
     }
 
@@ -93,12 +94,12 @@ public class JwtTokenProvider {
 
     private static Key createKey(String secret) {
         if (secret == null || secret.isBlank()) {
-            throw new IllegalStateException("jwt.secret is required");
+            throw new IllegalStateException(ErrorCode.CONFIG_SECRET_REQUIRED.message());
         }
 
         byte[] raw = secret.getBytes(StandardCharsets.UTF_8);
         if (raw.length < 32) {
-            throw new IllegalStateException("jwt.secret must be at least 32 bytes for HS256");
+            throw new IllegalStateException(ErrorCode.CONFIG_SECRET_TOO_SHORT.message());
         }
 
         return Keys.hmacShaKeyFor(raw);

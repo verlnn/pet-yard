@@ -9,6 +9,8 @@ import io.pet.petyard.auth.jpa.RefreshTokenRepository;
 import io.pet.petyard.auth.jpa.User;
 import io.pet.petyard.auth.jpa.UserRepository;
 import io.pet.petyard.auth.jwt.JwtTokenProvider;
+import io.pet.petyard.common.ApiException;
+import io.pet.petyard.common.ErrorCode;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -55,7 +57,7 @@ public class AuthService {
     @Transactional
     public SignupResult signup(String email, String password) {
         if (userRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("Email already registered");
+            throw new ApiException(ErrorCode.EMAIL_ALREADY_REGISTERED);
         }
 
         String passwordHash = passwordEncoder.encode(password);
@@ -76,44 +78,44 @@ public class AuthService {
         return new SignupResult(user.getId(), email);
     }
 
-    @Transactional(noRollbackFor = {IllegalArgumentException.class, AccessDeniedException.class})
+    @Transactional(noRollbackFor = {ApiException.class, AccessDeniedException.class})
     public void verifyEmail(String email, String code) {
         EmailVerification verification = verificationRepository
             .findTopByEmailAndVerifiedAtIsNullOrderByCreatedAtDesc(email)
-            .orElseThrow(() -> new IllegalArgumentException("Verification code not found"));
+            .orElseThrow(() -> new ApiException(ErrorCode.VERIFICATION_CODE_NOT_FOUND));
 
         Instant now = clock.instant();
         if (verification.isExpired(now)) {
-            throw new IllegalArgumentException("Verification code expired");
+            throw new ApiException(ErrorCode.VERIFICATION_CODE_EXPIRED);
         }
         if (verification.getAttemptCount() >= OTP_MAX_ATTEMPTS) {
-            throw new AccessDeniedException("Verification attempts exceeded");
+            throw new AccessDeniedException(ErrorCode.VERIFICATION_ATTEMPTS_EXCEEDED.message());
         }
 
         boolean matches = passwordEncoder.matches(code, verification.getCodeHash());
         if (!matches) {
             verification.incrementAttempt();
-            throw new IllegalArgumentException("Invalid verification code");
+            throw new ApiException(ErrorCode.INVALID_VERIFICATION_CODE);
         }
 
         verification.markVerified(now);
 
         User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new IllegalStateException("User not found"));
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
         user.setStatus(AccountStatus.ACTIVE);
     }
 
     @Transactional
     public TokenPair login(String email, String password) {
         User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("Invalid credentials"));
+            .orElseThrow(() -> new AuthenticationCredentialsNotFoundException(ErrorCode.INVALID_CREDENTIALS.message()));
 
         if (user.getStatus() != AccountStatus.ACTIVE) {
-            throw new AccessDeniedException("Account not active");
+            throw new AccessDeniedException(ErrorCode.ACCOUNT_NOT_ACTIVE.message());
         }
 
         if (!passwordEncoder.matches(password, user.getPasswordHash())) {
-            throw new AuthenticationCredentialsNotFoundException("Invalid credentials");
+            throw new AuthenticationCredentialsNotFoundException(ErrorCode.INVALID_CREDENTIALS.message());
         }
 
         String accessToken = tokenProvider.createAccessToken(user.getId(), user.getTier());
@@ -132,17 +134,17 @@ public class AuthService {
     public TokenPair refresh(String refreshTokenRaw) {
         String hash = tokenProvider.hashRefreshToken(refreshTokenRaw);
         RefreshToken stored = refreshTokenRepository.findByTokenHash(hash)
-            .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("Refresh token not found"));
+            .orElseThrow(() -> new AuthenticationCredentialsNotFoundException(ErrorCode.REFRESH_TOKEN_NOT_FOUND.message()));
 
         Instant now = clock.instant();
         if (stored.isRevoked() || stored.isExpired(now)) {
-            throw new AuthenticationCredentialsNotFoundException("Refresh token invalid");
+            throw new AuthenticationCredentialsNotFoundException(ErrorCode.REFRESH_TOKEN_INVALID.message());
         }
 
         stored.revoke(now);
 
         User user = userRepository.findById(stored.getUserId())
-            .orElseThrow(() -> new IllegalStateException("User not found"));
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
         String newAccess = tokenProvider.createAccessToken(user.getId(), user.getTier());
         String newRefreshRaw = tokenProvider.createRefreshToken();
@@ -158,7 +160,7 @@ public class AuthService {
     public void logout(String refreshTokenRaw) {
         String hash = tokenProvider.hashRefreshToken(refreshTokenRaw);
         RefreshToken stored = refreshTokenRepository.findByTokenHash(hash)
-            .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("Refresh token not found"));
+            .orElseThrow(() -> new AuthenticationCredentialsNotFoundException(ErrorCode.REFRESH_TOKEN_NOT_FOUND.message()));
 
         if (!stored.isRevoked()) {
             stored.revoke(clock.instant());
