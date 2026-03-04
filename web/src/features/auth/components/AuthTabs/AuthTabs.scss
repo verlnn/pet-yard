@@ -1,0 +1,26 @@
+@use "../../../../styles/tokens" as *;
+
+.authTabs {
+  display: inline-flex;
+  background: rgba(148, 163, 184, 0.14);
+  border-radius: 999px;
+  padding: $spacing-1;
+  gap: $spacing-1;
+}
+
+.authTabs__tab {
+  border: none;
+  background: transparent;
+  padding: $spacing-2 $spacing-5;
+  border-radius: 999px;
+  font-size: 14px;
+  color: $color-muted;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.authTabs__tab.is-active {
+  background: $color-surface-strong;
+  color: $color-ink;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
+}

@@ -1,0 +1,13 @@
+@use "./tokens" as *;
+
+@mixin glass-card {
+  background: $color-surface;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(22px);
+  box-shadow: $shadow-card;
+}
+
+@mixin title-text {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
