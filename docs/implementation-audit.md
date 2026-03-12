@@ -26,6 +26,7 @@
 - Tailwind 기반 auth UI 컴포넌트.
 - 로그인 후 `next` 파라미터 리다이렉트 처리.
 - Guard: `middleware.ts` + `(app)/layout.tsx`.
+- Vitest 기반 auth UI 컴포넌트 테스트 일부 도입.
 
 ### Docs
 - 기존 문서 + auth/DB/frontend/testing 문서 추가.
@@ -43,7 +44,7 @@
 
 ### Testing
 - Testcontainers/PostgreSQL 통합 테스트 미도입.
-- 프론트 컴포넌트/라우팅 테스트 미도입.
+- 프론트 E2E/라우팅 테스트 미도입.
 
 ## Improvements Completed
 1. Auth 헥사고날 구조 리팩터링 완료.
