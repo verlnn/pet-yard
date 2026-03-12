@@ -10,7 +10,6 @@ import SignupForm from "@/src/features/auth/components/SignupForm/SignupForm";
 import VerifyEmailForm from "@/src/features/auth/components/VerifyEmailForm/VerifyEmailForm";
 import { useAuthForms } from "@/src/features/auth/hooks/useAuthForms";
 import type { AuthMode } from "@/src/features/auth/types/authTypes";
-import "./AuthPage.scss";
 
 interface AuthPageProps {
   initialMode?: AuthMode;
@@ -22,7 +21,7 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
     useAuthForms({ mode, onModeChange: setMode });
 
   return (
-    <div className="authPageRoot">
+    <div className="min-h-screen">
       <AuthLayout
         brand={<BrandPanel />}
         card={

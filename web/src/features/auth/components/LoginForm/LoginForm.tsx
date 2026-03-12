@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import "./LoginForm.scss";
 
 interface LoginFormProps {
   onSubmit: (email: string, password: string) => void;
   loading?: boolean;
 }
+
+const inputClassName =
+  "w-full rounded-xl border border-ink/10 bg-white/80 px-4 py-3 text-sm text-ink shadow-sm transition focus:border-ember/40 focus:outline-none focus:ring-2 focus:ring-ember/20";
 
 export default function LoginForm({ onSubmit, loading }: LoginFormProps) {
   const [email, setEmail] = useState("");
@@ -29,12 +31,12 @@ export default function LoginForm({ onSubmit, loading }: LoginFormProps) {
   };
 
   return (
-    <form className="loginForm" onSubmit={handleSubmit}>
-      <label className="loginForm__field">
-        <span className="loginForm__label">이메일</span>
+    <form className="space-y-4" onSubmit={handleSubmit}>
+      <label className="flex flex-col gap-2 text-sm font-medium text-ink">
+        이메일
         <input
           type="email"
-          className="loginForm__input"
+          className={inputClassName}
           aria-label="이메일"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
@@ -42,12 +44,12 @@ export default function LoginForm({ onSubmit, loading }: LoginFormProps) {
           required
         />
       </label>
-      <label className="loginForm__field">
-        <span className="loginForm__label">비밀번호</span>
-        <div className="loginForm__password">
+      <label className="flex flex-col gap-2 text-sm font-medium text-ink">
+        비밀번호
+        <div className="flex items-center gap-2">
           <input
             type={showPassword ? "text" : "password"}
-            className="loginForm__input"
+            className={inputClassName}
             aria-label="비밀번호"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
@@ -56,15 +58,19 @@ export default function LoginForm({ onSubmit, loading }: LoginFormProps) {
           />
           <button
             type="button"
-            className="loginForm__toggle"
+            className="whitespace-nowrap rounded-xl border border-ink/10 bg-white/70 px-3 py-2 text-xs font-semibold text-ink/70 transition hover:border-ember/40 hover:text-ember"
             onClick={() => setShowPassword((prev) => !prev)}
           >
             {showPassword ? "숨기기" : "보기"}
           </button>
         </div>
       </label>
-      {error && <p className="loginForm__error">{error}</p>}
-      <button className="loginForm__submit" type="submit" disabled={loading}>
+      {error && <p className="text-sm text-ember">{error}</p>}
+      <button
+        className="w-full rounded-xl bg-ink px-4 py-3 text-sm font-semibold text-sand shadow-soft transition hover:-translate-y-0.5 hover:bg-ink/90 disabled:cursor-not-allowed disabled:bg-ink/40"
+        type="submit"
+        disabled={loading}
+      >
         {loading ? "로그인 중..." : "로그인"}
       </button>
     </form>
