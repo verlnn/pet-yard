@@ -1,15 +1,18 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { authApi } from "../api/authApi";
 import type { AuthMode } from "../types/authTypes";
 
 interface UseAuthFormsOptions {
   mode: AuthMode;
   onModeChange: (mode: AuthMode) => void;
+  nextPath?: string | null;
 }
 
-export function useAuthForms({ mode, onModeChange }: UseAuthFormsOptions) {
+export function useAuthForms({ mode, onModeChange, nextPath }: UseAuthFormsOptions) {
+  const router = useRouter();
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -69,14 +72,16 @@ export function useAuthForms({ mode, onModeChange }: UseAuthFormsOptions) {
         localStorage.setItem("refreshToken", tokens.refreshToken);
         document.cookie = `accessToken=${tokens.accessToken}; path=/`;
         setMessage("로그인에 성공했습니다.");
-        // TODO: next 파라미터 기반 리다이렉트 처리
+        const sanitizedNext =
+          nextPath && nextPath.startsWith("/") && !nextPath.startsWith("//") ? nextPath : "/feed";
+        router.push(sanitizedNext);
       } catch (err) {
         setError(err instanceof Error ? err.message : "로그인에 실패했습니다.");
       } finally {
         setLoading(false);
       }
     },
-    [resetNotice]
+    [nextPath, resetNotice, router]
   );
 
   const handleResend = useCallback(async () => {

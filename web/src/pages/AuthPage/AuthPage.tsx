@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import AuthLayout from "@/src/features/auth/components/AuthLayout/AuthLayout";
 import BrandPanel from "@/src/features/auth/components/BrandPanel/BrandPanel";
 import AuthCard from "@/src/features/auth/components/AuthCard/AuthCard";
@@ -17,8 +18,10 @@ interface AuthPageProps {
 
 export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
   const [mode, setMode] = useState<AuthMode>(initialMode);
+  const searchParams = useSearchParams();
+  const nextPath = searchParams.get("next");
   const { title, subtitle, message, error, loading, handleLogin, handleSignup, handleVerify, handleResend } =
-    useAuthForms({ mode, onModeChange: setMode });
+    useAuthForms({ mode, onModeChange: setMode, nextPath });
 
   return (
     <div className="min-h-screen">
