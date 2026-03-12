@@ -1,4 +1,4 @@
-package io.pet.petyard.auth.web;
+package io.pet.petyard.auth.adapter.in.web;
 
 public record TokenResponse(
     String accessToken,

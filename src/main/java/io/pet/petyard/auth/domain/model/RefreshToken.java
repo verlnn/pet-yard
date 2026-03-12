@@ -1,4 +1,4 @@
-package io.pet.petyard.auth.jpa;
+package io.pet.petyard.auth.domain.model;
 
 import java.time.Instant;
 

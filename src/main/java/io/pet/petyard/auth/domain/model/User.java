@@ -1,4 +1,4 @@
-package io.pet.petyard.auth.jpa;
+package io.pet.petyard.auth.domain.model;
 
 import io.pet.petyard.auth.domain.AccountStatus;
 import io.pet.petyard.auth.domain.UserTier;

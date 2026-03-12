@@ -1,4 +1,6 @@
-package io.pet.petyard.auth.jpa;
+package io.pet.petyard.auth.adapter.out.persistence;
+
+import io.pet.petyard.auth.domain.model.RefreshToken;
 
 import java.util.Optional;
 

@@ -1,4 +1,4 @@
-package io.pet.petyard.auth.web;
+package io.pet.petyard.auth.adapter.in.web;
 
 import io.pet.petyard.auth.security.ErrorResponse;
 import io.pet.petyard.common.ApiException;

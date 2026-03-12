@@ -1,6 +1,6 @@
 package io.pet.petyard.auth;
 
-import io.pet.petyard.auth.service.OtpGenerator;
+import io.pet.petyard.auth.application.service.OtpGenerator;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

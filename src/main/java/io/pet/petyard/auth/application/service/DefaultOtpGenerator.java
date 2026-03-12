@@ -1,4 +1,4 @@
-package io.pet.petyard.auth.service;
+package io.pet.petyard.auth.application.service;
 
 import java.util.Random;
 
