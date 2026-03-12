@@ -152,6 +152,67 @@ class AuthTier0IntegrationTest {
             .andExpect(status().isOk());
     }
 
+    @Test
+    void logoutRevokesRefreshToken() throws Exception {
+        String email = "user5@test.com";
+
+        mockMvc.perform(post("/api/auth/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new Signup(email, "pass1234"))))
+            .andExpect(status().isOk());
+
+        String code = otpGenerator.lastCodeFor(email);
+
+        mockMvc.perform(post("/api/auth/verify-email")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new Verify(email, code))))
+            .andExpect(status().isOk());
+
+        String tokenResponse = mockMvc.perform(post("/api/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new Login(email, "pass1234"))))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        String refreshToken = objectMapper.readTree(tokenResponse).get("refreshToken").asText();
+
+        mockMvc.perform(post("/api/auth/logout")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new Refresh(refreshToken))))
+            .andExpect(status().isOk());
+
+        mockMvc.perform(post("/api/auth/refresh")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new Refresh(refreshToken))))
+            .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void verifyEmailAttemptsExceededReturns403() throws Exception {
+        String email = "user6@test.com";
+
+        mockMvc.perform(post("/api/auth/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new Signup(email, "pass1234"))))
+            .andExpect(status().isOk());
+
+        String wrongCode = "000000";
+
+        for (int i = 0; i < 5; i++) {
+            mockMvc.perform(post("/api/auth/verify-email")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(new Verify(email, wrongCode))))
+                .andExpect(status().isBadRequest());
+        }
+
+        mockMvc.perform(post("/api/auth/verify-email")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new Verify(email, wrongCode))))
+            .andExpect(status().isForbidden());
+    }
+
     private record Signup(String email, String password) {
     }
 
