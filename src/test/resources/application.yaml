@@ -10,6 +10,8 @@ spring:
     properties:
       hibernate:
         format_sql: false
+  flyway:
+    enabled: false
 
 jwt:
   secret: dev-secret-change-me-please-32bytes-minimum
