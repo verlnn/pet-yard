@@ -1,5 +1,5 @@
-import AuthPage from "@/src/pages/AuthPage/AuthPage";
+import AuthForm from "@/components/auth/AuthForm";
 
 export default function SignupPage() {
-  return <AuthPage initialMode="signup" />;
+  return <AuthForm mode="signup" />;
 }
