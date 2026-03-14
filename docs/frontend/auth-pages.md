@@ -6,9 +6,9 @@
 - `/verify`
 
 ## Layout
-- 좌측: `BrandPanel`
-- 우측: `AuthCard` + `AuthTabs` + form
-- 모바일: 세로 스택
+- 상단 로고 + 단일 카드 레이아웃
+- `AuthCard` + form 구성
+- 모바일: 동일한 단일 컬럼
 
 ## Modes
 - Login

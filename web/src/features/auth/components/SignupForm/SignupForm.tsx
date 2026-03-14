@@ -8,7 +8,7 @@ interface SignupFormProps {
 }
 
 const inputClassName =
-  "w-full rounded-xl border border-ink/10 bg-white/80 px-4 py-3 text-sm text-ink shadow-sm transition focus:border-ember/40 focus:outline-none focus:ring-2 focus:ring-ember/20";
+  "w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10";
 
 export default function SignupForm({ onSubmit, loading }: SignupFormProps) {
   const [email, setEmail] = useState("");
@@ -36,7 +36,7 @@ export default function SignupForm({ onSubmit, loading }: SignupFormProps) {
 
   return (
     <form className="space-y-4" onSubmit={handleSubmit}>
-      <label className="flex flex-col gap-2 text-sm font-medium text-ink">
+      <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
         이메일
         <input
           type="email"
@@ -48,7 +48,7 @@ export default function SignupForm({ onSubmit, loading }: SignupFormProps) {
           required
         />
       </label>
-      <label className="flex flex-col gap-2 text-sm font-medium text-ink">
+      <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
         비밀번호
         <input
           type="password"
@@ -60,7 +60,7 @@ export default function SignupForm({ onSubmit, loading }: SignupFormProps) {
           required
         />
       </label>
-      <label className="flex flex-col gap-2 text-sm font-medium text-ink">
+      <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
         비밀번호 확인
         <input
           type="password"
@@ -72,9 +72,9 @@ export default function SignupForm({ onSubmit, loading }: SignupFormProps) {
           required
         />
       </label>
-      {error && <p className="text-sm text-ember">{error}</p>}
+      {error && <p className="text-sm text-rose-600">{error}</p>}
       <button
-        className="w-full rounded-xl bg-ink px-4 py-3 text-sm font-semibold text-sand shadow-soft transition hover:-translate-y-0.5 hover:bg-ink/90 disabled:cursor-not-allowed disabled:bg-ink/40"
+        className="w-full rounded-2xl bg-ink px-4 py-3 text-sm font-semibold text-sand shadow-sm transition hover:bg-ink/90 disabled:cursor-not-allowed disabled:bg-ink/40"
         type="submit"
         disabled={loading}
       >

@@ -12,7 +12,7 @@ interface VerifyEmailFormProps {
 }
 
 const inputClassName =
-  "w-full rounded-xl border border-ink/10 bg-white/80 px-4 py-3 text-sm text-ink shadow-sm transition focus:border-ember/40 focus:outline-none focus:ring-2 focus:ring-ember/20";
+  "w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10";
 
 function formatTime(seconds: number | null | undefined) {
   if (seconds === null || seconds === undefined) return "--:--";
@@ -51,7 +51,7 @@ export default function VerifyEmailForm({
 
   return (
     <form className="space-y-4" onSubmit={handleSubmit}>
-      <label className="flex flex-col gap-2 text-sm font-medium text-ink">
+      <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
         인증 코드
         <input
           type="text"
@@ -64,44 +64,44 @@ export default function VerifyEmailForm({
           required
         />
       </label>
-      {error && <p className="text-sm text-ember">{error}</p>}
+      {error && <p className="text-sm text-rose-600">{error}</p>}
       <button
-        className="w-full rounded-xl bg-ink px-4 py-3 text-sm font-semibold text-sand shadow-soft transition hover:-translate-y-0.5 hover:bg-ink/90 disabled:cursor-not-allowed disabled:bg-ink/40"
+        className="w-full rounded-2xl bg-ink px-4 py-3 text-sm font-semibold text-sand shadow-sm transition hover:bg-ink/90 disabled:cursor-not-allowed disabled:bg-ink/40"
         type="submit"
         disabled={loading}
       >
         {loading ? "인증 중..." : "이메일 인증"}
       </button>
-      <div className="flex items-center justify-between rounded-xl border border-ink/10 bg-white/60 px-4 py-3 text-sm text-ink/70">
+      <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500">
         <span>남은 시간</span>
-        <span className="font-semibold text-ink">{formatTime(remainingSeconds)}</span>
+        <span className="font-semibold text-slate-900">{formatTime(remainingSeconds)}</span>
       </div>
       <button
         type="button"
-        className="w-full rounded-xl border border-ink/10 bg-white/60 px-4 py-3 text-sm font-semibold text-ink/70 transition hover:border-ember/40 hover:text-ember disabled:cursor-not-allowed disabled:opacity-60"
+        className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-600 transition hover:border-blue-200 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-60"
         onClick={onExtend}
         disabled={loading || remainingSeconds === null || isExpired || isExtendCooling}
       >
         {isExtendCooling ? `연장 대기 ${extendCooldownSeconds}s` : "인증 시간 1분 연장"}
       </button>
       {isExtendCooling && (
-        <div className="relative h-2 overflow-hidden rounded-full bg-ink/10">
+        <div className="relative h-2 overflow-hidden rounded-full bg-slate-100">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-ember/70 via-ember to-ink/70 transition-[width] duration-300"
+            className="h-full rounded-full bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 transition-[width] duration-300"
             style={{ width: `${Math.max(0, Math.min(100, ((3 - extendCooldownSeconds) / 3) * 100))}%` }}
           />
         </div>
       )}
       {isExtendCooling && (
-        <p className="text-center text-xs text-ink/60">잠시만 기다려 주세요…</p>
+        <p className="text-center text-xs text-slate-500">잠시만 기다려 주세요…</p>
       )}
       {!isExpired && (
-        <p className="text-center text-xs text-ink/50">만료 후 재전송 버튼이 표시됩니다.</p>
+        <p className="text-center text-xs text-slate-400">만료 후 재전송 버튼이 표시됩니다.</p>
       )}
       {isExpired && (
         <button
           type="button"
-          className="w-full rounded-xl border border-ink/10 bg-white/60 px-4 py-3 text-sm font-semibold text-ink/70 transition hover:border-ember/40 hover:text-ember"
+          className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-600 transition hover:border-blue-200 hover:text-blue-600"
           onClick={onResend}
           disabled={loading}
         >

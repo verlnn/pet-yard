@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { PawPrint } from "lucide-react";
 import AuthLayout from "@/src/features/auth/components/AuthLayout/AuthLayout";
-import BrandPanel from "@/src/features/auth/components/BrandPanel/BrandPanel";
 import AuthCard from "@/src/features/auth/components/AuthCard/AuthCard";
-import AuthTabs from "@/src/features/auth/components/AuthTabs/AuthTabs";
 import LoginForm from "@/src/features/auth/components/LoginForm/LoginForm";
 import SignupForm from "@/src/features/auth/components/SignupForm/SignupForm";
 import VerifyEmailForm from "@/src/features/auth/components/VerifyEmailForm/VerifyEmailForm";
@@ -36,15 +36,48 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
   } =
     useAuthForms({ mode, onModeChange: setMode, nextPath });
 
+  const helperLink =
+    mode === "login" ? (
+      <p className="text-center text-sm text-slate-500">
+        아직 계정이 없나요?{" "}
+        <Link href="/signup" className="font-semibold text-[#0064FF] hover:text-[#0056E0]">
+          회원가입
+        </Link>
+      </p>
+    ) : mode === "signup" ? (
+      <p className="text-center text-sm text-slate-500">
+        이미 계정이 있나요?{" "}
+        <Link href="/login" className="font-semibold text-[#0064FF] hover:text-[#0056E0]">
+          로그인
+        </Link>
+      </p>
+    ) : (
+      <p className="text-center text-sm text-slate-500">
+        계정으로 돌아가기{" "}
+        <Link href="/login" className="font-semibold text-[#0064FF] hover:text-[#0056E0]">
+          로그인
+        </Link>
+      </p>
+    );
+
   return (
     <div className="min-h-screen">
       <AuthLayout
-        brand={<BrandPanel />}
+        brand={
+          <div className="flex items-center justify-between text-slate-600">
+            <Link href="/" className="flex items-center gap-3">
+              <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-ink text-sand">
+                <PawPrint className="h-5 w-5" />
+              </span>
+              <span className="text-lg font-semibold text-slate-900">멍냥마당</span>
+            </Link>
+            <span className="text-xs">PetYard</span>
+          </div>
+        }
         card={
           <AuthCard
             title={title}
             subtitle={subtitle}
-            tabs={<AuthTabs mode={mode} onChange={setMode} />}
             message={message}
             error={error}
           >
@@ -60,6 +93,8 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
                 loading={loading}
               />
             )}
+            {mode !== "verify" && helperLink}
+            {mode === "verify" && <div className="pt-2">{helperLink}</div>}
           </AuthCard>
         }
       />
