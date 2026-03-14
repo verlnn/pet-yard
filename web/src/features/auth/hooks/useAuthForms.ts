@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { authApi } from "../api/authApi";
+import { ApiError, authApi } from "../api/authApi";
 import type { AuthMode } from "../types/authTypes";
 
 interface UseAuthFormsOptions {
@@ -18,10 +18,23 @@ export function useAuthForms({ mode, onModeChange, nextPath }: UseAuthFormsOptio
   const [loading, setLoading] = useState(false);
   const [emailCache, setEmailCache] = useState<string | null>(null);
 
+  useEffect(() => {
+    const storedEmail = localStorage.getItem("pendingEmail");
+    if (storedEmail) {
+      setEmailCache(storedEmail);
+    }
+  }, []);
+
   const resetNotice = useCallback(() => {
     setMessage(null);
     setError(null);
   }, []);
+
+  const toMessage = (err: unknown, fallback: string) => {
+    if (err instanceof ApiError) return err.message;
+    if (err instanceof Error) return err.message || fallback;
+    return fallback;
+  };
 
   const handleSignup = useCallback(
     async (email: string, password: string) => {
@@ -30,10 +43,11 @@ export function useAuthForms({ mode, onModeChange, nextPath }: UseAuthFormsOptio
       try {
         await authApi.signup(email, password);
         setEmailCache(email);
+        localStorage.setItem("pendingEmail", email);
         setMessage("인증 코드가 전송되었습니다. 이메일을 확인해 주세요.");
         onModeChange("verify");
       } catch (err) {
-        setError(err instanceof Error ? err.message : "회원가입에 실패했습니다.");
+        setError(toMessage(err, "회원가입에 실패했습니다."));
       } finally {
         setLoading(false);
       }
@@ -51,10 +65,11 @@ export function useAuthForms({ mode, onModeChange, nextPath }: UseAuthFormsOptio
           throw new Error("이메일 정보가 없습니다. 다시 회원가입을 진행해주세요.");
         }
         await authApi.verifyEmail(email, code);
+        localStorage.removeItem("pendingEmail");
         setMessage("이메일 인증이 완료되었습니다. 로그인해 주세요.");
         onModeChange("login");
       } catch (err) {
-        setError(err instanceof Error ? err.message : "인증에 실패했습니다.");
+        setError(toMessage(err, "인증에 실패했습니다."));
       } finally {
         setLoading(false);
       }
@@ -76,7 +91,7 @@ export function useAuthForms({ mode, onModeChange, nextPath }: UseAuthFormsOptio
           nextPath && nextPath.startsWith("/") && !nextPath.startsWith("//") ? nextPath : "/feed";
         router.push(sanitizedNext);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "로그인에 실패했습니다.");
+        setError(toMessage(err, "로그인에 실패했습니다."));
       } finally {
         setLoading(false);
       }
@@ -95,7 +110,7 @@ export function useAuthForms({ mode, onModeChange, nextPath }: UseAuthFormsOptio
       await new Promise((resolve) => setTimeout(resolve, 400));
       setMessage("인증 코드가 재전송되었습니다.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "재전송에 실패했습니다.");
+      setError(toMessage(err, "재전송에 실패했습니다."));
     } finally {
       setLoading(false);
     }

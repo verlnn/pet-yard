@@ -2,6 +2,18 @@ import type { MeResponse, TokenResponse } from "../types/authTypes";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 
+export class ApiError extends Error {
+  readonly code?: string;
+  readonly status: number;
+
+  constructor(message: string, status: number, code?: string) {
+    super(message);
+    this.name = "ApiError";
+    this.code = code;
+    this.status = status;
+  }
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE}${path}`, {
     headers: {
@@ -16,10 +28,10 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     if (contentType.includes("application/json")) {
       const payload = (await response.json()) as { message?: string; code?: string };
       const message = payload?.message ?? payload?.code ?? "Request failed";
-      throw new Error(message);
+      throw new ApiError(message, response.status, payload?.code);
     }
     const message = await response.text();
-    throw new Error(message || "Request failed");
+    throw new ApiError(message || "Request failed", response.status);
   }
 
   if (response.status === 204) {
@@ -31,28 +43,24 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 export const authApi = {
   signup(email: string, password: string) {
-    // TODO: API 연동
     return request<void>("/api/auth/signup", {
       method: "POST",
       body: JSON.stringify({ email, password })
     });
   },
   verifyEmail(email: string, code: string) {
-    // TODO: API 연동
     return request<void>("/api/auth/verify-email", {
       method: "POST",
       body: JSON.stringify({ email, code })
     });
   },
   login(email: string, password: string) {
-    // TODO: API 연동
     return request<TokenResponse>("/api/auth/login", {
       method: "POST",
       body: JSON.stringify({ email, password })
     });
   },
   me(accessToken: string) {
-    // TODO: API 연동
     return request<MeResponse>("/api/auth/me", {
       method: "GET",
       headers: {
