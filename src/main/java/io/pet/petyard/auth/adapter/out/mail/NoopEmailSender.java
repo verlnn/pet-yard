@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.stereotype.Component;
 
 @Component
-@ConditionalOnMissingBean(EmailSender.class)
+//@ConditionalOnMissingBean(EmailSender.class)
 @ConditionalOnMissingBean(org.springframework.mail.javamail.JavaMailSender.class)
 public class NoopEmailSender implements EmailSender {
 
