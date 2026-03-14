@@ -47,6 +47,7 @@ npm run dev
 - `docs/backend/auth-api.md`
 - `docs/backend/auth-security.md`
 - `docs/backend/auth-testing.md`
+- `docs/backend/auth-email.md`
 - `docs/database/auth-schema.md`
 - `docs/database/migration-guide.md`
 - `docs/frontend/auth-pages.md`
