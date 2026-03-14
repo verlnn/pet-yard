@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { authApi } from "../api/authApi";
 import type { AuthMode } from "../types/authTypes";
@@ -18,13 +18,6 @@ export function useAuthForms({ mode, onModeChange, nextPath }: UseAuthFormsOptio
   const [loading, setLoading] = useState(false);
   const [emailCache, setEmailCache] = useState<string | null>(null);
 
-  useEffect(() => {
-    const storedEmail = localStorage.getItem("pendingEmail");
-    if (storedEmail) {
-      setEmailCache(storedEmail);
-    }
-  }, []);
-
   const resetNotice = useCallback(() => {
     setMessage(null);
     setError(null);
@@ -37,7 +30,6 @@ export function useAuthForms({ mode, onModeChange, nextPath }: UseAuthFormsOptio
       try {
         await authApi.signup(email, password);
         setEmailCache(email);
-        localStorage.setItem("pendingEmail", email);
         setMessage("인증 코드가 전송되었습니다. 이메일을 확인해 주세요.");
         onModeChange("verify");
       } catch (err) {
@@ -59,7 +51,6 @@ export function useAuthForms({ mode, onModeChange, nextPath }: UseAuthFormsOptio
           throw new Error("이메일 정보가 없습니다. 다시 회원가입을 진행해주세요.");
         }
         await authApi.verifyEmail(email, code);
-        localStorage.removeItem("pendingEmail");
         setMessage("이메일 인증이 완료되었습니다. 로그인해 주세요.");
         onModeChange("login");
       } catch (err) {
