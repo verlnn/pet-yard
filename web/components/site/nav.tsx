@@ -1,8 +1,13 @@
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Bell, Compass, HeartHandshake, MapPin, PawPrint, Shield } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { authApi } from "@/src/features/auth/api/authApi";
 
 const links = [
   { href: "/feed", label: "피드", icon: PawPrint },
@@ -12,10 +17,35 @@ const links = [
 ];
 
 export function SiteNav() {
+  const router = useRouter();
+  const [hasToken, setHasToken] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const accessToken = localStorage.getItem("accessToken");
+    const refreshToken = localStorage.getItem("refreshToken");
+    setHasToken(Boolean(accessToken || refreshToken));
+  }, []);
+
+  const handleLogout = useCallback(async () => {
+    const refreshToken = localStorage.getItem("refreshToken");
+    try {
+      if (refreshToken) {
+        await authApi.logout(refreshToken);
+      }
+    } finally {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      document.cookie = "accessToken=; path=/; max-age=0";
+      setHasToken(false);
+      router.push("/login");
+    }
+  }, [router]);
+
   return (
     <header className="sticky top-0 z-40 border-b border-ink/10 bg-white/70 backdrop-blur">
       <div className="container flex items-center justify-between py-4">
-        <div className="flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-ink text-sand">
             <PawPrint className="h-6 w-6" />
           </div>
@@ -26,7 +56,7 @@ export function SiteNav() {
               <span>성수동 · 동네 커뮤니티</span>
             </div>
           </div>
-        </div>
+        </Link>
         <nav className="hidden items-center gap-4 md:flex">
           {links.map((link) => (
             <Link
@@ -46,6 +76,11 @@ export function SiteNav() {
           <Button variant="ghost" size="sm" aria-label="알림">
             <Bell className="h-4 w-4" />
           </Button>
+          {hasToken && (
+            <Button variant="outline" size="sm" onClick={handleLogout}>
+              로그아웃
+            </Button>
+          )}
           <Link href="/profile">
             <Button variant="secondary" size="sm">
               내 프로필

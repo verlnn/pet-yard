@@ -71,6 +71,12 @@ export const authApi = {
       body: JSON.stringify({ email })
     });
   },
+  logout(refreshToken: string) {
+    return request<void>("/api/auth/logout", {
+      method: "POST",
+      body: JSON.stringify({ refreshToken })
+    });
+  },
   login(email: string, password: string) {
     return request<TokenResponse>("/api/auth/login", {
       method: "POST",
