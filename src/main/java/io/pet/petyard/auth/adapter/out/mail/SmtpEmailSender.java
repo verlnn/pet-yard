@@ -8,10 +8,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 @Component
 @Profile("local")
+@Primary
 @ConditionalOnBean(JavaMailSender.class)
 @ConditionalOnMissingBean(EmailSender.class)
 public class SmtpEmailSender implements EmailSender {
