@@ -1,11 +1,5 @@
-import AuthForm from "@/components/auth/AuthForm";
+import AuthPage from "@/src/pages/AuthPage/AuthPage";
 
-interface LoginPageProps {
-  searchParams?: {
-    next?: string;
-  };
-}
-
-export default function LoginPage({ searchParams }: LoginPageProps) {
-  return <AuthForm mode="login" nextPath={searchParams?.next ?? null} />;
+export default function LoginPage() {
+  return <AuthPage initialMode="login" />;
 }
