@@ -10,6 +10,7 @@ import io.pet.petyard.auth.application.port.in.VerifyEmailUseCase;
 import io.pet.petyard.auth.application.port.out.LoadLatestPendingEmailVerificationPort;
 import io.pet.petyard.auth.application.port.out.LoadRefreshTokenPort;
 import io.pet.petyard.auth.application.port.out.LoadUserPort;
+import io.pet.petyard.auth.application.port.out.EmailSender;
 import io.pet.petyard.auth.application.port.out.RevokeRefreshTokenPort;
 import io.pet.petyard.auth.application.port.out.SaveEmailVerificationPort;
 import io.pet.petyard.auth.application.port.out.SaveRefreshTokenPort;
@@ -49,6 +50,7 @@ public class AuthApplicationService implements SignUpUseCase, VerifyEmailUseCase
     private final SaveRefreshTokenPort saveRefreshTokenPort;
     private final LoadRefreshTokenPort loadRefreshTokenPort;
     private final RevokeRefreshTokenPort revokeRefreshTokenPort;
+    private final EmailSender emailSender;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
     private final Clock clock;
@@ -61,6 +63,7 @@ public class AuthApplicationService implements SignUpUseCase, VerifyEmailUseCase
                                   SaveRefreshTokenPort saveRefreshTokenPort,
                                   LoadRefreshTokenPort loadRefreshTokenPort,
                                   RevokeRefreshTokenPort revokeRefreshTokenPort,
+                                  EmailSender emailSender,
                                   PasswordEncoder passwordEncoder,
                                   JwtTokenProvider tokenProvider,
                                   Clock clock,
@@ -72,6 +75,7 @@ public class AuthApplicationService implements SignUpUseCase, VerifyEmailUseCase
         this.saveRefreshTokenPort = saveRefreshTokenPort;
         this.loadRefreshTokenPort = loadRefreshTokenPort;
         this.revokeRefreshTokenPort = revokeRefreshTokenPort;
+        this.emailSender = emailSender;
         this.passwordEncoder = passwordEncoder;
         this.tokenProvider = tokenProvider;
         this.clock = clock;
@@ -97,7 +101,10 @@ public class AuthApplicationService implements SignUpUseCase, VerifyEmailUseCase
         EmailVerification verification = new EmailVerification(user.getId(), command.email(), codeHash, expiresAt, now);
         saveEmailVerificationPort.save(verification);
 
-        // TODO: 실제 이메일 발송 연동
+        String subject = "[멍냥마당] 이메일 인증 코드";
+        String body = String.format("인증 코드는 %s 입니다.%n유효 시간: %d분", code, OTP_TTL_MINUTES);
+        emailSender.send(command.email(), subject, body);
+
         log.info("[OTP] {} -> {}", command.email(), code);
 
         return new SignupResult(user.getId(), command.email());
