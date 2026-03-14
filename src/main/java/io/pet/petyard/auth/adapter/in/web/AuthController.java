@@ -1,10 +1,12 @@
 package io.pet.petyard.auth.adapter.in.web;
 
 import io.pet.petyard.auth.application.port.in.AuthTokens;
+import io.pet.petyard.auth.application.port.in.ExtendEmailVerificationUseCase;
 import io.pet.petyard.auth.application.port.in.GetCurrentUserUseCase;
 import io.pet.petyard.auth.application.port.in.LoginUseCase;
 import io.pet.petyard.auth.application.port.in.LogoutUseCase;
 import io.pet.petyard.auth.application.port.in.RefreshTokenUseCase;
+import io.pet.petyard.auth.application.port.in.ResendEmailVerificationUseCase;
 import io.pet.petyard.auth.application.port.in.SignUpUseCase;
 import io.pet.petyard.auth.application.port.in.VerifyEmailUseCase;
 import io.pet.petyard.auth.security.AuthPrincipal;
@@ -26,6 +28,8 @@ public class AuthController {
 
     private final SignUpUseCase signUpUseCase;
     private final VerifyEmailUseCase verifyEmailUseCase;
+    private final ExtendEmailVerificationUseCase extendEmailUseCase;
+    private final ResendEmailVerificationUseCase resendEmailUseCase;
     private final LoginUseCase loginUseCase;
     private final RefreshTokenUseCase refreshTokenUseCase;
     private final LogoutUseCase logoutUseCase;
@@ -33,12 +37,16 @@ public class AuthController {
 
     public AuthController(SignUpUseCase signUpUseCase,
                           VerifyEmailUseCase verifyEmailUseCase,
+                          ExtendEmailVerificationUseCase extendEmailUseCase,
+                          ResendEmailVerificationUseCase resendEmailUseCase,
                           LoginUseCase loginUseCase,
                           RefreshTokenUseCase refreshTokenUseCase,
                           LogoutUseCase logoutUseCase,
                           GetCurrentUserUseCase getCurrentUserUseCase) {
         this.signUpUseCase = signUpUseCase;
         this.verifyEmailUseCase = verifyEmailUseCase;
+        this.extendEmailUseCase = extendEmailUseCase;
+        this.resendEmailUseCase = resendEmailUseCase;
         this.loginUseCase = loginUseCase;
         this.refreshTokenUseCase = refreshTokenUseCase;
         this.logoutUseCase = logoutUseCase;
@@ -46,13 +54,29 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public void signup(@Valid @RequestBody SignupRequest request) {
-        signUpUseCase.signup(new SignUpUseCase.SignUpCommand(request.email(), request.password()));
+    public SignupResponse signup(@Valid @RequestBody SignupRequest request) {
+        SignUpUseCase.SignupResult result = signUpUseCase
+            .signup(new SignUpUseCase.SignUpCommand(request.email(), request.password()));
+        return new SignupResponse(result.email(), result.expiresAt());
     }
 
     @PostMapping("/verify-email")
     public void verifyEmail(@Valid @RequestBody VerifyEmailRequest request) {
         verifyEmailUseCase.verifyEmail(new VerifyEmailUseCase.VerifyEmailCommand(request.email(), request.code()));
+    }
+
+    @PostMapping("/extend-email")
+    public VerificationExpiryResponse extendEmail(@Valid @RequestBody ExtendEmailRequest request) {
+        ExtendEmailVerificationUseCase.ExtendResult result = extendEmailUseCase
+            .extendEmail(new ExtendEmailVerificationUseCase.ExtendCommand(request.email()));
+        return new VerificationExpiryResponse(result.expiresAt());
+    }
+
+    @PostMapping("/resend-email")
+    public VerificationExpiryResponse resendEmail(@Valid @RequestBody ResendEmailRequest request) {
+        ResendEmailVerificationUseCase.ResendResult result = resendEmailUseCase
+            .resendEmail(new ResendEmailVerificationUseCase.ResendCommand(request.email()));
+        return new VerificationExpiryResponse(result.expiresAt());
     }
 
     @PostMapping("/login")

@@ -12,4 +12,10 @@ public class TestOtpConfig {
     public CapturingOtpGenerator capturingOtpGenerator() {
         return new CapturingOtpGenerator();
     }
+
+    @Bean
+    @Primary
+    public MutableClock mutableClock() {
+        return new MutableClock();
+    }
 }

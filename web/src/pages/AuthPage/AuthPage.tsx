@@ -20,7 +20,20 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
   const [mode, setMode] = useState<AuthMode>(initialMode);
   const searchParams = useSearchParams();
   const nextPath = searchParams.get("next");
-  const { title, subtitle, message, error, loading, handleLogin, handleSignup, handleVerify, handleResend } =
+  const {
+    title,
+    subtitle,
+    message,
+    error,
+    loading,
+    handleLogin,
+    handleSignup,
+    handleVerify,
+    handleResend,
+    handleExtend,
+    remainingSeconds,
+    extendCooldownSeconds
+  } =
     useAuthForms({ mode, onModeChange: setMode, nextPath });
 
   return (
@@ -38,7 +51,14 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
             {mode === "login" && <LoginForm onSubmit={handleLogin} loading={loading} />}
             {mode === "signup" && <SignupForm onSubmit={handleSignup} loading={loading} />}
             {mode === "verify" && (
-              <VerifyEmailForm onVerify={handleVerify} onResend={handleResend} loading={loading} />
+              <VerifyEmailForm
+                onVerify={handleVerify}
+                onResend={handleResend}
+                onExtend={handleExtend}
+                remainingSeconds={remainingSeconds}
+                extendCooldownSeconds={extendCooldownSeconds}
+                loading={loading}
+              />
             )}
           </AuthCard>
         }

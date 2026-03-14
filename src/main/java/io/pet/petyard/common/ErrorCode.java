@@ -18,7 +18,9 @@ public enum ErrorCode {
     EMAIL_ALREADY_REGISTERED("BAD_REQUEST", "이미 등록된 이메일입니다"),
     VERIFICATION_CODE_NOT_FOUND("BAD_REQUEST", "인증 코드를 찾을 수 없습니다"),
     VERIFICATION_CODE_EXPIRED("BAD_REQUEST", "인증 코드가 만료되었습니다"),
+    VERIFICATION_CODE_NOT_EXPIRED("BAD_REQUEST", "인증 코드가 아직 만료되지 않았습니다"),
     INVALID_VERIFICATION_CODE("BAD_REQUEST", "인증 코드가 올바르지 않습니다"),
+    VERIFICATION_EXTEND_RATE_LIMIT("BAD_REQUEST", "인증 코드 연장을 너무 자주 요청했습니다"),
     USER_NOT_FOUND("BAD_REQUEST", "사용자를 찾을 수 없습니다"),
     VALIDATION_FAILED("BAD_REQUEST", "요청 값 검증에 실패했습니다");
 

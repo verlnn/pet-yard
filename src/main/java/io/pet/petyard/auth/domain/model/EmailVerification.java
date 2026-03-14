@@ -34,6 +34,11 @@ public class EmailVerification {
     @Column(nullable = false)
     private int attemptCount;
 
+    private Instant extendWindowStart;
+
+    @Column(nullable = false)
+    private int extendWindowCount;
+
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
@@ -47,6 +52,7 @@ public class EmailVerification {
         this.expiresAt = expiresAt;
         this.createdAt = createdAt;
         this.attemptCount = 0;
+        this.extendWindowCount = 0;
     }
 
     public Long getId() {
@@ -81,6 +87,14 @@ public class EmailVerification {
         return createdAt;
     }
 
+    public Instant getExtendWindowStart() {
+        return extendWindowStart;
+    }
+
+    public int getExtendWindowCount() {
+        return extendWindowCount;
+    }
+
     public boolean isExpired(Instant now) {
         return now.isAfter(expiresAt);
     }
@@ -95,5 +109,23 @@ public class EmailVerification {
 
     public void incrementAttempt() {
         this.attemptCount += 1;
+    }
+
+    public boolean canExtend(Instant now, long windowMillis, int maxPerWindow) {
+        if (extendWindowStart == null || now.isAfter(extendWindowStart.plusMillis(windowMillis))) {
+            extendWindowStart = now;
+            extendWindowCount = 0;
+        }
+        if (extendWindowCount >= maxPerWindow) {
+            return false;
+        }
+        extendWindowCount += 1;
+        return true;
+    }
+
+    public void extendExpiryTo(Instant newExpiry) {
+        if (newExpiry.isAfter(this.expiresAt)) {
+            this.expiresAt = newExpiry;
+        }
     }
 }

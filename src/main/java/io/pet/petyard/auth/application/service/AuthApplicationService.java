@@ -1,10 +1,12 @@
 package io.pet.petyard.auth.application.service;
 
 import io.pet.petyard.auth.application.port.in.AuthTokens;
+import io.pet.petyard.auth.application.port.in.ExtendEmailVerificationUseCase;
 import io.pet.petyard.auth.application.port.in.GetCurrentUserUseCase;
 import io.pet.petyard.auth.application.port.in.LoginUseCase;
 import io.pet.petyard.auth.application.port.in.LogoutUseCase;
 import io.pet.petyard.auth.application.port.in.RefreshTokenUseCase;
+import io.pet.petyard.auth.application.port.in.ResendEmailVerificationUseCase;
 import io.pet.petyard.auth.application.port.in.SignUpUseCase;
 import io.pet.petyard.auth.application.port.in.VerifyEmailUseCase;
 import io.pet.petyard.auth.application.port.out.LoadLatestPendingEmailVerificationPort;
@@ -37,11 +39,15 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class AuthApplicationService implements SignUpUseCase, VerifyEmailUseCase, LoginUseCase, RefreshTokenUseCase,
-    LogoutUseCase, GetCurrentUserUseCase {
+public class AuthApplicationService implements SignUpUseCase, VerifyEmailUseCase, ExtendEmailVerificationUseCase,
+    ResendEmailVerificationUseCase, LoginUseCase, RefreshTokenUseCase, LogoutUseCase, GetCurrentUserUseCase {
 
-    private static final int OTP_TTL_MINUTES = 10;
+    private static final int OTP_TTL_MINUTES = 3;
     private static final int OTP_MAX_ATTEMPTS = 5;
+    private static final int OTP_EXTEND_SECONDS = 60;
+    private static final int OTP_EXTEND_WINDOW_MILLIS = 1000;
+    private static final int OTP_EXTEND_MAX_PER_WINDOW = 2;
+    private static final int OTP_MAX_EXTENSION_MINUTES = 15;
 
     private final LoadUserPort loadUserPort;
     private final SaveUserPort saveUserPort;
@@ -107,7 +113,7 @@ public class AuthApplicationService implements SignUpUseCase, VerifyEmailUseCase
 
         log.info("[OTP] {} -> {}", command.email(), code);
 
-        return new SignupResult(user.getId(), command.email());
+        return new SignupResult(user.getId(), command.email(), expiresAt);
     }
 
     @Transactional(noRollbackFor = {ApiException.class, AccessDeniedException.class})
@@ -136,6 +142,63 @@ public class AuthApplicationService implements SignUpUseCase, VerifyEmailUseCase
         User user = loadUserPort.findByEmail(command.email())
             .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
         user.setStatus(AccountStatus.ACTIVE);
+    }
+
+    @Transactional
+    @Override
+    public ExtendResult extendEmail(ExtendCommand command) {
+        EmailVerification verification = loadLatestPendingEmailVerificationPort
+            .loadLatestPendingByEmail(command.email())
+            .orElseThrow(() -> new ApiException(ErrorCode.VERIFICATION_CODE_NOT_FOUND));
+
+        Instant now = clock.instant();
+        if (verification.isExpired(now)) {
+            throw new ApiException(ErrorCode.VERIFICATION_CODE_EXPIRED);
+        }
+
+        if (!verification.canExtend(now, OTP_EXTEND_WINDOW_MILLIS, OTP_EXTEND_MAX_PER_WINDOW)) {
+            throw new ApiException(ErrorCode.VERIFICATION_EXTEND_RATE_LIMIT);
+        }
+
+        Instant maxExpiry = verification.getCreatedAt().plusSeconds(OTP_MAX_EXTENSION_MINUTES * 60L);
+        Instant nextExpiry = verification.getExpiresAt().plusSeconds(OTP_EXTEND_SECONDS);
+        if (nextExpiry.isAfter(maxExpiry)) {
+            nextExpiry = maxExpiry;
+        }
+        verification.extendExpiryTo(nextExpiry);
+
+        return new ExtendResult(verification.getExpiresAt());
+    }
+
+    @Transactional
+    @Override
+    public ResendResult resendEmail(ResendCommand command) {
+        EmailVerification verification = loadLatestPendingEmailVerificationPort
+            .loadLatestPendingByEmail(command.email())
+            .orElseThrow(() -> new ApiException(ErrorCode.VERIFICATION_CODE_NOT_FOUND));
+
+        Instant now = clock.instant();
+        if (!verification.isExpired(now)) {
+            throw new ApiException(ErrorCode.VERIFICATION_CODE_NOT_EXPIRED);
+        }
+
+        User user = loadUserPort.findByEmail(command.email())
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+
+        String code = otpGenerator.generate(command.email());
+        String codeHash = passwordEncoder.encode(code);
+        Instant expiresAt = now.plusSeconds(OTP_TTL_MINUTES * 60L);
+
+        EmailVerification renewed = new EmailVerification(user.getId(), command.email(), codeHash, expiresAt, now);
+        saveEmailVerificationPort.save(renewed);
+
+        String subject = "[멍냥마당] 이메일 인증 코드";
+        String body = String.format("인증 코드는 %s 입니다.%n유효 시간: %d분", code, OTP_TTL_MINUTES);
+        emailSender.send(command.email(), subject, body);
+
+        log.info("[OTP][RESEND] {} -> {}", command.email(), code);
+
+        return new ResendResult(expiresAt);
     }
 
     @Transactional

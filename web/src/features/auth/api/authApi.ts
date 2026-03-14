@@ -1,4 +1,4 @@
-import type { MeResponse, TokenResponse } from "../types/authTypes";
+import type { MeResponse, SignupResponse, TokenResponse, VerificationExpiryResponse } from "../types/authTypes";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 
@@ -38,12 +38,17 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     return {} as T;
   }
 
-  return (await response.json()) as T;
+  const text = await response.text();
+  if (!text) {
+    return {} as T;
+  }
+
+  return JSON.parse(text) as T;
 }
 
 export const authApi = {
   signup(email: string, password: string) {
-    return request<void>("/api/auth/signup", {
+    return request<SignupResponse>("/api/auth/signup", {
       method: "POST",
       body: JSON.stringify({ email, password })
     });
@@ -52,6 +57,18 @@ export const authApi = {
     return request<void>("/api/auth/verify-email", {
       method: "POST",
       body: JSON.stringify({ email, code })
+    });
+  },
+  extendEmail(email: string) {
+    return request<VerificationExpiryResponse>("/api/auth/extend-email", {
+      method: "POST",
+      body: JSON.stringify({ email })
+    });
+  },
+  resendEmail(email: string) {
+    return request<VerificationExpiryResponse>("/api/auth/resend-email", {
+      method: "POST",
+      body: JSON.stringify({ email })
     });
   },
   login(email: string, password: string) {

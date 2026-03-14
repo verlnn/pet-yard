@@ -6,6 +6,6 @@ public interface SignUpUseCase {
     record SignUpCommand(String email, String password) {
     }
 
-    record SignupResult(long userId, String email) {
+    record SignupResult(long userId, String email, java.time.Instant expiresAt) {
     }
 }

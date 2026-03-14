@@ -15,6 +15,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.Instant;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @Import(TestOtpConfig.class)
@@ -29,6 +31,9 @@ class AuthTier0IntegrationTest {
     @Autowired
     private CapturingOtpGenerator otpGenerator;
 
+    @Autowired
+    private MutableClock clock;
+
     @Test
     void signupVerifyLoginSuccess() throws Exception {
         String email = "user1@test.com";
@@ -36,7 +41,8 @@ class AuthTier0IntegrationTest {
         mockMvc.perform(post("/api/auth/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(new Signup(email, "pass1234"))))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.expiresAt").exists());
 
         String code = otpGenerator.lastCodeFor(email);
 
@@ -60,7 +66,8 @@ class AuthTier0IntegrationTest {
         mockMvc.perform(post("/api/auth/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(new Signup(email, "pass1234"))))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.expiresAt").exists());
 
         mockMvc.perform(post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -78,7 +85,8 @@ class AuthTier0IntegrationTest {
         mockMvc.perform(post("/api/auth/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(new Signup(email, "pass1234"))))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.expiresAt").exists());
 
         String code = otpGenerator.lastCodeFor(email);
 
@@ -112,7 +120,8 @@ class AuthTier0IntegrationTest {
         mockMvc.perform(post("/api/auth/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(new Signup(email, "pass1234"))))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.expiresAt").exists());
 
         String code = otpGenerator.lastCodeFor(email);
 
@@ -159,7 +168,8 @@ class AuthTier0IntegrationTest {
         mockMvc.perform(post("/api/auth/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(new Signup(email, "pass1234"))))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.expiresAt").exists());
 
         String code = otpGenerator.lastCodeFor(email);
 
@@ -213,7 +223,71 @@ class AuthTier0IntegrationTest {
             .andExpect(status().isForbidden());
     }
 
+    @Test
+    void extendEmailUpdatesExpiry() throws Exception {
+        String email = "user7@test.com";
+
+        String signupResponse = mockMvc.perform(post("/api/auth/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new Signup(email, "pass1234"))))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        Instant originalExpiry = Instant.parse(objectMapper.readTree(signupResponse).get("expiresAt").asText());
+
+        String extendResponse = mockMvc.perform(post("/api/auth/extend-email")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new EmailOnly(email))))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        Instant extendedExpiry = Instant.parse(objectMapper.readTree(extendResponse).get("expiresAt").asText());
+
+        org.junit.jupiter.api.Assertions.assertTrue(extendedExpiry.isAfter(originalExpiry));
+    }
+
+    @Test
+    void resendEmailOnlyAfterExpiry() throws Exception {
+        String email = "user8@test.com";
+
+        String signupResponse = mockMvc.perform(post("/api/auth/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new Signup(email, "pass1234"))))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        Instant originalExpiry = Instant.parse(objectMapper.readTree(signupResponse).get("expiresAt").asText());
+
+        mockMvc.perform(post("/api/auth/resend-email")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new EmailOnly(email))))
+            .andExpect(status().isBadRequest());
+
+        clock.setInstant(originalExpiry.plusSeconds(1));
+
+        String resendResponse = mockMvc.perform(post("/api/auth/resend-email")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new EmailOnly(email))))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        Instant newExpiry = Instant.parse(objectMapper.readTree(resendResponse).get("expiresAt").asText());
+
+        org.junit.jupiter.api.Assertions.assertTrue(newExpiry.isAfter(originalExpiry));
+    }
+
     private record Signup(String email, String password) {
+    }
+
+    private record EmailOnly(String email) {
     }
 
     private record Verify(String email, String code) {
