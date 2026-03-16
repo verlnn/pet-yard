@@ -6,7 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "regions")
+@Table(name = "regions", schema = "public")
 public class Region {
 
     @Id
@@ -19,7 +19,7 @@ public class Region {
     private String parentCode;
 
     @Column(nullable = false)
-    private String level;
+    private Integer level;
 
     protected Region() {
     }
@@ -36,7 +36,7 @@ public class Region {
         return parentCode;
     }
 
-    public String getLevel() {
+    public Integer getLevel() {
         return level;
     }
 }
