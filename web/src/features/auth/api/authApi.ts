@@ -1,4 +1,15 @@
-import type { MeResponse, SignupResponse, TokenResponse, VerificationExpiryResponse } from "../types/authTypes";
+import type {
+  MeResponse,
+  OAuthCallbackResponse,
+  OAuthStartResponse,
+  SignupCompleteResponse,
+  SignupProgressResponse,
+  SignupResponse,
+  SignupStepResponse,
+  TermsResponse,
+  TokenResponse,
+  VerificationExpiryResponse
+} from "../types/authTypes";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 
@@ -75,6 +86,87 @@ export const authApi = {
     return request<void>("/api/auth/logout", {
       method: "POST",
       body: JSON.stringify({ refreshToken })
+    });
+  },
+  oauthStart(provider: "kakao") {
+    return request<OAuthStartResponse>(`/api/auth/oauth/${provider}/start`, {
+      method: "POST"
+    });
+  },
+  oauthCallback(provider: "kakao", code: string, state: string, redirectUri: string) {
+    const params = new URLSearchParams({ code, state, redirectUri });
+    return request<OAuthCallbackResponse>(`/api/auth/oauth/${provider}/callback?${params.toString()}`, {
+      method: "GET"
+    });
+  },
+  signupProgress(signupToken: string) {
+    return request<SignupProgressResponse>("/api/auth/signup/progress", {
+      method: "GET",
+      headers: {
+        "X-Signup-Token": signupToken
+      }
+    });
+  },
+  signupProfile(
+    signupToken: string,
+    payload: {
+      nickname: string;
+      regionCode?: string | null;
+      profileImageUrl?: string | null;
+      marketingOptIn: boolean;
+      hasPet: boolean;
+    }
+  ) {
+    return request<SignupStepResponse>("/api/auth/signup/profile", {
+      method: "POST",
+      headers: {
+        "X-Signup-Token": signupToken
+      },
+      body: JSON.stringify(payload)
+    });
+  },
+  signupConsents(signupToken: string, consents: Array<{ code: string; agreed: boolean }>) {
+    return request<SignupStepResponse>("/api/auth/signup/consents", {
+      method: "POST",
+      headers: {
+        "X-Signup-Token": signupToken
+      },
+      body: JSON.stringify({ consents })
+    });
+  },
+  signupPet(
+    signupToken: string,
+    payload: {
+      name: string;
+      species: string;
+      breed?: string | null;
+      birthDate?: string | null;
+      ageGroup?: string | null;
+      gender: string;
+      neutered?: boolean | null;
+      intro?: string | null;
+      photoUrl?: string | null;
+    }
+  ) {
+    return request<SignupStepResponse>("/api/auth/signup/pet", {
+      method: "POST",
+      headers: {
+        "X-Signup-Token": signupToken
+      },
+      body: JSON.stringify(payload)
+    });
+  },
+  signupComplete(signupToken: string) {
+    return request<SignupCompleteResponse>("/api/auth/signup/complete", {
+      method: "POST",
+      headers: {
+        "X-Signup-Token": signupToken
+      }
+    });
+  },
+  terms() {
+    return request<TermsResponse>("/api/auth/terms", {
+      method: "GET"
     });
   },
   login(email: string, password: string) {
