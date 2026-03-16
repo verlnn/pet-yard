@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { authApi } from "@/src/features/auth/api/authApi";
+import { applyOAuthResult } from "@/src/features/auth/utils/oauthFlow";
 import OnboardingLayout from "@/src/features/onboarding/components/OnboardingLayout";
 import OnboardingCard from "@/src/features/onboarding/components/OnboardingCard";
 
@@ -28,22 +29,29 @@ export default function KakaoCallbackPage() {
     authApi
       .oauthCallback("kakao", code, state, redirectUri)
       .then((result) => {
-        if (result.status === "LOGIN" && result.accessToken && result.refreshToken) {
-          localStorage.setItem("accessToken", result.accessToken);
-          localStorage.setItem("refreshToken", result.refreshToken);
-          document.cookie = `accessToken=${result.accessToken}; path=/`;
-          router.replace("/feed");
+        if (window.opener && window.opener !== window) {
+          window.opener.postMessage(
+            { type: "oauth:success", provider: "kakao", payload: result },
+            window.location.origin
+          );
+          window.close();
           return;
         }
-        if (result.status === "ONBOARDING" && result.signupToken) {
-          localStorage.setItem("signupToken", result.signupToken);
-          router.replace("/onboarding/profile");
-          return;
-        }
-        setError("회원가입 상태를 확인할 수 없습니다. 다시 시도해 주세요.");
+
+        const { nextPath } = applyOAuthResult(result);
+        router.replace(nextPath);
       })
       .catch((err) => {
-        setError(err instanceof Error ? err.message : "카카오 인증에 실패했습니다.");
+        const message = err instanceof Error ? err.message : "카카오 인증에 실패했습니다.";
+        if (window.opener && window.opener !== window) {
+          window.opener.postMessage(
+            { type: "oauth:error", provider: "kakao", error: message },
+            window.location.origin
+          );
+          window.close();
+          return;
+        }
+        setError(message);
       });
   }, [params, router]);
 

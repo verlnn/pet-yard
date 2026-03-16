@@ -10,10 +10,12 @@ import LoginForm from "@/src/features/auth/components/LoginForm/LoginForm";
 import SignupForm from "@/src/features/auth/components/SignupForm/SignupForm";
 import VerifyEmailForm from "@/src/features/auth/components/VerifyEmailForm/VerifyEmailForm";
 import { useAuthForms } from "@/src/features/auth/hooks/useAuthForms";
-import type { AuthMode } from "@/src/features/auth/types/authTypes";
+import type { AuthMode, OAuthProvider } from "@/src/features/auth/types/authTypes";
 import KakaoLoginButton from "@/src/features/auth/components/AuthEntry/KakaoLoginButton";
 import AuthDivider from "@/src/features/auth/components/AuthEntry/AuthDivider";
 import AuthEntryActions from "@/src/features/auth/components/AuthEntry/AuthEntryActions";
+import { applyOAuthResult, openOAuthPopup } from "@/src/features/auth/utils/oauthFlow";
+import { authApi } from "@/src/features/auth/api/authApi";
 
 interface AuthPageProps {
   initialMode?: AuthMode;
@@ -21,6 +23,7 @@ interface AuthPageProps {
 
 export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
   const [mode, setMode] = useState<AuthMode>(initialMode);
+  const [socialError, setSocialError] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const nextPath = searchParams.get("next");
@@ -37,8 +40,21 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
     handleExtend,
     remainingSeconds,
     extendCooldownSeconds
-  } =
-    useAuthForms({ mode, onModeChange: setMode, nextPath });
+  } = useAuthForms({ mode, onModeChange: setMode, nextPath });
+
+  const displayError = error ?? socialError;
+
+  const handleOAuthLogin = async (provider: OAuthProvider) => {
+    setSocialError(null);
+    try {
+      const start = await authApi.oauthStart(provider);
+      const result = await openOAuthPopup({ authorizeUrl: start.authorizeUrl, provider });
+      const { nextPath: next } = applyOAuthResult(result);
+      router.replace(next);
+    } catch (err) {
+      setSocialError(err instanceof Error ? err.message : "소셜 로그인에 실패했습니다.");
+    }
+  };
 
   const helperLink =
     mode === "login" ? (
@@ -83,16 +99,16 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
             title={title}
             subtitle={subtitle}
             message={message}
-            error={error}
+            error={displayError}
           >
             {mode !== "verify" && (
               <div className="space-y-5">
-                <KakaoLoginButton onClick={() => router.push("/start")} />
+                <KakaoLoginButton onClick={() => handleOAuthLogin("kakao")} />
                 <AuthDivider />
                 <AuthEntryActions
-                  onGoogleLogin={() => console.log("google login")}
-                  onAppleLogin={() => console.log("apple login")}
-                  onNaverLogin={() => console.log("naver login")}
+                  onGoogleLogin={() => handleOAuthLogin("google")}
+                  onAppleLogin={() => handleOAuthLogin("apple")}
+                  onNaverLogin={() => handleOAuthLogin("naver")}
                 />
               </div>
             )}
