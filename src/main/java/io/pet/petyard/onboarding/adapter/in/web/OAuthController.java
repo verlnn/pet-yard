@@ -33,7 +33,7 @@ public class OAuthController {
     public OAuthCallbackResponse callback(@PathVariable String provider,
                                           @RequestParam String code,
                                           @RequestParam String state,
-                                          @RequestParam String redirectUri) {
+                                          @RequestParam(required = false) String redirectUri) {
         OAuthCallbackUseCase.OAuthCallbackResult result = oAuthCallbackUseCase
             .handle(new OAuthCallbackUseCase.OAuthCallbackCommand(provider, code, state, redirectUri));
         return new OAuthCallbackResponse(result.status(), result.signupToken(), result.nextStep(),

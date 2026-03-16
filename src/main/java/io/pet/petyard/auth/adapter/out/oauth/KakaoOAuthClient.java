@@ -46,7 +46,7 @@ public class KakaoOAuthClient implements OAuthClient {
 
     @Override
     public OAuthUserInfo fetchUser(String code, String redirectUri) {
-        String token = fetchAccessToken(code, redirectUri);
+        String token = fetchAccessToken(code, resolveRedirectUri(redirectUri));
 
         Map<String, Object> payload = restClient.get()
             .uri(properties.userInfoUrl())
@@ -90,5 +90,12 @@ public class KakaoOAuthClient implements OAuthClient {
             throw new ApiException(ErrorCode.OAUTH_PROVIDER_FAILED);
         }
         return (String) response.get("access_token");
+    }
+
+    private String resolveRedirectUri(String redirectUri) {
+        if (redirectUri == null || redirectUri.isBlank()) {
+            return properties.redirectUri();
+        }
+        return redirectUri;
     }
 }
