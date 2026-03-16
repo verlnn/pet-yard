@@ -9,14 +9,18 @@ import io.pet.petyard.auth.application.port.in.RefreshTokenUseCase;
 import io.pet.petyard.auth.application.port.in.ResendEmailVerificationUseCase;
 import io.pet.petyard.auth.application.port.in.SignUpUseCase;
 import io.pet.petyard.auth.application.port.in.VerifyEmailUseCase;
+import io.pet.petyard.auth.application.port.out.LoadAuthIdentityPort;
 import io.pet.petyard.auth.application.port.out.LoadLatestPendingEmailVerificationPort;
 import io.pet.petyard.auth.application.port.out.LoadRefreshTokenPort;
 import io.pet.petyard.auth.application.port.out.LoadUserPort;
 import io.pet.petyard.auth.application.port.out.EmailSender;
 import io.pet.petyard.auth.application.port.out.RevokeRefreshTokenPort;
+import io.pet.petyard.auth.application.port.out.SaveAuthIdentityPort;
 import io.pet.petyard.auth.application.port.out.SaveEmailVerificationPort;
 import io.pet.petyard.auth.application.port.out.SaveRefreshTokenPort;
 import io.pet.petyard.auth.application.port.out.SaveUserPort;
+import io.pet.petyard.auth.domain.AuthProvider;
+import io.pet.petyard.auth.domain.model.AuthIdentity;
 import io.pet.petyard.auth.domain.AccountStatus;
 import io.pet.petyard.auth.domain.UserTier;
 import io.pet.petyard.auth.domain.model.EmailVerification;
@@ -51,6 +55,8 @@ public class AuthApplicationService implements SignUpUseCase, VerifyEmailUseCase
 
     private final LoadUserPort loadUserPort;
     private final SaveUserPort saveUserPort;
+    private final LoadAuthIdentityPort loadAuthIdentityPort;
+    private final SaveAuthIdentityPort saveAuthIdentityPort;
     private final SaveEmailVerificationPort saveEmailVerificationPort;
     private final LoadLatestPendingEmailVerificationPort loadLatestPendingEmailVerificationPort;
     private final SaveRefreshTokenPort saveRefreshTokenPort;
@@ -64,6 +70,8 @@ public class AuthApplicationService implements SignUpUseCase, VerifyEmailUseCase
 
     public AuthApplicationService(LoadUserPort loadUserPort,
                                   SaveUserPort saveUserPort,
+                                  LoadAuthIdentityPort loadAuthIdentityPort,
+                                  SaveAuthIdentityPort saveAuthIdentityPort,
                                   SaveEmailVerificationPort saveEmailVerificationPort,
                                   LoadLatestPendingEmailVerificationPort loadLatestPendingEmailVerificationPort,
                                   SaveRefreshTokenPort saveRefreshTokenPort,
@@ -76,6 +84,8 @@ public class AuthApplicationService implements SignUpUseCase, VerifyEmailUseCase
                                   OtpGenerator otpGenerator) {
         this.loadUserPort = loadUserPort;
         this.saveUserPort = saveUserPort;
+        this.loadAuthIdentityPort = loadAuthIdentityPort;
+        this.saveAuthIdentityPort = saveAuthIdentityPort;
         this.saveEmailVerificationPort = saveEmailVerificationPort;
         this.loadLatestPendingEmailVerificationPort = loadLatestPendingEmailVerificationPort;
         this.saveRefreshTokenPort = saveRefreshTokenPort;
@@ -94,10 +104,14 @@ public class AuthApplicationService implements SignUpUseCase, VerifyEmailUseCase
         if (loadUserPort.existsByEmail(command.email())) {
             throw new ApiException(ErrorCode.EMAIL_ALREADY_REGISTERED);
         }
+        if (loadAuthIdentityPort.findByEmail(command.email()).isPresent()) {
+            throw new ApiException(ErrorCode.SOCIAL_EMAIL_CONFLICT);
+        }
 
         String passwordHash = passwordEncoder.encode(command.password());
         User user = new User(command.email(), passwordHash, UserTier.TIER_0, AccountStatus.PENDING_VERIFICATION);
         saveUserPort.save(user);
+        saveAuthIdentityPort.save(new AuthIdentity(user.getId(), AuthProvider.EMAIL, command.email(), command.email()));
 
         String code = otpGenerator.generate(command.email());
         String codeHash = passwordEncoder.encode(code);
@@ -211,7 +225,7 @@ public class AuthApplicationService implements SignUpUseCase, VerifyEmailUseCase
             throw new AccessDeniedException(ErrorCode.ACCOUNT_NOT_ACTIVE.message());
         }
 
-        if (!passwordEncoder.matches(command.password(), user.getPasswordHash())) {
+        if (user.getPasswordHash() == null || !passwordEncoder.matches(command.password(), user.getPasswordHash())) {
             throw new AuthenticationCredentialsNotFoundException(ErrorCode.INVALID_CREDENTIALS.message());
         }
 
