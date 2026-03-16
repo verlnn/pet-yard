@@ -6,6 +6,8 @@
 
 ## Current Migrations
 - `V1__init_auth_tier0.sql`
+- `V2__email_verification_extend.sql`
+- `V3__auth_onboarding.sql`
 
 ## Local Setup
 1. PostgreSQL DB 생성

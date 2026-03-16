@@ -10,7 +10,7 @@
 io.pet.petyard.auth
 ├── domain
 │   ├── AccountStatus, UserTier, Permission
-│   └── model (User, EmailVerification, RefreshToken)
+│   └── model (User, EmailVerification, RefreshToken, AuthIdentity)
 ├── application
 │   ├── port.in (UseCases)
 │   ├── port.out (Persistence Ports)
@@ -20,6 +20,14 @@ io.pet.petyard.auth
 │   └── out.persistence (Repositories, AuthPersistenceAdapter)
 ├── security (JWT filter, SecurityConfig, AuthPrincipal)
 └── jwt (JwtTokenProvider, AccessClaims, JwtProperties)
+
+io.pet.petyard.onboarding
+├── domain (SignupStep, SignupStatus, SignupSession)
+├── application (OnboardingApplicationService)
+└── adapter.in.web (OAuthController, SignupController)
+
+io.pet.petyard.user / terms / pet / region
+└── domain + adapter.out.persistence
 ```
 
 ## Inbound Use Cases

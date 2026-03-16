@@ -1,6 +1,7 @@
 # Auth Pages
 
 ## Routes
+- `/start`
 - `/login`
 - `/signup`
 - `/verify`

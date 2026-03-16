@@ -14,6 +14,7 @@
 
 ## API
 - `authApi`: signup/verify/login/me 호출
+- `onboarding`: 소셜 가입 추가 정보 입력
 
 ## Pages
 - `AuthPage`에서 mode별 폼 조립
