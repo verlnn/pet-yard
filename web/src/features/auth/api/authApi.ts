@@ -2,6 +2,7 @@ import type {
   MeResponse,
   OAuthCallbackResponse,
   OAuthStartResponse,
+  OAuthProvider,
   SignupCompleteResponse,
   SignupProgressResponse,
   SignupResponse,
@@ -88,12 +89,12 @@ export const authApi = {
       body: JSON.stringify({ refreshToken })
     });
   },
-  oauthStart(provider: "kakao") {
+  oauthStart(provider: OAuthProvider) {
     return request<OAuthStartResponse>(`/api/auth/oauth/${provider}/start`, {
       method: "POST"
     });
   },
-  oauthCallback(provider: "kakao", code: string, state: string, redirectUri: string) {
+  oauthCallback(provider: OAuthProvider, code: string, state: string, redirectUri: string) {
     const params = new URLSearchParams({ code, state, redirectUri });
     return request<OAuthCallbackResponse>(`/api/auth/oauth/${provider}/callback?${params.toString()}`, {
       method: "GET"

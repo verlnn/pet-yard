@@ -1,4 +1,5 @@
 export type AuthMode = "login" | "signup" | "verify";
+export type OAuthProvider = "kakao" | "google" | "apple" | "naver";
 
 export interface TokenResponse {
   accessToken: string;
