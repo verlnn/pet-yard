@@ -14,7 +14,11 @@ import type { AuthMode, OAuthProvider } from "@/src/features/auth/types/authType
 import KakaoLoginButton from "@/src/features/auth/components/AuthEntry/KakaoLoginButton";
 import AuthDivider from "@/src/features/auth/components/AuthEntry/AuthDivider";
 import AuthEntryActions from "@/src/features/auth/components/AuthEntry/AuthEntryActions";
-import { applyOAuthResult, openOAuthPopup } from "@/src/features/auth/utils/oauthFlow";
+import {
+  applyOAuthResult,
+  openOAuthPopupWindow,
+  waitForOAuthPopup
+} from "@/src/features/auth/utils/oauthFlow";
 import { authApi } from "@/src/features/auth/api/authApi";
 
 interface AuthPageProps {
@@ -46,9 +50,15 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
 
   const handleOAuthLogin = async (provider: OAuthProvider) => {
     setSocialError(null);
+    const popup = openOAuthPopupWindow(provider);
+    if (!popup) {
+      setSocialError("팝업을 열 수 없습니다. 브라우저의 팝업 차단을 확인해 주세요.");
+      return;
+    }
     try {
       const start = await authApi.oauthStart(provider);
-      const result = await openOAuthPopup({ authorizeUrl: start.authorizeUrl, provider });
+      popup.location.href = start.authorizeUrl;
+      const result = await waitForOAuthPopup({ popup, provider });
       const { nextPath: next } = applyOAuthResult(result);
       router.replace(next);
     } catch (err) {

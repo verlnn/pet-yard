@@ -13,24 +13,29 @@ export interface OpenOAuthPopupOptions {
   timeoutMs?: number;
 }
 
-export function openOAuthPopup({ authorizeUrl, provider, timeoutMs = 120_000 }: OpenOAuthPopupOptions) {
+export function openOAuthPopupWindow(provider: OAuthProvider) {
+  const width = 480;
+  const height = 680;
+  const left = window.screenX + (window.outerWidth - width) / 2;
+  const top = window.screenY + (window.outerHeight - height) / 2;
+
+  return window.open(
+    "about:blank",
+    `oauth_${provider}`,
+    `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`
+  );
+}
+
+export function waitForOAuthPopup({
+  popup,
+  provider,
+  timeoutMs = 120_000
+}: {
+  popup: Window;
+  provider: OAuthProvider;
+  timeoutMs?: number;
+}) {
   return new Promise<OAuthCallbackResponse>((resolve, reject) => {
-    const width = 480;
-    const height = 680;
-    const left = window.screenX + (window.outerWidth - width) / 2;
-    const top = window.screenY + (window.outerHeight - height) / 2;
-
-    const popup = window.open(
-      authorizeUrl,
-      `oauth_${provider}`,
-      `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`
-    );
-
-    if (!popup) {
-      reject(new Error("팝업을 열 수 없습니다. 브라우저의 팝업 차단을 확인해 주세요."));
-      return;
-    }
-
     const origin = window.location.origin;
     const allowedOrigins = new Set([origin]);
     const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
@@ -79,6 +84,19 @@ export function openOAuthPopup({ authorizeUrl, provider, timeoutMs = 120_000 }: 
 
     window.addEventListener("message", handleMessage);
   });
+}
+
+export async function openOAuthPopup({
+  authorizeUrl,
+  provider,
+  timeoutMs = 120_000
+}: OpenOAuthPopupOptions) {
+  const popup = openOAuthPopupWindow(provider);
+  if (!popup) {
+    throw new Error("팝업을 열 수 없습니다. 브라우저의 팝업 차단을 확인해 주세요.");
+  }
+  popup.location.href = authorizeUrl;
+  return waitForOAuthPopup({ popup, provider, timeoutMs });
 }
 
 export function applyOAuthResult(result: OAuthCallbackResponse) {
