@@ -32,9 +32,18 @@ export function openOAuthPopup({ authorizeUrl, provider, timeoutMs = 120_000 }: 
     }
 
     const origin = window.location.origin;
+    const allowedOrigins = new Set([origin]);
+    const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
+    if (apiBase) {
+      try {
+        allowedOrigins.add(new URL(apiBase).origin);
+      } catch {
+        // Ignore malformed API base in local overrides.
+      }
+    }
 
     const handleMessage = (event: MessageEvent<OAuthPopupMessage>) => {
-      if (event.origin !== origin) return;
+      if (!allowedOrigins.has(event.origin)) return;
       if (!event.data || event.data.provider !== provider) return;
 
       if (event.data.type === "oauth:success" && event.data.payload) {
