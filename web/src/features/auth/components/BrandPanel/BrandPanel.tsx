@@ -1,10 +1,18 @@
+import Image from "next/image";
+
 export default function BrandPanel() {
   return (
     <aside className="relative flex h-full flex-col justify-between overflow-hidden rounded-[28px] border border-white/60 bg-gradient-to-br from-white/90 via-sand/80 to-sky/70 p-10 text-ink shadow-card">
       <div className="space-y-6">
         <div className="inline-flex items-center gap-3 rounded-full bg-ink/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-ink">
-          <span className="h-2.5 w-2.5 rounded-full bg-ember" />
-          PetYard
+          <Image
+            src="/images/brand/petyard-symbol.png"
+            alt="멍냥마당 로고"
+            width={20}
+            height={20}
+            className="h-5 w-5"
+          />
+          멍냥마당
         </div>
         <h1 className="text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
           반려 생활을 더 따뜻하게,

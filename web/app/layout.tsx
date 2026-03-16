@@ -6,7 +6,14 @@ import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: "멍냥마당 | 반려동물 성장과 이웃 매칭",
-  description: "반려동물 성장 기록, 동네 산책/위탁 매칭, 초보 반려인을 위한 지식까지."
+  description: "반려동물 성장 기록, 동네 산책/위탁 매칭, 초보 반려인을 위한 지식까지.",
+  icons: {
+    icon: [
+      { url: "/images/brand/petyard-tiny-logo.png", type: "image/png" },
+      { url: "/images/brand/petyard-logo.png", type: "image/png" }
+    ],
+    apple: "/images/brand/petyard-tiny-logo.png"
+  }
 };
 
 export default function RootLayout({

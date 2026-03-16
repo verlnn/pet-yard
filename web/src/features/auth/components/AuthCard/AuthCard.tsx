@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import Image from "next/image";
 
 interface AuthCardProps {
   title: string;
@@ -13,7 +14,16 @@ export default function AuthCard({ title, subtitle, tabs, children, message, err
   return (
     <div className="w-full rounded-3xl border border-slate-200 bg-white p-8 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.6)]">
       <header className="space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">멍냥마당</p>
+        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
+          <Image
+            src="/images/brand/petyard-symbol.png"
+            alt="멍냥마당 로고"
+            width={20}
+            height={20}
+            className="h-5 w-5"
+          />
+          <span>멍냥마당</span>
+        </div>
         <h2 className="text-2xl font-semibold text-slate-900">{title}</h2>
         <p className="text-sm text-slate-500">{subtitle}</p>
       </header>

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { Bell, Compass, HeartHandshake, MapPin, PawPrint, Shield } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -46,9 +47,14 @@ export function SiteNav() {
     <header className="sticky top-0 z-40 border-b border-ink/10 bg-white/70 backdrop-blur">
       <div className="container flex items-center justify-between py-4">
         <Link href="/" className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-ink text-sand">
-            <PawPrint className="h-6 w-6" />
-          </div>
+          <Image
+            src="/images/brand/petyard-symbol.png"
+            alt="멍냥마당 로고"
+            width={44}
+            height={44}
+            className="h-11 w-11"
+            priority
+          />
           <div>
             <p className="font-display text-lg font-semibold">멍냥마당</p>
             <div className="flex items-center gap-2 text-xs text-ink/60">

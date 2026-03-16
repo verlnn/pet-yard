@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { PawPrint } from "lucide-react";
+import Image from "next/image";
 import AuthLayout from "@/src/features/auth/components/AuthLayout/AuthLayout";
 import AuthCard from "@/src/features/auth/components/AuthCard/AuthCard";
 import LoginForm from "@/src/features/auth/components/LoginForm/LoginForm";
@@ -86,9 +86,14 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
         brand={
           <div className="flex items-center justify-between text-slate-600">
             <Link href="/" className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-ink text-sand">
-                <PawPrint className="h-5 w-5" />
-              </span>
+              <Image
+                src="/images/brand/petyard-symbol.png"
+                alt="멍냥마당 로고"
+                width={40}
+                height={40}
+                className="h-10 w-10"
+                priority
+              />
               <span className="text-lg font-semibold text-slate-900">멍냥마당</span>
             </Link>
             <span className="text-xs">PetYard</span>
