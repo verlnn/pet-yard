@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { PawPrint } from "lucide-react";
 import AuthLayout from "@/src/features/auth/components/AuthLayout/AuthLayout";
@@ -11,6 +11,9 @@ import SignupForm from "@/src/features/auth/components/SignupForm/SignupForm";
 import VerifyEmailForm from "@/src/features/auth/components/VerifyEmailForm/VerifyEmailForm";
 import { useAuthForms } from "@/src/features/auth/hooks/useAuthForms";
 import type { AuthMode } from "@/src/features/auth/types/authTypes";
+import KakaoLoginButton from "@/src/features/auth/components/AuthEntry/KakaoLoginButton";
+import AuthDivider from "@/src/features/auth/components/AuthEntry/AuthDivider";
+import AuthEntryActions from "@/src/features/auth/components/AuthEntry/AuthEntryActions";
 
 interface AuthPageProps {
   initialMode?: AuthMode;
@@ -18,6 +21,7 @@ interface AuthPageProps {
 
 export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
   const [mode, setMode] = useState<AuthMode>(initialMode);
+  const router = useRouter();
   const searchParams = useSearchParams();
   const nextPath = searchParams.get("next");
   const {
@@ -40,21 +44,21 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
     mode === "login" ? (
       <p className="text-center text-sm text-slate-500">
         아직 계정이 없나요?{" "}
-        <Link href="/signup" className="font-semibold text-[#0064FF] hover:text-[#0056E0]">
+        <Link href="/signup" className="font-semibold text-ink hover:text-ink/80">
           회원가입
         </Link>
       </p>
     ) : mode === "signup" ? (
       <p className="text-center text-sm text-slate-500">
         이미 계정이 있나요?{" "}
-        <Link href="/login" className="font-semibold text-[#0064FF] hover:text-[#0056E0]">
+        <Link href="/login" className="font-semibold text-ink hover:text-ink/80">
           로그인
         </Link>
       </p>
     ) : (
       <p className="text-center text-sm text-slate-500">
         계정으로 돌아가기{" "}
-        <Link href="/login" className="font-semibold text-[#0064FF] hover:text-[#0056E0]">
+        <Link href="/login" className="font-semibold text-ink hover:text-ink/80">
           로그인
         </Link>
       </p>
@@ -81,6 +85,17 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
             message={message}
             error={error}
           >
+            {mode !== "verify" && (
+              <div className="space-y-5">
+                <KakaoLoginButton onClick={() => router.push("/start")} />
+                <AuthDivider />
+                <AuthEntryActions
+                  onGoogleLogin={() => console.log("google login")}
+                  onAppleLogin={() => console.log("apple login")}
+                  onNaverLogin={() => console.log("naver login")}
+                />
+              </div>
+            )}
             {mode === "login" && <LoginForm onSubmit={handleLogin} loading={loading} />}
             {mode === "signup" && <SignupForm onSubmit={handleSignup} loading={loading} />}
             {mode === "verify" && (
