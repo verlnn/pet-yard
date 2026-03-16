@@ -1,6 +1,7 @@
 package io.pet.petyard.auth.config;
 
 import io.pet.petyard.auth.jwt.JwtProperties;
+import io.pet.petyard.auth.oauth.KakaoOAuthProperties;
 
 import java.security.SecureRandom;
 import java.time.Clock;
@@ -13,7 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
-@EnableConfigurationProperties(JwtProperties.class)
+@EnableConfigurationProperties({JwtProperties.class, KakaoOAuthProperties.class})
 public class AuthConfig {
     @Bean
     public Clock clock() {

@@ -31,6 +31,15 @@ app:
   mail:
     from: ${MAIL_FROM:no-reply@pet-yard.local}
 
+kakao:
+  oauth:
+    client-id: ${KAKAO_CLIENT_ID:}
+    client-secret: ${KAKAO_CLIENT_SECRET:}
+    redirect-uri: ${KAKAO_REDIRECT_URI:}
+    authorize-url: ${KAKAO_AUTHORIZE_URL:https://kauth.kakao.com/oauth/authorize}
+    token-url: ${KAKAO_TOKEN_URL:https://kauth.kakao.com/oauth/token}
+    user-info-url: ${KAKAO_USERINFO_URL:https://kapi.kakao.com/v2/user/me}
+
 jwt:
   # TODO: 운영 환경에서는 반드시 안전한 랜덤 키로 교체
   secret: ${JWT_SECRET:dev-secret-change-me-please-32bytes-minimum}
