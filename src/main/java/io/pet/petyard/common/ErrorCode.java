@@ -22,6 +22,14 @@ public enum ErrorCode {
     INVALID_VERIFICATION_CODE("BAD_REQUEST", "인증 코드가 올바르지 않습니다"),
     VERIFICATION_EXTEND_RATE_LIMIT("BAD_REQUEST", "인증 코드 연장을 너무 자주 요청했습니다"),
     USER_NOT_FOUND("BAD_REQUEST", "사용자를 찾을 수 없습니다"),
+    OAUTH_STATE_MISMATCH("BAD_REQUEST", "OAuth state가 일치하지 않습니다"),
+    OAUTH_PROVIDER_FAILED("BAD_REQUEST", "OAuth 제공자 통신에 실패했습니다"),
+    OAUTH_ACCOUNT_EXISTS("BAD_REQUEST", "이미 가입된 소셜 계정입니다"),
+    SOCIAL_EMAIL_CONFLICT("BAD_REQUEST", "이미 다른 계정에 연결된 이메일입니다"),
+    NICKNAME_ALREADY_TAKEN("BAD_REQUEST", "이미 사용 중인 닉네임입니다"),
+    REQUIRED_TERMS_MISSING("BAD_REQUEST", "필수 약관 동의가 필요합니다"),
+    SIGNUP_SESSION_EXPIRED("BAD_REQUEST", "회원가입 세션이 만료되었습니다"),
+    SIGNUP_STEP_INVALID("BAD_REQUEST", "회원가입 단계가 올바르지 않습니다"),
     VALIDATION_FAILED("BAD_REQUEST", "요청 값 검증에 실패했습니다");
 
     private final String code;
