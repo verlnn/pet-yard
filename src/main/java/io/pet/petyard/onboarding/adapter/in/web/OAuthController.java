@@ -22,14 +22,12 @@ public class OAuthController {
 
     private final OAuthStartUseCase oAuthStartUseCase;
     private final OAuthCallbackUseCase oAuthCallbackUseCase;
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public OAuthController(OAuthStartUseCase oAuthStartUseCase,
-                           OAuthCallbackUseCase oAuthCallbackUseCase,
-                           ObjectMapper objectMapper) {
+                           OAuthCallbackUseCase oAuthCallbackUseCase) {
         this.oAuthStartUseCase = oAuthStartUseCase;
         this.oAuthCallbackUseCase = oAuthCallbackUseCase;
-        this.objectMapper = objectMapper;
     }
 
     @PostMapping("/{provider}/start")
