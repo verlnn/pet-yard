@@ -11,9 +11,7 @@ interface PostComposerSidebarProps {
   petName?: string | null;
   petBreed?: string | null;
   content: string;
-  hashtags: string;
   onContentChange: (value: string) => void;
-  onHashtagsChange: (value: string) => void;
 }
 
 export function PostComposerSidebar({
@@ -22,9 +20,7 @@ export function PostComposerSidebar({
   petName,
   petBreed,
   content,
-  hashtags,
-  onContentChange,
-  onHashtagsChange
+  onContentChange
 }: PostComposerSidebarProps) {
   return (
     <div className="flex h-full flex-col gap-4 p-6">
@@ -50,13 +46,6 @@ export function PostComposerSidebar({
         placeholder="오늘의 기록을 남겨보세요."
         value={content}
         onChange={(event) => onContentChange(event.target.value)}
-      />
-      <input
-        type="text"
-        className="w-full rounded-2xl border border-slate-200 bg-white/90 px-3 py-2 text-sm"
-        placeholder="해시태그 입력 (쉼표 또는 공백으로 구분)"
-        value={hashtags}
-        onChange={(event) => onHashtagsChange(event.target.value)}
       />
       <div className="space-y-2 text-xs text-ink/60">
         <div className="flex items-center gap-2">

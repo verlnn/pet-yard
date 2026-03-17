@@ -31,7 +31,6 @@ export default function MyFeedPage() {
   const [error, setError] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
   const [content, setContent] = useState("");
-  const [hashtags, setHashtags] = useState("");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageError, setImageError] = useState<string | null>(null);
   const [selectedPost, setSelectedPost] = useState<FeedPost | null>(null);
@@ -85,7 +84,6 @@ export default function MyFeedPage() {
 
   const resetForm = () => {
     setContent("");
-    setHashtags("");
     setImageUrl(null);
     setImageError(null);
   };
@@ -98,14 +96,9 @@ export default function MyFeedPage() {
     }
     setCreating(true);
     try {
-      const parsedTags = hashtags
-        .split(/[,\\s]+/)
-        .map((tag) => tag.trim().replace(/^#/, ""))
-        .filter(Boolean);
       const created = await authApi.createFeedPost(accessToken, {
         content: content.trim() || null,
-        imageUrl,
-        hashtags: parsedTags.length > 0 ? parsedTags : null
+        imageUrl
       });
       setPosts((prev) => [created, ...prev]);
       resetForm();
@@ -197,7 +190,6 @@ export default function MyFeedPage() {
         petName={primaryPet?.name ?? null}
         petBreed={primaryPet?.breed ?? null}
         content={content}
-        hashtags={hashtags}
         imageError={imageError}
         onClose={() => {
           setModalOpen(false);
@@ -205,7 +197,6 @@ export default function MyFeedPage() {
         }}
         onImageUpload={handleImageUpload}
         onContentChange={setContent}
-        onHashtagsChange={setHashtags}
         onSubmit={handleCreate}
         submitting={creating}
       />
@@ -240,7 +231,7 @@ export default function MyFeedPage() {
                 {selectedPost.hashtags && selectedPost.hashtags.length > 0 && (
                   <div>
                     <p className="text-xs text-ink/50">해시태그</p>
-                    <p className="mt-1 flex flex-wrap gap-2 text-xs text-ink/70">
+                    <p className="mt-1 flex flex-wrap gap-2 text-xs text-sky-700">
                       {selectedPost.hashtags.map((tag) => (
                         <span key={tag} className="rounded-full bg-slate-100 px-2 py-1">
                           #{tag}

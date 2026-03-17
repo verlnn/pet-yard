@@ -36,7 +36,7 @@ export function FeedGridItem({ post, onSelect }: FeedGridItemProps) {
           {post.content ? post.content.slice(0, 60) : "게시물 보기"}
         </p>
         {post.hashtags && post.hashtags.length > 0 && (
-          <p className="mt-1 text-[10px] text-white/80">
+          <p className="mt-1 text-[10px] text-sky-200">
             {post.hashtags.slice(0, 2).map((tag) => `#${tag}`).join(" ")}
             {post.hashtags.length > 2 && " ..."}
           </p>
