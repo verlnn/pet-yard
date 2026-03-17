@@ -35,6 +35,12 @@ export function FeedGridItem({ post, onSelect }: FeedGridItemProps) {
         <p className="text-xs font-semibold">
           {post.content ? post.content.slice(0, 60) : "게시물 보기"}
         </p>
+        {post.hashtags && post.hashtags.length > 0 && (
+          <p className="mt-1 text-[10px] text-white/80">
+            {post.hashtags.slice(0, 2).map((tag) => `#${tag}`).join(" ")}
+            {post.hashtags.length > 2 && " ..."}
+          </p>
+        )}
         <span className="mt-1 text-[10px] text-white/70">
           {new Date(post.createdAt).toLocaleDateString("ko-KR")}
         </span>

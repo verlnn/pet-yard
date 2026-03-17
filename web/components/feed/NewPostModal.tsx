@@ -13,10 +13,12 @@ interface NewPostModalProps {
   petName?: string | null;
   petBreed?: string | null;
   content: string;
+  hashtags: string;
   imageError?: string | null;
   onClose: () => void;
   onImageUpload: (file?: File) => void;
   onContentChange: (value: string) => void;
+  onHashtagsChange: (value: string) => void;
   onSubmit: () => void;
   submitting: boolean;
 }
@@ -29,10 +31,12 @@ export function NewPostModal({
   petName,
   petBreed,
   content,
+  hashtags,
   imageError,
   onClose,
   onImageUpload,
   onContentChange,
+  onHashtagsChange,
   onSubmit,
   submitting
 }: NewPostModalProps) {
@@ -77,7 +81,9 @@ export function NewPostModal({
             petName={petName}
             petBreed={petBreed}
             content={content}
+            hashtags={hashtags}
             onContentChange={onContentChange}
+            onHashtagsChange={onHashtagsChange}
           />
         </div>
       </div>

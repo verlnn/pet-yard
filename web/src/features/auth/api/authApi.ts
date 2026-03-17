@@ -328,7 +328,7 @@ export const authApi = {
   },
   createFeedPost(
     accessToken: string,
-    payload: { content?: string | null; imageUrl?: string | null }
+    payload: { content?: string | null; imageUrl?: string | null; hashtags?: string[] | null }
   ) {
     return request<FeedPost>("/api/feeds", {
       method: "POST",

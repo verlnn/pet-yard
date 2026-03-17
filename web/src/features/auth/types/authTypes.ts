@@ -118,4 +118,5 @@ export interface FeedPost {
   content?: string | null;
   imageUrl?: string | null;
   createdAt: string;
+  hashtags?: string[] | null;
 }

@@ -2,12 +2,23 @@ package io.pet.petyard.feed.application.service;
 
 import io.pet.petyard.common.ApiException;
 import io.pet.petyard.common.ErrorCode;
+import io.pet.petyard.feed.application.model.FeedPostView;
 import io.pet.petyard.feed.application.port.out.DeleteFeedPostPort;
+import io.pet.petyard.feed.application.port.out.LoadFeedPostHashtagPort;
 import io.pet.petyard.feed.application.port.out.LoadFeedPostPort;
+import io.pet.petyard.feed.application.port.out.SaveFeedPostHashtagPort;
 import io.pet.petyard.feed.application.port.out.SaveFeedPostPort;
 import io.pet.petyard.feed.domain.model.FeedPost;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,32 +26,70 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class FeedApplicationService {
 
+    private static final Pattern HASHTAG_PATTERN = Pattern.compile("#([\\p{L}0-9_]{1,50})");
+
     private final LoadFeedPostPort loadFeedPostPort;
     private final SaveFeedPostPort saveFeedPostPort;
     private final DeleteFeedPostPort deleteFeedPostPort;
+    private final SaveFeedPostHashtagPort saveFeedPostHashtagPort;
+    private final LoadFeedPostHashtagPort loadFeedPostHashtagPort;
 
     public FeedApplicationService(LoadFeedPostPort loadFeedPostPort,
                                   SaveFeedPostPort saveFeedPostPort,
-                                  DeleteFeedPostPort deleteFeedPostPort) {
+                                  DeleteFeedPostPort deleteFeedPostPort,
+                                  SaveFeedPostHashtagPort saveFeedPostHashtagPort,
+                                  LoadFeedPostHashtagPort loadFeedPostHashtagPort) {
         this.loadFeedPostPort = loadFeedPostPort;
         this.saveFeedPostPort = saveFeedPostPort;
         this.deleteFeedPostPort = deleteFeedPostPort;
+        this.saveFeedPostHashtagPort = saveFeedPostHashtagPort;
+        this.loadFeedPostHashtagPort = loadFeedPostHashtagPort;
     }
 
     @Transactional(readOnly = true)
-    public List<FeedPost> listMyFeed(Long userId) {
-        return loadFeedPostPort.findByUserId(userId);
+    public List<FeedPostView> listMyFeed(Long userId) {
+        List<FeedPost> posts = loadFeedPostPort.findByUserId(userId);
+        if (posts.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<Long> postIds = posts.stream().map(FeedPost::getId).toList();
+        Map<Long, List<String>> tagsByPost = loadFeedPostHashtagPort.findTagNamesByPostIds(postIds);
+        List<FeedPostView> result = new ArrayList<>();
+        for (FeedPost post : posts) {
+            List<String> tags = tagsByPost.getOrDefault(post.getId(), List.of());
+            result.add(new FeedPostView(
+                post.getId(),
+                post.getContent(),
+                post.getImageUrl(),
+                post.getCreatedAt(),
+                tags
+            ));
+        }
+        return result;
     }
 
     @Transactional
-    public FeedPost create(Long userId, String content, String imageUrl) {
+    public FeedPostView create(Long userId, String content, String imageUrl, List<String> hashtags) {
         boolean hasContent = content != null && !content.isBlank();
         boolean hasImage = imageUrl != null && !imageUrl.isBlank();
         if (!hasContent && !hasImage) {
             throw new ApiException(ErrorCode.BAD_REQUEST);
         }
         FeedPost feedPost = new FeedPost(userId, content, imageUrl);
-        return saveFeedPostPort.save(feedPost);
+        FeedPost saved = saveFeedPostPort.save(feedPost);
+
+        List<String> normalizedTags = normalizeTags(content, hashtags);
+        if (!normalizedTags.isEmpty()) {
+            saveFeedPostHashtagPort.saveTags(saved.getId(), normalizedTags);
+        }
+
+        return new FeedPostView(
+            saved.getId(),
+            saved.getContent(),
+            saved.getImageUrl(),
+            saved.getCreatedAt(),
+            normalizedTags
+        );
     }
 
     @Transactional
@@ -48,5 +97,36 @@ public class FeedApplicationService {
         FeedPost post = loadFeedPostPort.findByIdAndUserId(postId, userId)
             .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST));
         deleteFeedPostPort.deleteById(post.getId());
+    }
+
+    private List<String> normalizeTags(String content, List<String> inputTags) {
+        Set<String> tags = new HashSet<>();
+
+        if (content != null && !content.isBlank()) {
+            Matcher matcher = HASHTAG_PATTERN.matcher(content);
+            while (matcher.find()) {
+                String tag = matcher.group(1);
+                if (tag != null && !tag.isBlank()) {
+                    tags.add(tag.toLowerCase(Locale.ROOT));
+                }
+            }
+        }
+
+        if (inputTags != null) {
+            for (String raw : inputTags) {
+                if (raw == null) continue;
+                String tag = raw.trim();
+                if (tag.startsWith("#")) {
+                    tag = tag.substring(1);
+                }
+                if (tag.isBlank()) continue;
+                if (tag.length() > 50) {
+                    tag = tag.substring(0, 50);
+                }
+                tags.add(tag.toLowerCase(Locale.ROOT));
+            }
+        }
+
+        return new ArrayList<>(tags);
     }
 }

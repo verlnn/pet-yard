@@ -3,8 +3,8 @@ package io.pet.petyard.feed.adapter.in.web;
 import io.pet.petyard.auth.domain.Permission;
 import io.pet.petyard.auth.guard.RequirePermission;
 import io.pet.petyard.auth.security.AuthPrincipal;
+import io.pet.petyard.feed.application.model.FeedPostView;
 import io.pet.petyard.feed.application.service.FeedApplicationService;
-import io.pet.petyard.feed.domain.model.FeedPost;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ public class FeedController {
     @RequirePermission(Permission.FEED_READ)
     @GetMapping("/me")
     public List<FeedPostResponse> myFeed(@AuthenticationPrincipal AuthPrincipal principal) {
-        List<FeedPost> posts = feedApplicationService.listMyFeed(principal.userId());
+        List<FeedPostView> posts = feedApplicationService.listMyFeed(principal.userId());
         return posts.stream()
             .map(FeedPostResponse::from)
             .toList();
@@ -42,7 +42,12 @@ public class FeedController {
     @PostMapping
     public FeedPostResponse create(@AuthenticationPrincipal AuthPrincipal principal,
                                    @Valid @RequestBody FeedPostRequest request) {
-        FeedPost post = feedApplicationService.create(principal.userId(), request.content(), request.imageUrl());
+        FeedPostView post = feedApplicationService.create(
+            principal.userId(),
+            request.content(),
+            request.imageUrl(),
+            request.hashtags()
+        );
         return FeedPostResponse.from(post);
     }
 
