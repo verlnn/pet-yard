@@ -241,7 +241,7 @@ export function NewPostModal({
               </label>
             </div>
 
-            <div className="flex h-full flex-col gap-3 rounded-3xl border border-dashed border-slate-200 bg-white/80 p-4">
+            <div className="mx-auto flex aspect-square w-full max-w-[480px] flex-col gap-3 self-center rounded-3xl border border-dashed border-slate-200 bg-white/80 p-4">
               {displayUrl ? (
                 <>
                   <div className="flex flex-1 items-center justify-center">
