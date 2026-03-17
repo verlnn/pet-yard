@@ -58,8 +58,10 @@ export function FeedProfileHeader({ profile, postCount, onNewPost }: FeedProfile
           </div>
         </div>
         <div className="flex flex-wrap gap-3">
-          <Button variant="secondary" className="gap-2">
-            <Settings className="h-4 w-4" /> 프로필 편집
+          <Button variant="secondary" className="gap-2" asChild>
+            <a href="/onboarding/profile">
+              <Settings className="h-4 w-4" /> 프로필 편집
+            </a>
           </Button>
           <Button onClick={onNewPost} className="gap-2">
             <Plus className="h-4 w-4" /> 새 게시물

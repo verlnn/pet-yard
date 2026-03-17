@@ -127,7 +127,7 @@ export default function MyFeedPage() {
   const primaryPet = profile?.pets?.[0];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-white to-sand/40">
+    <div className="min-h-screen">
       <SiteNav />
       <main className="container py-10">
         <SectionShell

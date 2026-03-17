@@ -84,7 +84,9 @@ export default function ProfilePage() {
                   <Badge variant="soft">반려동물 {profile?.petCount ?? 0}마리</Badge>
                   <Badge variant="outline">등급 {profile?.tier ?? "-"}</Badge>
                 </div>
-                <Button className="w-full">프로필 수정</Button>
+                <Button asChild className="w-full">
+                  <Link href="/onboarding/profile">프로필 수정</Link>
+                </Button>
               </CardContent>
             </Card>
             <div className="grid gap-4">
