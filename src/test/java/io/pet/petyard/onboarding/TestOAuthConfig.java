@@ -19,8 +19,8 @@ public class TestOAuthConfig {
             }
 
             @Override
-            public String buildAuthorizeUrl(String state) {
-                return "https://fake.kakao/authorize?state=" + state;
+            public String buildAuthorizeUrl(String state, String prompt) {
+                return "https://fake.kakao/authorize?state=" + state + "&prompt=" + prompt;
             }
 
             @Override
