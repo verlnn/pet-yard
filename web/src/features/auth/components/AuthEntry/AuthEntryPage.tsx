@@ -6,7 +6,11 @@ import KakaoLoginButton from "./KakaoLoginButton";
 import AuthDivider from "./AuthDivider";
 import AuthEntryActions from "./AuthEntryActions";
 import { authApi } from "@/src/features/auth/api/authApi";
-import { applyOAuthResult, openOAuthPopup } from "@/src/features/auth/utils/oauthFlow";
+import {
+    applyOAuthResult, openOAuthPopup,
+    openOAuthPopupWindow,
+    waitForOAuthPopup
+} from "@/src/features/auth/utils/oauthFlow";
 import type { OAuthProvider } from "@/src/features/auth/types/authTypes";
 import { useState } from "react";
 
@@ -15,6 +19,11 @@ export default function AuthEntryPage() {
 
   const handleOAuthLogin = async (provider: OAuthProvider) => {
     setError(null);
+    const popup = openOAuthPopupWindow(provider);
+    if (!popup) {
+      setError("팝업을 열 수 없습니다. 브라우저의 팝업 차단을 확인해 주세요.");
+      return;
+    }
     try {
       const start = await authApi.oauthStart(provider, { prompt: "login" });
       const result = await openOAuthPopup({ authorizeUrl: start.authorizeUrl, provider });
