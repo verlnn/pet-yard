@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const AUTH_ROUTES = new Set(["/login", "/signup", "/verify"]);
-const PUBLIC_ROUTES = new Set(["/"]);
+const AUTH_ROUTES = new Set(["/login", "/signup", "/start", "/verify"]);
+const AUTH_PREFIXES = ["/oauth", "/onboarding"];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -10,8 +10,11 @@ export function middleware(request: NextRequest) {
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
     pathname.startsWith("/favicon") ||
+    pathname.startsWith("/images") ||
+    pathname.startsWith("/icons") ||
+    pathname.startsWith("/fonts") ||
     AUTH_ROUTES.has(pathname) ||
-    PUBLIC_ROUTES.has(pathname)
+    AUTH_PREFIXES.some((prefix) => pathname.startsWith(prefix))
   ) {
     return NextResponse.next();
   }
