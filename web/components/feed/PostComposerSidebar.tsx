@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { MapPin, Tag, User } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -24,12 +25,12 @@ const formatText = (text: string) => {
   );
 };
 
-function renderHighlightedContent(text: string) {
+function renderHighlightedContent(text: string): ReactNode[] | null {
   if (!text) {
     return null;
   }
 
-  const parts: React.ReactNode[] = [];
+  const parts: ReactNode[] = [];
   let lastIndex = 0;
   let matchIndex = 0;
 

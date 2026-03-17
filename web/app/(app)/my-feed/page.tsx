@@ -14,6 +14,7 @@ import { authApi } from "@/src/features/auth/api/authApi";
 import type { FeedPost, MyProfileResponse } from "@/src/features/auth/types/authTypes";
 
 const MAX_IMAGE_SIZE = 3 * 1024 * 1024;
+const MAX_IMAGES = 15;
 
 const tabs = [
   { id: "posts", label: "게시물" },
@@ -22,6 +23,36 @@ const tabs = [
 ] as const;
 
 type TabId = (typeof tabs)[number]["id"];
+type ComposerImage = {
+  id: string;
+  name: string;
+  originalUrl: string;
+  aspectRatio: "original" | "1:1" | "4:5" | "16:9";
+  scale: number;
+  position: { x: number; y: number };
+  naturalSize?: { width: number; height: number };
+};
+
+const createImageId = () => {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+  return `img_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+};
+
+const readFileAsDataUrl = (file: File) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        resolve(reader.result);
+      } else {
+        reject(new Error("이미지 읽기에 실패했습니다."));
+      }
+    };
+    reader.onerror = () => reject(new Error("이미지 읽기에 실패했습니다."));
+    reader.readAsDataURL(file);
+  });
 
 export default function MyFeedPage() {
   const [accessToken, setAccessToken] = useState<string | null>(null);
@@ -31,7 +62,7 @@ export default function MyFeedPage() {
   const [error, setError] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
   const [content, setContent] = useState("");
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [images, setImages] = useState<ComposerImage[]>([]);
   const [imageError, setImageError] = useState<string | null>(null);
   const [selectedPost, setSelectedPost] = useState<FeedPost | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -64,33 +95,90 @@ export default function MyFeedPage() {
 
   const grid = useMemo(() => posts, [posts]);
 
-  const handleImageUpload = (file?: File) => {
-    if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      setImageError("이미지 파일만 업로드할 수 있어요.");
+  const handleAddImages = async (files?: FileList | null) => {
+    if (!files || files.length === 0) return;
+    const remaining = MAX_IMAGES - images.length;
+    if (remaining <= 0) {
+      setImageError(`사진은 최대 ${MAX_IMAGES}장까지 올릴 수 있어요.`);
       return;
     }
-    if (file.size > MAX_IMAGE_SIZE) {
-      setImageError("3MB 이하 이미지로 업로드해 주세요.");
+
+    const selectedFiles = Array.from(files);
+    const acceptedFiles = selectedFiles.slice(0, remaining);
+    const errors: string[] = [];
+    const validFiles: File[] = [];
+
+    for (const file of acceptedFiles) {
+      if (!file.type.startsWith("image/")) {
+        errors.push(`${file.name}: 이미지 파일만 업로드할 수 있어요.`);
+        continue;
+      }
+      if (file.size > MAX_IMAGE_SIZE) {
+        errors.push(`${file.name}: 3MB 이하 이미지로 업로드해 주세요.`);
+        continue;
+      }
+      validFiles.push(file);
+    }
+
+    if (selectedFiles.length > remaining) {
+      errors.push(`최대 ${MAX_IMAGES}장까지만 추가할 수 있어요.`);
+    }
+
+    if (validFiles.length === 0) {
+      if (errors.length > 0) {
+        setImageError(errors[0]);
+      }
       return;
     }
-    const reader = new FileReader();
-    reader.onload = () => {
-      setImageUrl(typeof reader.result === "string" ? reader.result : null);
-      setImageError(null);
-    };
-    reader.readAsDataURL(file);
+
+    try {
+      const dataUrls = await Promise.all(validFiles.map((file) => readFileAsDataUrl(file)));
+      const nextImages = dataUrls.map((url, index) => ({
+        id: createImageId(),
+        name: validFiles[index]?.name ?? `image-${index + 1}`,
+        originalUrl: url,
+        aspectRatio: "original" as const,
+        scale: 1,
+        position: { x: 0, y: 0 }
+      }));
+      setImages((prev) => [...prev, ...nextImages]);
+      setImageError(errors[0] ?? null);
+    } catch (err) {
+      setImageError(err instanceof Error ? err.message : "이미지 업로드에 실패했습니다.");
+    }
+  };
+
+  const handleRemoveImage = (id: string) => {
+    setImages((prev) => prev.filter((image) => image.id !== id));
+  };
+
+  const handleReorderImages = (sourceId: string, targetId: string) => {
+    if (sourceId === targetId) return;
+    setImages((prev) => {
+      const next = [...prev];
+      const sourceIndex = next.findIndex((image) => image.id === sourceId);
+      const targetIndex = next.findIndex((image) => image.id === targetId);
+      if (sourceIndex === -1 || targetIndex === -1) return prev;
+      const [moved] = next.splice(sourceIndex, 1);
+      next.splice(targetIndex, 0, moved);
+      return next;
+    });
+  };
+
+  const handleUpdateImage = (id: string, update: Partial<ComposerImage>) => {
+    setImages((prev) => prev.map((image) => (image.id === id ? { ...image, ...update } : image)));
   };
 
   const resetForm = () => {
     setContent("");
-    setImageUrl(null);
+    setImages([]);
     setImageError(null);
   };
 
   const handleCreate = async () => {
     if (!accessToken) return;
-    if (!content.trim() && !imageUrl) {
+    const primaryImageUrl = images[0]?.originalUrl ?? null;
+    if (!content.trim() && !primaryImageUrl) {
       setImageError("사진 또는 글을 입력해 주세요.");
       return;
     }
@@ -98,7 +186,7 @@ export default function MyFeedPage() {
     try {
       const created = await authApi.createFeedPost(accessToken, {
         content: content.trim() || null,
-        imageUrl
+        imageUrl: primaryImageUrl
       });
       setPosts((prev) => [created, ...prev]);
       resetForm();
@@ -184,7 +272,7 @@ export default function MyFeedPage() {
 
       <NewPostModal
         open={modalOpen}
-        imageUrl={imageUrl}
+        images={images}
         nickname={profile?.nickname ?? "멍냥마당"}
         profileImageUrl={profile?.profileImageUrl ?? null}
         petName={primaryPet?.name ?? null}
@@ -195,7 +283,10 @@ export default function MyFeedPage() {
           setModalOpen(false);
           resetForm();
         }}
-        onImageUpload={handleImageUpload}
+        onAddImages={handleAddImages}
+        onRemoveImage={handleRemoveImage}
+        onReorderImages={handleReorderImages}
+        onUpdateImage={handleUpdateImage}
         onContentChange={setContent}
         onSubmit={handleCreate}
         submitting={creating}
