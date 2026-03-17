@@ -27,11 +27,12 @@ export class ApiError extends Error {
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const headers = new Headers(init?.headers ?? {});
+  if (!headers.has("Content-Type") && !(init?.body instanceof FormData)) {
+    headers.set("Content-Type", "application/json");
+  }
   const response = await fetch(`${API_BASE}${path}`, {
-    headers: {
-      "Content-Type": "application/json",
-      ...(init?.headers ?? {})
-    },
+    headers,
     ...init
   });
 
@@ -126,7 +127,8 @@ export const authApi = {
     return request<SignupStepResponse>("/api/auth/signup/profile", {
       method: "POST",
       headers: {
-        "X-Signup-Token": signupToken
+        "X-Signup-Token": signupToken,
+        "Content-Type": "application/json"
       },
       body: JSON.stringify(payload)
     });
