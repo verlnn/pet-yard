@@ -1,6 +1,7 @@
 package io.pet.petyard.auth.security;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.pet.petyard.auth.jwt.AccessClaims;
 import io.pet.petyard.auth.jwt.JwtTokenProvider;
@@ -61,10 +62,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             filterChain.doFilter(request, response);
-        } catch (JwtException ex) {
-            log.error("[ ERROR ] --> {}", ex.getMessage());
+        } catch (ExpiredJwtException ex) {
+            Instant expiresAt = ex.getClaims().getExpiration().toInstant();
+            long remainingSeconds = Duration.between(Instant.now(), expiresAt).getSeconds();
+            log.info("Access token remaining: {}s (uid=unknown, path={})",
+                remainingSeconds,
+                request.getRequestURI());
             errorResponseWriter.write(request, response, HttpServletResponse.SC_UNAUTHORIZED,
-                ErrorCode.INVALID_TOKEN);
+                ErrorCode.INVALID_TOKEN, ex);
+        } catch (JwtException ex) {
+            errorResponseWriter.write(request, response, HttpServletResponse.SC_UNAUTHORIZED,
+                ErrorCode.INVALID_TOKEN, ex);
         }
     }
 }

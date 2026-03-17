@@ -63,12 +63,12 @@ public class SecurityConfig {
     @Bean
     public AuthenticationEntryPoint authenticationEntryPoint(ErrorResponseWriter errorResponseWriter) {
         return (request, response, authException) ->
-            errorResponseWriter.write(request, response, 401, ErrorCode.UNAUTHORIZED);
+            errorResponseWriter.write(request, response, 401, ErrorCode.UNAUTHORIZED, authException);
     }
 
     @Bean
     public AccessDeniedHandler accessDeniedHandler(ErrorResponseWriter errorResponseWriter) {
         return (request, response, accessDeniedException) ->
-            errorResponseWriter.write(request, response, 403, ErrorCode.FORBIDDEN);
+            errorResponseWriter.write(request, response, 403, ErrorCode.FORBIDDEN, accessDeniedException);
     }
 }

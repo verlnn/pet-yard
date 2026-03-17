@@ -12,6 +12,7 @@ public enum ErrorCode {
     VERIFICATION_ATTEMPTS_EXCEEDED("FORBIDDEN", "인증 시도 횟수를 초과했습니다"),
 
     BAD_REQUEST("BAD_REQUEST", "잘못된 요청입니다"),
+    INTERNAL_ERROR("INTERNAL_ERROR", "서버 오류가 발생했습니다"),
     CONFIG_SECRET_REQUIRED("INTERNAL_ERROR", "JWT 시크릿이 필요합니다"),
     CONFIG_SECRET_TOO_SHORT("INTERNAL_ERROR", "JWT 시크릿은 HS256을 위해 최소 32바이트여야 합니다"),
     CRYPTO_NOT_SUPPORTED("INTERNAL_ERROR", "SHA-256을 지원하지 않습니다"),
