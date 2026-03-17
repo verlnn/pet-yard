@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { ApiError, authApi } from "../api/authApi";
 import type { AuthMode } from "../types/authTypes";
@@ -125,7 +126,7 @@ export function useAuthForms({ mode, onModeChange, nextPath }: UseAuthFormsOptio
         setMessage("로그인에 성공했습니다.");
         const sanitizedNext =
           nextPath && nextPath.startsWith("/") && !nextPath.startsWith("//") ? nextPath : "/feed";
-        router.push(sanitizedNext);
+        router.push(sanitizedNext as Route);
       } catch (err) {
         setError(toMessage(err, "로그인에 실패했습니다."));
       } finally {

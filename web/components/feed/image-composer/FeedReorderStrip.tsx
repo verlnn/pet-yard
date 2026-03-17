@@ -68,7 +68,7 @@ export function FeedReorderStrip({ images, activeImageId, onSelect, onReorder }:
     });
   };
 
-  const updateTargetIndex = (clientX: number) => {
+  const updateTargetIndex = () => {
     const state = dragStateRef.current;
     if (!state.containerRect || state.sourceIndex === -1 || state.itemRects.length === 0) return;
     const scrollDelta = (containerRef.current?.scrollLeft ?? 0) - state.scrollLeftStart;
@@ -138,7 +138,7 @@ export function FeedReorderStrip({ images, activeImageId, onSelect, onReorder }:
       }
     }
 
-    updateTargetIndex(event.clientX);
+    updateTargetIndex();
     scheduleUpdate();
   };
 
@@ -164,6 +164,7 @@ export function FeedReorderStrip({ images, activeImageId, onSelect, onReorder }:
       isDragging: false,
       itemRect: null,
       containerRect: null,
+      itemRects: [],
       scrollLeftStart: 0,
       itemWidth: 0,
       itemGap: itemSpacing

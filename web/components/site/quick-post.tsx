@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Image, Tag } from "lucide-react";
+import { ImageIcon, Tag } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -62,7 +62,7 @@ export function QuickPost() {
         </div>
         <div className="flex flex-wrap gap-2">
           <Button type="button" variant="secondary" size="sm">
-            <Image className="h-4 w-4" /> 사진 추가
+            <ImageIcon className="h-4 w-4" /> 사진 추가
           </Button>
           <Button type="button" variant="secondary" size="sm">
             <Tag className="h-4 w-4" /> 태그 추천

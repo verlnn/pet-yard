@@ -1,5 +1,7 @@
 import type { OAuthCallbackResponse, OAuthProvider } from "../types/authTypes";
 
+type OAuthNextPath = "/feed" | "/onboarding/profile";
+
 export interface OAuthPopupMessage {
   type: "oauth:success" | "oauth:error";
   provider: OAuthProvider;
@@ -104,12 +106,12 @@ export function applyOAuthResult(result: OAuthCallbackResponse) {
     localStorage.setItem("accessToken", result.accessToken);
     localStorage.setItem("refreshToken", result.refreshToken);
     document.cookie = `accessToken=${result.accessToken}; path=/`;
-    return { nextPath: "/feed" };
+    return { nextPath: "/feed" as OAuthNextPath };
   }
 
   if (result.status === "ONBOARDING" && result.signupToken) {
     localStorage.setItem("signupToken", result.signupToken);
-    return { nextPath: "/onboarding/profile" };
+    return { nextPath: "/onboarding/profile" as OAuthNextPath };
   }
 
   throw new Error("회원가입 상태를 확인할 수 없습니다. 다시 시도해 주세요.");

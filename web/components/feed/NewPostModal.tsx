@@ -48,8 +48,6 @@ export function NewPostModal({
   onSubmit,
   submitting
 }: NewPostModalProps) {
-  if (!open) return null;
-
   const [activeImageId, setActiveImageId] = useState<string | null>(images[0]?.id ?? null);
   const [showRatioPanel, setShowRatioPanel] = useState(false);
   const [showZoomPanel, setShowZoomPanel] = useState(false);
@@ -203,6 +201,8 @@ export function NewPostModal({
     onReorderImages(sourceId, targetId);
   };
 
+  if (!open) return null;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
       <div className="w-full max-w-5xl overflow-hidden rounded-[32px] bg-white shadow-2xl">
@@ -256,7 +256,6 @@ export function NewPostModal({
                     <FeedImageOverlayControls
                       activeImage={activeImage}
                       showRatioPanel={showRatioPanel}
-                      showZoomPanel={showZoomPanel}
                       showReorder={showReorder}
                       ratioPanelRef={ratioPanelRef}
                       onToggleRatio={() => {

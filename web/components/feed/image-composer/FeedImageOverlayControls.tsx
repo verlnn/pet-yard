@@ -8,7 +8,6 @@ import type { ComposerImage } from "@/components/feed/image-composer/feedImageTy
 interface FeedImageOverlayControlsProps {
   activeImage: ComposerImage | null;
   showRatioPanel: boolean;
-  showZoomPanel: boolean;
   showReorder: boolean;
   ratioPanelRef: RefObject<HTMLDivElement | null>;
   onToggleRatio: () => void;
@@ -28,7 +27,6 @@ const ratioOptions: Array<{ value: ComposerImage["aspectRatio"]; label: string }
 export function FeedImageOverlayControls({
   activeImage,
   showRatioPanel,
-  showZoomPanel,
   showReorder,
   ratioPanelRef,
   onToggleRatio,

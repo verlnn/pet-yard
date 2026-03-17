@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+
 import AuthLayout from "@/src/features/auth/components/AuthLayout/AuthLayout";
 import AuthCard from "@/src/features/auth/components/AuthCard/AuthCard";
 import { useAuthForms } from "@/src/features/auth/hooks/useAuthForms";
@@ -15,12 +16,12 @@ interface AuthPageProps {
   initialMode?: AuthMode;
 }
 
-export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
+function AuthPageContent({ initialMode = "login" }: AuthPageProps) {
   const [mode, setMode] = useState<AuthMode>(initialMode);
   const [socialError, setSocialError] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const nextPath = searchParams.get("next");
+  const nextPath = searchParams?.get("next");
   const {
     title,
     subtitle,
@@ -112,5 +113,13 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
         }
       />
     </div>
+  );
+}
+
+export default function AuthPage(props: AuthPageProps) {
+  return (
+    <Suspense fallback={null}>
+      <AuthPageContent {...props} />
+    </Suspense>
   );
 }

@@ -30,7 +30,7 @@ export default function VerifyEmailForm({
 }: VerifyEmailFormProps) {
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const isExpired = remainingSeconds !== null && remainingSeconds <= 0;
+  const isExpired = remainingSeconds != null && remainingSeconds <= 0;
   const isExtendCooling = extendCooldownSeconds > 0;
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -78,7 +78,7 @@ export default function VerifyEmailForm({
         type="button"
         className={authGhostButtonClass}
         onClick={onExtend}
-        disabled={loading || remainingSeconds === null || isExpired || isExtendCooling}
+        disabled={loading || remainingSeconds == null || isExpired || isExtendCooling}
       >
         {isExtendCooling ? `연장 대기 ${extendCooldownSeconds}s` : "인증 시간 1분 연장"}
       </button>

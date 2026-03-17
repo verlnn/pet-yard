@@ -1,16 +1,18 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Bell, Compass, HeartHandshake, MapPin, PawPrint, Shield } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { authApi } from "@/src/features/auth/api/authApi";
 
-const links = [
+const links: Array<{ href: Route; label: string; icon: LucideIcon }> = [
   { href: "/feed", label: "피드", icon: PawPrint },
   { href: "/my-feed", label: "내 피드", icon: PawPrint },
   { href: "/walks", label: "산책", icon: Compass },
@@ -84,7 +86,7 @@ export function SiteNav() {
             <Bell className="h-4 w-4" />
           </Button>
           {hasToken && (
-            <Button variant="outline" size="sm" onClick={handleLogout}>
+            <Button variant="secondary" size="sm" onClick={handleLogout}>
               로그아웃
             </Button>
           )}

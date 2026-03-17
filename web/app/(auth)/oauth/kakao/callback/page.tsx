@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { authApi } from "@/src/features/auth/api/authApi";
@@ -10,12 +10,17 @@ import OnboardingCard from "@/src/features/onboarding/components/OnboardingCard"
 
 const APP_BASE = process.env.NEXT_PUBLIC_APP_BASE_URL ?? "";
 
-export default function KakaoCallbackPage() {
+function KakaoCallbackPageContent() {
   const router = useRouter();
   const params = useSearchParams();
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!params) {
+      setError("카카오 인증 정보를 불러오지 못했습니다. 다시 시도해 주세요.");
+      return;
+    }
+
     const code = params.get("code");
     const state = params.get("state");
     if (!code || !state) {
@@ -65,5 +70,13 @@ export default function KakaoCallbackPage() {
         {!error && <p className="text-sm text-slate-500">안전하게 로그인 정보를 확인하고 있습니다.</p>}
       </OnboardingCard>
     </OnboardingLayout>
+  );
+}
+
+export default function KakaoCallbackPage() {
+  return (
+    <Suspense fallback={null}>
+      <KakaoCallbackPageContent />
+    </Suspense>
   );
 }
