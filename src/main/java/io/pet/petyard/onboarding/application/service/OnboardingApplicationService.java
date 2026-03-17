@@ -282,7 +282,8 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
             PetGender.valueOf(command.gender().toUpperCase()),
             command.neutered(),
             command.intro(),
-            command.photoUrl()
+            command.photoUrl(),
+            null
         );
         savePetProfilePort.save(profile);
 

@@ -63,3 +63,35 @@ export interface MeResponse {
   tier: string;
   permissions: string[];
 }
+
+export interface PetProfile {
+  id: number;
+  name: string;
+  species: string;
+  breed?: string | null;
+  birthDate?: string | null;
+  ageGroup?: string | null;
+  gender: string;
+  neutered?: boolean | null;
+  intro?: string | null;
+  photoUrl?: string | null;
+  weightKg?: number | null;
+}
+
+export interface PetBreed {
+  id: number;
+  nameKo: string;
+  nameEn?: string | null;
+}
+
+export interface MyProfileResponse {
+  userId: number;
+  nickname: string;
+  regionName?: string | null;
+  profileImageUrl?: string | null;
+  tier: string;
+  joinedAt: string;
+  lastLoginAt?: string | null;
+  petCount: number;
+  pets: PetProfile[];
+}

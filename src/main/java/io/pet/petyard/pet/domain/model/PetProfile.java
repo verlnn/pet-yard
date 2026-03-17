@@ -3,6 +3,7 @@ package io.pet.petyard.pet.domain.model;
 import io.pet.petyard.pet.domain.PetGender;
 import io.pet.petyard.pet.domain.PetSpecies;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 
@@ -51,6 +52,9 @@ public class PetProfile {
 
     private String photoUrl;
 
+    @Column(name = "weight_kg")
+    private BigDecimal weightKg;
+
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
@@ -61,7 +65,7 @@ public class PetProfile {
     }
 
     public PetProfile(Long userId, String name, PetSpecies species, String breed, LocalDate birthDate, String ageGroup,
-                      PetGender gender, Boolean neutered, String intro, String photoUrl) {
+                      PetGender gender, Boolean neutered, String intro, String photoUrl, BigDecimal weightKg) {
         this.userId = userId;
         this.name = name;
         this.species = species;
@@ -72,6 +76,7 @@ public class PetProfile {
         this.neutered = neutered;
         this.intro = intro;
         this.photoUrl = photoUrl;
+        this.weightKg = weightKg;
     }
 
     @PrePersist
@@ -88,5 +93,49 @@ public class PetProfile {
 
     public Long getId() {
         return id;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public PetSpecies getSpecies() {
+        return species;
+    }
+
+    public String getBreed() {
+        return breed;
+    }
+
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public String getAgeGroup() {
+        return ageGroup;
+    }
+
+    public PetGender getGender() {
+        return gender;
+    }
+
+    public Boolean getNeutered() {
+        return neutered;
+    }
+
+    public String getIntro() {
+        return intro;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public BigDecimal getWeightKg() {
+        return weightKg;
     }
 }
