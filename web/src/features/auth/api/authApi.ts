@@ -6,6 +6,7 @@ import type {
   OAuthProvider,
   PetBreed,
   PetProfile,
+  PetRegistrationVerificationResponse,
   SignupCompleteResponse,
   SignupProgressResponse,
   SignupResponse,
@@ -205,13 +206,10 @@ export const authApi = {
   createPetProfile(
     accessToken: string,
     payload: {
-      name: string;
-      species: string;
-      breed?: string | null;
-      birthDate?: string | null;
-      ageGroup?: string | null;
-      gender: string;
-      neutered?: boolean | null;
+      dogRegNo: string;
+      rfidCd: string;
+      ownerNm: string;
+      ownerBirth: string;
       intro?: string | null;
       photoUrl?: string | null;
       weightKg?: number | null;
@@ -256,6 +254,18 @@ export const authApi = {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }
+    });
+  },
+  verifyPetRegistration(
+    accessToken: string,
+    payload: { dogRegNo: string; rfidCd: string; ownerNm: string; ownerBirth: string }
+  ) {
+    return request<PetRegistrationVerificationResponse>("/api/pets/verify", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      },
+      body: JSON.stringify(payload)
     });
   }
 };

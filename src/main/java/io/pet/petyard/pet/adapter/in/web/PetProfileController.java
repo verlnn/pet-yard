@@ -5,6 +5,8 @@ import io.pet.petyard.common.ApiException;
 import io.pet.petyard.common.ErrorCode;
 import io.pet.petyard.pet.application.port.out.LoadPetProfilePort;
 import io.pet.petyard.pet.application.port.out.SavePetProfilePort;
+import io.pet.petyard.pet.application.service.AnimalRegistrationResult;
+import io.pet.petyard.pet.application.service.AnimalRegistrationService;
 import io.pet.petyard.pet.domain.PetGender;
 import io.pet.petyard.pet.domain.PetSpecies;
 import io.pet.petyard.pet.domain.model.PetProfile;
@@ -27,28 +29,59 @@ public class PetProfileController {
 
     private final LoadPetProfilePort loadPetProfilePort;
     private final SavePetProfilePort savePetProfilePort;
+    private final AnimalRegistrationService registrationService;
 
     public PetProfileController(LoadPetProfilePort loadPetProfilePort,
-                                SavePetProfilePort savePetProfilePort) {
+                                SavePetProfilePort savePetProfilePort,
+                                AnimalRegistrationService registrationService) {
         this.loadPetProfilePort = loadPetProfilePort;
         this.savePetProfilePort = savePetProfilePort;
+        this.registrationService = registrationService;
+    }
+
+    @PostMapping("/verify")
+    public PetRegistrationVerificationResponse verify(@Valid @RequestBody PetRegistrationRequest request) {
+        AnimalRegistrationResult result = registrationService.verify(
+            request.dogRegNo(),
+            request.rfidCd(),
+            request.ownerNm(),
+            request.ownerBirth()
+        );
+
+        return new PetRegistrationVerificationResponse(
+            result.dogRegNo(),
+            result.rfidCd(),
+            result.name(),
+            result.birthDate(),
+            result.gender().name(),
+            result.breed(),
+            result.neutered(),
+            result.orgName(),
+            result.officeTel(),
+            result.approvalStatus(),
+            result.registeredAt(),
+            result.approvedAt()
+        );
     }
 
     @PostMapping
     public PetProfileResponse create(@AuthenticationPrincipal AuthPrincipal principal,
-                                     @Valid @RequestBody PetProfileRequest request) {
-        PetSpecies species = parseSpecies(request.species());
-        PetGender gender = parseGender(request.gender());
-
+                                     @Valid @RequestBody PetRegistrationRequest request) {
+        AnimalRegistrationResult result = registrationService.verify(
+            request.dogRegNo(),
+            request.rfidCd(),
+            request.ownerNm(),
+            request.ownerBirth()
+        );
         PetProfile profile = new PetProfile(
             principal.userId(),
-            request.name(),
-            species,
-            request.breed(),
-            request.birthDate(),
-            request.ageGroup(),
-            gender,
-            request.neutered(),
+            result.name(),
+            PetSpecies.DOG,
+            result.breed(),
+            result.birthDate(),
+            null,
+            result.gender(),
+            result.neutered(),
             request.intro(),
             request.photoUrl(),
             request.weightKg() == null ? null : BigDecimal.valueOf(request.weightKg())

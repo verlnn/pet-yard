@@ -27,6 +27,8 @@ public enum ErrorCode {
     OAUTH_ACCOUNT_EXISTS("BAD_REQUEST", "이미 가입된 소셜 계정입니다"),
     SOCIAL_EMAIL_CONFLICT("BAD_REQUEST", "이미 다른 계정에 연결된 이메일입니다"),
     NICKNAME_ALREADY_TAKEN("BAD_REQUEST", "이미 사용 중인 닉네임입니다"),
+    PET_REGISTRATION_VERIFY_FAILED("BAD_REQUEST", "반려견 등록 정보를 확인할 수 없습니다"),
+    PET_REGISTRATION_NOT_APPROVED("BAD_REQUEST", "반려견 등록 정보가 승인 상태가 아닙니다"),
     REQUIRED_TERMS_MISSING("BAD_REQUEST", "필수 약관 동의가 필요합니다"),
     SIGNUP_SESSION_EXPIRED("BAD_REQUEST", "회원가입 세션이 만료되었습니다"),
     SIGNUP_STEP_INVALID("BAD_REQUEST", "회원가입 단계가 올바르지 않습니다"),

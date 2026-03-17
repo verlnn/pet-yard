@@ -84,6 +84,21 @@ export interface PetBreed {
   nameEn?: string | null;
 }
 
+export interface PetRegistrationVerificationResponse {
+  dogRegNo: string;
+  rfidCd: string;
+  name: string;
+  birthDate?: string | null;
+  gender: string;
+  breed?: string | null;
+  neutered?: boolean | null;
+  orgName?: string | null;
+  officeTel?: string | null;
+  approvalStatus?: string | null;
+  registeredAt?: string | null;
+  approvedAt?: string | null;
+}
+
 export interface MyProfileResponse {
   userId: number;
   nickname: string;
