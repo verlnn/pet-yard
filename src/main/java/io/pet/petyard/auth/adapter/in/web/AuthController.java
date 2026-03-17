@@ -9,12 +9,17 @@ import io.pet.petyard.auth.application.port.in.RefreshTokenUseCase;
 import io.pet.petyard.auth.application.port.in.ResendEmailVerificationUseCase;
 import io.pet.petyard.auth.application.port.in.SignUpUseCase;
 import io.pet.petyard.auth.application.port.in.VerifyEmailUseCase;
+import io.pet.petyard.auth.application.service.LoginLogService;
+import io.pet.petyard.auth.adapter.out.persistence.UserRepository;
 import io.pet.petyard.auth.security.AuthPrincipal;
 import io.pet.petyard.common.ErrorCode;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +39,8 @@ public class AuthController {
     private final RefreshTokenUseCase refreshTokenUseCase;
     private final LogoutUseCase logoutUseCase;
     private final GetCurrentUserUseCase getCurrentUserUseCase;
+    private final LoginLogService loginLogService;
+    private final UserRepository userRepository;
 
     public AuthController(SignUpUseCase signUpUseCase,
                           VerifyEmailUseCase verifyEmailUseCase,
@@ -42,7 +49,9 @@ public class AuthController {
                           LoginUseCase loginUseCase,
                           RefreshTokenUseCase refreshTokenUseCase,
                           LogoutUseCase logoutUseCase,
-                          GetCurrentUserUseCase getCurrentUserUseCase) {
+                          GetCurrentUserUseCase getCurrentUserUseCase,
+                          LoginLogService loginLogService,
+                          UserRepository userRepository) {
         this.signUpUseCase = signUpUseCase;
         this.verifyEmailUseCase = verifyEmailUseCase;
         this.extendEmailUseCase = extendEmailUseCase;
@@ -51,6 +60,8 @@ public class AuthController {
         this.refreshTokenUseCase = refreshTokenUseCase;
         this.logoutUseCase = logoutUseCase;
         this.getCurrentUserUseCase = getCurrentUserUseCase;
+        this.loginLogService = loginLogService;
+        this.userRepository = userRepository;
     }
 
     @PostMapping("/signup")
@@ -80,9 +91,24 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public TokenResponse login(@Valid @RequestBody LoginRequest request) {
-        AuthTokens tokens = loginUseCase.login(new LoginUseCase.LoginCommand(request.email(), request.password()));
-        return new TokenResponse(tokens.accessToken(), tokens.refreshToken());
+    public TokenResponse login(@Valid @RequestBody LoginRequest request, HttpServletRequest httpRequest) {
+        try {
+            AuthTokens tokens = loginUseCase.login(new LoginUseCase.LoginCommand(request.email(), request.password()));
+            Long userId = userRepository.findByEmail(request.email())
+                .map(user -> user.getId())
+                .orElse(null);
+            loginLogService.recordSuccess(httpRequest, request.email(), userId);
+            return new TokenResponse(tokens.accessToken(), tokens.refreshToken());
+        } catch (AuthenticationException ex) {
+            loginLogService.recordFailure(httpRequest, request.email(), "UNAUTHORIZED", ex.getMessage());
+            throw ex;
+        } catch (AccessDeniedException ex) {
+            loginLogService.recordFailure(httpRequest, request.email(), "FORBIDDEN", ex.getMessage());
+            throw ex;
+        } catch (RuntimeException ex) {
+            loginLogService.recordFailure(httpRequest, request.email(), "INTERNAL_ERROR", ex.getMessage());
+            throw ex;
+        }
     }
 
     @PostMapping("/refresh")
