@@ -54,11 +54,14 @@ public class LoginLogService {
             userId,
             clientIp);
 
+        repository.save(logEntry);
+/*
         try {
             repository.save(logEntry);
         } catch (Exception ex) {
             log.warn("Failed to persist login log", ex);
         }
+*/
     }
 
     private String resolveClientIp(HttpServletRequest request) {

@@ -17,7 +17,7 @@ public class LoginLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 320)
+    @Column(length = 320)
     private String email;
 
     private Long userId;
