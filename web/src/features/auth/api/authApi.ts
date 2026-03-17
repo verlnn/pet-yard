@@ -4,6 +4,7 @@ import type {
   OAuthCallbackResponse,
   OAuthStartResponse,
   OAuthProvider,
+  FeedPost,
   PetBreed,
   PetProfile,
   PetRegistrationVerificationResponse,
@@ -255,6 +256,34 @@ export const authApi = {
     const params = new URLSearchParams({ species });
     return request<PetBreed[]>(`/api/pets/breeds?${params.toString()}`, {
       method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+  },
+  getMyFeed(accessToken: string) {
+    return request<FeedPost[]>("/api/feeds/me", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+  },
+  createFeedPost(
+    accessToken: string,
+    payload: { content?: string | null; imageUrl?: string | null }
+  ) {
+    return request<FeedPost>("/api/feeds", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      },
+      body: JSON.stringify(payload)
+    });
+  },
+  deleteFeedPost(accessToken: string, id: number) {
+    return request<void>(`/api/feeds/${id}`, {
+      method: "DELETE",
       headers: {
         Authorization: `Bearer ${accessToken}`
       }

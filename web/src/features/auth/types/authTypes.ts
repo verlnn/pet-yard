@@ -112,3 +112,10 @@ export interface MyProfileResponse {
   petCount: number;
   pets: PetProfile[];
 }
+
+export interface FeedPost {
+  id: number;
+  content?: string | null;
+  imageUrl?: string | null;
+  createdAt: string;
+}

@@ -7,6 +7,7 @@ export const ROUTES = {
   onboarding: "/onboarding",
   oauth: "/oauth",
   feed: "/feed",
+  myFeed: "/my-feed",
   walks: "/walks",
   profile: "/profile"
 } as const;

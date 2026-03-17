@@ -90,6 +90,18 @@ export default function ProfilePage() {
             <div className="grid gap-4">
               <Card className="gradient-shell">
                 <CardContent className="space-y-3">
+                  <p className="text-sm text-ink/60">나의 피드</p>
+                  <p className="font-display text-lg font-semibold">기록을 이어가세요</p>
+                  <p className="text-sm text-ink/70">
+                    우리 아이의 소소한 순간을 피드로 남겨보세요.
+                  </p>
+                  <Button asChild>
+                    <Link href="/my-feed">내 피드로 이동</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+              <Card className="gradient-shell">
+                <CardContent className="space-y-3">
                   <p className="text-sm text-ink/60">반려동물 정보</p>
                   <p className="font-display text-lg font-semibold">
                     {profile?.petCount ?? 0}마리 등록됨
