@@ -2,10 +2,11 @@ import type { ReactNode } from "react";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-export default function AppLayout({ children }: { children: ReactNode }) {
-  const cookieStore = cookies();
+export default async function AppLayout({ children }: { children: ReactNode }) {
+  const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;
-  const path = headers().get("x-pathname") ?? "/";
+  const requestHeaders = await headers();
+  const path = requestHeaders.get("x-pathname") ?? "/";
 
   // TODO: 서버에서 토큰 유효성 검증 로직 추가
   if (!accessToken) {
