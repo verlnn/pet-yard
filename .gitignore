@@ -43,4 +43,6 @@ out/
 # Local overrides
 /src/main/resources/application-local.yaml
 
+.env.relase
+
 /web/.env.local
