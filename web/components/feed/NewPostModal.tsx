@@ -2,20 +2,14 @@
 
 import type { PointerEvent } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Grip, Plus, Trash2, X, ZoomIn } from "lucide-react";
+import { Plus, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { PostComposerSidebar } from "@/components/feed/PostComposerSidebar";
-
-interface ComposerImage {
-  id: string;
-  name: string;
-  originalUrl: string;
-  aspectRatio: "original" | "1:1" | "4:5" | "16:9";
-  scale: number;
-  position: { x: number; y: number };
-  naturalSize?: { width: number; height: number };
-}
+import { FeedImageOverlayControls } from "@/components/feed/image-composer/FeedImageOverlayControls";
+import { FeedImageStage } from "@/components/feed/image-composer/FeedImageStage";
+import { FeedReorderStrip } from "@/components/feed/image-composer/FeedReorderStrip";
+import type { ComposerImage } from "@/components/feed/image-composer/feedImageTypes";
 
 interface NewPostModalProps {
   open: boolean;
@@ -244,177 +238,54 @@ export function NewPostModal({
             <div className="mx-auto flex aspect-square w-full max-w-[480px] flex-col gap-3 self-center rounded-3xl border border-dashed border-slate-200 bg-white/80 p-4">
               {displayUrl ? (
                 <>
-                  <div className="flex flex-1 items-center justify-center">
-                    <div
-                    ref={containerRef}
-                    className={`relative mx-auto overflow-hidden rounded-2xl bg-black 
-                      h-[420px]
-                      w-[420px]
-                      `}
-                      onPointerDown={handlePointerDown}
-                      onPointerMove={handlePointerMove}
-                      onPointerUp={handlePointerUp}
-                      onPointerLeave={handlePointerUp}
-                    >
-                      <div className="relative flex h-full w-full items-center justify-center bg-black">
-                        <div
-                          className="relative overflow-hidden rounded-xl bg-black/90"
-                          style={{
-                            width: `${frameSize.width}px`,
-                            height: `${frameSize.height}px`
-                          }}
-                        >
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={displayUrl}
-                            alt="업로드 이미지"
-                            onLoad={(event) => {
-                              if (!activeImage) return;
-                              const target = event.currentTarget;
-                              if (activeImage.naturalSize) return;
-                              onUpdateImage(activeImage.id, {
-                                naturalSize: { width: target.naturalWidth, height: target.naturalHeight }
-                              });
-                            }}
-                            className="absolute left-1/2 top-1/2 select-none"
-                            style={{
-                              transform: `translate(-50%, -50%) translate(${activeImage?.position.x ?? 0}px, ${
-                                activeImage?.position.y ?? 0
-                              }px)`
-                            }}
-                            draggable={false}
-                          />
-                        </div>
-                      </div>
-                      <div
-                        className="absolute right-3 top-3 flex items-center gap-2"
-                        onPointerDown={(event) => event.stopPropagation()}
-                      >
-                        <div className="relative">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setShowRatioPanel((prev) => !prev);
-                              setShowZoomPanel(false);
-                            }}
-                            className="rounded-full bg-black/70 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-black/90"
-                          >
-                            📐 비율
-                          </button>
-                          {showRatioPanel && (
-                            <div
-                              ref={ratioPanelRef}
-                              className="absolute right-0 top-11 w-44 rounded-2xl bg-black/85 p-2 text-xs text-white shadow-lg"
-                            >
-                              {(["original", "1:1", "4:5", "16:9"] as const).map((ratio) => (
-                                <button
-                                  key={ratio}
-                                  type="button"
-                                  onClick={() => handleRatioSelect(ratio)}
-                                  className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-left transition ${
-                                    activeImage?.aspectRatio === ratio
-                                      ? "bg-white/15 text-white"
-                                      : "text-white/80 hover:bg-white/10"
-                                  }`}
-                                >
-                                  <span>
-                                    {ratio === "original"
-                                      ? "원본"
-                                      : ratio === "1:1"
-                                      ? "1:1"
-                                      : ratio === "4:5"
-                                      ? "4:5"
-                                      : "16:9"}
-                                  </span>
-                                  {activeImage?.aspectRatio === ratio && <span className="text-[10px]">선택됨</span>}
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                        <div className="relative">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setShowZoomPanel((prev) => !prev);
-                              setShowRatioPanel(false);
-                            }}
-                            className="rounded-full bg-black/70 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-black/90"
-                          >
-                            <ZoomIn className="mr-1 inline h-3.5 w-3.5" />
-                            줌
-                          </button>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => activeImage && onRemoveImage(activeImage.id)}
-                          className="rounded-full bg-black/70 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-black/90"
-                        >
-                          <Trash2 className="mr-1 inline h-3.5 w-3.5" />
-                          삭제
-                        </button>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setShowReorder((prev) => !prev)}
-                        className="absolute bottom-3 right-3 rounded-full bg-black/70 p-2 text-white shadow-sm transition hover:bg-black/90"
-                        onPointerDown={(event) => event.stopPropagation()}
-                        aria-label={showReorder ? "순서 변경 닫기" : "순서 변경 열기"}
-                        title="순서 변경"
-                      >
-                        <Grip className="h-4 w-4" />
-                      </button>
-                      {showReorder && images.length > 0 && (
-                        <div
-                          className="absolute bottom-12 left-1/2 flex max-w-[90%] -translate-x-1/2 flex-wrap gap-2 rounded-2xl bg-black/70 p-3"
-                          onPointerDown={(event) => event.stopPropagation()}
-                        >
-                          {images.map((image, index) => {
-                            const thumbUrl = image.originalUrl;
-                            const isActive = image.id === activeImageId;
-                            return (
-                              <button
-                                key={image.id}
-                                type="button"
-                                draggable
-                                onDragStart={() => handleDragStart(image.id)}
-                                onDragEnd={() => setDraggingId(null)}
-                                onDragOver={(event) => event.preventDefault()}
-                                onDrop={() => handleDrop(image.id)}
-                                onClick={() => setActiveImageId(image.id)}
-                                className={`relative h-14 w-14 overflow-hidden rounded-xl border ${
-                                  isActive ? "border-white" : "border-white/40"
-                                }`}
-                              >
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img src={thumbUrl} alt={image.name} className="h-full w-full object-cover" />
-                                <span className="absolute left-1 top-1 rounded-full bg-black/60 px-1.5 py-0.5 text-[10px] text-white">
-                                  {index + 1}
-                                </span>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      )}
-                      {showZoomPanel && (
-                        <div
-                          ref={zoomPanelRef}
-                          className="absolute bottom-4 left-1/2 w-[70%] -translate-x-1/2 rounded-full bg-black/80 px-4 py-3 text-xs text-white shadow-lg"
-                          onPointerDown={(event) => event.stopPropagation()}
-                        >
-                          <input
-                            type="range"
-                            min={1}
-                            max={3}
-                            step={0.01}
-                            value={activeImage?.scale ?? 1}
-                            onChange={(event) => handleZoomChange(Number(event.target.value))}
-                            className="w-full"
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </div>
+                  <FeedImageStage
+                    containerRef={containerRef}
+                    zoomPanelRef={zoomPanelRef}
+                    displayUrl={displayUrl}
+                    frameSize={frameSize}
+                    transform={`translate(-50%, -50%) translate(${activeImage?.position.x ?? 0}px, ${
+                      activeImage?.position.y ?? 0
+                    }px)`}
+                    onPointerDown={handlePointerDown}
+                    onPointerMove={handlePointerMove}
+                    onPointerUp={handlePointerUp}
+                    onImageLoad={(size) => {
+                      if (!activeImage || activeImage.naturalSize) return;
+                      onUpdateImage(activeImage.id, { naturalSize: size });
+                    }}
+                    showZoomPanel={showZoomPanel}
+                    zoomValue={activeImage?.scale ?? 1}
+                    onZoomChange={handleZoomChange}
+                  >
+                    <FeedImageOverlayControls
+                      activeImage={activeImage}
+                      showRatioPanel={showRatioPanel}
+                      showZoomPanel={showZoomPanel}
+                      showReorder={showReorder}
+                      ratioPanelRef={ratioPanelRef}
+                      onToggleRatio={() => {
+                        setShowRatioPanel((prev) => !prev);
+                        setShowZoomPanel(false);
+                      }}
+                      onToggleZoom={() => {
+                        setShowZoomPanel((prev) => !prev);
+                        setShowRatioPanel(false);
+                      }}
+                      onRemove={() => activeImage && onRemoveImage(activeImage.id)}
+                      onToggleReorder={() => setShowReorder((prev) => !prev)}
+                      onSelectRatio={handleRatioSelect}
+                    />
+                    {showReorder && images.length > 0 && (
+                      <FeedReorderStrip
+                        images={images}
+                        activeImageId={activeImageId}
+                        onSelect={setActiveImageId}
+                        onDragStart={handleDragStart}
+                        onDragEnd={() => setDraggingId(null)}
+                        onDrop={handleDrop}
+                      />
+                    )}
+                  </FeedImageStage>
                 </>
               ) : (
                 <label className="flex h-full w-full cursor-pointer flex-col items-center justify-center gap-3 text-sm text-ink/50">
