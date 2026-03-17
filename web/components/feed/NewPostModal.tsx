@@ -184,9 +184,11 @@ export function NewPostModal({
   };
 
   const handleRatioSelect = (ratio: ComposerImage["aspectRatio"]) => {
-    if (!activeImage) return;
+    if (images.length === 0) return;
     const next = { aspectRatio: ratio, scale: 1, position: { x: 0, y: 0 } };
-    onUpdateImage(activeImage.id, next);
+    images.forEach((image) => {
+      onUpdateImage(image.id, next);
+    });
     setShowRatioPanel(false);
   };
 
