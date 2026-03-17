@@ -144,8 +144,8 @@ export default function PetsPage() {
       setPetImageError("이미지 파일만 업로드할 수 있어요.");
       return;
     }
-    if (file.size > 2 * 1024 * 1024) {
-      setPetImageError("2MB 이하 이미지로 업로드해 주세요.");
+    if (file.size > 3 * 1024 * 1024) {
+      setPetImageError("3MB 이하 이미지로 업로드해 주세요.");
       return;
     }
     const reader = new FileReader();
@@ -162,8 +162,8 @@ export default function PetsPage() {
       setEditError("이미지 파일만 업로드할 수 있어요.");
       return;
     }
-    if (file.size > 2 * 1024 * 1024) {
-      setEditError("2MB 이하 이미지로 업로드해 주세요.");
+    if (file.size > 3 * 1024 * 1024) {
+      setEditError("3MB 이하 이미지로 업로드해 주세요.");
       return;
     }
     const reader = new FileReader();
@@ -477,6 +477,16 @@ export default function PetsPage() {
                         />
                       </label>
                       <div className="flex items-center gap-3">
+                        <div className="h-14 w-14 overflow-hidden rounded-2xl bg-white/70 shadow-inner">
+                          {editForm.photoUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={editForm.photoUrl} alt="반려동물 사진" className="h-full w-full object-cover" />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center text-[10px] text-ink/40">
+                              No Photo
+                            </div>
+                          )}
+                        </div>
                         <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-xs font-semibold text-ink/70">
                           사진 변경
                           <input
@@ -486,7 +496,6 @@ export default function PetsPage() {
                             onChange={(event) => handleEditImageUpload(event.target.files?.[0])}
                           />
                         </label>
-                        {editForm.photoUrl && <span className="text-xs text-ink/60">사진 선택됨</span>}
                       </div>
                       {editError && <p className="text-xs text-rose-500">{editError}</p>}
                       <div className="flex gap-2">
@@ -690,18 +699,27 @@ export default function PetsPage() {
                             onChange={(event) => setForm((prev) => ({ ...prev, intro: event.target.value }))}
                           />
                         </label>
-                        <div className="flex items-center gap-3">
-                          <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-xs font-semibold text-ink/70">
-                            사진 업로드
-                            <input
-                              type="file"
-                              accept="image/*"
-                              className="hidden"
-                              onChange={(event) => handlePetImageUpload(event.target.files?.[0])}
-                            />
-                          </label>
-                          {form.photoUrl && <span className="text-xs text-ink/60">사진 선택됨</span>}
-                        </div>
+                    <div className="flex items-center gap-3">
+                      <div className="h-14 w-14 overflow-hidden rounded-2xl bg-white/70 shadow-inner">
+                        {form.photoUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={form.photoUrl} alt="반려동물 사진" className="h-full w-full object-cover" />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center text-[10px] text-ink/40">
+                            No Photo
+                          </div>
+                        )}
+                      </div>
+                      <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-xs font-semibold text-ink/70">
+                        사진 업로드
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(event) => handlePetImageUpload(event.target.files?.[0])}
+                        />
+                      </label>
+                    </div>
                         {petImageError && <p className="text-xs text-rose-500">{petImageError}</p>}
                         <Button onClick={handlePetSubmit} disabled={savingPet}>
                           {savingPet ? "저장 중..." : "반려동물 등록"}
