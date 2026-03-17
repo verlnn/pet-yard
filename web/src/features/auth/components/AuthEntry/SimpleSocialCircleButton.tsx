@@ -18,7 +18,7 @@ export default function SimpleSocialCircleButton({
       type="button"
       onClick={onClick}
       aria-label={ariaLabel}
-      className="flex h-16 w-16 items-center justify-center rounded-2xl bg-transparent transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+      className="flex h-16 w-16 items-center justify-center rounded-2xl bg-transparent transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/20"
     >
       <img
         src={iconSrc}
