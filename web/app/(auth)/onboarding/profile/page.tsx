@@ -96,10 +96,12 @@ export default function OnboardingProfilePage() {
   const [districts, setDistricts] = useState<RegionOption[]>([]);
   const [dongs, setDongs] = useState<RegionOption[]>([]);
   const [profileImageUrl, setProfileImageUrl] = useState("");
+  const [profileImageError, setProfileImageError] = useState<string | null>(null);
   const [marketingOptIn, setMarketingOptIn] = useState(false);
   const [hasPetChoice, setHasPetChoice] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [defaultsLoaded, setDefaultsLoaded] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("signupToken");
@@ -109,6 +111,26 @@ export default function OnboardingProfilePage() {
     }
     setSignupToken(token);
   }, [router]);
+
+  useEffect(() => {
+    if (!signupToken || defaultsLoaded) return;
+    const loadDefaults = async () => {
+      try {
+        const progress = await authApi.signupProgress(signupToken);
+        if (!nickname && progress.nickname) {
+          setNickname(progress.nickname);
+        }
+        if (!profileImageUrl && progress.profileImageUrl) {
+          setProfileImageUrl(progress.profileImageUrl);
+        }
+      } catch {
+        // ignore
+      } finally {
+        setDefaultsLoaded(true);
+      }
+    };
+    loadDefaults();
+  }, [signupToken, defaultsLoaded, nickname, profileImageUrl]);
 
   useEffect(() => {
     const loadCities = async () => {
@@ -249,16 +271,69 @@ export default function OnboardingProfilePage() {
               }`}
             >
               <div className="space-y-4">
-                <label className="flex flex-col gap-2 text-xs font-semibold text-slate-500">
-                  닉네임
+              <label className="flex flex-col gap-2 text-xs font-semibold text-slate-500">
+                닉네임
                 <input
                   className={inputClassName}
-                    value={nickname}
-                    onChange={(event) => setNickname(event.target.value)}
-                    placeholder="멍냥마당에서 사용할 이름"
-                    required
-                  />
-                </label>
+                  value={nickname}
+                  onChange={(event) => setNickname(event.target.value)}
+                  placeholder="멍냥마당에서 사용할 이름"
+                  required
+                />
+              </label>
+                <div className="space-y-2 text-xs font-semibold text-slate-500">
+                  프로필 이미지 (선택)
+                  <div className="flex items-center gap-4 rounded-2xl border border-slate-200/70 bg-white/80 px-4 py-3">
+                    <div className="h-14 w-14 overflow-hidden rounded-2xl bg-slate-100">
+                      {profileImageUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={profileImageUrl} alt="프로필 미리보기" className="h-full w-full object-cover" />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-[11px] text-slate-400">
+                          없음
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex flex-1 flex-col gap-2">
+                      <label className="inline-flex w-fit cursor-pointer items-center gap-2 rounded-full border border-slate-200/70 bg-white px-3 py-1 text-[11px] font-semibold text-slate-600">
+                        사진 업로드
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(event) => {
+                            const file = event.target.files?.[0];
+                            if (!file) return;
+                            if (!file.type.startsWith("image/")) {
+                              setProfileImageError("이미지 파일만 업로드할 수 있어요.");
+                              return;
+                            }
+                            if (file.size > 2 * 1024 * 1024) {
+                              setProfileImageError("2MB 이하 이미지로 업로드해 주세요.");
+                              return;
+                            }
+                            const reader = new FileReader();
+                            reader.onload = () => {
+                              setProfileImageUrl(typeof reader.result === "string" ? reader.result : "");
+                              setProfileImageError(null);
+                            };
+                            reader.readAsDataURL(file);
+                          }}
+                        />
+                      </label>
+                      {profileImageUrl && (
+                        <button
+                          type="button"
+                          className="w-fit text-[11px] font-semibold text-slate-400 hover:text-slate-600"
+                          onClick={() => setProfileImageUrl("")}
+                        >
+                          삭제
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  {profileImageError && <p className="text-[11px] text-rose-500">{profileImageError}</p>}
+                </div>
                 <div className="space-y-2 text-xs font-semibold text-slate-500">
                   반려동물 유무
                   <div className="grid grid-cols-2 gap-2">
@@ -286,15 +361,6 @@ export default function OnboardingProfilePage() {
                     </button>
                   </div>
                 </div>
-                <label className="flex flex-col gap-2 text-xs font-semibold text-slate-500">
-                  프로필 이미지 URL (선택)
-                  <input
-                    className={inputClassName}
-                    value={profileImageUrl}
-                    onChange={(event) => setProfileImageUrl(event.target.value)}
-                    placeholder="https://"
-                  />
-                </label>
               </div>
               <div className="mt-auto pt-4">
                 <button

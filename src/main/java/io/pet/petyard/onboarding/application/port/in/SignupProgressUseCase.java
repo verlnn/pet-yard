@@ -6,6 +6,12 @@ public interface SignupProgressUseCase {
     record SignupProgressQuery(String signupToken) {
     }
 
-    record SignupProgressResult(String step, String expiresAt, boolean hasPet) {
+    record SignupProgressResult(
+        String step,
+        String expiresAt,
+        boolean hasPet,
+        String nickname,
+        String profileImageUrl
+    ) {
     }
 }

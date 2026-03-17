@@ -33,6 +33,8 @@ export interface SignupProgressResponse {
   step: string;
   expiresAt: string;
   hasPet: boolean;
+  nickname?: string | null;
+  profileImageUrl?: string | null;
 }
 
 export interface SignupStepResponse {

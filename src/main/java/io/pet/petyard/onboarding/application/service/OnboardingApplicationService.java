@@ -185,8 +185,14 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
     @Override
     public SignupProgressResult progress(SignupProgressQuery query) {
         SignupSession session = findActiveSession(query.signupToken());
-        return new SignupProgressResult(session.getStep().name(), session.getExpiresAt().toString(),
-            loadUserProfilePort.findByUserId(session.getUserId()).map(UserProfile::hasPet).orElse(false));
+        Map<String, String> metadata = decodeMetadata(session.getMetadata());
+        return new SignupProgressResult(
+            session.getStep().name(),
+            session.getExpiresAt().toString(),
+            loadUserProfilePort.findByUserId(session.getUserId()).map(UserProfile::hasPet).orElse(false),
+            metadata.get("nickname"),
+            metadata.get("profileImageUrl")
+        );
     }
 
     @Transactional
@@ -348,6 +354,26 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
             return objectMapper.writeValueAsString(payload);
         } catch (Exception ex) {
             return null;
+        }
+    }
+
+    private Map<String, String> decodeMetadata(String metadata) {
+        if (metadata == null || metadata.isBlank()) {
+            return java.util.Collections.emptyMap();
+        }
+        try {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> payload = objectMapper.readValue(metadata, Map.class);
+            Map<String, String> result = new java.util.HashMap<>();
+            if (payload.get("nickname") != null) {
+                result.put("nickname", payload.get("nickname").toString());
+            }
+            if (payload.get("profileImageUrl") != null) {
+                result.put("profileImageUrl", payload.get("profileImageUrl").toString());
+            }
+            return result;
+        } catch (Exception ex) {
+            return java.util.Collections.emptyMap();
         }
     }
 }

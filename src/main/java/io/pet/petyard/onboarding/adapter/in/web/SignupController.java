@@ -43,7 +43,13 @@ public class SignupController {
     public SignupProgressResponse progress(@RequestHeader(SIGNUP_TOKEN_HEADER) String signupToken) {
         SignupProgressUseCase.SignupProgressResult result =
             signupProgressUseCase.progress(new SignupProgressUseCase.SignupProgressQuery(signupToken));
-        return new SignupProgressResponse(result.step(), result.expiresAt(), result.hasPet());
+        return new SignupProgressResponse(
+            result.step(),
+            result.expiresAt(),
+            result.hasPet(),
+            result.nickname(),
+            result.profileImageUrl()
+        );
     }
 
     @PostMapping("/profile")
