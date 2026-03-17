@@ -8,7 +8,7 @@ import { useAuthForms } from "@/src/features/auth/hooks/useAuthForms";
 import type { AuthMode, OAuthProvider } from "@/src/features/auth/types/authTypes";
 import KakaoLoginButton from "@/src/features/auth/components/AuthEntry/KakaoLoginButton";
 import AuthEntryActions from "@/src/features/auth/components/AuthEntry/AuthEntryActions";
-import { applyOAuthResult, openOAuthPopup, openOAuthPopupWindow } from "@/src/features/auth/utils/oauthFlow";
+import { applyOAuthResult, openOAuthPopupWindow, waitForOAuthPopup } from "@/src/features/auth/utils/oauthFlow";
 import { authApi } from "@/src/features/auth/api/authApi";
 
 interface AuthPageProps {
@@ -38,8 +38,12 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
       return;
     }
     try {
-      const start = await authApi.oauthStart(provider);
-      const result = await openOAuthPopup({ authorizeUrl: start.authorizeUrl, provider });
+      const start =
+        mode === "signup"
+          ? await authApi.oauthStart(provider, { prompt: "login" })
+          : await authApi.oauthStart(provider);
+      popup.location.href = start.authorizeUrl;
+      const result = await waitForOAuthPopup({ popup, provider });
       const { nextPath: next } = applyOAuthResult(result);
       router.replace(next);
     } catch (err) {

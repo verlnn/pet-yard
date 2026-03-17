@@ -8,11 +8,7 @@ import { authApi } from "@/src/features/auth/api/authApi";
 import OnboardingLayout from "@/src/features/onboarding/components/OnboardingLayout";
 import OnboardingCard from "@/src/features/onboarding/components/OnboardingCard";
 import KakaoLoginButton from "@/src/features/onboarding/components/KakaoLoginButton";
-import {
-    applyOAuthResult, openOAuthPopup,
-    openOAuthPopupWindow,
-    waitForOAuthPopup
-} from "@/src/features/auth/utils/oauthFlow";
+import { applyOAuthResult, openOAuthPopupWindow, waitForOAuthPopup } from "@/src/features/auth/utils/oauthFlow";
 
 export default function StartPage() {
   const router = useRouter();
@@ -30,7 +26,8 @@ export default function StartPage() {
     }
     try {
       const result = await authApi.oauthStart("kakao");
-      const oauthResult = await openOAuthPopup({ authorizeUrl: result.authorizeUrl, provider: "kakao" });
+      popup.location.href = result.authorizeUrl;
+      const oauthResult = await waitForOAuthPopup({ popup, provider: "kakao" });
       const { nextPath } = applyOAuthResult(oauthResult);
       router.replace(nextPath);
     } catch (err) {

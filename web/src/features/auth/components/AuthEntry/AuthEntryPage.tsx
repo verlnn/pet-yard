@@ -5,11 +5,7 @@ import SpeechBubbleBadge from "./SpeechBubbleBadge";
 import KakaoLoginButton from "./KakaoLoginButton";
 import AuthEntryActions from "./AuthEntryActions";
 import { authApi } from "@/src/features/auth/api/authApi";
-import {
-    applyOAuthResult, openOAuthPopup,
-    openOAuthPopupWindow,
-    waitForOAuthPopup
-} from "@/src/features/auth/utils/oauthFlow";
+import { applyOAuthResult, openOAuthPopupWindow, waitForOAuthPopup } from "@/src/features/auth/utils/oauthFlow";
 import type { OAuthProvider } from "@/src/features/auth/types/authTypes";
 import { useState } from "react";
 
@@ -25,7 +21,8 @@ export default function AuthEntryPage() {
     }
     try {
       const start = await authApi.oauthStart(provider);
-      const result = await openOAuthPopup({ authorizeUrl: start.authorizeUrl, provider });
+      popup.location.href = start.authorizeUrl;
+      const result = await waitForOAuthPopup({ popup, provider });
       const { nextPath } = applyOAuthResult(result);
       window.location.assign(nextPath);
     } catch (err) {
