@@ -277,8 +277,8 @@ export function NewPostModal({
                           className="absolute left-1/2 top-1/2 select-none"
                           style={{
                             transform: `translate(-50%, -50%) translate(${activeImage?.position.x ?? 0}px, ${
-                              activeImage?.position.y ?? 0
-                            }px) scale(${baseScale * (activeImage?.scale ?? 1)})`
+                                activeImage?.position.y ?? 0
+                            }px)`
                           }}
                           draggable={false}
                         />
