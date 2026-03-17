@@ -50,6 +50,7 @@ public class PetProfile {
 
     private String intro;
 
+    @Column(columnDefinition = "text")
     private String photoUrl;
 
     @Column(name = "weight_kg")
