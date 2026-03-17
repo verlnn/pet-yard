@@ -213,6 +213,8 @@ export const authApi = {
       intro?: string | null;
       photoUrl?: string | null;
       weightKg?: number | null;
+      vaccinationComplete?: boolean | null;
+      walkSafetyChecked?: boolean | null;
     }
   ) {
     return request<PetProfile>("/api/pets", {
@@ -237,6 +239,8 @@ export const authApi = {
       intro?: string | null;
       photoUrl?: string | null;
       weightKg?: number | null;
+      vaccinationComplete?: boolean | null;
+      walkSafetyChecked?: boolean | null;
     }
   ) {
     return request<PetProfile>(`/api/pets/${id}`, {

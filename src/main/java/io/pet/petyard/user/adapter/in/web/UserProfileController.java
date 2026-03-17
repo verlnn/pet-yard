@@ -66,7 +66,9 @@ public class UserProfileController {
                 pet.getNeutered(),
                 pet.getIntro(),
                 pet.getPhotoUrl(),
-                pet.getWeightKg() == null ? null : pet.getWeightKg().doubleValue()
+                pet.getWeightKg() == null ? null : pet.getWeightKg().doubleValue(),
+                pet.getVaccinationComplete(),
+                pet.getWalkSafetyChecked()
             ))
             .toList();
 

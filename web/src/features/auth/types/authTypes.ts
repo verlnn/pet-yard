@@ -76,6 +76,8 @@ export interface PetProfile {
   intro?: string | null;
   photoUrl?: string | null;
   weightKg?: number | null;
+  vaccinationComplete?: boolean | null;
+  walkSafetyChecked?: boolean | null;
 }
 
 export interface PetBreed {

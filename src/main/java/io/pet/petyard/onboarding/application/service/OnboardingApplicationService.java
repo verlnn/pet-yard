@@ -283,6 +283,8 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
             command.neutered(),
             command.intro(),
             command.photoUrl(),
+            null,
+            null,
             null
         );
         savePetProfilePort.save(profile);

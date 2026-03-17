@@ -14,6 +14,8 @@ public record PetProfileRequest(
     Boolean neutered,
     String intro,
     String photoUrl,
-    Double weightKg
+    Double weightKg,
+    Boolean vaccinationComplete,
+    Boolean walkSafetyChecked
 ) {
 }

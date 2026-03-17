@@ -9,6 +9,8 @@ public record PetRegistrationRequest(
     @NotBlank String ownerBirth,
     String intro,
     String photoUrl,
-    Double weightKg
+    Double weightKg,
+    Boolean vaccinationComplete,
+    Boolean walkSafetyChecked
 ) {
 }

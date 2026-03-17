@@ -26,7 +26,9 @@ const emptyForm = {
   neutered: "",
   intro: "",
   photoUrl: "",
-  weightKg: ""
+  weightKg: "",
+  vaccinationComplete: "",
+  walkSafetyChecked: ""
 };
 
 const emptyVerification = {
@@ -189,7 +191,11 @@ export default function PetsPage() {
         ownerBirth: verification.ownerBirth.trim(),
         intro: form.intro || null,
         photoUrl: form.photoUrl || null,
-        weightKg: form.weightKg ? Number(form.weightKg) : null
+        weightKg: form.weightKg ? Number(form.weightKg) : null,
+        vaccinationComplete:
+          form.vaccinationComplete === "" ? null : form.vaccinationComplete === "true",
+        walkSafetyChecked:
+          form.walkSafetyChecked === "" ? null : form.walkSafetyChecked === "true"
       };
       const saved = await authApi.createPetProfile(accessToken, payload);
       setPets((prev) => [saved, ...prev]);
@@ -250,7 +256,9 @@ export default function PetsPage() {
       breed: "",
       birthDate: "",
       gender: "UNKNOWN",
-      neutered: ""
+      neutered: "",
+      vaccinationComplete: "",
+      walkSafetyChecked: ""
     }));
   };
 
@@ -267,7 +275,15 @@ export default function PetsPage() {
       neutered: pet.neutered === null || pet.neutered === undefined ? "" : String(pet.neutered),
       intro: pet.intro ?? "",
       photoUrl: pet.photoUrl ?? "",
-      weightKg: pet.weightKg ? String(pet.weightKg) : ""
+      weightKg: pet.weightKg ? String(pet.weightKg) : "",
+      vaccinationComplete:
+        pet.vaccinationComplete === null || pet.vaccinationComplete === undefined
+          ? ""
+          : String(pet.vaccinationComplete),
+      walkSafetyChecked:
+        pet.walkSafetyChecked === null || pet.walkSafetyChecked === undefined
+          ? ""
+          : String(pet.walkSafetyChecked)
     });
   };
 
@@ -295,7 +311,11 @@ export default function PetsPage() {
         neutered: editForm.neutered === "" ? null : editForm.neutered === "true",
         intro: editForm.intro || null,
         photoUrl: editForm.photoUrl || null,
-        weightKg: editForm.weightKg ? Number(editForm.weightKg) : null
+        weightKg: editForm.weightKg ? Number(editForm.weightKg) : null,
+        vaccinationComplete:
+          editForm.vaccinationComplete === "" ? null : editForm.vaccinationComplete === "true",
+        walkSafetyChecked:
+          editForm.walkSafetyChecked === "" ? null : editForm.walkSafetyChecked === "true"
       };
       const saved = await authApi.updatePetProfile(accessToken, editingPetId, payload);
       setPets((prev) => prev.map((pet) => (pet.id === saved.id ? saved : pet)));
@@ -358,9 +378,23 @@ export default function PetsPage() {
                     {genderLabel[pet.gender] ?? pet.gender} {pet.neutered ? "· 중성화 완료" : ""}
                     {pet.weightKg ? ` · 체중 ${pet.weightKg}kg` : ""}
                   </p>
-                  <div className="flex gap-2 text-sm text-ink/60">
-                    <BadgeCheck className="h-4 w-4" /> 예방접종 완료
-                    <Shield className="ml-2 h-4 w-4" /> 산책 안전 필터 적용
+                  <div className="flex flex-wrap gap-2 text-sm text-ink/60">
+                    <span className="inline-flex items-center gap-2">
+                      <BadgeCheck className="h-4 w-4" />
+                      {pet.vaccinationComplete === true
+                        ? "예방접종 완료"
+                        : pet.vaccinationComplete === false
+                        ? "예방접종 미완료"
+                        : "예방접종 미확인"}
+                    </span>
+                    <span className="inline-flex items-center gap-2">
+                      <Shield className="h-4 w-4" />
+                      {pet.walkSafetyChecked === true
+                        ? "산책 안전 확인"
+                        : pet.walkSafetyChecked === false
+                        ? "산책 안전 미확인"
+                        : "산책 안전 미설정"}
+                    </span>
                   </div>
                   <div className="flex justify-end">
                     <button
@@ -465,6 +499,34 @@ export default function PetsPage() {
                             <option value="">선택 안함</option>
                             <option value="true">완료</option>
                             <option value="false">미완료</option>
+                          </select>
+                        </label>
+                        <label className="text-sm text-ink/70">
+                          예방접종
+                          <select
+                            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                            value={editForm.vaccinationComplete}
+                            onChange={(event) =>
+                              setEditForm((prev) => ({ ...prev, vaccinationComplete: event.target.value }))
+                            }
+                          >
+                            <option value="">미설정</option>
+                            <option value="true">완료</option>
+                            <option value="false">미완료</option>
+                          </select>
+                        </label>
+                        <label className="text-sm text-ink/70">
+                          산책 안전
+                          <select
+                            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                            value={editForm.walkSafetyChecked}
+                            onChange={(event) =>
+                              setEditForm((prev) => ({ ...prev, walkSafetyChecked: event.target.value }))
+                            }
+                          >
+                            <option value="">미설정</option>
+                            <option value="true">확인</option>
+                            <option value="false">미확인</option>
                           </select>
                         </label>
                       </div>
@@ -677,19 +739,47 @@ export default function PetsPage() {
                               <option value="UNKNOWN">모름</option>
                             </select>
                           </label>
-                          <label className="text-sm text-ink/70">
-                            중성화
-                            <select
-                              className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
-                              value={form.neutered}
-                              onChange={(event) => setForm((prev) => ({ ...prev, neutered: event.target.value }))}
-                              disabled
-                            >
-                              <option value="">선택 안함</option>
-                              <option value="true">완료</option>
-                              <option value="false">미완료</option>
-                            </select>
-                          </label>
+                        <label className="text-sm text-ink/70">
+                          중성화
+                          <select
+                            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                            value={form.neutered}
+                            onChange={(event) => setForm((prev) => ({ ...prev, neutered: event.target.value }))}
+                            disabled
+                          >
+                            <option value="">선택 안함</option>
+                            <option value="true">완료</option>
+                            <option value="false">미완료</option>
+                          </select>
+                        </label>
+                        <label className="text-sm text-ink/70">
+                          예방접종
+                          <select
+                            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                            value={form.vaccinationComplete}
+                            onChange={(event) =>
+                              setForm((prev) => ({ ...prev, vaccinationComplete: event.target.value }))
+                            }
+                          >
+                            <option value="">미설정</option>
+                            <option value="true">완료</option>
+                            <option value="false">미완료</option>
+                          </select>
+                        </label>
+                        <label className="text-sm text-ink/70">
+                          산책 안전
+                          <select
+                            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                            value={form.walkSafetyChecked}
+                            onChange={(event) =>
+                              setForm((prev) => ({ ...prev, walkSafetyChecked: event.target.value }))
+                            }
+                          >
+                            <option value="">미설정</option>
+                            <option value="true">확인</option>
+                            <option value="false">미확인</option>
+                          </select>
+                        </label>
                         </div>
                         <label className="text-sm text-ink/70">
                           소개

@@ -84,7 +84,9 @@ public class PetProfileController {
             result.neutered(),
             request.intro(),
             request.photoUrl(),
-            request.weightKg() == null ? null : BigDecimal.valueOf(request.weightKg())
+            request.weightKg() == null ? null : BigDecimal.valueOf(request.weightKg()),
+            request.vaccinationComplete(),
+            request.walkSafetyChecked()
         );
 
         PetProfile saved = savePetProfilePort.save(profile);
@@ -99,7 +101,9 @@ public class PetProfileController {
             saved.getNeutered(),
             saved.getIntro(),
             saved.getPhotoUrl(),
-            saved.getWeightKg() == null ? null : saved.getWeightKg().doubleValue()
+            saved.getWeightKg() == null ? null : saved.getWeightKg().doubleValue(),
+            saved.getVaccinationComplete(),
+            saved.getWalkSafetyChecked()
         );
     }
 
@@ -122,7 +126,9 @@ public class PetProfileController {
             request.neutered(),
             request.intro(),
             request.photoUrl(),
-            request.weightKg() == null ? null : BigDecimal.valueOf(request.weightKg())
+            request.weightKg() == null ? null : BigDecimal.valueOf(request.weightKg()),
+            request.vaccinationComplete(),
+            request.walkSafetyChecked()
         );
 
         PetProfile saved = savePetProfilePort.save(profile);
@@ -137,7 +143,9 @@ public class PetProfileController {
             saved.getNeutered(),
             saved.getIntro(),
             saved.getPhotoUrl(),
-            saved.getWeightKg() == null ? null : saved.getWeightKg().doubleValue()
+            saved.getWeightKg() == null ? null : saved.getWeightKg().doubleValue(),
+            saved.getVaccinationComplete(),
+            saved.getWalkSafetyChecked()
         );
     }
 

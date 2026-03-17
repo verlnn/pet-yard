@@ -56,6 +56,12 @@ public class PetProfile {
     @Column(name = "weight_kg")
     private BigDecimal weightKg;
 
+    @Column(name = "vaccination_complete")
+    private Boolean vaccinationComplete;
+
+    @Column(name = "walk_safety_checked")
+    private Boolean walkSafetyChecked;
+
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
@@ -66,7 +72,8 @@ public class PetProfile {
     }
 
     public PetProfile(Long userId, String name, PetSpecies species, String breed, LocalDate birthDate, String ageGroup,
-                      PetGender gender, Boolean neutered, String intro, String photoUrl, BigDecimal weightKg) {
+                      PetGender gender, Boolean neutered, String intro, String photoUrl, BigDecimal weightKg,
+                      Boolean vaccinationComplete, Boolean walkSafetyChecked) {
         this.userId = userId;
         this.name = name;
         this.species = species;
@@ -78,6 +85,8 @@ public class PetProfile {
         this.intro = intro;
         this.photoUrl = photoUrl;
         this.weightKg = weightKg;
+        this.vaccinationComplete = vaccinationComplete;
+        this.walkSafetyChecked = walkSafetyChecked;
     }
 
     @PrePersist
@@ -140,6 +149,14 @@ public class PetProfile {
         return weightKg;
     }
 
+    public Boolean getVaccinationComplete() {
+        return vaccinationComplete;
+    }
+
+    public Boolean getWalkSafetyChecked() {
+        return walkSafetyChecked;
+    }
+
     public void updateFrom(
         String name,
         PetSpecies species,
@@ -150,7 +167,9 @@ public class PetProfile {
         Boolean neutered,
         String intro,
         String photoUrl,
-        BigDecimal weightKg
+        BigDecimal weightKg,
+        Boolean vaccinationComplete,
+        Boolean walkSafetyChecked
     ) {
         this.name = name;
         this.species = species;
@@ -162,5 +181,7 @@ public class PetProfile {
         this.intro = intro;
         this.photoUrl = photoUrl;
         this.weightKg = weightKg;
+        this.vaccinationComplete = vaccinationComplete;
+        this.walkSafetyChecked = walkSafetyChecked;
     }
 }
