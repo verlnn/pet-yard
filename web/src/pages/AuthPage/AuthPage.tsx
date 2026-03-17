@@ -56,11 +56,7 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
       return;
     }
     try {
-        console.log('Mode >>> ', mode)
-      const start = await authApi.oauthStart(
-        provider,
-        mode === "signup" ? { prompt: "login" } : undefined
-      );
+      const start = await authApi.oauthStart(provider);
       const result = await openOAuthPopup({ authorizeUrl: start.authorizeUrl, provider });
       const { nextPath: next } = applyOAuthResult(result);
       router.replace(next);
