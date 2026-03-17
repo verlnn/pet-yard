@@ -12,6 +12,7 @@ import { authApi } from "@/src/features/auth/api/authApi";
 
 const links = [
   { href: "/feed", label: "피드", icon: PawPrint },
+  { href: "/my-feed", label: "내 피드", icon: PawPrint },
   { href: "/walks", label: "산책", icon: Compass },
   { href: "/boarding", label: "위탁", icon: HeartHandshake },
   { href: "/knowledge", label: "지식", icon: Shield }

@@ -2,9 +2,15 @@ package io.pet.petyard.onboarding.adapter.in.web;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.pet.petyard.auth.application.port.out.LoadUserPort;
+import io.pet.petyard.auth.application.service.LoginLogService;
+import io.pet.petyard.auth.domain.model.User;
+import io.pet.petyard.auth.jwt.AccessClaims;
+import io.pet.petyard.auth.jwt.JwtTokenProvider;
 import io.pet.petyard.common.ApiException;
 import io.pet.petyard.onboarding.application.port.in.OAuthCallbackUseCase;
 import io.pet.petyard.onboarding.application.port.in.OAuthStartUseCase;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -25,12 +31,21 @@ public class OAuthController {
 
     private final OAuthStartUseCase oAuthStartUseCase;
     private final OAuthCallbackUseCase oAuthCallbackUseCase;
+    private final JwtTokenProvider tokenProvider;
+    private final LoadUserPort loadUserPort;
+    private final LoginLogService loginLogService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public OAuthController(OAuthStartUseCase oAuthStartUseCase,
-                           OAuthCallbackUseCase oAuthCallbackUseCase) {
+                           OAuthCallbackUseCase oAuthCallbackUseCase,
+                           JwtTokenProvider tokenProvider,
+                           LoadUserPort loadUserPort,
+                           LoginLogService loginLogService) {
         this.oAuthStartUseCase = oAuthStartUseCase;
         this.oAuthCallbackUseCase = oAuthCallbackUseCase;
+        this.tokenProvider = tokenProvider;
+        this.loadUserPort = loadUserPort;
+        this.loginLogService = loginLogService;
     }
 
     @PostMapping("/{provider}/start")
@@ -48,7 +63,8 @@ public class OAuthController {
                                       @RequestParam String code,
                                       @RequestParam String state,
                                       @RequestParam(required = false) String redirectUri,
-                                      @RequestHeader(value = "Accept", required = false) String accept) {
+                                      @RequestHeader(value = "Accept", required = false) String accept,
+                                      HttpServletRequest httpRequest) {
         boolean wantsHtml = redirectUri == null || (accept != null && accept.contains(MediaType.TEXT_HTML_VALUE));
         log.info("OAuth callback provider={}, state={}, redirectUri={}, accept={}, wantsHtml={}, codePrefix={}",
             provider, state, redirectUri, accept, wantsHtml, safePrefix(code, 10));
@@ -57,6 +73,7 @@ public class OAuthController {
                 .handle(new OAuthCallbackUseCase.OAuthCallbackCommand(provider, code, state, redirectUri));
             OAuthCallbackResponse response = new OAuthCallbackResponse(result.status(), result.signupToken(),
                 result.nextStep(), result.accessToken(), result.refreshToken());
+            recordSocialLoginIfNeeded(httpRequest, response);
             log.info("OAuth callback success provider={}, status={}, nextStep={}",
                 provider, result.status(), result.nextStep());
             if (wantsHtml) {
@@ -132,5 +149,21 @@ public class OAuthController {
         }
         int end = Math.min(value.length(), max);
         return value.substring(0, end);
+    }
+
+    private void recordSocialLoginIfNeeded(HttpServletRequest request, OAuthCallbackResponse response) {
+        if (!"LOGIN".equals(response.status()) || response.accessToken() == null) {
+            return;
+        }
+        try {
+            AccessClaims claims = tokenProvider.validateAndParseAccessToken(response.accessToken());
+            User user = loadUserPort.findById(claims.userId()).orElse(null);
+            if (user == null) {
+                return;
+            }
+            loginLogService.recordSuccess(request, user.getEmail(), user.getId());
+        } catch (Exception ex) {
+            log.warn("Failed to record oauth login log", ex);
+        }
     }
 }

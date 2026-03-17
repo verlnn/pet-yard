@@ -11,6 +11,7 @@ import io.pet.petyard.auth.application.port.in.SignUpUseCase;
 import io.pet.petyard.auth.application.port.in.VerifyEmailUseCase;
 import io.pet.petyard.auth.application.service.LoginLogService;
 import io.pet.petyard.auth.adapter.out.persistence.UserRepository;
+import io.pet.petyard.auth.domain.model.User;
 import io.pet.petyard.auth.security.AuthPrincipal;
 import io.pet.petyard.common.ErrorCode;
 
@@ -95,7 +96,7 @@ public class AuthController {
         try {
             AuthTokens tokens = loginUseCase.login(new LoginUseCase.LoginCommand(request.email(), request.password()));
             Long userId = userRepository.findByEmail(request.email())
-                .map(user -> user.getId())
+                .map(User::getId)
                 .orElse(null);
             loginLogService.recordSuccess(httpRequest, request.email(), userId);
             return new TokenResponse(tokens.accessToken(), tokens.refreshToken());
