@@ -1,4 +1,4 @@
-# PetYard (멍냥마당)
+# 🐾 PetYard (멍냥마당)
 
 반려 생활을 위한 커뮤니티/산책/돌봄 플랫폼을 목표로 하는 웹 프로젝트입니다.
 
@@ -8,50 +8,73 @@
 - DB Migration: Flyway
 - Test: JUnit, MockMvc, (향후 Vitest/Playwright)
 
-## Backend Run
-1. 환경 변수 설정
+
+---
+
+
+## 🧱 Architecture
 
 ```
-DB_URL=jdbc:postgresql://localhost:5432/petyard
-DB_USERNAME=petyard
-DB_PASSWORD=petyard
+EC2
+ └ docker-compose
+    ├ web (Next.js)
+    ├ api (Server - Spring)
+    └ db (PostgreSQL - official image)
 ```
 
-2. 실행
 
-```
-./gradlew bootRun
+---
+
+## 🐳 docker-compose.yml 예시
+
+```yaml
+version: "3.8"
+
+services:
+  web:
+    image: petyard-web-image
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+  api:
+    image: petyard-server-image
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: verlnn
+      POSTGRES_PASSWORD: qwer123@
+      POSTGRES_DB: petyard
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:
 ```
 
-## Frontend Run
-1. 의존성 설치
+---
 
-```
-cd web
-npm install
-```
 
-2. 개발 서버 실행
+## 🏗️ 이미지 구성
 
-```
-npm run dev
-```
+### 1. petyard-web-image
+- Next.js 기반
+- 프론트엔드 서버
 
-## Tests
-```
-./gradlew test
-```
+### 2. petyard-server-image
+- Java (Spring) 또는 Node API 서버
 
-## Docs
-- `docs/backend/auth-architecture.md`
-- `docs/backend/auth-api.md`
-- `docs/backend/auth-security.md`
-- `docs/backend/auth-testing.md`
-- `docs/backend/auth-email.md`
-- `docs/database/auth-schema.md`
-- `docs/database/migration-guide.md`
-- `docs/frontend/auth-pages.md`
-- `docs/frontend/routing-guard.md`
-- `docs/frontend/component-structure.md`
-- `docs/testing/strategy.md`
-- `docs/implementation-audit.md`
+### 3. PostgreSQL
+- 공식 이미지 사용 (`postgres:15`)
+
+---
+
+
