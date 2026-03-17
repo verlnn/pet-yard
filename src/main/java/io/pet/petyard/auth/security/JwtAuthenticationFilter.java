@@ -1,5 +1,6 @@
 package io.pet.petyard.auth.security;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.pet.petyard.auth.jwt.AccessClaims;
 import io.pet.petyard.auth.jwt.JwtTokenProvider;
@@ -12,6 +13,10 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.time.Duration;
+import java.time.Instant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -19,6 +24,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
     private final JwtTokenProvider tokenProvider;
     private final ErrorResponseWriter errorResponseWriter;
 
@@ -40,6 +46,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             AccessClaims payload = tokenProvider.validateAndParseAccessToken(token);
             AuthPrincipal principal = new AuthPrincipal(payload.userId(), payload.tier());
+            long remainingSeconds = Duration.between(Instant.now(), payload.expiresAt()).getSeconds();
+            log.info("Access token remaining: {}s (uid={}, path={})",
+                Math.max(remainingSeconds, 0),
+                payload.userId(),
+                request.getRequestURI());
 
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                 principal,
@@ -51,6 +62,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
         } catch (JwtException ex) {
+            log.error("[ ERROR ] --> {}", ex.getMessage());
             errorResponseWriter.write(request, response, HttpServletResponse.SC_UNAUTHORIZED,
                 ErrorCode.INVALID_TOKEN);
         }

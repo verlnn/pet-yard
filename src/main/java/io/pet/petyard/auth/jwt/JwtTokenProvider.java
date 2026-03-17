@@ -65,7 +65,8 @@ public class JwtTokenProvider {
             }
 
             UserTier tier = UserTier.valueOf(tierName);
-            return new AccessClaims(uid.longValue(), tier);
+            Instant expiresAt = claims.getExpiration().toInstant();
+            return new AccessClaims(uid.longValue(), tier, expiresAt);
         } catch (IllegalArgumentException ex) {
             throw new JwtException(ErrorCode.INVALID_TOKEN.message(), ex);
         }

@@ -18,6 +18,8 @@ import type {
 } from "../types/authTypes";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
+const REFRESH_PATH = "/api/auth/refresh";
+let refreshInFlight: Promise<TokenResponse> | null = null;
 
 export class ApiError extends Error {
   readonly code?: string;
@@ -31,6 +33,37 @@ export class ApiError extends Error {
   }
 }
 
+function cloneInit(init?: RequestInit): RequestInit | undefined {
+  if (!init) return undefined;
+  return {
+    ...init,
+    headers: new Headers(init.headers ?? {})
+  };
+}
+
+function setAuthHeader(init: RequestInit | undefined, accessToken: string) {
+  if (!init) return;
+  const headers = new Headers(init.headers ?? {});
+  headers.set("Authorization", `Bearer ${accessToken}`);
+  init.headers = headers;
+}
+
+async function refreshTokens(): Promise<TokenResponse> {
+  if (!refreshInFlight) {
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (!refreshToken) {
+      throw new ApiError("Missing refresh token", 401, "REFRESH_TOKEN_NOT_FOUND");
+    }
+    refreshInFlight = request<TokenResponse>(REFRESH_PATH, {
+      method: "POST",
+      body: JSON.stringify({ refreshToken })
+    }).finally(() => {
+      refreshInFlight = null;
+    });
+  }
+  return refreshInFlight;
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const headers = new Headers(init?.headers ?? {});
   if (!headers.has("Content-Type") && !(init?.body instanceof FormData)) {
@@ -42,6 +75,24 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   });
 
   if (!response.ok) {
+    if (response.status === 401 && path !== REFRESH_PATH) {
+      try {
+        const tokens = await refreshTokens();
+        localStorage.setItem("accessToken", tokens.accessToken);
+        localStorage.setItem("refreshToken", tokens.refreshToken);
+        const retryInit = cloneInit(init);
+        setAuthHeader(retryInit, tokens.accessToken);
+        return request<T>(path, retryInit);
+      } catch (error) {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        document.cookie = "accessToken=; path=/; max-age=0";
+        if (typeof window !== "undefined") {
+          window.location.href = "/login";
+        }
+        throw error;
+      }
+    }
     const contentType = response.headers.get("Content-Type") ?? "";
     if (contentType.includes("application/json")) {
       const payload = (await response.json()) as { message?: string; code?: string };
@@ -91,6 +142,12 @@ export const authApi = {
   },
   logout(refreshToken: string) {
     return request<void>("/api/auth/logout", {
+      method: "POST",
+      body: JSON.stringify({ refreshToken })
+    });
+  },
+  refresh(refreshToken: string) {
+    return request<TokenResponse>(REFRESH_PATH, {
       method: "POST",
       body: JSON.stringify({ refreshToken })
     });
