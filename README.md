@@ -78,3 +78,66 @@ volumes:
 ---
 
 
+
+## 🚀 배포 흐름
+
+### 1. 이미지 빌드
+
+```bash
+docker build -t petyard-web-image ./web
+docker build -t petyard-server-image .
+```
+
+---
+
+### 2. compose 실행
+
+```bash
+docker compose up -d
+```
+
+---
+
+### 3.1 EC2로 파일 옮기기
+
+```bash
+docker save -o petyard-server-image.tar petyard-server-image
+
+scp -i ~/???.pem ~/petyard-server-image.tar ubuntu@<EC2_IP>:~ 
+
+docker load -i petyard-server-image.tar
+```
+
+---
+
+### 3.2 Docker Hub
+
+```bash
+
+## Docker 로그인
+docker login
+
+
+
+# local
+./gradlew clean build
+
+docker buildx build \
+  --platform linux/amd64 \
+  -t verlnnennn/petyard-server-image:ec2-amd64-v1 \
+  --push \
+  .
+
+# ec2
+# docker-compose.yml 태그를 ec2-amd64-v3로 수정
+docker compose down
+docker compose pull
+docker compose up -d
+docker logs -f petyard-server
+
+
+## Log
+docker logs -f --tail 300 petyard-server
+```
+
+---

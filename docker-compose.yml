@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15
+    container_name: petyard-db
+    environment:
+      POSTGRES_USER: verlnn
+      POSTGRES_PASSWORD: qwer123@
+      POSTGRES_DB: petyard
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  server:
+    image: verlnnennn/petyard-server-image:ec2-amd64-v3
+    container_name: petyard-server
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    env_file:
+      - .env.release
+    environment:
+      SPRING_PROFILES_ACTIVE: release
+      DB_URL: jdbc:postgresql://db:5432/petyard
+      DB_USERNAME: verlnn
+      DB_PASSWORD: qwer123@
+    restart: always
+
+volumes:
+  db-data:
