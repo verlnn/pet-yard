@@ -1,14 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { authInputClass, authPrimaryButtonClass } from "../authStyles";
 
 interface LoginFormProps {
   onSubmit: (email: string, password: string) => void;
   loading?: boolean;
 }
-
-const inputClassName =
-  "w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10";
 
 export default function LoginForm({ onSubmit, loading }: LoginFormProps) {
   const [email, setEmail] = useState("");
@@ -31,25 +29,25 @@ export default function LoginForm({ onSubmit, loading }: LoginFormProps) {
   };
 
   return (
-    <form className="space-y-4" onSubmit={handleSubmit}>
-      <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+    <form className="space-y-5" onSubmit={handleSubmit}>
+      <label className="flex flex-col gap-2 text-xs font-semibold text-slate-500">
         이메일
         <input
           type="email"
-          className={inputClassName}
+          className={authInputClass}
           aria-label="이메일"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          placeholder="you@pet-yard.com"
+          placeholder="you@meongnyang.com"
           required
         />
       </label>
-      <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+      <label className="flex flex-col gap-2 text-xs font-semibold text-slate-500">
         비밀번호
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 rounded-2xl border border-slate-200/70 bg-white/90 p-1.5 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.5)]">
           <input
             type={showPassword ? "text" : "password"}
-            className={inputClassName}
+            className="h-11 w-full bg-transparent px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none"
             aria-label="비밀번호"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
@@ -58,7 +56,7 @@ export default function LoginForm({ onSubmit, loading }: LoginFormProps) {
           />
           <button
             type="button"
-            className="whitespace-nowrap rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-500 transition hover:border-blue-200 hover:text-blue-600"
+            className="whitespace-nowrap rounded-xl bg-slate-100 px-3 py-2 text-[11px] font-semibold text-slate-500 transition hover:bg-slate-200/70 hover:text-ink"
             onClick={() => setShowPassword((prev) => !prev)}
           >
             {showPassword ? "숨기기" : "보기"}
@@ -67,7 +65,7 @@ export default function LoginForm({ onSubmit, loading }: LoginFormProps) {
       </label>
       {error && <p className="text-sm text-rose-600">{error}</p>}
       <button
-        className="w-full rounded-2xl bg-ink px-4 py-3 text-sm font-semibold text-sand shadow-sm transition hover:bg-ink/90 disabled:cursor-not-allowed disabled:bg-ink/40"
+        className={authPrimaryButtonClass}
         type="submit"
         disabled={loading}
       >

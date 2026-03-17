@@ -15,7 +15,7 @@ export default function KakaoLoginButton({ onClick, disabled }: KakaoLoginButton
       disabled={disabled}
       aria-label="카카오 로그인"
       aria-busy={disabled}
-      className="h-12 w-full overflow-hidden rounded-[12px] shadow-sm disabled:cursor-not-allowed"
+      className="h-14 w-full overflow-hidden rounded-2xl bg-transparent transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
     >
       <img
         src={KAKAO_BUTTON_SRC}

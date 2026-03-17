@@ -1,14 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { authInputClass, authPrimaryButtonClass } from "../authStyles";
 
 interface SignupFormProps {
   onSubmit: (email: string, password: string) => void;
   loading?: boolean;
 }
-
-const inputClassName =
-  "w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10";
 
 export default function SignupForm({ onSubmit, loading }: SignupFormProps) {
   const [email, setEmail] = useState("");
@@ -35,24 +33,24 @@ export default function SignupForm({ onSubmit, loading }: SignupFormProps) {
   };
 
   return (
-    <form className="space-y-4" onSubmit={handleSubmit}>
-      <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+    <form className="space-y-5" onSubmit={handleSubmit}>
+      <label className="flex flex-col gap-2 text-xs font-semibold text-slate-500">
         이메일
         <input
           type="email"
-          className={inputClassName}
+          className={authInputClass}
           aria-label="이메일"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          placeholder="you@pet-yard.com"
+          placeholder="you@meongnyang.com"
           required
         />
       </label>
-      <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+      <label className="flex flex-col gap-2 text-xs font-semibold text-slate-500">
         비밀번호
         <input
           type="password"
-          className={inputClassName}
+          className={authInputClass}
           aria-label="비밀번호"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
@@ -60,11 +58,11 @@ export default function SignupForm({ onSubmit, loading }: SignupFormProps) {
           required
         />
       </label>
-      <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+      <label className="flex flex-col gap-2 text-xs font-semibold text-slate-500">
         비밀번호 확인
         <input
           type="password"
-          className={inputClassName}
+          className={authInputClass}
           aria-label="비밀번호 확인"
           value={confirmPassword}
           onChange={(event) => setConfirmPassword(event.target.value)}
@@ -74,7 +72,7 @@ export default function SignupForm({ onSubmit, loading }: SignupFormProps) {
       </label>
       {error && <p className="text-sm text-rose-600">{error}</p>}
       <button
-        className="w-full rounded-2xl bg-ink px-4 py-3 text-sm font-semibold text-sand shadow-sm transition hover:bg-ink/90 disabled:cursor-not-allowed disabled:bg-ink/40"
+        className={authPrimaryButtonClass}
         type="submit"
         disabled={loading}
       >

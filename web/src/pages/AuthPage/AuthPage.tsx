@@ -2,23 +2,13 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
 import AuthLayout from "@/src/features/auth/components/AuthLayout/AuthLayout";
 import AuthCard from "@/src/features/auth/components/AuthCard/AuthCard";
-import LoginForm from "@/src/features/auth/components/LoginForm/LoginForm";
-import SignupForm from "@/src/features/auth/components/SignupForm/SignupForm";
-import VerifyEmailForm from "@/src/features/auth/components/VerifyEmailForm/VerifyEmailForm";
 import { useAuthForms } from "@/src/features/auth/hooks/useAuthForms";
 import type { AuthMode, OAuthProvider } from "@/src/features/auth/types/authTypes";
 import KakaoLoginButton from "@/src/features/auth/components/AuthEntry/KakaoLoginButton";
-import AuthDivider from "@/src/features/auth/components/AuthEntry/AuthDivider";
 import AuthEntryActions from "@/src/features/auth/components/AuthEntry/AuthEntryActions";
-import {
-    applyOAuthResult, openOAuthPopup,
-    openOAuthPopupWindow,
-    waitForOAuthPopup
-} from "@/src/features/auth/utils/oauthFlow";
+import { applyOAuthResult, openOAuthPopup, openOAuthPopupWindow } from "@/src/features/auth/utils/oauthFlow";
 import { authApi } from "@/src/features/auth/api/authApi";
 
 interface AuthPageProps {
@@ -35,15 +25,7 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
     title,
     subtitle,
     message,
-    error,
-    loading,
-    handleLogin,
-    handleSignup,
-    handleVerify,
-    handleResend,
-    handleExtend,
-    remainingSeconds,
-    extendCooldownSeconds
+    error
   } = useAuthForms({ mode, onModeChange: setMode, nextPath });
 
   const displayError = error ?? socialError;
@@ -65,47 +47,18 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
     }
   };
 
-  const helperLink =
-    mode === "login" ? (
-      <p className="text-center text-sm text-slate-500">
-        아직 계정이 없나요?{" "}
-        <Link href="/signup" className="font-semibold text-ink hover:text-ink/80">
-          회원가입
-        </Link>
-      </p>
-    ) : mode === "signup" ? (
-      <p className="text-center text-sm text-slate-500">
-        이미 계정이 있나요?{" "}
-        <Link href="/login" className="font-semibold text-ink hover:text-ink/80">
-          로그인
-        </Link>
-      </p>
-    ) : (
-      <p className="text-center text-sm text-slate-500">
-        계정으로 돌아가기{" "}
-        <Link href="/login" className="font-semibold text-ink hover:text-ink/80">
-          로그인
-        </Link>
-      </p>
-    );
-
   return (
     <div className="min-h-screen">
       <AuthLayout
         brand={
-          <div className="flex items-center justify-between text-slate-600">
-            <Link href="/" className="flex items-center gap-3">
-              <Image
-                src="/images/brand/petyard-symbol.png"
-                alt="멍냥마당 로고"
-                width={40}
-                height={40}
-                className="h-10 w-10"
-                priority
-              />
-              <span className="text-lg font-semibold text-slate-900">멍냥마당</span>
-            </Link>
-            <span className="text-xs">PetYard</span>
+          <div className="flex w-full max-w-md items-center justify-between text-white/70">
+            <div className="flex items-center gap-3">
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/10 text-xs font-semibold text-white/70">
+                M
+              </span>
+              <span className="text-sm font-semibold text-white">멍냥마당</span>
+            </div>
+            <span className="text-xs tracking-[0.3em] text-white/40">PetYard</span>
           </div>
         }
         card={
@@ -115,31 +68,24 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
             message={message}
             error={displayError}
           >
-            {mode !== "verify" && (
-              <div className="space-y-5">
-                <KakaoLoginButton onClick={() => handleOAuthLogin("kakao")} />
-                <AuthDivider />
-                <AuthEntryActions
-                  onGoogleLogin={() => handleOAuthLogin("google")}
-                  onAppleLogin={() => handleOAuthLogin("apple")}
-                  onNaverLogin={() => handleOAuthLogin("naver")}
-                />
+            <div className="space-y-6">
+              <KakaoLoginButton onClick={() => handleOAuthLogin("kakao")} />
+              <div className="rounded-2xl border border-white/15 bg-white/5 px-4 py-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-white/60">
+                  다른 계정으로 계속
+                </p>
+                <div className="mt-4">
+                  <AuthEntryActions
+                    onGoogleLogin={() => handleOAuthLogin("google")}
+                    onAppleLogin={() => handleOAuthLogin("apple")}
+                    onNaverLogin={() => handleOAuthLogin("naver")}
+                  />
+                </div>
               </div>
-            )}
-            {mode === "login" && <LoginForm onSubmit={handleLogin} loading={loading} />}
-            {mode === "signup" && <SignupForm onSubmit={handleSignup} loading={loading} />}
-            {mode === "verify" && (
-              <VerifyEmailForm
-                onVerify={handleVerify}
-                onResend={handleResend}
-                onExtend={handleExtend}
-                remainingSeconds={remainingSeconds}
-                extendCooldownSeconds={extendCooldownSeconds}
-                loading={loading}
-              />
-            )}
-            {mode !== "verify" && helperLink}
-            {mode === "verify" && <div className="pt-2">{helperLink}</div>}
+              <p className="text-center text-sm text-white/60">
+                멍냥마당은 소셜 계정으로만 가입 및 로그인할 수 있어요.
+              </p>
+            </div>
           </AuthCard>
         }
       />

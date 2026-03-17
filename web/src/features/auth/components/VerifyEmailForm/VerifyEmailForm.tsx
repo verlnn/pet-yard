@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { authGhostButtonClass, authInputClass, authPrimaryButtonClass } from "../authStyles";
 
 interface VerifyEmailFormProps {
   onVerify: (code: string) => void;
@@ -10,9 +11,6 @@ interface VerifyEmailFormProps {
   remainingSeconds?: number | null;
   extendCooldownSeconds?: number;
 }
-
-const inputClassName =
-  "w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10";
 
 function formatTime(seconds: number | null | undefined) {
   if (seconds === null || seconds === undefined) return "--:--";
@@ -50,12 +48,12 @@ export default function VerifyEmailForm({
   };
 
   return (
-    <form className="space-y-4" onSubmit={handleSubmit}>
-      <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+    <form className="space-y-5" onSubmit={handleSubmit}>
+      <label className="flex flex-col gap-2 text-xs font-semibold text-slate-500">
         인증 코드
         <input
           type="text"
-          className={inputClassName}
+          className={authInputClass}
           aria-label="인증 코드"
           value={code}
           onChange={(event) => setCode(event.target.value)}
@@ -66,19 +64,19 @@ export default function VerifyEmailForm({
       </label>
       {error && <p className="text-sm text-rose-600">{error}</p>}
       <button
-        className="w-full rounded-2xl bg-ink px-4 py-3 text-sm font-semibold text-sand shadow-sm transition hover:bg-ink/90 disabled:cursor-not-allowed disabled:bg-ink/40"
+        className={authPrimaryButtonClass}
         type="submit"
         disabled={loading}
       >
         {loading ? "인증 중..." : "이메일 인증"}
       </button>
-      <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500">
+      <div className="flex items-center justify-between rounded-2xl border border-slate-200/70 bg-white/80 px-4 py-3 text-sm text-slate-500 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.4)]">
         <span>남은 시간</span>
         <span className="font-semibold text-slate-900">{formatTime(remainingSeconds)}</span>
       </div>
       <button
         type="button"
-        className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-600 transition hover:border-blue-200 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-60"
+        className={authGhostButtonClass}
         onClick={onExtend}
         disabled={loading || remainingSeconds === null || isExpired || isExtendCooling}
       >
@@ -101,7 +99,7 @@ export default function VerifyEmailForm({
       {isExpired && (
         <button
           type="button"
-          className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-600 transition hover:border-blue-200 hover:text-blue-600"
+          className={authGhostButtonClass}
           onClick={onResend}
           disabled={loading}
         >

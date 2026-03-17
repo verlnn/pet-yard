@@ -8,11 +8,11 @@ interface AuthTabsProps {
 }
 
 const tabBase =
-  "flex-1 rounded-full px-4 py-2 text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-ember/40";
+  "flex-1 rounded-full px-4 py-2.5 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-ink/30";
 
 export default function AuthTabs({ mode, onChange }: AuthTabsProps) {
   return (
-    <div className="flex gap-2 rounded-full bg-ink/5 p-1" role="tablist" aria-label="auth tabs">
+    <div className="flex gap-2 rounded-full border border-white/70 bg-white/70 p-1 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.35)]" role="tablist" aria-label="auth tabs">
       <button
         type="button"
         role="tab"
@@ -20,7 +20,7 @@ export default function AuthTabs({ mode, onChange }: AuthTabsProps) {
         className={`${tabBase} ${
           mode === "login"
             ? "bg-ink text-sand shadow-soft"
-            : "text-ink/60 hover:bg-white/70"
+            : "text-slate-500 hover:bg-white/80"
         }`}
         onClick={() => onChange("login")}
       >
@@ -33,7 +33,7 @@ export default function AuthTabs({ mode, onChange }: AuthTabsProps) {
         className={`${tabBase} ${
           mode === "signup"
             ? "bg-ink text-sand shadow-soft"
-            : "text-ink/60 hover:bg-white/70"
+            : "text-slate-500 hover:bg-white/80"
         }`}
         onClick={() => onChange("signup")}
       >

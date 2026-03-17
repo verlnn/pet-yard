@@ -17,23 +17,17 @@ const providerHandlers = {
 
 export default function AuthEntryActions(props: AuthEntryActionsProps) {
   return (
-    <div className="flex items-center justify-center gap-4">
+    <div className="flex items-center justify-center gap-8">
       {SOCIAL_PROVIDERS.map((provider, index) => (
-        <div key={provider.id} className="flex items-center gap-4">
+        <div key={provider.id} className="flex items-center gap-8">
           <SimpleSocialCircleButton
             label={provider.label}
             ariaLabel={provider.ariaLabel}
             onClick={providerHandlers[provider.id](props)}
-            backgroundClass={provider.backgroundClass}
-            foregroundClass={provider.foregroundClass}
-            iconSizeClass={provider.iconSizeClass}
             iconSrc={provider.iconSrc}
-            borderClass={provider.borderClass}
-            hoverBackgroundClass={provider.hoverBackgroundClass}
-            hoverBorderClass={provider.hoverBorderClass}
           />
           {index < SOCIAL_PROVIDERS.length - 1 && (
-            <span className="h-6 w-px bg-slate-200" aria-hidden="true" />
+            <span className="h-7 w-px rounded-full bg-white/20" aria-hidden="true" />
           )}
         </div>
       ))}
