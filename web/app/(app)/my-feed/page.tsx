@@ -10,6 +10,7 @@ import { FeedProfileHeader } from "@/components/feed/FeedProfileHeader";
 import { FeedGrid } from "@/components/feed/FeedGrid";
 import { EmptyFeedState } from "@/components/feed/EmptyFeedState";
 import { NewPostModal } from "@/components/feed/NewPostModal";
+import { PostImageCarousel } from "@/components/feed/PostImageCarousel";
 import { authApi } from "@/src/features/auth/api/authApi";
 import type { FeedPost, MyProfileResponse } from "@/src/features/auth/types/authTypes";
 
@@ -177,8 +178,9 @@ export default function MyFeedPage() {
 
   const handleCreate = async () => {
     if (!accessToken) return;
-    const primaryImageUrl = images[0]?.originalUrl ?? null;
-    if (!content.trim() && !primaryImageUrl) {
+    const imageUrls = images.map((image) => image.originalUrl);
+    const primaryImageUrl = imageUrls[0] ?? null;
+    if (!content.trim() && imageUrls.length === 0) {
       setImageError("사진 또는 글을 입력해 주세요.");
       return;
     }
@@ -188,7 +190,12 @@ export default function MyFeedPage() {
         content: content.trim() || null,
         imageUrl: primaryImageUrl
       });
-      setPosts((prev) => [created, ...prev]);
+      const createdWithImages: FeedPost = {
+        ...created,
+        imageUrl: primaryImageUrl,
+        imageUrls: imageUrls.length > 0 ? imageUrls : null
+      };
+      setPosts((prev) => [createdWithImages, ...prev]);
       resetForm();
       setModalOpen(false);
     } catch (err) {
@@ -297,7 +304,9 @@ export default function MyFeedPage() {
           <div className="w-full max-w-4xl overflow-hidden rounded-[32px] bg-white">
             <div className="grid gap-0 md:grid-cols-[1.3fr_0.7fr]">
               <div className="bg-black">
-                {selectedPost.imageUrl ? (
+                {selectedPost.imageUrls && selectedPost.imageUrls.length > 0 ? (
+                  <PostImageCarousel images={selectedPost.imageUrls} />
+                ) : selectedPost.imageUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={selectedPost.imageUrl} alt="피드 이미지" className="h-full w-full object-cover" />
                 ) : (
