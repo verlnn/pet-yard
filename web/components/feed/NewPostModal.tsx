@@ -51,7 +51,6 @@ export function NewPostModal({
   if (!open) return null;
 
   const [activeImageId, setActiveImageId] = useState<string | null>(images[0]?.id ?? null);
-  const [draggingId, setDraggingId] = useState<string | null>(null);
   const [showRatioPanel, setShowRatioPanel] = useState(false);
   const [showZoomPanel, setShowZoomPanel] = useState(false);
   const [showReorder, setShowReorder] = useState(false);
@@ -199,14 +198,9 @@ export function NewPostModal({
     onUpdateImage(activeImage.id, { scale: nextScale, position: nextPosition });
   };
 
-  const handleDragStart = (id: string) => {
-    setDraggingId(id);
-  };
-
-  const handleDrop = (id: string) => {
-    if (!draggingId || draggingId === id) return;
-    onReorderImages(draggingId, id);
-    setDraggingId(null);
+  const handleReorder = (sourceId: string, targetId: string) => {
+    if (sourceId === targetId) return;
+    onReorderImages(sourceId, targetId);
   };
 
   return (
@@ -282,9 +276,7 @@ export function NewPostModal({
                         images={images}
                         activeImageId={activeImageId}
                         onSelect={setActiveImageId}
-                        onDragStart={handleDragStart}
-                        onDragEnd={() => setDraggingId(null)}
-                        onDrop={handleDrop}
+                        onReorder={handleReorder}
                       />
                     )}
                   </FeedImageStage>
