@@ -6,14 +6,17 @@ import io.pet.petyard.pet.domain.PetGender;
 
 import java.net.URI;
 import java.time.LocalDate;
+import java.nio.charset.StandardCharsets;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+@Slf4j
 @Service
 public class AnimalRegistrationService {
 
@@ -40,8 +43,10 @@ public class AnimalRegistrationService {
             .queryParam("owner_birth", ownerBirth)
             .queryParam("_type", "json")
             .build()
+            .encode(StandardCharsets.UTF_8)
             .toUri();
 
+        log.info("URI >>> {}", uri);
         String body = restTemplate.getForObject(uri, String.class);
         if (body == null || body.isBlank()) {
             throw new ApiException(ErrorCode.PET_REGISTRATION_VERIFY_FAILED);

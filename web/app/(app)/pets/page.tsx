@@ -589,121 +589,125 @@ export default function PetsPage() {
                         )}
                       </div>
                     </div>
-                    <div className="grid gap-3 md:grid-cols-2">
-                      <label className="text-sm text-ink/70">
-                        이름
-                        <input
-                          className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
-                          value={form.name}
-                          onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
-                          disabled={verified}
-                        />
-                      </label>
-                      <label className="text-sm text-ink/70">
-                        생일
-                        <input
-                          type="date"
-                          className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
-                          value={form.birthDate}
-                          onChange={(event) => setForm((prev) => ({ ...prev, birthDate: event.target.value }))}
-                          disabled={verified}
-                        />
-                      </label>
-                      <label className="text-sm text-ink/70">
-                        체중(kg)
-                        <input
-                          type="number"
-                          step="0.1"
-                          className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
-                          value={form.weightKg}
-                          onChange={(event) => setForm((prev) => ({ ...prev, weightKg: event.target.value }))}
-                        />
-                      </label>
-                      <label className="text-sm text-ink/70">
-                        종
-                        <select
-                          className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
-                          value={form.species}
-                          onChange={(event) => setForm((prev) => ({ ...prev, species: event.target.value }))}
-                          disabled
-                        >
-                          <option value="DOG">강아지</option>
-                          <option value="CAT">고양이</option>
-                          <option value="OTHER">기타</option>
-                        </select>
-                      </label>
-                      <label className="text-sm text-ink/70 md:col-span-2">
-                        품종
-                        <select
-                          className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
-                          value={form.breed}
-                          onChange={(event) => setForm((prev) => ({ ...prev, breed: event.target.value }))}
-                          disabled={verified || form.species === "OTHER"}
-                        >
-                          <option value="">
-                            {form.species === "OTHER" ? "기타 종은 품종 선택 없음" : "선택 안함"}
-                          </option>
-                          {form.breed && !breeds.some((breed) => breed.nameKo === form.breed) && (
-                            <option value={form.breed}>{form.breed}</option>
-                          )}
-                          {breeds.map((breed) => (
-                            <option key={breed.id} value={breed.nameKo}>
-                              {breed.nameKo}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
-                      <label className="text-sm text-ink/70">
-                        성별
-                        <select
-                          className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
-                          value={form.gender}
-                          onChange={(event) => setForm((prev) => ({ ...prev, gender: event.target.value }))}
-                          disabled={verified}
-                        >
-                          <option value="MALE">수컷</option>
-                          <option value="FEMALE">암컷</option>
-                          <option value="UNKNOWN">모름</option>
-                        </select>
-                      </label>
-                      <label className="text-sm text-ink/70">
-                        중성화
-                        <select
-                          className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
-                          value={form.neutered}
-                          onChange={(event) => setForm((prev) => ({ ...prev, neutered: event.target.value }))}
-                          disabled={verified}
-                        >
-                          <option value="">선택 안함</option>
-                          <option value="true">완료</option>
-                          <option value="false">미완료</option>
-                        </select>
-                      </label>
-                    </div>
-                    <label className="text-sm text-ink/70">
-                      소개
-                      <input
-                        className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
-                        value={form.intro}
-                        onChange={(event) => setForm((prev) => ({ ...prev, intro: event.target.value }))}
-                      />
-                    </label>
-                    <div className="flex items-center gap-3">
-                      <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-xs font-semibold text-ink/70">
-                        사진 업로드
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(event) => handlePetImageUpload(event.target.files?.[0])}
-                        />
-                      </label>
-                      {form.photoUrl && <span className="text-xs text-ink/60">사진 선택됨</span>}
-                    </div>
-                    {petImageError && <p className="text-xs text-rose-500">{petImageError}</p>}
-                    <Button onClick={handlePetSubmit} disabled={savingPet || !verified}>
-                      {savingPet ? "저장 중..." : verified ? "반려동물 등록" : "등록번호 인증 필요"}
-                    </Button>
+                    {verified && (
+                      <>
+                        <div className="grid gap-3 md:grid-cols-2">
+                          <label className="text-sm text-ink/70">
+                            이름
+                            <input
+                              className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                              value={form.name}
+                              onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
+                              disabled
+                            />
+                          </label>
+                          <label className="text-sm text-ink/70">
+                            생일
+                            <input
+                              type="date"
+                              className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                              value={form.birthDate}
+                              onChange={(event) => setForm((prev) => ({ ...prev, birthDate: event.target.value }))}
+                              disabled
+                            />
+                          </label>
+                          <label className="text-sm text-ink/70">
+                            체중(kg)
+                            <input
+                              type="number"
+                              step="0.1"
+                              className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                              value={form.weightKg}
+                              onChange={(event) => setForm((prev) => ({ ...prev, weightKg: event.target.value }))}
+                            />
+                          </label>
+                          <label className="text-sm text-ink/70">
+                            종
+                            <select
+                              className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                              value={form.species}
+                              onChange={(event) => setForm((prev) => ({ ...prev, species: event.target.value }))}
+                              disabled
+                            >
+                              <option value="DOG">강아지</option>
+                              <option value="CAT">고양이</option>
+                              <option value="OTHER">기타</option>
+                            </select>
+                          </label>
+                          <label className="text-sm text-ink/70 md:col-span-2">
+                            품종
+                            <select
+                              className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                              value={form.breed}
+                              onChange={(event) => setForm((prev) => ({ ...prev, breed: event.target.value }))}
+                              disabled={form.species === "OTHER"}
+                            >
+                              <option value="">
+                                {form.species === "OTHER" ? "기타 종은 품종 선택 없음" : "선택 안함"}
+                              </option>
+                              {form.breed && !breeds.some((breed) => breed.nameKo === form.breed) && (
+                                <option value={form.breed}>{form.breed}</option>
+                              )}
+                              {breeds.map((breed) => (
+                                <option key={breed.id} value={breed.nameKo}>
+                                  {breed.nameKo}
+                                </option>
+                              ))}
+                            </select>
+                          </label>
+                          <label className="text-sm text-ink/70">
+                            성별
+                            <select
+                              className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                              value={form.gender}
+                              onChange={(event) => setForm((prev) => ({ ...prev, gender: event.target.value }))}
+                              disabled
+                            >
+                              <option value="MALE">수컷</option>
+                              <option value="FEMALE">암컷</option>
+                              <option value="UNKNOWN">모름</option>
+                            </select>
+                          </label>
+                          <label className="text-sm text-ink/70">
+                            중성화
+                            <select
+                              className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                              value={form.neutered}
+                              onChange={(event) => setForm((prev) => ({ ...prev, neutered: event.target.value }))}
+                              disabled
+                            >
+                              <option value="">선택 안함</option>
+                              <option value="true">완료</option>
+                              <option value="false">미완료</option>
+                            </select>
+                          </label>
+                        </div>
+                        <label className="text-sm text-ink/70">
+                          소개
+                          <input
+                            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                            value={form.intro}
+                            onChange={(event) => setForm((prev) => ({ ...prev, intro: event.target.value }))}
+                          />
+                        </label>
+                        <div className="flex items-center gap-3">
+                          <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-xs font-semibold text-ink/70">
+                            사진 업로드
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(event) => handlePetImageUpload(event.target.files?.[0])}
+                            />
+                          </label>
+                          {form.photoUrl && <span className="text-xs text-ink/60">사진 선택됨</span>}
+                        </div>
+                        {petImageError && <p className="text-xs text-rose-500">{petImageError}</p>}
+                        <Button onClick={handlePetSubmit} disabled={savingPet}>
+                          {savingPet ? "저장 중..." : "반려동물 등록"}
+                        </Button>
+                      </>
+                    )}
                   </>
                 )}
               </CardContent>
