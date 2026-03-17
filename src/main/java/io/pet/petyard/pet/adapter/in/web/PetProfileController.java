@@ -1,6 +1,10 @@
 package io.pet.petyard.pet.adapter.in.web;
 
 import io.pet.petyard.auth.security.AuthPrincipal;
+import io.pet.petyard.auth.application.port.out.LoadUserPort;
+import io.pet.petyard.auth.application.port.out.SaveUserPort;
+import io.pet.petyard.auth.domain.UserTier;
+import io.pet.petyard.auth.domain.model.User;
 import io.pet.petyard.common.ApiException;
 import io.pet.petyard.common.ErrorCode;
 import io.pet.petyard.pet.application.port.out.LoadPetProfilePort;
@@ -30,13 +34,19 @@ public class PetProfileController {
     private final LoadPetProfilePort loadPetProfilePort;
     private final SavePetProfilePort savePetProfilePort;
     private final AnimalRegistrationService registrationService;
+    private final LoadUserPort loadUserPort;
+    private final SaveUserPort saveUserPort;
 
     public PetProfileController(LoadPetProfilePort loadPetProfilePort,
                                 SavePetProfilePort savePetProfilePort,
-                                AnimalRegistrationService registrationService) {
+                                AnimalRegistrationService registrationService,
+                                LoadUserPort loadUserPort,
+                                SaveUserPort saveUserPort) {
         this.loadPetProfilePort = loadPetProfilePort;
         this.savePetProfilePort = savePetProfilePort;
         this.registrationService = registrationService;
+        this.loadUserPort = loadUserPort;
+        this.saveUserPort = saveUserPort;
     }
 
     @PostMapping("/verify")
@@ -90,6 +100,7 @@ public class PetProfileController {
         );
 
         PetProfile saved = savePetProfilePort.save(profile);
+        promoteTierIfNeeded(principal.userId());
         return new PetProfileResponse(
             saved.getId(),
             saved.getName(),
@@ -132,6 +143,7 @@ public class PetProfileController {
         );
 
         PetProfile saved = savePetProfilePort.save(profile);
+        promoteTierIfNeeded(principal.userId());
         return new PetProfileResponse(
             saved.getId(),
             saved.getName(),
@@ -162,6 +174,15 @@ public class PetProfileController {
             return PetGender.valueOf(raw.trim().toUpperCase());
         } catch (Exception ex) {
             throw new ApiException(ErrorCode.BAD_REQUEST);
+        }
+    }
+
+    private void promoteTierIfNeeded(Long userId) {
+        User user = loadUserPort.findById(userId)
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+        if (user.getTier() == UserTier.TIER_0) {
+            user.setTier(UserTier.TIER_1);
+            saveUserPort.save(user);
         }
     }
 }
