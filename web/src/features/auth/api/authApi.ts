@@ -1,8 +1,11 @@
 import type {
   MeResponse,
+  MyProfileResponse,
   OAuthCallbackResponse,
   OAuthStartResponse,
   OAuthProvider,
+  PetBreed,
+  PetProfile,
   SignupCompleteResponse,
   SignupProgressResponse,
   SignupResponse,
@@ -185,6 +188,46 @@ export const authApi = {
   },
   me(accessToken: string) {
     return request<MeResponse>("/api/auth/me", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+  },
+  getMyProfile(accessToken: string) {
+    return request<MyProfileResponse>("/api/users/me/profile", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+  },
+  createPetProfile(
+    accessToken: string,
+    payload: {
+      name: string;
+      species: string;
+      breed?: string | null;
+      birthDate?: string | null;
+      ageGroup?: string | null;
+      gender: string;
+      neutered?: boolean | null;
+      intro?: string | null;
+      photoUrl?: string | null;
+      weightKg?: number | null;
+    }
+  ) {
+    return request<PetProfile>("/api/pets", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      },
+      body: JSON.stringify(payload)
+    });
+  },
+  getPetBreeds(accessToken: string, species: string) {
+    const params = new URLSearchParams({ species });
+    return request<PetBreed[]>(`/api/pets/breeds?${params.toString()}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${accessToken}`
