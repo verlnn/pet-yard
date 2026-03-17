@@ -246,9 +246,10 @@ export function NewPostModal({
                 <>
                   <div
                     ref={containerRef}
-                    className={`relative overflow-hidden rounded-2xl bg-black ${
-                      showReorder ? "h-[340px]" : "h-[420px]"
-                    }`}
+                    className={`relative overflow-hidden rounded-2xl bg-black 
+                    ${showReorder ? "h-[340px]" : "h-[420px]"}
+                    ${showReorder ? "w-[340px]" : "w-[420px]"}
+                    `}
                     onPointerDown={handlePointerDown}
                     onPointerMove={handlePointerMove}
                     onPointerUp={handlePointerUp}
