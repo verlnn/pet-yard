@@ -244,142 +244,144 @@ export function NewPostModal({
             <div className="flex h-full flex-col gap-3 rounded-3xl border border-dashed border-slate-200 bg-white/80 p-4">
               {displayUrl ? (
                 <>
-                  <div
-                    ref={containerRef}
-                    className={`relative overflow-hidden rounded-2xl bg-black 
-                    ${showReorder ? "h-[340px]" : "h-[420px]"}
-                    ${showReorder ? "w-[340px]" : "w-[420px]"}
-                    `}
-                    onPointerDown={handlePointerDown}
-                    onPointerMove={handlePointerMove}
-                    onPointerUp={handlePointerUp}
-                    onPointerLeave={handlePointerUp}
-                  >
-                    <div className="relative flex h-full w-full items-center justify-center bg-black">
-                      <div
-                        className="relative overflow-hidden rounded-xl bg-black/90"
-                        style={{
-                          width: `${frameSize.width}px`,
-                          height: `${frameSize.height}px`
-                        }}
-                      >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={displayUrl}
-                          alt="업로드 이미지"
-                          onLoad={(event) => {
-                            if (!activeImage) return;
-                            const target = event.currentTarget;
-                            if (activeImage.naturalSize) return;
-                            onUpdateImage(activeImage.id, {
-                              naturalSize: { width: target.naturalWidth, height: target.naturalHeight }
-                            });
-                          }}
-                          className="absolute left-1/2 top-1/2 select-none"
-                          style={{
-                            transform: `translate(-50%, -50%) translate(${activeImage?.position.x ?? 0}px, ${
-                                activeImage?.position.y ?? 0
-                            }px)`
-                          }}
-                          draggable={false}
-                        />
-                      </div>
-                    </div>
+                  <div className="flex flex-1 items-center justify-center">
                     <div
-                      className="absolute right-3 top-3 flex items-center gap-2"
-                      onPointerDown={(event) => event.stopPropagation()}
+                      ref={containerRef}
+                      className={`relative mx-auto overflow-hidden rounded-2xl bg-black 
+                      ${showReorder ? "h-[340px]" : "h-[420px]"}
+                      ${showReorder ? "w-[340px]" : "w-[420px]"}
+                      `}
+                      onPointerDown={handlePointerDown}
+                      onPointerMove={handlePointerMove}
+                      onPointerUp={handlePointerUp}
+                      onPointerLeave={handlePointerUp}
                     >
-                      <div className="relative">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setShowRatioPanel((prev) => !prev);
-                            setShowZoomPanel(false);
+                      <div className="relative flex h-full w-full items-center justify-center bg-black">
+                        <div
+                          className="relative overflow-hidden rounded-xl bg-black/90"
+                          style={{
+                            width: `${frameSize.width}px`,
+                            height: `${frameSize.height}px`
                           }}
-                          className="rounded-full bg-black/70 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-black/90"
                         >
-                          📐 비율
-                        </button>
-                        {showRatioPanel && (
-                          <div
-                            ref={ratioPanelRef}
-                            className="absolute right-0 top-11 w-44 rounded-2xl bg-black/85 p-2 text-xs text-white shadow-lg"
-                          >
-                            {(["original", "1:1", "4:5", "16:9"] as const).map((ratio) => (
-                              <button
-                                key={ratio}
-                                type="button"
-                                onClick={() => handleRatioSelect(ratio)}
-                                className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-left transition ${
-                                  activeImage?.aspectRatio === ratio
-                                    ? "bg-white/15 text-white"
-                                    : "text-white/80 hover:bg-white/10"
-                                }`}
-                              >
-                                <span>
-                                  {ratio === "original"
-                                    ? "원본"
-                                    : ratio === "1:1"
-                                    ? "1:1"
-                                    : ratio === "4:5"
-                                    ? "4:5"
-                                    : "16:9"}
-                                </span>
-                                {activeImage?.aspectRatio === ratio && <span className="text-[10px]">선택됨</span>}
-                              </button>
-                            ))}
-                          </div>
-                        )}
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={displayUrl}
+                            alt="업로드 이미지"
+                            onLoad={(event) => {
+                              if (!activeImage) return;
+                              const target = event.currentTarget;
+                              if (activeImage.naturalSize) return;
+                              onUpdateImage(activeImage.id, {
+                                naturalSize: { width: target.naturalWidth, height: target.naturalHeight }
+                              });
+                            }}
+                            className="absolute left-1/2 top-1/2 select-none"
+                            style={{
+                              transform: `translate(-50%, -50%) translate(${activeImage?.position.x ?? 0}px, ${
+                                activeImage?.position.y ?? 0
+                              }px)`
+                            }}
+                            draggable={false}
+                          />
+                        </div>
                       </div>
-                      <div className="relative">
+                      <div
+                        className="absolute right-3 top-3 flex items-center gap-2"
+                        onPointerDown={(event) => event.stopPropagation()}
+                      >
+                        <div className="relative">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowRatioPanel((prev) => !prev);
+                              setShowZoomPanel(false);
+                            }}
+                            className="rounded-full bg-black/70 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-black/90"
+                          >
+                            📐 비율
+                          </button>
+                          {showRatioPanel && (
+                            <div
+                              ref={ratioPanelRef}
+                              className="absolute right-0 top-11 w-44 rounded-2xl bg-black/85 p-2 text-xs text-white shadow-lg"
+                            >
+                              {(["original", "1:1", "4:5", "16:9"] as const).map((ratio) => (
+                                <button
+                                  key={ratio}
+                                  type="button"
+                                  onClick={() => handleRatioSelect(ratio)}
+                                  className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-left transition ${
+                                    activeImage?.aspectRatio === ratio
+                                      ? "bg-white/15 text-white"
+                                      : "text-white/80 hover:bg-white/10"
+                                  }`}
+                                >
+                                  <span>
+                                    {ratio === "original"
+                                      ? "원본"
+                                      : ratio === "1:1"
+                                      ? "1:1"
+                                      : ratio === "4:5"
+                                      ? "4:5"
+                                      : "16:9"}
+                                  </span>
+                                  {activeImage?.aspectRatio === ratio && <span className="text-[10px]">선택됨</span>}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        <div className="relative">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowZoomPanel((prev) => !prev);
+                              setShowRatioPanel(false);
+                            }}
+                            className="rounded-full bg-black/70 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-black/90"
+                          >
+                            <ZoomIn className="mr-1 inline h-3.5 w-3.5" />
+                            줌
+                          </button>
+                        </div>
                         <button
                           type="button"
-                          onClick={() => {
-                            setShowZoomPanel((prev) => !prev);
-                            setShowRatioPanel(false);
-                          }}
+                          onClick={() => activeImage && onRemoveImage(activeImage.id)}
                           className="rounded-full bg-black/70 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-black/90"
                         >
-                          <ZoomIn className="mr-1 inline h-3.5 w-3.5" />
-                          줌
+                          <Trash2 className="mr-1 inline h-3.5 w-3.5" />
+                          삭제
                         </button>
                       </div>
                       <button
                         type="button"
-                        onClick={() => activeImage && onRemoveImage(activeImage.id)}
-                        className="rounded-full bg-black/70 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-black/90"
-                      >
-                        <Trash2 className="mr-1 inline h-3.5 w-3.5" />
-                        삭제
-                      </button>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setShowReorder((prev) => !prev)}
-                      className="absolute bottom-3 right-3 rounded-full bg-black/70 p-2 text-white shadow-sm transition hover:bg-black/90"
-                      onPointerDown={(event) => event.stopPropagation()}
-                      aria-label={showReorder ? "순서 변경 닫기" : "순서 변경 열기"}
-                      title="순서 변경"
-                    >
-                      <Grip className="h-4 w-4" />
-                    </button>
-                    {showZoomPanel && (
-                      <div
-                        ref={zoomPanelRef}
-                        className="absolute bottom-4 left-1/2 w-[70%] -translate-x-1/2 rounded-full bg-black/80 px-4 py-3 text-xs text-white shadow-lg"
+                        onClick={() => setShowReorder((prev) => !prev)}
+                        className="absolute bottom-3 right-3 rounded-full bg-black/70 p-2 text-white shadow-sm transition hover:bg-black/90"
                         onPointerDown={(event) => event.stopPropagation()}
+                        aria-label={showReorder ? "순서 변경 닫기" : "순서 변경 열기"}
+                        title="순서 변경"
                       >
-                        <input
-                          type="range"
-                          min={1}
-                          max={3}
-                          step={0.01}
-                          value={activeImage?.scale ?? 1}
-                          onChange={(event) => handleZoomChange(Number(event.target.value))}
-                          className="w-full"
-                        />
-                      </div>
-                    )}
+                        <Grip className="h-4 w-4" />
+                      </button>
+                      {showZoomPanel && (
+                        <div
+                          ref={zoomPanelRef}
+                          className="absolute bottom-4 left-1/2 w-[70%] -translate-x-1/2 rounded-full bg-black/80 px-4 py-3 text-xs text-white shadow-lg"
+                          onPointerDown={(event) => event.stopPropagation()}
+                        >
+                          <input
+                            type="range"
+                            min={1}
+                            max={3}
+                            step={0.01}
+                            value={activeImage?.scale ?? 1}
+                            onChange={(event) => handleZoomChange(Number(event.target.value))}
+                            className="w-full"
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </>
               ) : (
