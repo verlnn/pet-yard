@@ -225,6 +225,30 @@ export const authApi = {
       body: JSON.stringify(payload)
     });
   },
+  updatePetProfile(
+    accessToken: string,
+    id: number,
+    payload: {
+      name: string;
+      species: string;
+      breed?: string | null;
+      birthDate?: string | null;
+      ageGroup?: string | null;
+      gender: string;
+      neutered?: boolean | null;
+      intro?: string | null;
+      photoUrl?: string | null;
+      weightKg?: number | null;
+    }
+  ) {
+    return request<PetProfile>(`/api/pets/${id}`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      },
+      body: JSON.stringify(payload)
+    });
+  },
   getPetBreeds(accessToken: string, species: string) {
     const params = new URLSearchParams({ species });
     return request<PetBreed[]>(`/api/pets/breeds?${params.toString()}`, {

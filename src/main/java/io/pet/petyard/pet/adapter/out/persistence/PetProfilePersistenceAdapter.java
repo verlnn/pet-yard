@@ -26,4 +26,9 @@ public class PetProfilePersistenceAdapter implements SavePetProfilePort, LoadPet
     public List<PetProfile> findByUserId(Long userId) {
         return repository.findByUserId(userId);
     }
+
+    @Override
+    public java.util.Optional<PetProfile> findByIdAndUserId(Long id, Long userId) {
+        return repository.findByIdAndUserId(id, userId);
+    }
 }

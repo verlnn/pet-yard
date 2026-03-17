@@ -139,4 +139,28 @@ public class PetProfile {
     public BigDecimal getWeightKg() {
         return weightKg;
     }
+
+    public void updateFrom(
+        String name,
+        PetSpecies species,
+        String breed,
+        LocalDate birthDate,
+        String ageGroup,
+        PetGender gender,
+        Boolean neutered,
+        String intro,
+        String photoUrl,
+        BigDecimal weightKg
+    ) {
+        this.name = name;
+        this.species = species;
+        this.breed = breed;
+        this.birthDate = birthDate;
+        this.ageGroup = ageGroup;
+        this.gender = gender;
+        this.neutered = neutered;
+        this.intro = intro;
+        this.photoUrl = photoUrl;
+        this.weightKg = weightKg;
+    }
 }

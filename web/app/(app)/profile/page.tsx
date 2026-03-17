@@ -61,6 +61,11 @@ export default function ProfilePage() {
   const [savingPet, setSavingPet] = useState(false);
   const [breeds, setBreeds] = useState<PetBreed[]>([]);
   const [petFormOpen, setPetFormOpen] = useState(false);
+  const [editingPetId, setEditingPetId] = useState<number | null>(null);
+  const [editForm, setEditForm] = useState(emptyForm);
+  const [editBreeds, setEditBreeds] = useState<PetBreed[]>([]);
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -96,6 +101,23 @@ export default function ProfilePage() {
     loadBreeds();
   }, [accessToken, form.species]);
 
+  useEffect(() => {
+    const loadEditBreeds = async () => {
+      if (!accessToken) return;
+      if (!editingPetId) {
+        setEditBreeds([]);
+        return;
+      }
+      try {
+        const response = await authApi.getPetBreeds(accessToken, editForm.species);
+        setEditBreeds(response);
+      } catch {
+        setEditBreeds([]);
+      }
+    };
+    loadEditBreeds();
+  }, [accessToken, editForm.species, editingPetId]);
+
   const joinedAt = useMemo(() => {
     if (!profile?.joinedAt) return "-";
     return new Date(profile.joinedAt).toLocaleDateString("ko-KR");
@@ -120,6 +142,24 @@ export default function ProfilePage() {
     reader.onload = () => {
       setForm((prev) => ({ ...prev, photoUrl: typeof reader.result === "string" ? reader.result : "" }));
       setPetImageError(null);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleEditImageUpload = (file?: File) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setEditError("이미지 파일만 업로드할 수 있어요.");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setEditError("2MB 이하 이미지로 업로드해 주세요.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setEditForm((prev) => ({ ...prev, photoUrl: typeof reader.result === "string" ? reader.result : "" }));
+      setEditError(null);
     };
     reader.readAsDataURL(file);
   };
@@ -152,6 +192,59 @@ export default function ProfilePage() {
       setPetImageError(err instanceof Error ? err.message : "반려동물 저장에 실패했습니다.");
     } finally {
       setSavingPet(false);
+    }
+  };
+
+  const startEdit = (pet: PetProfile) => {
+    setEditingPetId(pet.id);
+    setEditError(null);
+    setEditForm({
+      name: pet.name ?? "",
+      species: pet.species ?? "DOG",
+      breed: pet.breed ?? "",
+      birthDate: pet.birthDate ?? "",
+      ageGroup: pet.ageGroup ?? "",
+      gender: pet.gender ?? "UNKNOWN",
+      neutered: pet.neutered === null || pet.neutered === undefined ? "" : String(pet.neutered),
+      intro: pet.intro ?? "",
+      photoUrl: pet.photoUrl ?? "",
+      weightKg: pet.weightKg ? String(pet.weightKg) : ""
+    });
+  };
+
+  const cancelEdit = () => {
+    setEditingPetId(null);
+    setEditForm(emptyForm);
+    setEditError(null);
+  };
+
+  const handlePetUpdate = async () => {
+    if (!accessToken || editingPetId === null) return;
+    if (!editForm.name.trim()) {
+      setEditError("반려동물 이름을 입력해 주세요.");
+      return;
+    }
+    setSavingEdit(true);
+    try {
+      const payload = {
+        name: editForm.name.trim(),
+        species: editForm.species,
+        breed: editForm.breed || null,
+        birthDate: editForm.birthDate || null,
+        ageGroup: editForm.ageGroup || null,
+        gender: editForm.gender,
+        neutered: editForm.neutered === "" ? null : editForm.neutered === "true",
+        intro: editForm.intro || null,
+        photoUrl: editForm.photoUrl || null,
+        weightKg: editForm.weightKg ? Number(editForm.weightKg) : null
+      };
+      const saved = await authApi.updatePetProfile(accessToken, editingPetId, payload);
+      setPets((prev) => prev.map((pet) => (pet.id === saved.id ? saved : pet)));
+      cancelEdit();
+    } catch (err) {
+      setEditError(err instanceof Error ? err.message : "반려동물 수정에 실패했습니다.");
+    } finally {
+      setSavingEdit(false);
     }
   };
 
@@ -229,6 +322,145 @@ export default function ProfilePage() {
                       <BadgeCheck className="h-4 w-4" /> 예방접종 완료
                       <Shield className="ml-2 h-4 w-4" /> 산책 안전 필터 적용
                     </div>
+                    <div className="flex justify-end">
+                      <button
+                        type="button"
+                        onClick={() => startEdit(pet)}
+                        className="text-xs font-semibold text-ink/60 hover:text-ink"
+                      >
+                        수정
+                      </button>
+                    </div>
+                    {editingPetId === pet.id && (
+                      <div className="mt-4 space-y-3 rounded-2xl border border-slate-200/70 bg-white/70 p-4">
+                        <div className="grid gap-3 md:grid-cols-2">
+                          <label className="text-sm text-ink/70">
+                            이름
+                            <input
+                              className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                              value={editForm.name}
+                              onChange={(event) => setEditForm((prev) => ({ ...prev, name: event.target.value }))}
+                            />
+                          </label>
+                          <label className="text-sm text-ink/70">
+                            생일
+                            <input
+                              type="date"
+                              className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                              value={editForm.birthDate}
+                              onChange={(event) =>
+                                setEditForm((prev) => ({ ...prev, birthDate: event.target.value }))
+                              }
+                            />
+                          </label>
+                          <label className="text-sm text-ink/70">
+                            체중(kg)
+                            <input
+                              type="number"
+                              step="0.1"
+                              className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                              value={editForm.weightKg}
+                              onChange={(event) =>
+                                setEditForm((prev) => ({ ...prev, weightKg: event.target.value }))
+                              }
+                            />
+                          </label>
+                          <label className="text-sm text-ink/70">
+                            종
+                            <select
+                              className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                              value={editForm.species}
+                              onChange={(event) =>
+                                setEditForm((prev) => ({ ...prev, species: event.target.value }))
+                              }
+                            >
+                              <option value="DOG">강아지</option>
+                              <option value="CAT">고양이</option>
+                              <option value="OTHER">기타</option>
+                            </select>
+                          </label>
+                          <label className="text-sm text-ink/70 md:col-span-2">
+                            품종
+                            <select
+                              className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                              value={editForm.breed}
+                              onChange={(event) =>
+                                setEditForm((prev) => ({ ...prev, breed: event.target.value }))
+                              }
+                              disabled={editForm.species === "OTHER"}
+                            >
+                              <option value="">
+                                {editForm.species === "OTHER" ? "기타 종은 품종 선택 없음" : "선택 안함"}
+                              </option>
+                              {editBreeds.map((breed) => (
+                                <option key={breed.id} value={breed.nameKo}>
+                                  {breed.nameKo}
+                                </option>
+                              ))}
+                            </select>
+                          </label>
+                          <label className="text-sm text-ink/70">
+                            성별
+                            <select
+                              className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                              value={editForm.gender}
+                              onChange={(event) =>
+                                setEditForm((prev) => ({ ...prev, gender: event.target.value }))
+                              }
+                            >
+                              <option value="MALE">수컷</option>
+                              <option value="FEMALE">암컷</option>
+                              <option value="UNKNOWN">모름</option>
+                            </select>
+                          </label>
+                          <label className="text-sm text-ink/70">
+                            중성화
+                            <select
+                              className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                              value={editForm.neutered}
+                              onChange={(event) =>
+                                setEditForm((prev) => ({ ...prev, neutered: event.target.value }))
+                              }
+                            >
+                              <option value="">선택 안함</option>
+                              <option value="true">완료</option>
+                              <option value="false">미완료</option>
+                            </select>
+                          </label>
+                        </div>
+                        <label className="text-sm text-ink/70">
+                          소개
+                          <input
+                            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                            value={editForm.intro}
+                            onChange={(event) => setEditForm((prev) => ({ ...prev, intro: event.target.value }))}
+                          />
+                        </label>
+                        <div className="flex items-center gap-3">
+                          <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-xs font-semibold text-ink/70">
+                            사진 변경
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(event) => handleEditImageUpload(event.target.files?.[0])}
+                            />
+                          </label>
+                          {editForm.photoUrl && (
+                            <span className="text-xs text-ink/60">사진 선택됨</span>
+                          )}
+                        </div>
+                        {editError && <p className="text-xs text-rose-500">{editError}</p>}
+                        <div className="flex gap-2">
+                          <Button variant="secondary" onClick={cancelEdit}>
+                            취소
+                          </Button>
+                          <Button onClick={handlePetUpdate} disabled={savingEdit}>
+                            {savingEdit ? "저장 중..." : "수정 완료"}
+                          </Button>
+                        </div>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               ))}
