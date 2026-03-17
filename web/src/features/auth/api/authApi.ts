@@ -32,8 +32,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     headers.set("Content-Type", "application/json");
   }
   const response = await fetch(`${API_BASE}${path}`, {
-    headers,
-    ...init
+    ...init,
+    headers
   });
 
   if (!response.ok) {
