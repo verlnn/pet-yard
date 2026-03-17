@@ -246,10 +246,10 @@ export function NewPostModal({
                 <>
                   <div className="flex flex-1 items-center justify-center">
                     <div
-                      ref={containerRef}
-                      className={`relative mx-auto overflow-hidden rounded-2xl bg-black 
-                      ${showReorder ? "h-[340px]" : "h-[420px]"}
-                      ${showReorder ? "w-[340px]" : "w-[420px]"}
+                    ref={containerRef}
+                    className={`relative mx-auto overflow-hidden rounded-2xl bg-black 
+                      h-[420px]
+                      w-[420px]
                       `}
                       onPointerDown={handlePointerDown}
                       onPointerMove={handlePointerMove}
@@ -364,6 +364,38 @@ export function NewPostModal({
                       >
                         <Grip className="h-4 w-4" />
                       </button>
+                      {showReorder && images.length > 0 && (
+                        <div
+                          className="absolute bottom-12 left-1/2 flex max-w-[90%] -translate-x-1/2 flex-wrap gap-2 rounded-2xl bg-black/70 p-3"
+                          onPointerDown={(event) => event.stopPropagation()}
+                        >
+                          {images.map((image, index) => {
+                            const thumbUrl = image.originalUrl;
+                            const isActive = image.id === activeImageId;
+                            return (
+                              <button
+                                key={image.id}
+                                type="button"
+                                draggable
+                                onDragStart={() => handleDragStart(image.id)}
+                                onDragEnd={() => setDraggingId(null)}
+                                onDragOver={(event) => event.preventDefault()}
+                                onDrop={() => handleDrop(image.id)}
+                                onClick={() => setActiveImageId(image.id)}
+                                className={`relative h-14 w-14 overflow-hidden rounded-xl border ${
+                                  isActive ? "border-white" : "border-white/40"
+                                }`}
+                              >
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={thumbUrl} alt={image.name} className="h-full w-full object-cover" />
+                                <span className="absolute left-1 top-1 rounded-full bg-black/60 px-1.5 py-0.5 text-[10px] text-white">
+                                  {index + 1}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
                       {showZoomPanel && (
                         <div
                           ref={zoomPanelRef}
@@ -398,39 +430,6 @@ export function NewPostModal({
                 </label>
               )}
             </div>
-
-            {images.length > 0 && showReorder && (
-              <div className="flex flex-col gap-2">
-                <p className="text-xs font-semibold text-ink/70">순서 변경</p>
-                <div className="flex flex-wrap gap-2">
-                  {images.map((image, index) => {
-                    const thumbUrl = image.originalUrl;
-                    const isActive = image.id === activeImageId;
-                    return (
-                      <div
-                        key={image.id}
-                        draggable
-                        onDragStart={() => handleDragStart(image.id)}
-                        onDragEnd={() => setDraggingId(null)}
-                        onDragOver={(event) => event.preventDefault()}
-                        onDrop={() => handleDrop(image.id)}
-                        onClick={() => setActiveImageId(image.id)}
-                        className={`group relative h-16 w-16 cursor-pointer overflow-hidden rounded-2xl border ${
-                          isActive ? "border-ink" : "border-slate-200"
-                        }`}
-                      >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={thumbUrl} alt={image.name} className="h-full w-full object-cover" />
-                        <span className="absolute left-1 top-1 rounded-full bg-black/60 px-1.5 py-0.5 text-[10px] text-white">
-                          {index + 1}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-                <p className="text-[11px] text-ink/50">드래그로 순서를 바꿀 수 있어요.</p>
-              </div>
-            )}
 
             {imageError && <p className="text-xs text-rose-500">{imageError}</p>}
           </div>
