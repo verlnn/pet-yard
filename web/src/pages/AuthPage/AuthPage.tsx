@@ -85,6 +85,24 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
               <p className="text-center text-sm text-white/60">
                 멍냥마당은 소셜 계정으로만 가입 및 로그인할 수 있어요.
               </p>
+              {mode === "login" && (
+                <button
+                  type="button"
+                  onClick={() => router.push("/signup")}
+                  className="w-full rounded-2xl border border-white/25 bg-white/5 py-3 text-sm font-semibold text-white/80 transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+                >
+                  회원가입으로 이동
+                </button>
+              )}
+              {mode === "signup" && (
+                <button
+                  type="button"
+                  onClick={() => router.push("/login")}
+                  className="w-full rounded-2xl border border-white/25 bg-white/5 py-3 text-sm font-semibold text-white/80 transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+                >
+                  로그인으로 이동
+                </button>
+              )}
             </div>
           </AuthCard>
         }
