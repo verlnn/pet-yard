@@ -1,19 +1,31 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
 
 import { SectionShell } from "@/components/site/section-shell";
 import { SiteNav } from "@/components/site/nav";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { FeedProfileHeader } from "@/components/feed/FeedProfileHeader";
+import { FeedGrid } from "@/components/feed/FeedGrid";
+import { EmptyFeedState } from "@/components/feed/EmptyFeedState";
+import { NewPostModal } from "@/components/feed/NewPostModal";
 import { authApi } from "@/src/features/auth/api/authApi";
-import type { FeedPost } from "@/src/features/auth/types/authTypes";
+import type { FeedPost, MyProfileResponse } from "@/src/features/auth/types/authTypes";
 
 const MAX_IMAGE_SIZE = 3 * 1024 * 1024;
 
+const tabs = [
+  { id: "posts", label: "게시물" },
+  { id: "saved", label: "저장됨" },
+  { id: "tagged", label: "태그됨" }
+] as const;
+
+type TabId = (typeof tabs)[number]["id"];
+
 export default function MyFeedPage() {
   const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [profile, setProfile] = useState<MyProfileResponse | null>(null);
   const [posts, setPosts] = useState<FeedPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -23,6 +35,8 @@ export default function MyFeedPage() {
   const [imageError, setImageError] = useState<string | null>(null);
   const [selectedPost, setSelectedPost] = useState<FeedPost | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [activeTab, setActiveTab] = useState<TabId>("posts");
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -33,8 +47,12 @@ export default function MyFeedPage() {
     if (!accessToken) return;
     const load = async () => {
       try {
-        const response = await authApi.getMyFeed(accessToken);
-        setPosts(response);
+        const [feedResponse, profileResponse] = await Promise.all([
+          authApi.getMyFeed(accessToken),
+          authApi.getMyProfile(accessToken)
+        ]);
+        setPosts(feedResponse);
+        setProfile(profileResponse);
       } catch (err) {
         setError(err instanceof Error ? err.message : "피드를 불러오지 못했습니다.");
       } finally {
@@ -84,6 +102,7 @@ export default function MyFeedPage() {
       });
       setPosts((prev) => [created, ...prev]);
       resetForm();
+      setModalOpen(false);
     } catch (err) {
       setImageError(err instanceof Error ? err.message : "피드 등록에 실패했습니다.");
     } finally {
@@ -105,8 +124,10 @@ export default function MyFeedPage() {
     }
   };
 
+  const primaryPet = profile?.pets?.[0];
+
   return (
-    <div>
+    <div className="min-h-screen bg-gradient-to-b from-white via-white to-sand/40">
       <SiteNav />
       <main className="container py-10">
         <SectionShell
@@ -119,81 +140,71 @@ export default function MyFeedPage() {
               {error}
             </div>
           )}
-          <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-            <Card className="gradient-shell">
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <p className="font-display text-lg font-semibold">새 게시물</p>
-                  <Plus className="h-4 w-4 text-ink/40" />
-                </div>
-                <div className="h-40 overflow-hidden rounded-2xl border border-slate-200 bg-white/80">
-                  {imageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={imageUrl} alt="업로드 이미지" className="h-full w-full object-cover" />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center text-xs text-ink/40">
-                      사진을 업로드하세요
-                    </div>
-                  )}
-                </div>
-                <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-xs font-semibold text-ink/70">
-                  사진 업로드
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(event) => handleImageUpload(event.target.files?.[0])}
-                  />
-                </label>
-                <textarea
-                  className="min-h-[120px] w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
-                  placeholder="오늘의 기록을 남겨보세요."
-                  value={content}
-                  onChange={(event) => setContent(event.target.value)}
-                />
-                {imageError && <p className="text-xs text-rose-500">{imageError}</p>}
-                <Button onClick={handleCreate} disabled={creating} className="w-full">
-                  {creating ? "등록 중..." : "피드 올리기"}
+
+          <div className="space-y-6">
+            <FeedProfileHeader
+              profile={profile}
+              postCount={posts.length}
+              onNewPost={() => setModalOpen(true)}
+            />
+
+            <div className="flex flex-wrap gap-3 rounded-full border border-slate-200/70 bg-white/80 p-2">
+              {tabs.map((tab) => (
+                <Button
+                  key={tab.id}
+                  variant={activeTab === tab.id ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setActiveTab(tab.id)}
+                >
+                  {tab.label}
                 </Button>
-              </CardContent>
-            </Card>
-            <div>
-              <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-                {grid.map((post) => (
-                  <button
-                    key={post.id}
-                    type="button"
-                    onClick={() => setSelectedPost(post)}
-                    className="group overflow-hidden rounded-2xl border border-slate-200 bg-white/80 text-left"
-                  >
-                    <div className="aspect-square w-full overflow-hidden">
-                      {post.imageUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={post.imageUrl}
-                          alt="피드 이미지"
-                          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center p-4 text-xs text-ink/40">
-                          {post.content ? post.content.slice(0, 40) : "사진 없음"}
-                        </div>
-                      )}
-                    </div>
-                  </button>
-                ))}
-              </div>
-              {!loading && posts.length === 0 && (
-                <p className="mt-4 text-sm text-ink/60">아직 작성한 피드가 없어요.</p>
-              )}
+              ))}
             </div>
+
+            {activeTab === "posts" && (
+              <>
+                {grid.length === 0 && !loading ? (
+                  <EmptyFeedState onNewPost={() => setModalOpen(true)} />
+                ) : (
+                  <FeedGrid posts={grid} onSelect={setSelectedPost} />
+                )}
+              </>
+            )}
+
+            {activeTab !== "posts" && (
+              <Card className="gradient-shell">
+                <CardContent className="py-12 text-center text-sm text-ink/60">
+                  준비 중인 영역입니다.
+                </CardContent>
+              </Card>
+            )}
           </div>
         </SectionShell>
       </main>
+
+      <NewPostModal
+        open={modalOpen}
+        imageUrl={imageUrl}
+        nickname={profile?.nickname ?? "멍냥마당"}
+        profileImageUrl={profile?.profileImageUrl ?? null}
+        petName={primaryPet?.name ?? null}
+        petBreed={primaryPet?.breed ?? null}
+        content={content}
+        imageError={imageError}
+        onClose={() => {
+          setModalOpen(false);
+          resetForm();
+        }}
+        onImageUpload={handleImageUpload}
+        onContentChange={setContent}
+        onSubmit={handleCreate}
+        submitting={creating}
+      />
+
       {selectedPost && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="w-full max-w-3xl overflow-hidden rounded-3xl bg-white">
-            <div className="grid gap-0 md:grid-cols-[1.2fr_0.8fr]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
+          <div className="w-full max-w-4xl overflow-hidden rounded-[32px] bg-white">
+            <div className="grid gap-0 md:grid-cols-[1.3fr_0.7fr]">
               <div className="bg-black">
                 {selectedPost.imageUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -227,11 +238,7 @@ export default function MyFeedPage() {
                     disabled={deleting}
                     className="text-rose-600 hover:bg-rose-50"
                   >
-                    {deleting ? "삭제 중..." : (
-                      <span className="inline-flex items-center gap-2">
-                        <Trash2 className="h-4 w-4" /> 삭제
-                      </span>
-                    )}
+                    {deleting ? "삭제 중..." : "삭제"}
                   </Button>
                 </div>
               </div>
