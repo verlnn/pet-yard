@@ -121,7 +121,7 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
         SignupSession session = new SignupSession(provider, state, SignupStep.OAUTH, SignupStatus.OAUTH_PENDING, expiresAt);
         saveSignupSessionPort.save(session);
 
-        return new OAuthStartResult(client.buildAuthorizeUrl(state), state, expiresAt.toString());
+        return new OAuthStartResult(client.buildAuthorizeUrl(state, command.prompt()), state, expiresAt.toString());
     }
 
     @Transactional

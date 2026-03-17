@@ -89,10 +89,15 @@ export const authApi = {
       body: JSON.stringify({ refreshToken })
     });
   },
-  oauthStart(provider: OAuthProvider) {
-    return request<OAuthStartResponse>(`/api/auth/oauth/${provider}/start`, {
-      method: "POST"
-    });
+  oauthStart(provider: OAuthProvider, options?: { prompt?: string }) {
+    const params = new URLSearchParams();
+    if (options?.prompt) {
+      params.set("prompt", options.prompt);
+    }
+    const url = params.size
+      ? `/api/auth/oauth/${provider}/start?${params.toString()}`
+      : `/api/auth/oauth/${provider}/start`;
+    return request<OAuthStartResponse>(url, { method: "POST" });
   },
   oauthCallback(provider: OAuthProvider, code: string, state: string, redirectUri: string) {
     const params = new URLSearchParams({ code, state, redirectUri });

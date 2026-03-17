@@ -16,7 +16,7 @@ export default function AuthEntryPage() {
   const handleOAuthLogin = async (provider: OAuthProvider) => {
     setError(null);
     try {
-      const start = await authApi.oauthStart(provider);
+      const start = await authApi.oauthStart(provider, { prompt: "login" });
       const result = await openOAuthPopup({ authorizeUrl: start.authorizeUrl, provider });
       const { nextPath } = applyOAuthResult(result);
       window.location.assign(nextPath);

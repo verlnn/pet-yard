@@ -1,11 +1,12 @@
 package io.pet.petyard.onboarding.adapter.in.web;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.pet.petyard.common.ApiException;
 import io.pet.petyard.onboarding.application.port.in.OAuthCallbackUseCase;
 import io.pet.petyard.onboarding.application.port.in.OAuthStartUseCase;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth/oauth")
 public class OAuthController {
 
+    private static final Logger log = LoggerFactory.getLogger(OAuthController.class);
+
     private final OAuthStartUseCase oAuthStartUseCase;
     private final OAuthCallbackUseCase oAuthCallbackUseCase;
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -31,9 +34,12 @@ public class OAuthController {
     }
 
     @PostMapping("/{provider}/start")
-    public OAuthStartResponse start(@PathVariable String provider) {
+    public OAuthStartResponse start(@PathVariable String provider,
+                                    @RequestParam(required = false) String prompt) {
         OAuthStartUseCase.OAuthStartResult result = oAuthStartUseCase
-            .start(new OAuthStartUseCase.OAuthStartCommand(provider));
+            .start(new OAuthStartUseCase.OAuthStartCommand(provider, prompt));
+        log.info("OAuth start provider={}, state={}, prompt={}, expiresAt={}, authorizeUrl={}",
+            provider, result.state(), prompt, result.expiresAt(), result.authorizeUrl());
         return new OAuthStartResponse(result.authorizeUrl(), result.state(), result.expiresAt());
     }
 
@@ -44,11 +50,15 @@ public class OAuthController {
                                       @RequestParam(required = false) String redirectUri,
                                       @RequestHeader(value = "Accept", required = false) String accept) {
         boolean wantsHtml = redirectUri == null || (accept != null && accept.contains(MediaType.TEXT_HTML_VALUE));
+        log.info("OAuth callback provider={}, state={}, redirectUri={}, accept={}, wantsHtml={}, codePrefix={}",
+            provider, state, redirectUri, accept, wantsHtml, safePrefix(code, 10));
         try {
             OAuthCallbackUseCase.OAuthCallbackResult result = oAuthCallbackUseCase
                 .handle(new OAuthCallbackUseCase.OAuthCallbackCommand(provider, code, state, redirectUri));
             OAuthCallbackResponse response = new OAuthCallbackResponse(result.status(), result.signupToken(),
                 result.nextStep(), result.accessToken(), result.refreshToken());
+            log.info("OAuth callback success provider={}, status={}, nextStep={}",
+                provider, result.status(), result.nextStep());
             if (wantsHtml) {
                 return ResponseEntity.ok()
                     .contentType(MediaType.TEXT_HTML)
@@ -56,6 +66,7 @@ public class OAuthController {
             }
             return ResponseEntity.ok(response);
         } catch (ApiException ex) {
+            log.warn("OAuth callback failed provider={}, message={}", provider, ex.getMessage());
             if (wantsHtml) {
                 return ResponseEntity.ok()
                     .contentType(MediaType.TEXT_HTML)
@@ -113,5 +124,13 @@ public class OAuthController {
         } catch (JsonProcessingException ex) {
             throw new IllegalStateException("Failed to serialize OAuth response", ex);
         }
+    }
+
+    private String safePrefix(String value, int max) {
+        if (value == null || value.isBlank()) {
+            return "null";
+        }
+        int end = Math.min(value.length(), max);
+        return value.substring(0, end);
     }
 }

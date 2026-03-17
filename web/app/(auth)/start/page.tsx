@@ -19,7 +19,7 @@ export default function StartPage() {
     setError(null);
     setLoading(true);
     try {
-      const result = await authApi.oauthStart("kakao");
+      const result = await authApi.oauthStart("kakao", { prompt: "login" });
       const oauthResult = await openOAuthPopup({ authorizeUrl: result.authorizeUrl, provider: "kakao" });
       const { nextPath } = applyOAuthResult(oauthResult);
       router.replace(nextPath);

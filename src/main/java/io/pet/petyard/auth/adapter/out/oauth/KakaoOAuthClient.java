@@ -34,14 +34,22 @@ public class KakaoOAuthClient implements OAuthClient {
     }
 
     @Override
-    public String buildAuthorizeUrl(String state) {
-        return String.format(
+    public String buildAuthorizeUrl(String state, String prompt) {
+        String base = String.format(
             "%s?response_type=code&client_id=%s&redirect_uri=%s&state=%s",
             properties.authorizeUrl(),
             properties.clientId(),
             properties.redirectUri(),
             state
         );
+        String resolvedPrompt = prompt;
+        if (resolvedPrompt == null || resolvedPrompt.isBlank()) {
+            resolvedPrompt = properties.prompt();
+        }
+        if (resolvedPrompt != null && !resolvedPrompt.isBlank()) {
+            return base + "&prompt=" + resolvedPrompt;
+        }
+        return base;
     }
 
     @Override
