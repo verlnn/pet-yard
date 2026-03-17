@@ -27,7 +27,7 @@ export default function AuthEntryActions(props: AuthEntryActionsProps) {
             iconSrc={provider.iconSrc}
           />
           {index < SOCIAL_PROVIDERS.length - 1 && (
-            <span className="h-7 w-px rounded-full bg-white/20" aria-hidden="true" />
+            <span className="h-7 w-px rounded-full bg-black/20" aria-hidden="true" />
           )}
         </div>
       ))}
