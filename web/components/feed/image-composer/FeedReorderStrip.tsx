@@ -21,7 +21,7 @@ export function FeedReorderStrip({
 }: FeedReorderStripProps) {
   return (
     <div
-      className="absolute bottom-12 left-1/2 flex max-w-[90%] -translate-x-1/2 flex-wrap gap-2 rounded-2xl bg-black/70 p-3"
+      className="absolute bottom-12 left-1/2 flex w-[92%] -translate-x-1/2 flex-nowrap gap-2 overflow-x-auto rounded-2xl bg-black/70 p-3"
       onPointerDown={(event) => event.stopPropagation()}
     >
       {images.map((image, index) => {
@@ -36,7 +36,7 @@ export function FeedReorderStrip({
             onDragOver={(event) => event.preventDefault()}
             onDrop={() => onDrop(image.id)}
             onClick={() => onSelect(image.id)}
-            className={`relative h-14 w-14 overflow-hidden rounded-xl border ${
+            className={`relative h-14 w-14 flex-none overflow-hidden rounded-xl border ${
               isActive ? "border-white" : "border-white/40"
             }`}
           >
