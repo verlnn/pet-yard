@@ -7,6 +7,7 @@ public record FeedPostView(
     Long id,
     String content,
     String imageUrl,
+    List<String> imageUrls,
     Double imageAspectRatioValue,
     String imageAspectRatio,
     Instant createdAt,

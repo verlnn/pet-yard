@@ -4,9 +4,11 @@ import io.pet.petyard.auth.domain.Permission;
 import io.pet.petyard.auth.guard.RequirePermission;
 import io.pet.petyard.auth.security.AuthPrincipal;
 import io.pet.petyard.common.storage.LocalFileStorage;
+import io.pet.petyard.feed.application.model.FeedPostImageCommand;
 import io.pet.petyard.feed.application.model.FeedPostView;
 import io.pet.petyard.feed.application.service.FeedApplicationService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.MediaType;
@@ -46,17 +48,36 @@ public class FeedController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public FeedPostResponse create(@AuthenticationPrincipal AuthPrincipal principal,
                                    @RequestParam(required = false) String content,
-                                   @RequestParam(required = false) Double imageAspectRatioValue,
-                                   @RequestParam(required = false) String imageAspectRatio,
+                                   @RequestParam(required = false) List<Double> imageAspectRatioValue,
+                                   @RequestParam(required = false) List<String> imageAspectRatio,
                                    @RequestParam(required = false) List<String> hashtags,
-                                   @RequestParam(required = false) MultipartFile image) {
-        String imageUrl = localFileStorage.saveFeedImage(image);
+                                   @RequestParam(required = false) List<MultipartFile> images) {
+        List<FeedPostImageCommand> imageCommands = new ArrayList<>();
+        if (images != null) {
+            for (int i = 0; i < images.size(); i++) {
+                MultipartFile image = images.get(i);
+                String imageUrl = localFileStorage.saveFeedImage(image);
+                if (imageUrl == null || imageUrl.isBlank()) {
+                    continue;
+                }
+                Double aspectRatioValue = imageAspectRatioValue != null && i < imageAspectRatioValue.size()
+                    ? imageAspectRatioValue.get(i)
+                    : null;
+                String aspectRatio = imageAspectRatio != null && i < imageAspectRatio.size()
+                    ? imageAspectRatio.get(i)
+                    : null;
+                imageCommands.add(new FeedPostImageCommand(
+                    imageUrl,
+                    aspectRatioValue,
+                    aspectRatio,
+                    i
+                ));
+            }
+        }
         FeedPostView post = feedApplicationService.create(
             principal.userId(),
             content,
-            imageUrl,
-            imageAspectRatioValue,
-            imageAspectRatio,
+            imageCommands,
             hashtags
         );
         return FeedPostResponse.from(post);

@@ -192,8 +192,6 @@ export default function MyFeedPage() {
   const handleCreate = async () => {
     if (!accessToken) return;
     const imageUrls = images.map((image) => image.originalUrl);
-    const primaryImage = images[0];
-    const primaryImageUrl = imageUrls[0] ?? null;
     if (!content.trim() && imageUrls.length === 0) {
       setImageError("사진 또는 글을 입력해 주세요.");
       return;
@@ -204,23 +202,22 @@ export default function MyFeedPage() {
       if (content.trim()) {
         formData.append("content", content.trim());
       }
-      if (primaryImage) {
-        formData.append("image", primaryImage.file);
-      }
-      const aspectRatioValue = getAspectRatioValue(primaryImage);
-      if (aspectRatioValue !== null) {
-        formData.append("imageAspectRatioValue", String(aspectRatioValue));
-      }
-      if (primaryImage?.aspectRatio) {
-        formData.append("imageAspectRatio", primaryImage.aspectRatio);
-      }
+      images.forEach((image) => {
+        formData.append("images", image.file);
+        const aspectRatioValue = getAspectRatioValue(image);
+        if (aspectRatioValue !== null) {
+          formData.append("imageAspectRatioValue", String(aspectRatioValue));
+        }
+        formData.append("imageAspectRatio", image.aspectRatio);
+      });
 
       const created = await authApi.createFeedPost(accessToken, formData);
       const createdWithImages: FeedPost = {
         ...created,
-        imageAspectRatioValue: aspectRatioValue,
-        imageAspectRatio: primaryImage?.aspectRatio ?? null,
-        imageUrls: imageUrls.length > 0 ? imageUrls : null
+        imageUrl: created.imageUrls?.[0] ?? created.imageUrl ?? null,
+        imageAspectRatioValue: images[0] ? getAspectRatioValue(images[0]) : null,
+        imageAspectRatio: images[0]?.aspectRatio ?? null,
+        imageUrls: created.imageUrls?.length ? created.imageUrls : created.imageUrl ? [created.imageUrl] : null
       };
       setPosts((prev) => [createdWithImages, ...prev]);
       resetForm();

@@ -3,12 +3,16 @@ package io.pet.petyard.feed.application.service;
 import io.pet.petyard.common.ApiException;
 import io.pet.petyard.common.ErrorCode;
 import io.pet.petyard.feed.application.model.FeedPostView;
+import io.pet.petyard.feed.application.model.FeedPostImageCommand;
 import io.pet.petyard.feed.application.port.out.DeleteFeedPostPort;
+import io.pet.petyard.feed.application.port.out.LoadFeedPostImagePort;
 import io.pet.petyard.feed.application.port.out.LoadFeedPostHashtagPort;
 import io.pet.petyard.feed.application.port.out.LoadFeedPostPort;
+import io.pet.petyard.feed.application.port.out.SaveFeedPostImagePort;
 import io.pet.petyard.feed.application.port.out.SaveFeedPostHashtagPort;
 import io.pet.petyard.feed.application.port.out.SaveFeedPostPort;
 import io.pet.petyard.feed.domain.model.FeedPost;
+import io.pet.petyard.feed.domain.model.FeedPostImage;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,17 +35,23 @@ public class FeedApplicationService {
     private final LoadFeedPostPort loadFeedPostPort;
     private final SaveFeedPostPort saveFeedPostPort;
     private final DeleteFeedPostPort deleteFeedPostPort;
+    private final SaveFeedPostImagePort saveFeedPostImagePort;
+    private final LoadFeedPostImagePort loadFeedPostImagePort;
     private final SaveFeedPostHashtagPort saveFeedPostHashtagPort;
     private final LoadFeedPostHashtagPort loadFeedPostHashtagPort;
 
     public FeedApplicationService(LoadFeedPostPort loadFeedPostPort,
                                   SaveFeedPostPort saveFeedPostPort,
                                   DeleteFeedPostPort deleteFeedPostPort,
+                                  SaveFeedPostImagePort saveFeedPostImagePort,
+                                  LoadFeedPostImagePort loadFeedPostImagePort,
                                   SaveFeedPostHashtagPort saveFeedPostHashtagPort,
                                   LoadFeedPostHashtagPort loadFeedPostHashtagPort) {
         this.loadFeedPostPort = loadFeedPostPort;
         this.saveFeedPostPort = saveFeedPostPort;
         this.deleteFeedPostPort = deleteFeedPostPort;
+        this.saveFeedPostImagePort = saveFeedPostImagePort;
+        this.loadFeedPostImagePort = loadFeedPostImagePort;
         this.saveFeedPostHashtagPort = saveFeedPostHashtagPort;
         this.loadFeedPostHashtagPort = loadFeedPostHashtagPort;
     }
@@ -53,14 +63,23 @@ public class FeedApplicationService {
             return Collections.emptyList();
         }
         List<Long> postIds = posts.stream().map(FeedPost::getId).toList();
+        Map<Long, List<FeedPostImage>> imagesByPost = loadFeedPostImagePort.findByPostIds(postIds);
         Map<Long, List<String>> tagsByPost = loadFeedPostHashtagPort.findTagNamesByPostIds(postIds);
         List<FeedPostView> result = new ArrayList<>();
         for (FeedPost post : posts) {
+            List<String> imageUrls = imagesByPost.getOrDefault(post.getId(), List.of())
+                .stream()
+                .map(FeedPostImage::getImageUrl)
+                .toList();
+            if (imageUrls.isEmpty() && post.getImageUrl() != null && !post.getImageUrl().isBlank()) {
+                imageUrls = List.of(post.getImageUrl());
+            }
             List<String> tags = tagsByPost.getOrDefault(post.getId(), List.of());
             result.add(new FeedPostView(
                 post.getId(),
                 post.getContent(),
                 post.getImageUrl(),
+                imageUrls,
                 post.getImageAspectRatioValue(),
                 post.getImageAspectRatio(),
                 post.getCreatedAt(),
@@ -73,23 +92,26 @@ public class FeedApplicationService {
     @Transactional
     public FeedPostView create(Long userId,
                                String content,
-                               String imageUrl,
-                               Double imageAspectRatioValue,
-                               String imageAspectRatio,
+                               List<FeedPostImageCommand> images,
                                List<String> hashtags) {
         boolean hasContent = content != null && !content.isBlank();
-        boolean hasImage = imageUrl != null && !imageUrl.isBlank();
+        List<FeedPostImageCommand> safeImages = images == null ? List.of() : images.stream()
+            .filter(image -> image.imageUrl() != null && !image.imageUrl().isBlank())
+            .toList();
+        FeedPostImageCommand primaryImage = safeImages.isEmpty() ? null : safeImages.get(0);
+        boolean hasImage = primaryImage != null;
         if (!hasContent && !hasImage) {
             throw new ApiException(ErrorCode.BAD_REQUEST);
         }
         FeedPost feedPost = new FeedPost(
             userId,
             content,
-            imageUrl,
-            imageAspectRatioValue,
-            imageAspectRatio
+            primaryImage != null ? primaryImage.imageUrl() : null,
+            primaryImage != null ? primaryImage.imageAspectRatioValue() : null,
+            primaryImage != null ? primaryImage.imageAspectRatio() : null
         );
         FeedPost saved = saveFeedPostPort.save(feedPost);
+        saveFeedPostImagePort.saveImages(saved.getId(), safeImages);
 
         List<String> normalizedTags = normalizeTags(content, hashtags);
         if (!normalizedTags.isEmpty()) {
@@ -100,6 +122,7 @@ public class FeedApplicationService {
             saved.getId(),
             saved.getContent(),
             saved.getImageUrl(),
+            safeImages.stream().map(FeedPostImageCommand::imageUrl).toList(),
             saved.getImageAspectRatioValue(),
             saved.getImageAspectRatio(),
             saved.getCreatedAt(),

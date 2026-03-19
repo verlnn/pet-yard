@@ -35,6 +35,7 @@ public enum ErrorCode {
     SIGNUP_STEP_INVALID("BAD_REQUEST", "회원가입 단계가 올바르지 않습니다"),
     VALIDATION_FAILED("BAD_REQUEST", "요청 값 검증에 실패했습니다"),
     INVALID_FILE_TYPE("BAD_REQUEST", "지원하지 않는 파일 형식입니다"),
+    FILE_SIZE_EXCEEDED("BAD_REQUEST", "업로드 가능한 파일 크기를 초과했습니다"),
     FILE_UPLOAD_FAILED("INTERNAL_ERROR", "파일 업로드에 실패했습니다");
 
     private final String code;
