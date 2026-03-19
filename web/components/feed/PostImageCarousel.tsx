@@ -47,23 +47,6 @@ export function PostImageCarousel({ images }: PostImageCarouselProps) {
           </>
         )}
       </div>
-      {total > 1 && (
-        <div className="flex gap-2 bg-black/90 px-4 py-3">
-          {images.map((image, imageIndex) => (
-            <button
-              key={`${image}-${imageIndex}`}
-              type="button"
-              onClick={() => setIndex(imageIndex)}
-              className={`h-12 w-12 overflow-hidden rounded-lg border ${
-                imageIndex === index ? "border-white" : "border-white/20"
-              }`}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={image} alt="미리보기" className="h-full w-full object-cover" />
-            </button>
-          ))}
-        </div>
-      )}
     </div>
   );
 }
