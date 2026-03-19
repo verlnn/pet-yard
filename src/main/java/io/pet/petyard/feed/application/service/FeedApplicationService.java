@@ -71,14 +71,11 @@ public class FeedApplicationService {
                 .stream()
                 .map(FeedPostImage::getImageUrl)
                 .toList();
-            if (imageUrls.isEmpty() && post.getImageUrl() != null && !post.getImageUrl().isBlank()) {
-                imageUrls = List.of(post.getImageUrl());
-            }
             List<String> tags = tagsByPost.getOrDefault(post.getId(), List.of());
             result.add(new FeedPostView(
                 post.getId(),
                 post.getContent(),
-                post.getImageUrl(),
+                imageUrls.isEmpty() ? null : imageUrls.get(0),
                 imageUrls,
                 post.getImageAspectRatioValue(),
                 post.getImageAspectRatio(),
@@ -106,7 +103,6 @@ public class FeedApplicationService {
         FeedPost feedPost = new FeedPost(
             userId,
             content,
-            primaryImage != null ? primaryImage.imageUrl() : null,
             primaryImage != null ? primaryImage.imageAspectRatioValue() : null,
             primaryImage != null ? primaryImage.imageAspectRatio() : null
         );
@@ -121,7 +117,7 @@ public class FeedApplicationService {
         return new FeedPostView(
             saved.getId(),
             saved.getContent(),
-            saved.getImageUrl(),
+            primaryImage != null ? primaryImage.imageUrl() : null,
             safeImages.stream().map(FeedPostImageCommand::imageUrl).toList(),
             saved.getImageAspectRatioValue(),
             saved.getImageAspectRatio(),
