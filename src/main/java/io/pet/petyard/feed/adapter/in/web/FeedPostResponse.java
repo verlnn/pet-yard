@@ -9,6 +9,8 @@ public record FeedPostResponse(
     Long id,
     String content,
     String imageUrl,
+    Double imageAspectRatioValue,
+    String imageAspectRatio,
     Instant createdAt,
     List<String> hashtags
 ) {
@@ -17,6 +19,8 @@ public record FeedPostResponse(
             post.id(),
             post.content(),
             post.imageUrl(),
+            post.imageAspectRatioValue(),
+            post.imageAspectRatio(),
             post.createdAt(),
             post.hashtags()
         );

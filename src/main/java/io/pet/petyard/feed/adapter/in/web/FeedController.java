@@ -46,6 +46,8 @@ public class FeedController {
             principal.userId(),
             request.content(),
             request.imageUrl(),
+            request.imageAspectRatioValue(),
+            request.imageAspectRatio(),
             request.hashtags()
         );
         return FeedPostResponse.from(post);

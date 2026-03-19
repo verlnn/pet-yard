@@ -34,6 +34,17 @@ type ComposerImage = {
   naturalSize?: { width: number; height: number };
 };
 
+const getAspectRatioValue = (image: ComposerImage | undefined) => {
+  if (!image) return null;
+  if (image.aspectRatio === "1:1") return 1;
+  if (image.aspectRatio === "4:5") return 4 / 5;
+  if (image.aspectRatio === "16:9") return 16 / 9;
+  if (image.naturalSize?.width && image.naturalSize?.height) {
+    return image.naturalSize.width / image.naturalSize.height;
+  }
+  return null;
+};
+
 const createImageId = () => {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
     return crypto.randomUUID();
@@ -179,6 +190,7 @@ export default function MyFeedPage() {
   const handleCreate = async () => {
     if (!accessToken) return;
     const imageUrls = images.map((image) => image.originalUrl);
+    const primaryImage = images[0];
     const primaryImageUrl = imageUrls[0] ?? null;
     if (!content.trim() && imageUrls.length === 0) {
       setImageError("사진 또는 글을 입력해 주세요.");
@@ -188,11 +200,15 @@ export default function MyFeedPage() {
     try {
       const created = await authApi.createFeedPost(accessToken, {
         content: content.trim() || null,
-        imageUrl: primaryImageUrl
+        imageUrl: primaryImageUrl,
+        imageAspectRatioValue: getAspectRatioValue(primaryImage),
+        imageAspectRatio: primaryImage?.aspectRatio ?? null
       });
       const createdWithImages: FeedPost = {
         ...created,
         imageUrl: primaryImageUrl,
+        imageAspectRatioValue: getAspectRatioValue(primaryImage),
+        imageAspectRatio: primaryImage?.aspectRatio ?? null,
         imageUrls: imageUrls.length > 0 ? imageUrls : null
       };
       setPosts((prev) => [createdWithImages, ...prev]);

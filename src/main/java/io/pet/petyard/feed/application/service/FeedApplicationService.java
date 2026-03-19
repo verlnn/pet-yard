@@ -61,6 +61,8 @@ public class FeedApplicationService {
                 post.getId(),
                 post.getContent(),
                 post.getImageUrl(),
+                post.getImageAspectRatioValue(),
+                post.getImageAspectRatio(),
                 post.getCreatedAt(),
                 tags
             ));
@@ -69,13 +71,24 @@ public class FeedApplicationService {
     }
 
     @Transactional
-    public FeedPostView create(Long userId, String content, String imageUrl, List<String> hashtags) {
+    public FeedPostView create(Long userId,
+                               String content,
+                               String imageUrl,
+                               Double imageAspectRatioValue,
+                               String imageAspectRatio,
+                               List<String> hashtags) {
         boolean hasContent = content != null && !content.isBlank();
         boolean hasImage = imageUrl != null && !imageUrl.isBlank();
         if (!hasContent && !hasImage) {
             throw new ApiException(ErrorCode.BAD_REQUEST);
         }
-        FeedPost feedPost = new FeedPost(userId, content, imageUrl);
+        FeedPost feedPost = new FeedPost(
+            userId,
+            content,
+            imageUrl,
+            imageAspectRatioValue,
+            imageAspectRatio
+        );
         FeedPost saved = saveFeedPostPort.save(feedPost);
 
         List<String> normalizedTags = normalizeTags(content, hashtags);
@@ -87,6 +100,8 @@ public class FeedApplicationService {
             saved.getId(),
             saved.getContent(),
             saved.getImageUrl(),
+            saved.getImageAspectRatioValue(),
+            saved.getImageAspectRatio(),
             saved.getCreatedAt(),
             normalizedTags
         );

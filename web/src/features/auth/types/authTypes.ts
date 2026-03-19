@@ -118,6 +118,8 @@ export interface FeedPost {
   content?: string | null;
   imageUrl?: string | null;
   imageUrls?: string[] | null;
+  imageAspectRatioValue?: number | null;
+  imageAspectRatio?: "original" | "1:1" | "4:5" | "16:9" | null;
   createdAt: string;
   hashtags?: string[] | null;
 }
