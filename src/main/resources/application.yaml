@@ -57,3 +57,7 @@ logging:
   level:
     root: INFO
     io.pet.petyard: INFO
+
+server:
+  tomcat:
+    max-part-count: 15
