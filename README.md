@@ -163,3 +163,93 @@ docker pull verlnnennn/petyard-web-image:ec2-amd64-v1
 
 
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## ⚙️ Tech Stack
+
+<p>
+  <img src="https://skillicons.dev/icons?i=java,spring,postgres,nextjs,ts,tailwind,docker,aws,nginx,githubactions" />
+</p>
+
+
+---
+
+## ⚙️ Tech Stack
+
+### 🧩 Backend
+<p>
+  <img src="https://skillicons.dev/icons?i=java,spring,postgres" />
+</p>
+
+### 🎨 Frontend
+<p>
+  <img src="https://skillicons.dev/icons?i=nextjs,ts,tailwind" />
+</p>
+
+### ⚙️ DevOps / Infra
+<p>
+  <img src="https://skillicons.dev/icons?i=docker,aws,nginx,githubactions" />
+</p>
+
+
+
+----
+
+### 🧩 Backend
+![Java](https://img.shields.io/badge/Java-25-red?logo=openjdk)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-green?logo=springboot)
+![Spring Security](https://img.shields.io/badge/Spring_Security-6-green?logo=springsecurity)
+![JPA](https://img.shields.io/badge/JPA-Hibernate-orange?logo=hibernate)
+![JWT](https://img.shields.io/badge/JWT-Auth-black?logo=jsonwebtokens)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue?logo=postgresql)
+![Flyway](https://img.shields.io/badge/Flyway-DB_Migration-red?logo=flyway)
+
+### 🎨 Frontend
+![Next.js](https://img.shields.io/badge/Next.js-App_Router-black?logo=nextdotjs)
+![TypeScript](https://img.shields.io/badge/TypeScript-blue?logo=typescript)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-38B2AC?logo=tailwindcss)
+
+### ⚙️ DevOps / Infra
+![Docker](https://img.shields.io/badge/Docker-blue?logo=docker)
+![Docker Compose](https://img.shields.io/badge/Docker_Compose-2496ED?logo=docker)
+![AWS EC2](https://img.shields.io/badge/AWS-EC2-orange?logo=amazonaws)
+![Nginx](https://img.shields.io/badge/Nginx-Reverse_Proxy-green?logo=nginx)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI/CD-black?logo=githubactions)
+![Docker Hub](https://img.shields.io/badge/Docker_Hub-Registry-blue?logo=docker)
