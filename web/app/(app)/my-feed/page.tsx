@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { SectionShell } from "@/components/site/section-shell";
 import { SiteNav } from "@/components/site/nav";
@@ -108,17 +109,6 @@ export default function MyFeedPage() {
   }, [accessToken]);
 
   useEffect(() => {
-    if (!selectedPost) return;
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setSelectedPost(null);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedPost]);
-
-  useEffect(() => {
     const updateViewportSize = () => {
       setViewportSize({
         width: window.innerWidth,
@@ -131,6 +121,12 @@ export default function MyFeedPage() {
   }, []);
 
   const grid = useMemo(() => posts, [posts]);
+  const selectedPostIndex = useMemo(
+    () => (selectedPost ? posts.findIndex((post) => post.id === selectedPost.id) : -1),
+    [posts, selectedPost]
+  );
+  const hasPrevPost = selectedPostIndex > 0;
+  const hasNextPost = selectedPostIndex !== -1 && selectedPostIndex < posts.length - 1;
   const selectedPostPhotoSize = useMemo(() => {
     if (!selectedPost || !viewportSize.width || !viewportSize.height) {
       return { width: 0, height: 0 };
@@ -159,6 +155,35 @@ export default function MyFeedPage() {
       targetRatio
     });
   }, [selectedPost, viewportSize]);
+
+  const handleSelectPrevPost = () => {
+    if (!hasPrevPost) return;
+    setSelectedPost(posts[selectedPostIndex - 1] ?? null);
+  };
+
+  const handleSelectNextPost = () => {
+    if (!hasNextPost) return;
+    setSelectedPost(posts[selectedPostIndex + 1] ?? null);
+  };
+
+  useEffect(() => {
+    if (!selectedPost) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setSelectedPost(null);
+        return;
+      }
+      if (event.key === "ArrowLeft") {
+        handleSelectPrevPost();
+        return;
+      }
+      if (event.key === "ArrowRight") {
+        handleSelectNextPost();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedPost, hasPrevPost, hasNextPost, selectedPostIndex, posts]);
 
   const handleAddImages = async (files?: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -375,6 +400,26 @@ export default function MyFeedPage() {
 
       {selectedPost && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
+          {hasPrevPost && (
+            <button
+              type="button"
+              onClick={handleSelectPrevPost}
+              className="absolute left-6 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/90 p-3 text-ink shadow-lg transition hover:bg-white"
+              aria-label="이전 게시물 보기"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+          )}
+          {hasNextPost && (
+            <button
+              type="button"
+              onClick={handleSelectNextPost}
+              className="absolute right-6 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/90 p-3 text-ink shadow-lg transition hover:bg-white"
+              aria-label="다음 게시물 보기"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          )}
           <div className="flex overflow-hidden rounded-[32px] bg-white">
             <div
               className="flex items-center justify-center bg-black"
