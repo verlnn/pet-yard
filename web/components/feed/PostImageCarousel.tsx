@@ -27,20 +27,22 @@ export function PostImageCarousel({ images }: PostImageCarouselProps) {
         <img src={current} alt="피드 이미지" className="h-full w-full object-cover" />
         {total > 1 && (
           <>
-            <button
-              type="button"
-              onClick={goPrev}
-              className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/80 p-2 text-ink shadow-sm transition hover:bg-white"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              onClick={goNext}
-              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/80 p-2 text-ink shadow-sm transition hover:bg-white"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </button>
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-between px-3">
+              <button
+                type="button"
+                onClick={goPrev}
+                className="pointer-events-auto rounded-full bg-white/80 p-2 text-ink shadow-sm transition hover:bg-white"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                onClick={goNext}
+                className="pointer-events-auto rounded-full bg-white/80 p-2 text-ink shadow-sm transition hover:bg-white"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
             <div className="absolute bottom-3 right-3 rounded-full bg-black/60 px-2 py-1 text-[10px] text-white">
               {index + 1}/{total}
             </div>
