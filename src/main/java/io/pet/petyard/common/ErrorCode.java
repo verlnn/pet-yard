@@ -33,7 +33,9 @@ public enum ErrorCode {
     REQUIRED_TERMS_MISSING("BAD_REQUEST", "필수 약관 동의가 필요합니다"),
     SIGNUP_SESSION_EXPIRED("BAD_REQUEST", "회원가입 세션이 만료되었습니다"),
     SIGNUP_STEP_INVALID("BAD_REQUEST", "회원가입 단계가 올바르지 않습니다"),
-    VALIDATION_FAILED("BAD_REQUEST", "요청 값 검증에 실패했습니다");
+    VALIDATION_FAILED("BAD_REQUEST", "요청 값 검증에 실패했습니다"),
+    INVALID_FILE_TYPE("BAD_REQUEST", "지원하지 않는 파일 형식입니다"),
+    FILE_UPLOAD_FAILED("INTERNAL_ERROR", "파일 업로드에 실패했습니다");
 
     private final String code;
     private final String message;

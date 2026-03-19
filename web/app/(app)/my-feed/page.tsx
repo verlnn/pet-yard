@@ -27,6 +27,7 @@ type TabId = (typeof tabs)[number]["id"];
 type ComposerImage = {
   id: string;
   name: string;
+  file: File;
   originalUrl: string;
   aspectRatio: "original" | "1:1" | "4:5" | "16:9";
   scale: number;
@@ -148,6 +149,7 @@ export default function MyFeedPage() {
       const nextImages = dataUrls.map((url, index) => ({
         id: createImageId(),
         name: validFiles[index]?.name ?? `image-${index + 1}`,
+        file: validFiles[index] as File,
         originalUrl: url,
         aspectRatio: "original" as const,
         scale: 1,
@@ -198,16 +200,25 @@ export default function MyFeedPage() {
     }
     setCreating(true);
     try {
-      const created = await authApi.createFeedPost(accessToken, {
-        content: content.trim() || null,
-        imageUrl: primaryImageUrl,
-        imageAspectRatioValue: getAspectRatioValue(primaryImage),
-        imageAspectRatio: primaryImage?.aspectRatio ?? null
-      });
+      const formData = new FormData();
+      if (content.trim()) {
+        formData.append("content", content.trim());
+      }
+      if (primaryImage) {
+        formData.append("image", primaryImage.file);
+      }
+      const aspectRatioValue = getAspectRatioValue(primaryImage);
+      if (aspectRatioValue !== null) {
+        formData.append("imageAspectRatioValue", String(aspectRatioValue));
+      }
+      if (primaryImage?.aspectRatio) {
+        formData.append("imageAspectRatio", primaryImage.aspectRatio);
+      }
+
+      const created = await authApi.createFeedPost(accessToken, formData);
       const createdWithImages: FeedPost = {
         ...created,
-        imageUrl: primaryImageUrl,
-        imageAspectRatioValue: getAspectRatioValue(primaryImage),
+        imageAspectRatioValue: aspectRatioValue,
         imageAspectRatio: primaryImage?.aspectRatio ?? null,
         imageUrls: imageUrls.length > 0 ? imageUrls : null
       };

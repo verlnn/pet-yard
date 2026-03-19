@@ -328,20 +328,14 @@ export const authApi = {
   },
   createFeedPost(
     accessToken: string,
-    payload: {
-      content?: string | null;
-      imageUrl?: string | null;
-      imageAspectRatioValue?: number | null;
-      imageAspectRatio?: "original" | "1:1" | "4:5" | "16:9" | null;
-      hashtags?: string[] | null;
-    }
+    payload: FormData
   ) {
     return request<FeedPost>("/api/feeds", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`
       },
-      body: JSON.stringify(payload)
+      body: payload
     });
   },
   deleteFeedPost(accessToken: string, id: number) {

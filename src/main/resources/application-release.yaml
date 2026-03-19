@@ -16,6 +16,9 @@ spring:
 app:
   frontend-origin: ${FRONTEND_ORIGIN}
   frontend-origin-www: ${FRONTEND_ORIGIN_WWW}
+  storage:
+    upload-dir: /data/pet-yard/images
+    public-url-prefix: /data/pet-yard/images
   mail:
     from: ${MAIL_FROM}
 

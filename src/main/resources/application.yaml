@@ -28,6 +28,9 @@ spring:
       mail.smtp.starttls.enable: ${MAIL_SMTP_STARTTLS:false}
 
 app:
+  storage:
+    upload-dir: uploads
+    public-url-prefix: /uploads
   mail:
     from: ${MAIL_FROM:no-reply@pet-yard.local}
 

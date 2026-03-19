@@ -13,6 +13,9 @@ spring:
       mail.smtp.starttls.enable: false
 
 app:
+  storage:
+    upload-dir: upload/images
+    public-url-prefix: /upload/images
   mail:
     from: no-reply@pet-yard.local
 
