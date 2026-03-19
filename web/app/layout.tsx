@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import "./globals.css";
 import "@/src/styles/globals.scss";
 import { Providers } from "./providers";
+import { notoSansKr, playfairDisplay, spaceGrotesk } from "./fonts";
 
 export const metadata: Metadata = {
   title: "멍냥마당 | 반려동물 성장과 이웃 매칭",
@@ -23,7 +24,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body>
+      <body
+        className={`${spaceGrotesk.variable} ${playfairDisplay.variable} ${notoSansKr.variable}`}
+      >
         <Providers>{children}</Providers>
       </body>
     </html>

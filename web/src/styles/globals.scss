@@ -1,14 +1,11 @@
 @use "./tokens" as *;
 
-@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/pretendard.css");
-@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap");
-
 * {
   box-sizing: border-box;
 }
 
 body {
-  font-family: "Space Grotesk", "Playfair Display", serif;
+  font-family: var(--font-space-grotesk), var(--font-playfair-display), var(--font-noto-sans-kr), serif;
   color: $color-ink;
   background: $bg-gradient;
 }
