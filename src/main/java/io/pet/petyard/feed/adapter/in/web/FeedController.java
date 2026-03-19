@@ -56,16 +56,16 @@ public class FeedController {
         if (images != null) {
             for (int i = 0; i < images.size(); i++) {
                 MultipartFile image = images.get(i);
-                String imageUrl = localFileStorage.saveFeedImage(image);
-                if (imageUrl == null || imageUrl.isBlank()) {
-                    continue;
-                }
                 Double aspectRatioValue = imageAspectRatioValue != null && i < imageAspectRatioValue.size()
                     ? imageAspectRatioValue.get(i)
                     : null;
                 String aspectRatio = imageAspectRatio != null && i < imageAspectRatio.size()
                     ? imageAspectRatio.get(i)
                     : null;
+                String imageUrl = localFileStorage.saveFeedImage(image, aspectRatioValue, aspectRatio);
+                if (imageUrl == null || imageUrl.isBlank()) {
+                    continue;
+                }
                 String imageContent = image.getOriginalFilename();
                 imageCommands.add(new FeedPostImageCommand(
                     imageUrl,
