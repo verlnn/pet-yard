@@ -14,7 +14,7 @@
 # =========================
 # 1) Build stage
 # =========================
-FROM gradle:8.10.2-jdk25 AS builder
+FROM gradle:9.4.0-jdk25 AS builder
 
 WORKDIR /app
 
