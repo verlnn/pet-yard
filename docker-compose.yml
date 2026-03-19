@@ -25,6 +25,7 @@ services:
       - .env.release
     environment:
       TZ: Asia/Seoul
+      JAVA_TOOL_OPTIONS: -Duser.timezone=Asia/Seoul
       SPRING_PROFILES_ACTIVE: release
       DB_URL: jdbc:postgresql://db:5432/petyard
       DB_USERNAME: verlnn
