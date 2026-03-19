@@ -14,7 +14,7 @@ services:
       - db-data:/var/lib/postgresql/data
 
   server:
-    image: verlnnennn/petyard-server-image:ec2-amd64-v3
+    image: verlnnennn/petyard-server-image:ec2-amd64-v1
     container_name: petyard-server
     ports:
       - "8080:8080"
@@ -28,6 +28,17 @@ services:
       DB_USERNAME: verlnn
       DB_PASSWORD: qwer123@
     restart: always
+
+  web:
+    image: verlnnennn/petyard-web-image:ec2-amd64-v1
+    container_name: petyard-web
+    restart: always
+    depends_on:
+      - server
+    env_file:
+      - .env.web
+    ports:
+      - "3000:3000"
 
 volumes:
   db-data:
