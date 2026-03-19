@@ -7,8 +7,8 @@ import AuthLayout from "@/src/features/auth/components/AuthLayout/AuthLayout";
 import AuthCard from "@/src/features/auth/components/AuthCard/AuthCard";
 import { useAuthForms } from "@/src/features/auth/hooks/useAuthForms";
 import type { AuthMode, OAuthProvider } from "@/src/features/auth/types/authTypes";
-import KakaoLoginButton from "@/src/features/auth/components/AuthEntry/KakaoLoginButton";
-import AuthEntryActions from "@/src/features/auth/components/AuthEntry/AuthEntryActions";
+import KakaoLoginButton from "@/src/features/auth/components/social-auth/KakaoLoginButton";
+import AuthEntryActions from "@/src/features/auth/components/social-auth/AuthEntryActions";
 import { applyOAuthResult, openOAuthPopupWindow, waitForOAuthPopup } from "@/src/features/auth/utils/oauthFlow";
 import { authApi } from "@/src/features/auth/api/authApi";
 
