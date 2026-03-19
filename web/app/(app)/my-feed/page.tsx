@@ -12,6 +12,7 @@ import { EmptyFeedState } from "@/components/feed/EmptyFeedState";
 import { NewPostModal } from "@/components/feed/NewPostModal";
 import { PostImageCarousel } from "@/components/feed/PostImageCarousel";
 import { FeedImageFrame } from "@/components/feed/FeedImageFrame";
+import { getBoxSize, getTargetRatio } from "@/components/feed/imageSizing";
 import { authApi } from "@/src/features/auth/api/authApi";
 import type { FeedPost, MyProfileResponse } from "@/src/features/auth/types/authTypes";
 
@@ -80,6 +81,7 @@ export default function MyFeedPage() {
   const [deleting, setDeleting] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId>("posts");
   const [modalOpen, setModalOpen] = useState(false);
+  const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -116,7 +118,47 @@ export default function MyFeedPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [selectedPost]);
 
+  useEffect(() => {
+    const updateViewportSize = () => {
+      setViewportSize({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    };
+    updateViewportSize();
+    window.addEventListener("resize", updateViewportSize);
+    return () => window.removeEventListener("resize", updateViewportSize);
+  }, []);
+
   const grid = useMemo(() => posts, [posts]);
+  const selectedPostPhotoSize = useMemo(() => {
+    if (!selectedPost || !viewportSize.width || !viewportSize.height) {
+      return { width: 0, height: 0 };
+    }
+
+    const targetRatio = getTargetRatio({
+      aspectRatio: selectedPost.imageAspectRatio,
+      aspectRatioValue: selectedPost.imageAspectRatioValue
+    });
+    const modalMaxHeight = Math.min(viewportSize.height * 0.88, 820);
+    const sidebarWidth = 360;
+    const modalMaxWidth = Math.min(viewportSize.width - 32, 1280);
+    const photoMaxWidth = Math.max(280, modalMaxWidth - sidebarWidth);
+    const isWideLandscape = selectedPost.imageAspectRatio === "16:9";
+
+    if (isWideLandscape) {
+      return {
+        width: photoMaxWidth,
+        height: modalMaxHeight
+      };
+    }
+
+    return getBoxSize({
+      containerWidth: photoMaxWidth,
+      containerHeight: modalMaxHeight,
+      targetRatio
+    });
+  }, [selectedPost, viewportSize]);
 
   const handleAddImages = async (files?: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -333,9 +375,14 @@ export default function MyFeedPage() {
 
       {selectedPost && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
-          <div className="h-[min(88vh,820px)] w-full max-w-6xl overflow-hidden rounded-[32px] bg-white">
-            <div className="grid h-full gap-0 md:grid-cols-[1.3fr_0.7fr]">
-              <div className="h-full bg-black">
+          <div className="flex overflow-hidden rounded-[32px] bg-white">
+            <div
+              className="flex items-center justify-center bg-black"
+              style={{
+                width: `${selectedPostPhotoSize.width || 480}px`,
+                height: `${selectedPostPhotoSize.height || 480}px`
+              }}
+            >
                 {selectedPost.imageUrls && selectedPost.imageUrls.length > 0 ? (
                   <PostImageCarousel
                     images={selectedPost.imageUrls}
@@ -356,7 +403,13 @@ export default function MyFeedPage() {
                   </div>
                 )}
               </div>
-              <div className="flex h-full flex-col gap-4 overflow-y-auto p-6">
+              <div
+                className="flex flex-col gap-4 overflow-y-auto p-6"
+                style={{
+                  width: "360px",
+                  maxHeight: `${selectedPostPhotoSize.height || 480}px`
+                }}
+              >
                 <div>
                   <p className="text-xs text-ink/50">작성일</p>
                   <p className="text-sm font-semibold">
@@ -395,7 +448,6 @@ export default function MyFeedPage() {
                   </Button>
                 </div>
               </div>
-            </div>
           </div>
         </div>
       )}
