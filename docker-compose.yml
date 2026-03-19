@@ -5,6 +5,7 @@ services:
     image: postgres:15
     container_name: petyard-db
     environment:
+      TZ: Asia/Seoul
       POSTGRES_USER: verlnn
       POSTGRES_PASSWORD: qwer123@
       POSTGRES_DB: petyard
@@ -14,7 +15,7 @@ services:
       - db-data:/var/lib/postgresql/data
 
   server:
-    image: verlnnennn/petyard-server-image:ec2-amd64-v3
+    image: verlnnennn/petyard-server-image:latest
     container_name: petyard-server
     ports:
       - "8080:8080"
@@ -23,11 +24,26 @@ services:
     env_file:
       - .env.release
     environment:
+      TZ: Asia/Seoul
+      JAVA_TOOL_OPTIONS: -Duser.timezone=Asia/Seoul
       SPRING_PROFILES_ACTIVE: release
       DB_URL: jdbc:postgresql://db:5432/petyard
       DB_USERNAME: verlnn
       DB_PASSWORD: qwer123@
     restart: always
+
+  web:
+    environment:
+      TZ: Asia/Seoul
+    image: verlnnennn/petyard-web-image:latest
+    container_name: petyard-web
+    restart: always
+    depends_on:
+      - server
+    env_file:
+      - .env.web
+    ports:
+      - "3000:3000"
 
 volumes:
   db-data:

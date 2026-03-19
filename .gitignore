@@ -40,6 +40,7 @@ out/
 ### WEB ###
 /web/node_modules
 /web/.next
+/web/.env.web
 # Local overrides
 /src/main/resources/application-local.yaml
 

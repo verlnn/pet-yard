@@ -3,6 +3,7 @@ package io.pet.petyard.auth.security;
 import io.pet.petyard.auth.jwt.JwtTokenProvider;
 import io.pet.petyard.common.ErrorCode;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,6 +22,12 @@ import java.util.List;
 @Configuration
 public class SecurityConfig {
 
+    @Value("${app.frontend-origin}")
+    private String frontendOrigin;
+
+    @Value("${app.frontend-origin-www:}")
+    private String frontendOriginWww;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtTokenProvider tokenProvider,
                                                    ErrorResponseWriter errorResponseWriter) throws Exception {
@@ -30,6 +37,7 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/actuator/health").permitAll()
+                .requestMatchers("/api/health").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/regions/**").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
@@ -49,7 +57,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000"));
+        config.setAllowedOrigins(List.of(
+                "http://localhost:3000",
+                frontendOrigin,
+                frontendOriginWww
+        ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Signup-Token"));
         config.setAllowCredentials(true);
