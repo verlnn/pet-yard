@@ -4,11 +4,16 @@ import { useState } from "react";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+import { FeedImageFrame } from "@/components/feed/FeedImageFrame";
+import type { AspectRatioMode } from "@/components/feed/imageSizing";
+
 interface PostImageCarouselProps {
   images: string[];
+  aspectRatio?: AspectRatioMode | null;
+  aspectRatioValue?: number | null;
 }
 
-export function PostImageCarousel({ images }: PostImageCarouselProps) {
+export function PostImageCarousel({ images, aspectRatio, aspectRatioValue }: PostImageCarouselProps) {
   const [index, setIndex] = useState(0);
   const total = images.length;
   const current = images[index] ?? images[0];
@@ -22,9 +27,14 @@ export function PostImageCarousel({ images }: PostImageCarouselProps) {
 
   return (
     <div className="flex h-full w-full flex-col">
-      <div className="relative flex-1 bg-black">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={current} alt="피드 이미지" className="h-full w-full object-cover" />
+      <div className="relative flex-1 overflow-hidden bg-black">
+        <FeedImageFrame
+          src={current}
+          alt="피드 이미지"
+          aspectRatio={aspectRatio}
+          aspectRatioValue={aspectRatioValue}
+          outerClassName="h-full w-full"
+        />
         {total > 1 && (
           <>
             <div className="pointer-events-none absolute inset-0 flex items-center justify-between px-3">

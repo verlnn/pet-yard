@@ -22,6 +22,36 @@ export function getTargetRatio({
   return ratioMap[aspectRatio];
 }
 
+export function getFrameStyle(targetRatio: number) {
+  if (!targetRatio || !Number.isFinite(targetRatio) || targetRatio <= 0) {
+    return {
+      width: "100%",
+      height: "100%",
+      maxWidth: "100%",
+      maxHeight: "100%",
+      aspectRatio: "1 / 1"
+    };
+  }
+
+  if (targetRatio >= 1) {
+    return {
+      width: "100%",
+      height: "auto",
+      maxWidth: "100%",
+      maxHeight: "100%",
+      aspectRatio: `${targetRatio}`
+    };
+  }
+
+  return {
+    width: "auto",
+    height: "100%",
+    maxWidth: "100%",
+    maxHeight: "100%",
+    aspectRatio: `${targetRatio}`
+  };
+}
+
 export function getBoxSize({
   containerWidth,
   containerHeight,

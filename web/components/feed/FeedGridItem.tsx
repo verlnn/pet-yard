@@ -2,6 +2,7 @@
 
 import { ImageIcon } from "lucide-react";
 
+import { FeedImageFrame } from "@/components/feed/FeedImageFrame";
 import type { FeedPost } from "@/src/features/auth/types/authTypes";
 
 interface FeedGridItemProps {
@@ -19,13 +20,15 @@ export function FeedGridItem({ post, onSelect }: FeedGridItemProps) {
       onClick={() => onSelect(post)}
       className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white/80 text-left"
     >
-      <div className="aspect-square w-full overflow-hidden">
+      <div className="aspect-square w-full overflow-hidden bg-black">
         {thumbnail ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <FeedImageFrame
             src={thumbnail}
             alt="피드 이미지"
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            aspectRatio={post.imageAspectRatio}
+            aspectRatioValue={post.imageAspectRatioValue}
+            outerClassName="h-full w-full"
+            imageClassName="transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
           <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-xs text-ink/40">

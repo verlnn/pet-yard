@@ -11,6 +11,7 @@ import { FeedGrid } from "@/components/feed/FeedGrid";
 import { EmptyFeedState } from "@/components/feed/EmptyFeedState";
 import { NewPostModal } from "@/components/feed/NewPostModal";
 import { PostImageCarousel } from "@/components/feed/PostImageCarousel";
+import { FeedImageFrame } from "@/components/feed/FeedImageFrame";
 import { authApi } from "@/src/features/auth/api/authApi";
 import type { FeedPost, MyProfileResponse } from "@/src/features/auth/types/authTypes";
 
@@ -30,8 +31,6 @@ type ComposerImage = {
   file: File;
   originalUrl: string;
   aspectRatio: "original" | "1:1" | "4:5" | "16:9";
-  scale: number;
-  position: { x: number; y: number };
   naturalSize?: { width: number; height: number };
 };
 
@@ -152,8 +151,6 @@ export default function MyFeedPage() {
         file: validFiles[index] as File,
         originalUrl: url,
         aspectRatio: "original" as const,
-        scale: 1,
-        position: { x: 0, y: 0 }
       }));
       setImages((prev) => [...prev, ...nextImages]);
       setImageError(errors[0] ?? null);
@@ -329,10 +326,19 @@ export default function MyFeedPage() {
             <div className="grid h-full gap-0 md:grid-cols-[1.3fr_0.7fr]">
               <div className="h-full bg-black">
                 {selectedPost.imageUrls && selectedPost.imageUrls.length > 0 ? (
-                  <PostImageCarousel images={selectedPost.imageUrls} />
+                  <PostImageCarousel
+                    images={selectedPost.imageUrls}
+                    aspectRatio={selectedPost.imageAspectRatio}
+                    aspectRatioValue={selectedPost.imageAspectRatioValue}
+                  />
                 ) : selectedPost.imageUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={selectedPost.imageUrl} alt="피드 이미지" className="h-full w-full object-cover" />
+                  <FeedImageFrame
+                    src={selectedPost.imageUrl}
+                    alt="피드 이미지"
+                    aspectRatio={selectedPost.imageAspectRatio}
+                    aspectRatioValue={selectedPost.imageAspectRatioValue}
+                    outerClassName="h-full w-full"
+                  />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center text-xs text-white/60">
                     이미지 없음
