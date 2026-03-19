@@ -15,12 +15,15 @@ import java.util.UUID;
 
 import javax.imageio.ImageIO;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 @Component
 public class LocalFileStorage {
 
+    private static final Logger log = LoggerFactory.getLogger(LocalFileStorage.class);
     private static final Set<String> ALLOWED_EXTENSIONS = Set.of("jpg", "jpeg", "png", "webp", "gif");
 
     private final FileStorageProperties properties;
@@ -55,7 +58,14 @@ public class LocalFileStorage {
         }
 
         String basePath = properties.publicUrlPrefix();
-        return basePath + "/feed/" + filename;
+        String publicPath = basePath + "/feed/" + filename;
+        log.info("피드 이미지 저장 완료: 원본파일명={}, 저장경로={}, 공개경로={}, 비율={}, 비율값={}",
+            file.getOriginalFilename(),
+            target,
+            publicPath,
+            aspectRatio,
+            aspectRatioValue);
+        return publicPath;
     }
 
     private boolean shouldCrop(String aspectRatio, Double aspectRatioValue) {
