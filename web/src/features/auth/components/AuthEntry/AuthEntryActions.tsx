@@ -25,6 +25,7 @@ export default function AuthEntryActions(props: AuthEntryActionsProps) {
             ariaLabel={provider.ariaLabel}
             onClick={providerHandlers[provider.id](props)}
             iconSrc={provider.iconSrc}
+            disabled
           />
           {index < SOCIAL_PROVIDERS.length - 1 && (
             <span className="h-7 w-px rounded-full bg-black/20" aria-hidden="true" />

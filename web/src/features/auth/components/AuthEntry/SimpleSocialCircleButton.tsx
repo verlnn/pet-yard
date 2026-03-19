@@ -7,20 +7,27 @@ interface SimpleSocialCircleButtonProps {
   ariaLabel: string;
   onClick: () => void;
   iconSrc: string;
+  disabled?: boolean;
 }
 
 export default function SimpleSocialCircleButton({
   label,
   ariaLabel,
   onClick,
-  iconSrc
+  iconSrc,
+  disabled = false
 }: SimpleSocialCircleButtonProps) {
   return (
     <button
       type="button"
       onClick={onClick}
       aria-label={ariaLabel}
-      className="flex h-16 w-16 items-center justify-center rounded-2xl bg-transparent transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/20"
+      disabled={disabled}
+      className={`flex h-16 w-16 items-center justify-center rounded-2xl bg-transparent transition ${
+        disabled
+          ? "cursor-not-allowed opacity-40"
+          : "hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/20"
+      }`}
     >
       <Image
         src={iconSrc}
