@@ -30,6 +30,8 @@ services:
       DB_URL: jdbc:postgresql://db:5432/petyard
       DB_USERNAME: verlnn
       DB_PASSWORD: qwer123@
+    volumes:
+      - /data/pet-yard/images:/data/pet-yard/images
     restart: always
 
   web:
