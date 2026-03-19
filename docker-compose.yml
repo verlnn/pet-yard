@@ -15,7 +15,7 @@ services:
       - db-data:/var/lib/postgresql/data
 
   server:
-    image: verlnnennn/petyard-server-image:ec2-amd64-v1
+    image: verlnnennn/petyard-server-image:latest
     container_name: petyard-server
     ports:
       - "8080:8080"
@@ -35,7 +35,7 @@ services:
   web:
     environment:
       TZ: Asia/Seoul
-    image: verlnnennn/petyard-web-image:ec2-amd64-v1
+    image: verlnnennn/petyard-web-image:latest
     container_name: petyard-web
     restart: always
     depends_on:
