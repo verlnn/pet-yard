@@ -67,14 +67,16 @@ public class FeedApplicationService {
         Map<Long, List<String>> tagsByPost = loadFeedPostHashtagPort.findTagNamesByPostIds(postIds);
         List<FeedPostView> result = new ArrayList<>();
         for (FeedPost post : posts) {
-            List<String> imageUrls = imagesByPost.getOrDefault(post.getId(), List.of())
+            List<FeedPostImage> postImages = imagesByPost.getOrDefault(post.getId(), List.of());
+            List<String> imageUrls = postImages
                 .stream()
                 .map(FeedPostImage::getImageUrl)
                 .toList();
+            String displayContent = postImages.isEmpty() ? null : postImages.get(0).getContent();
             List<String> tags = tagsByPost.getOrDefault(post.getId(), List.of());
             result.add(new FeedPostView(
                 post.getId(),
-                post.getContent(),
+                displayContent,
                 imageUrls.isEmpty() ? null : imageUrls.get(0),
                 imageUrls,
                 post.getImageAspectRatioValue(),
@@ -91,18 +93,16 @@ public class FeedApplicationService {
                                String content,
                                List<FeedPostImageCommand> images,
                                List<String> hashtags) {
-        boolean hasContent = content != null && !content.isBlank();
         List<FeedPostImageCommand> safeImages = images == null ? List.of() : images.stream()
             .filter(image -> image.imageUrl() != null && !image.imageUrl().isBlank())
             .toList();
         FeedPostImageCommand primaryImage = safeImages.isEmpty() ? null : safeImages.get(0);
         boolean hasImage = primaryImage != null;
-        if (!hasContent && !hasImage) {
+        if (!hasImage) {
             throw new ApiException(ErrorCode.BAD_REQUEST);
         }
         FeedPost feedPost = new FeedPost(
             userId,
-            content,
             primaryImage != null ? primaryImage.imageAspectRatioValue() : null,
             primaryImage != null ? primaryImage.imageAspectRatio() : null
         );
@@ -116,7 +116,7 @@ public class FeedApplicationService {
 
         return new FeedPostView(
             saved.getId(),
-            saved.getContent(),
+            primaryImage != null ? primaryImage.content() : null,
             primaryImage != null ? primaryImage.imageUrl() : null,
             safeImages.stream().map(FeedPostImageCommand::imageUrl).toList(),
             saved.getImageAspectRatioValue(),

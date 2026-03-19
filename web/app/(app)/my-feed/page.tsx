@@ -192,8 +192,8 @@ export default function MyFeedPage() {
   const handleCreate = async () => {
     if (!accessToken) return;
     const imageUrls = images.map((image) => image.originalUrl);
-    if (!content.trim() && imageUrls.length === 0) {
-      setImageError("사진 또는 글을 입력해 주세요.");
+    if (imageUrls.length === 0) {
+      setImageError("사진을 한 장 이상 추가해 주세요.");
       return;
     }
     setCreating(true);

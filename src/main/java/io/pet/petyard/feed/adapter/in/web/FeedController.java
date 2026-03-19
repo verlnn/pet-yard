@@ -66,8 +66,10 @@ public class FeedController {
                 String aspectRatio = imageAspectRatio != null && i < imageAspectRatio.size()
                     ? imageAspectRatio.get(i)
                     : null;
+                String imageContent = image.getOriginalFilename();
                 imageCommands.add(new FeedPostImageCommand(
                     imageUrl,
+                    imageContent,
                     aspectRatioValue,
                     aspectRatio,
                     i

@@ -24,6 +24,9 @@ public class FeedPostImage {
     @Column(name = "image_url", nullable = false, columnDefinition = "text")
     private String imageUrl;
 
+    @Column(columnDefinition = "text")
+    private String content;
+
     @Column(name = "image_aspect_ratio_value")
     private Double imageAspectRatioValue;
 
@@ -41,11 +44,13 @@ public class FeedPostImage {
 
     public FeedPostImage(Long postId,
                          String imageUrl,
+                         String content,
                          Double imageAspectRatioValue,
                          String imageAspectRatio,
                          Integer sortOrder) {
         this.postId = postId;
         this.imageUrl = imageUrl;
+        this.content = content;
         this.imageAspectRatioValue = imageAspectRatioValue;
         this.imageAspectRatio = imageAspectRatio;
         this.sortOrder = sortOrder;
@@ -64,6 +69,10 @@ public class FeedPostImage {
 
     public String getImageUrl() {
         return imageUrl;
+    }
+
+    public String getContent() {
+        return content;
     }
 
     public Double getImageAspectRatioValue() {

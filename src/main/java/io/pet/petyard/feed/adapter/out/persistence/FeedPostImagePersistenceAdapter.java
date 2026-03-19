@@ -48,6 +48,7 @@ public class FeedPostImagePersistenceAdapter implements LoadFeedPostImagePort, S
             .map(image -> new FeedPostImage(
                 postId,
                 image.imageUrl(),
+                image.content(),
                 image.imageAspectRatioValue(),
                 image.imageAspectRatio(),
                 image.sortOrder()
