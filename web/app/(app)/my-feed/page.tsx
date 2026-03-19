@@ -325,9 +325,9 @@ export default function MyFeedPage() {
 
       {selectedPost && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
-          <div className="w-full max-w-4xl overflow-hidden rounded-[32px] bg-white">
-            <div className="grid gap-0 md:grid-cols-[1.3fr_0.7fr]">
-              <div className="bg-black">
+          <div className="h-[min(88vh,820px)] w-full max-w-6xl overflow-hidden rounded-[32px] bg-white">
+            <div className="grid h-full gap-0 md:grid-cols-[1.3fr_0.7fr]">
+              <div className="h-full bg-black">
                 {selectedPost.imageUrls && selectedPost.imageUrls.length > 0 ? (
                   <PostImageCarousel images={selectedPost.imageUrls} />
                 ) : selectedPost.imageUrl ? (
@@ -339,7 +339,7 @@ export default function MyFeedPage() {
                   </div>
                 )}
               </div>
-              <div className="flex flex-col gap-4 p-6">
+              <div className="flex h-full flex-col gap-4 overflow-y-auto p-6">
                 <div>
                   <p className="text-xs text-ink/50">작성일</p>
                   <p className="text-sm font-semibold">
