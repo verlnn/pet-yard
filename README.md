@@ -1,236 +1,33 @@
 # 🐾 PetYard (멍냥마당)
 
-반려 생활을 위한 커뮤니티/산책/돌봄 플랫폼을 목표로 하는 웹 프로젝트입니다.
-
-## Stack
-- Backend: Java 25, Spring Boot, Spring Security, JPA, JWT, PostgreSQL
-- Frontend: Next.js(App Router), Tailwind CSS, TypeScript
-- DB Migration: Flyway
-- Test: JUnit, MockMvc, (향후 Vitest/Playwright)
-
+> 반려동물 기반 커뮤니티 · 산책 매칭 · 돌봄 플랫폼  
+> **실제 운영을 목표로 설계된 Full-stack 서비스**
 
 ---
 
+## 🌐 Live
 
-## 🧱 Architecture
-
-```
-EC2
- └ docker-compose
-    ├ web (Next.js)
-    ├ api (Server - Spring)
-    └ db (PostgreSQL - official image)
-```
-
+- 🔗 https://www.pet-yard.org
 
 ---
 
-## 🐳 docker-compose.yml 예시
+## 🧭 Overview
 
-```yaml
-version: "3.8"
+PetYard는 반려동물 사용자들을 위한 통합 플랫폼입니다.
 
-services:
-  web:
-    image: petyard-web-image
-    ports:
-      - "3000:3000"
-    depends_on:
-      - api
+- 반려동물 SNS (기록/공유)
+- 산책 매칭 및 커뮤니티
+- 향후 위탁/돌봄 기능 확장 예정
+- 향후 산책 관련 to-do 기능 예정
 
-  api:
-    image: petyard-server-image
-    ports:
-      - "8080:8080"
-    depends_on:
-      - db
-
-  db:
-    image: postgres:15
-    environment:
-      POSTGRES_USER: verlnn
-      POSTGRES_PASSWORD: qwer123@
-      POSTGRES_DB: petyard
-    ports:
-      - "5432:5432"
-    volumes:
-      - db-data:/var/lib/postgresql/data
-
-volumes:
-  db-data:
-```
-
----
-
-
-## 🏗️ 이미지 구성
-
-### 1. petyard-web-image
-- Next.js 기반
-- 프론트엔드 서버
-
-### 2. petyard-server-image
-- Java (Spring) 또는 Node API 서버
-
-### 3. PostgreSQL
-- 공식 이미지 사용 (`postgres:15`)
+단순 CRUD 프로젝트가 아닌,  
+**실제 운영을 고려한 아키텍처와 배포 환경**을 구축했습니다.
 
 ---
 
 
 
-## 🚀 배포 흐름
-
-### 1. 이미지 빌드
-
-```bash
-docker build -t petyard-web-image ./web
-docker build -t petyard-server-image .
-```
-
----
-
-### 2. compose 실행
-
-```bash
-docker compose up -d
-```
-
----
-
-### 3.1 EC2로 파일 옮기기
-
-```bash
-docker save -o petyard-server-image.tar petyard-server-image
-
-scp -i ~/???.pem ~/petyard-server-image.tar ubuntu@<EC2_IP>:~ 
-
-docker load -i petyard-server-image.tar
-```
-
----
-
-### 3.2 Docker Hub ( Backend )
-
-```bash
-
-## Docker 로그인
-docker login
-
-
-
-# local
-./gradlew clean build
-
-docker buildx build \
-  --platform linux/amd64 \
-  -t verlnnennn/petyard-server-image:ec2-amd64-v1 \
-  --push \
-  .
-
-# EC2
-docker compose down
-docker compose pull
-docker compose up -d
-docker logs -f petyard-server
-
-
-## Log
-docker logs -f --tail 300 petyard-server
-```
-
----
-
-### 3.2 Docker Hub ( Backend )
-
-```bash
-# local
-docker build -t petyard-web-image .
-
-docker buildx build \
-  --platform linux/amd64 \
-  -t verlnnennn/petyard-web-image:ec2-amd64-v1 \
-  --push \
-  .
-  
-
-# Test
-docker run -p 3000:3000 petyard-web-image
-
-  
-# EC2
-docker pull verlnnennn/petyard-web-image:ec2-amd64-v1
-
-
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## ⚙️ Tech Stack
-
-<p>
-  <img src="https://skillicons.dev/icons?i=java,spring,postgres,nextjs,ts,tailwind,docker,aws,nginx,githubactions" />
-</p>
-
-
----
-
-## ⚙️ Tech Stack
-
-### 🧩 Backend
-<p>
-  <img src="https://skillicons.dev/icons?i=java,spring,postgres" />
-</p>
-
-### 🎨 Frontend
-<p>
-  <img src="https://skillicons.dev/icons?i=nextjs,ts,tailwind" />
-</p>
-
-### ⚙️ DevOps / Infra
-<p>
-  <img src="https://skillicons.dev/icons?i=docker,aws,nginx,githubactions" />
-</p>
-
-
-
-----
+## 🛠 Tech Stack
 
 ### 🧩 Backend
 ![Java](https://img.shields.io/badge/Java-25-red?logo=openjdk)
@@ -253,3 +50,102 @@ docker pull verlnnennn/petyard-web-image:ec2-amd64-v1
 ![Nginx](https://img.shields.io/badge/Nginx-Reverse_Proxy-green?logo=nginx)
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI/CD-black?logo=githubactions)
 ![Docker Hub](https://img.shields.io/badge/Docker_Hub-Registry-blue?logo=docker)
+
+---
+
+## 🧱 Architecture
+
+```
+Client (Browser)
+   ↓
+Internet
+   ↓
+Nginx (Reverse Proxy + HTTPS)
+├── Route: /        → Web (Next.js)
+└── Route: /api     → API (Spring Boot)
+
+EC2 Instance
+└── Docker Compose
+├── web (Next.js, Port 3000)
+├── api (Spring Boot, Port 8080)
+└── db (PostgreSQL, Port 5432)   
+```
+
+---
+
+## 🐳 Docker Structure
+
+| Service | Description |
+|--------|------------|
+| web    | Next.js frontend |
+| api    | Spring Boot backend |
+| db     | PostgreSQL (official image) |
+
+---
+
+## ⚙️ CI/CD Pipeline
+
+GitHub Actions 기반 자동 배포
+
+### 📌 Trigger
+- `release` 브랜치 push 시 자동 실행
+
+### 🔁 Flow
+
+1. Docker Build (multi-stage)
+2. Docker Hub Push (`latest`)
+3. EC2 SSH 접속
+4. `docker compose pull`
+5. `docker compose up -d --force-recreate`
+
+---
+
+## 📦 Branch Strategy
+
+```
+develop → feature → release
+```
+
+| Branch  | Description |
+|---------|------------|
+| develop | 기능 개발 |
+| feature | 통합 개발 |
+| release | 배포 트리거 |
+
+
+---
+
+## 🔐 Authentication
+
+- Kakao OAuth 로그인
+- JWT 기반 인증/인가
+- Stateless 구조
+
+---
+
+## 📌 Key Features
+
+- 카카오 로그인 (OAuth)
+- JWT 기반 인증 시스템
+- 반려동물 중심 계정 확장 구조
+- Docker 기반 서비스 분리
+- CI/CD 자동 배포 환경 구축
+- HTTPS 적용 (Let's Encrypt)
+
+---
+
+
+## 🧠 What I Focused On
+
+- 단순 기능 구현이 아닌 **운영 가능한 구조 설계**
+- Docker 기반 서비스 분리
+- CI/CD 자동화
+- 인증/인가 구조 설계 (JWT + OAuth)
+- 확장 가능한 아키텍처
+
+---
+
+## 🧾 Summary
+
+PetYard는 단순한 개인 프로젝트가 아닌,  
+**실제 서비스 운영을 목표로 구축된 Full-stack 시스템**입니다.
