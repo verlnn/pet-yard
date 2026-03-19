@@ -110,7 +110,7 @@ docker load -i petyard-server-image.tar
 
 ---
 
-### 3.2 Docker Hub
+### 3.2 Docker Hub ( Backend )
 
 ```bash
 
@@ -128,8 +128,7 @@ docker buildx build \
   --push \
   .
 
-# ec2
-# docker-compose.yml 태그를 ec2-amd64-v3로 수정
+# EC2
 docker compose down
 docker compose pull
 docker compose up -d
@@ -141,3 +140,26 @@ docker logs -f --tail 300 petyard-server
 ```
 
 ---
+
+### 3.2 Docker Hub ( Backend )
+
+```bash
+# local
+docker build -t petyard-web-image .
+
+docker buildx build \
+  --platform linux/amd64 \
+  -t verlnnennn/petyard-web-image:ec2-amd64-v1 \
+  --push \
+  .
+  
+
+# Test
+docker run -p 3000:3000 petyard-web-image
+
+  
+# EC2
+docker pull verlnnennn/petyard-web-image:ec2-amd64-v1
+
+
+```
