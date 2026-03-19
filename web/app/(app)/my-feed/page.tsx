@@ -105,6 +105,17 @@ export default function MyFeedPage() {
     load();
   }, [accessToken]);
 
+  useEffect(() => {
+    if (!selectedPost) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setSelectedPost(null);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedPost]);
+
   const grid = useMemo(() => posts, [posts]);
 
   const handleAddImages = async (files?: FileList | null) => {
