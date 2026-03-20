@@ -111,7 +111,134 @@ Avoid:
 - writing `bg-slate-800`, `text-white`, `border-white/10` directly in many places when the role is reusable
 - defining separate per-page dark colors without first checking the shared tokens
 
-## 6. Component Mapping Draft
+## 6. State Tokens Draft
+
+State colors should also be semantic and mode-aware.
+
+Recommended additions:
+
+```css
+:root {
+  --color-success: #16a34a;
+  --color-success-soft: #dcfce7;
+  --color-warning: #d97706;
+  --color-warning-soft: #fef3c7;
+  --color-danger: #ef4444;
+  --color-danger-soft: #fee2e2;
+  --color-info: #2563eb;
+  --color-info-soft: #dbeafe;
+}
+
+[data-theme="dark"] {
+  --color-success: #4ade80;
+  --color-success-soft: rgba(74, 222, 128, 0.14);
+  --color-warning: #fbbf24;
+  --color-warning-soft: rgba(251, 191, 36, 0.14);
+  --color-danger: #f87171;
+  --color-danger-soft: rgba(248, 113, 113, 0.14);
+  --color-info: #60a5fa;
+  --color-info-soft: rgba(96, 165, 250, 0.14);
+}
+```
+
+Use cases:
+
+- success badge / toast / verification complete
+- warning state / pending notice
+- error alert / destructive action
+- info helper / neutral status
+
+## 7. Form / Overlay / Feed Interaction Tokens
+
+These areas need explicit tokens because they are used heavily in PetYard.
+
+Recommended additions:
+
+```css
+:root {
+  --color-input-bg: #ffffff;
+  --color-input-border: rgba(15, 23, 42, 0.12);
+  --color-input-placeholder: #94a3b8;
+  --color-overlay-backdrop: rgba(15, 23, 42, 0.45);
+  --color-hover-surface: #f8fafc;
+  --color-press-surface: #e2e8f0;
+  --color-feed-overlay: rgba(15, 23, 42, 0.42);
+}
+
+[data-theme="dark"] {
+  --color-input-bg: #273449;
+  --color-input-border: rgba(255, 255, 255, 0.12);
+  --color-input-placeholder: #94a3b8;
+  --color-overlay-backdrop: rgba(2, 6, 23, 0.68);
+  --color-hover-surface: #334155;
+  --color-press-surface: #3f4d63;
+  --color-feed-overlay: rgba(2, 6, 23, 0.52);
+}
+```
+
+Recommended mapping:
+
+- inputs / selects / textareas: `--color-input-bg`, `--color-input-border`
+- modal backdrop / menu backdrop: `--color-overlay-backdrop`
+- hover cards / menu rows: `--color-hover-surface`
+- pressed state / active subtle fill: `--color-press-surface`
+- feed image hover overlay / detail dimmer: `--color-feed-overlay`
+
+## 8. Component Mapping Table
+
+| Component area | White mode token | Dark mode token |
+| --- | --- | --- |
+| App background | `--color-bg` | `--color-bg` |
+| Sidebar shell | `--color-surface` | `--color-surface` |
+| Sidebar more menu | `--color-surface-elevated` or `--color-surface` | `--color-surface` |
+| Standard card | `--color-surface` | `--color-surface` |
+| Secondary card | `--color-surface-muted` | `--color-surface-muted` |
+| Modal panel | `--color-surface-elevated` | `--color-surface-elevated` |
+| Backdrop | `--color-overlay-backdrop` | `--color-overlay-backdrop` |
+| Input field | `--color-input-bg` | `--color-input-bg` |
+| Input border | `--color-input-border` | `--color-input-border` |
+| Hover row / hover card | `--color-hover-surface` | `--color-hover-surface` |
+| Active subtle fill | `--color-press-surface` | `--color-press-surface` |
+| Primary text | `--color-text` | `--color-text` |
+| Secondary text | `--color-text-muted` | `--color-text-muted` |
+| Success UI | `--color-success`, `--color-success-soft` | same semantic token, dark value |
+| Warning UI | `--color-warning`, `--color-warning-soft` | same semantic token, dark value |
+| Error UI | `--color-danger`, `--color-danger-soft` | same semantic token, dark value |
+
+## 9. Theme Persistence and Initialization Policy
+
+Theme priority must follow this exact order:
+
+1. `localStorage`
+2. system (`prefers-color-scheme`)
+3. default (`light`)
+
+Storage policy:
+
+- key: `theme`
+- allowed values:
+  - `light`
+  - `dark`
+  - `system`
+
+Important constraints:
+
+- Initial theme must be applied before first render.
+- Do not decide the initial theme in React `useEffect`.
+- Add an inline initialization script in `<head>` to set `data-theme` before hydration.
+
+Runtime rules:
+
+- `ThemeProvider` owns runtime theme state
+- `useTheme` is the single public hook
+- if stored value is `system`, OS theme change must be observed at runtime
+
+Recommended implementation files:
+
+- `/web/src/providers/ThemeProvider.tsx`
+- `/web/src/hooks/useTheme.ts`
+
+## 10. Component Mapping Draft
 
 Recommended first mapping:
 
@@ -124,14 +251,14 @@ Recommended first mapping:
 - Primary text: `--color-text`
 - Secondary text: `--color-text-muted`
 
-## 7. Motion and Effects in Dark Mode
+## 11. Motion and Effects in Dark Mode
 
 - Reduce glow usage
 - Prefer contrast and layering over colored blur backgrounds
 - Shadows should become slightly denser, not larger
 - Glassmorphism should be used carefully; solid dark surfaces are preferred over translucent blur-heavy dark panels
 
-## 8. Implementation Order Suggestion
+## 12. Implementation Order Suggestion
 
 Recommended rollout order:
 
@@ -141,7 +268,7 @@ Recommended rollout order:
 4. Convert auth/onboarding forms
 5. Convert edge cases and interactive states
 
-## 9. Important Constraint
+## 13. Important Constraint
 
 Dark mode should not become a new visual identity.
 It should feel like PetYard in a darker environment, not like a different product.
