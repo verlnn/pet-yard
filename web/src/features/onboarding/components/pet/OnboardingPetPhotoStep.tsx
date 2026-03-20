@@ -66,7 +66,7 @@ export default function OnboardingPetPhotoStep({
           className="onboarding-pet-submit-button onboarding-pet-submit-button-half"
           disabled={loading}
         >
-          {loading ? "저장 중..." : "완료로 이동"}
+          {loading ? "저장 중..." : "반려동물 등록 완료"}
         </button>
       </div>
     </>
