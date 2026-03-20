@@ -125,16 +125,15 @@ public class PetProfileController {
         PetProfile profile = loadPetProfilePort.findByIdAndUserId(id, principal.userId())
             .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST));
 
-        PetSpecies species = parseSpecies(request.species());
-        PetGender gender = parseGender(request.gender());
+        Boolean neutered = Boolean.TRUE.equals(profile.getNeutered()) ? Boolean.TRUE : request.neutered();
         profile.updateFrom(
             request.name(),
-            species,
-            request.breed(),
-            request.birthDate(),
+            profile.getSpecies(),
+            profile.getBreed(),
+            profile.getBirthDate(),
             request.ageGroup(),
-            gender,
-            request.neutered(),
+            profile.getGender(),
+            neutered,
             request.intro(),
             request.photoUrl(),
             request.weightKg() == null ? null : BigDecimal.valueOf(request.weightKg()),
