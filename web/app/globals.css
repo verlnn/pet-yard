@@ -166,23 +166,23 @@ body {
   }
 
   .app-sidebar-item {
-    @apply flex w-full items-center gap-3 rounded-[24px] px-3 py-3 text-ink/70 transition hover:bg-white/80 hover:text-ink;
+    @apply flex w-full items-center gap-3 rounded-[24px] px-3 py-3 text-ink/70 transition hover:bg-slate-100 hover:text-ink;
   }
 
   .app-sidebar-item:hover .app-sidebar-item-icon-shell {
-    @apply scale-[1.08] bg-sky/55 text-ink;
+    @apply scale-[1.08] bg-sky/60 text-ink;
   }
 
   .app-sidebar-item-active {
-    @apply bg-white text-ink shadow-[0_16px_36px_-30px_rgba(15,23,42,0.35)];
+    @apply bg-slate-100 text-ink shadow-[0_16px_36px_-30px_rgba(15,23,42,0.22)];
   }
 
   .app-sidebar-item-active .app-sidebar-item-icon-shell {
-    @apply bg-clay/50 text-ink;
+    @apply bg-clay/65 text-ink;
   }
 
   .app-sidebar-item-icon-shell {
-    @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white/70 transition;
+    @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-slate-100 transition;
   }
 
   .app-sidebar-item-icon {
