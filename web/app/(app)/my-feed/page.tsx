@@ -350,7 +350,7 @@ export default function MyFeedPage() {
           description="반려동물의 일상을 기록하고, 내 피드를 관리하세요."
         >
           {error && (
-            <div className="mb-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
+            <div className="my-feed-error-alert">
               {error}
             </div>
           )}
@@ -362,7 +362,7 @@ export default function MyFeedPage() {
               onNewPost={() => setModalOpen(true)}
             />
 
-            <div className="flex flex-wrap gap-3 rounded-full border border-slate-200/70 bg-white/80 p-2">
+            <div className="my-feed-tab-list">
               {tabs.map((tab) => (
                 <Button
                   key={tab.id}
@@ -420,14 +420,14 @@ export default function MyFeedPage() {
 
       {selectedPost && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4"
+          className="feed-detail-overlay"
           onClick={handleCloseSelectedPost}
         >
           {hasPrevPost && (
             <button
               type="button"
               onClick={handleSelectPrevPost}
-              className="absolute left-6 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/90 p-3 text-ink shadow-lg transition hover:bg-white"
+              className="feed-detail-nav-button feed-detail-nav-button-prev"
               aria-label="이전 게시물 보기"
             >
               <ChevronLeft className="h-5 w-5" />
@@ -437,35 +437,35 @@ export default function MyFeedPage() {
             <button
               type="button"
               onClick={handleSelectNextPost}
-              className="absolute right-6 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/90 p-3 text-ink shadow-lg transition hover:bg-white"
+              className="feed-detail-nav-button feed-detail-nav-button-next"
               aria-label="다음 게시물 보기"
             >
               <ChevronRight className="h-5 w-5" />
             </button>
           )}
-          <div className="relative" onClick={(event) => event.stopPropagation()}>
+          <div className="feed-detail-shell" onClick={(event) => event.stopPropagation()}>
             <button
               type="button"
               onClick={handleCloseSelectedPost}
-              className="absolute -right-3 -top-3 z-20 rounded-full bg-white p-2 text-ink shadow-lg transition hover:bg-slate-100"
+              className="feed-detail-close-button"
               aria-label="피드 상세 닫기"
             >
               <X className="h-5 w-5" />
             </button>
-            <div ref={postActionMenuRef} className="absolute right-5 top-5 z-20">
+            <div ref={postActionMenuRef} className="feed-detail-menu-anchor">
               <button
                 type="button"
                 onClick={() => setPostActionMenuOpen((prev) => !prev)}
-                className="rounded-full bg-white/95 p-2 text-ink shadow-md transition duration-200 hover:-translate-y-0.5 hover:bg-white hover:shadow-lg"
+                className="feed-detail-menu-trigger"
                 aria-label="게시물 메뉴 열기"
               >
                 <MoreHorizontal className="h-5 w-5" />
               </button>
               <div
-                className={`absolute right-0 top-12 w-48 origin-top-right overflow-hidden rounded-2xl border border-slate-200 bg-white py-2 shadow-xl transition duration-200 ${
+                className={`feed-detail-menu ${
                   postActionMenuOpen
-                    ? "pointer-events-auto translate-y-0 scale-100 opacity-100"
-                    : "pointer-events-none -translate-y-1 scale-95 opacity-0"
+                    ? "feed-detail-menu-open"
+                    : "feed-detail-menu-closed"
                 }`}
               >
                   <button
@@ -475,48 +475,48 @@ export default function MyFeedPage() {
                       setDeleteConfirmOpen(true);
                     }}
                     disabled={deleting}
-                    className="flex w-full items-center px-4 py-3 text-left text-sm font-semibold text-rose-600 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="feed-detail-menu-item feed-detail-menu-item-danger"
                   >
                     {deleting ? "삭제 중..." : "삭제"}
                   </button>
                   <button
                     type="button"
                     onClick={() => setPostActionMenuOpen(false)}
-                    className="flex w-full items-center px-4 py-3 text-left text-sm text-ink transition hover:bg-slate-50"
+                    className="feed-detail-menu-item"
                   >
                     좋아요 수 숨기기
                   </button>
                   <button
                     type="button"
                     onClick={() => setPostActionMenuOpen(false)}
-                    className="flex w-full items-center px-4 py-3 text-left text-sm text-ink transition hover:bg-slate-50"
+                    className="feed-detail-menu-item"
                   >
                     댓글기능 해제
                   </button>
                   <button
                     type="button"
                     onClick={() => setPostActionMenuOpen(false)}
-                    className="flex w-full items-center px-4 py-3 text-left text-sm text-ink transition hover:bg-slate-50"
+                    className="feed-detail-menu-item"
                   >
                     공유기능 해제
                   </button>
                   <button
                     type="button"
                     onClick={() => setPostActionMenuOpen(false)}
-                    className="flex w-full items-center px-4 py-3 text-left text-sm text-ink transition hover:bg-slate-50"
+                    className="feed-detail-menu-item"
                   >
                     수정
                   </button>
                   <button
                     type="button"
                     onClick={() => setPostActionMenuOpen(false)}
-                    className="flex w-full items-center px-4 py-3 text-left text-sm text-ink/70 transition hover:bg-slate-50"
+                    className="feed-detail-menu-item feed-detail-menu-item-muted"
                   >
                     취소
                   </button>
                 </div>
             </div>
-          <div className="flex overflow-hidden rounded-[32px] bg-white">
+          <div className="feed-detail-content">
             <FeedDetailPhotoPanel
               post={selectedPost}
               width={selectedPostPhotoSize.width || 480}
@@ -528,20 +528,20 @@ export default function MyFeedPage() {
             />
           </div>
           {deleteConfirmOpen && (
-            <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/35">
-              <div className="w-full max-w-sm overflow-hidden rounded-[28px] bg-white shadow-2xl">
-                <div className="px-6 py-7">
-                  <p className="text-center text-base font-semibold text-ink">
+            <div className="feed-detail-confirm-overlay">
+              <div className="feed-detail-confirm-dialog">
+                <div className="feed-detail-confirm-body">
+                  <p className="feed-detail-confirm-title">
                     이 게시물을 삭제하시겠습니까?
                   </p>
                 </div>
-                <div className="border-t border-slate-200" />
-                <div className="grid grid-cols-2">
+                <div className="feed-detail-confirm-divider" />
+                <div className="feed-detail-confirm-actions">
                   <button
                     type="button"
                     onClick={() => setDeleteConfirmOpen(false)}
                     disabled={deleting}
-                    className="flex h-14 items-center justify-center text-sm font-medium text-ink transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="feed-detail-confirm-button feed-detail-confirm-cancel"
                   >
                     취소
                   </button>
@@ -549,7 +549,7 @@ export default function MyFeedPage() {
                     type="button"
                     onClick={handleDelete}
                     disabled={deleting}
-                    className="flex h-14 items-center justify-center border-l border-slate-200 text-sm font-semibold text-rose-600 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="feed-detail-confirm-button feed-detail-confirm-submit"
                   >
                     {deleting ? "삭제 중..." : "삭제"}
                   </button>
