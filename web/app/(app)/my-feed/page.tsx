@@ -1,7 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, MoreHorizontal, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, MessageCircle, MoreHorizontal, Send, X } from "lucide-react";
 
 import { SectionShell } from "@/components/site/section-shell";
 import { SiteNav } from "@/components/site/nav";
@@ -545,36 +546,93 @@ export default function MyFeedPage() {
                 )}
               </div>
               <div
-                className="flex flex-col gap-4 overflow-y-auto p-6"
+                className="flex flex-col overflow-y-auto"
                 style={{
                   width: "360px",
                   maxHeight: `${selectedPostPhotoSize.height || 480}px`
                 }}
               >
-                <div>
-                  <p className="text-xs text-ink/50">작성일</p>
-                  <p className="text-sm font-semibold">
-                    {new Date(selectedPost.createdAt).toLocaleString("ko-KR")}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs text-ink/50">내용</p>
-                  <p className="text-sm text-ink/80 whitespace-pre-wrap">
-                    {selectedPost.content || "작성된 내용이 없습니다."}
-                  </p>
-                </div>
-                {selectedPost.hashtags && selectedPost.hashtags.length > 0 && (
+                <div className="flex-1 space-y-4 overflow-y-auto p-6 pb-4">
                   <div>
-                    <p className="text-xs text-ink/50">해시태그</p>
-                    <p className="mt-1 flex flex-wrap gap-2 text-xs text-sky-700">
-                      {selectedPost.hashtags.map((tag) => (
-                        <span key={tag} className="rounded-full bg-slate-100 px-2 py-1">
-                          #{tag}
-                        </span>
-                      ))}
+                    <p className="text-xs text-ink/50">작성일</p>
+                    <p className="text-sm font-semibold">
+                      {new Date(selectedPost.createdAt).toLocaleString("ko-KR")}
                     </p>
                   </div>
-                )}
+                  <div>
+                    <p className="text-xs text-ink/50">내용</p>
+                    <p className="text-sm text-ink/80 whitespace-pre-wrap">
+                      {selectedPost.content || "작성된 내용이 없습니다."}
+                    </p>
+                  </div>
+                  {selectedPost.hashtags && selectedPost.hashtags.length > 0 && (
+                    <div>
+                      <p className="text-xs text-ink/50">해시태그</p>
+                      <p className="mt-1 flex flex-wrap gap-2 text-xs text-sky-700">
+                        {selectedPost.hashtags.map((tag) => (
+                          <span key={tag} className="rounded-full bg-slate-100 px-2 py-1">
+                            #{tag}
+                          </span>
+                        ))}
+                      </p>
+                    </div>
+                  )}
+                </div>
+                <div className="mt-auto border-t border-slate-200/90">
+                  <div className="space-y-3 px-6 py-5">
+                    <div className="flex items-center gap-4">
+                      <button
+                        type="button"
+                        className="flex h-10 w-10 items-center justify-center rounded-full transition hover:bg-slate-100"
+                        aria-label="발자국 남기기"
+                      >
+                        <Image
+                          src="/images/icons/paw-solid-full.svg"
+                          alt=""
+                          width={22}
+                          height={22}
+                          className="h-[22px] w-[22px]"
+                        />
+                      </button>
+                      <button
+                        type="button"
+                        className="flex h-10 w-10 items-center justify-center rounded-full transition hover:bg-slate-100"
+                        aria-label="댓글 보기"
+                      >
+                        <MessageCircle className="h-5 w-5 text-ink" />
+                      </button>
+                      <button
+                        type="button"
+                        className="flex h-10 w-10 items-center justify-center rounded-full transition hover:bg-slate-100"
+                        aria-label="공유하기"
+                      >
+                        <Send className="h-5 w-5 text-ink" />
+                      </button>
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-ink">발자국 0개</p>
+                      <p className="mt-1 text-[11px] text-ink/45">
+                        {new Date(selectedPost.createdAt).toLocaleDateString("ko-KR")}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="border-t border-slate-200/90 px-4 py-3">
+                    <div className="flex items-center gap-3 rounded-full bg-slate-50 px-4 py-2.5">
+                      <MessageCircle className="h-4 w-4 shrink-0 text-ink/45" />
+                      <input
+                        type="text"
+                        placeholder="댓글을 남겨보세요."
+                        className="w-full bg-transparent text-sm text-ink outline-none placeholder:text-ink/35"
+                      />
+                      <button
+                        type="button"
+                        className="text-xs font-semibold text-sky-700 transition hover:text-sky-800"
+                      >
+                        등록
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
           </div>
           {deleteConfirmOpen && (
