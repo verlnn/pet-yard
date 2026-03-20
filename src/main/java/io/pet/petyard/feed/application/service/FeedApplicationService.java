@@ -4,11 +4,15 @@ import io.pet.petyard.common.ApiException;
 import io.pet.petyard.common.ErrorCode;
 import io.pet.petyard.feed.application.model.FeedPostView;
 import io.pet.petyard.feed.application.model.FeedPostImageCommand;
+import io.pet.petyard.feed.application.model.FeedPostPawResult;
 import io.pet.petyard.feed.application.port.out.DeleteFeedPostPort;
+import io.pet.petyard.feed.application.port.out.DeleteFeedPostPawPort;
 import io.pet.petyard.feed.application.port.out.LoadFeedPostImagePort;
+import io.pet.petyard.feed.application.port.out.LoadFeedPostPawPort;
 import io.pet.petyard.feed.application.port.out.LoadFeedPostHashtagPort;
 import io.pet.petyard.feed.application.port.out.LoadFeedPostPort;
 import io.pet.petyard.feed.application.port.out.SaveFeedPostImagePort;
+import io.pet.petyard.feed.application.port.out.SaveFeedPostPawPort;
 import io.pet.petyard.feed.application.port.out.SaveFeedPostHashtagPort;
 import io.pet.petyard.feed.application.port.out.SaveFeedPostPort;
 import io.pet.petyard.feed.domain.model.FeedPost;
@@ -37,6 +41,9 @@ public class FeedApplicationService {
     private final DeleteFeedPostPort deleteFeedPostPort;
     private final SaveFeedPostImagePort saveFeedPostImagePort;
     private final LoadFeedPostImagePort loadFeedPostImagePort;
+    private final SaveFeedPostPawPort saveFeedPostPawPort;
+    private final LoadFeedPostPawPort loadFeedPostPawPort;
+    private final DeleteFeedPostPawPort deleteFeedPostPawPort;
     private final SaveFeedPostHashtagPort saveFeedPostHashtagPort;
     private final LoadFeedPostHashtagPort loadFeedPostHashtagPort;
 
@@ -45,6 +52,9 @@ public class FeedApplicationService {
                                   DeleteFeedPostPort deleteFeedPostPort,
                                   SaveFeedPostImagePort saveFeedPostImagePort,
                                   LoadFeedPostImagePort loadFeedPostImagePort,
+                                  SaveFeedPostPawPort saveFeedPostPawPort,
+                                  LoadFeedPostPawPort loadFeedPostPawPort,
+                                  DeleteFeedPostPawPort deleteFeedPostPawPort,
                                   SaveFeedPostHashtagPort saveFeedPostHashtagPort,
                                   LoadFeedPostHashtagPort loadFeedPostHashtagPort) {
         this.loadFeedPostPort = loadFeedPostPort;
@@ -52,6 +62,9 @@ public class FeedApplicationService {
         this.deleteFeedPostPort = deleteFeedPostPort;
         this.saveFeedPostImagePort = saveFeedPostImagePort;
         this.loadFeedPostImagePort = loadFeedPostImagePort;
+        this.saveFeedPostPawPort = saveFeedPostPawPort;
+        this.loadFeedPostPawPort = loadFeedPostPawPort;
+        this.deleteFeedPostPawPort = deleteFeedPostPawPort;
         this.saveFeedPostHashtagPort = saveFeedPostHashtagPort;
         this.loadFeedPostHashtagPort = loadFeedPostHashtagPort;
     }
@@ -64,6 +77,8 @@ public class FeedApplicationService {
         }
         List<Long> postIds = posts.stream().map(FeedPost::getId).toList();
         Map<Long, List<FeedPostImage>> imagesByPost = loadFeedPostImagePort.findByPostIds(postIds);
+        Map<Long, Long> pawCountsByPost = loadFeedPostPawPort.countByPostIds(postIds);
+        Set<Long> pawedPostIds = new HashSet<>(loadFeedPostPawPort.findPawedPostIds(userId, postIds));
         Map<Long, List<String>> tagsByPost = loadFeedPostHashtagPort.findTagNamesByPostIds(postIds);
         List<FeedPostView> result = new ArrayList<>();
         for (FeedPost post : posts) {
@@ -80,6 +95,8 @@ public class FeedApplicationService {
                 imageUrls,
                 post.getImageAspectRatioValue(),
                 post.getImageAspectRatio(),
+                pawCountsByPost.getOrDefault(post.getId(), 0L),
+                pawedPostIds.contains(post.getId()),
                 post.getCreatedAt(),
                 tags
             ));
@@ -121,6 +138,8 @@ public class FeedApplicationService {
             safeImages.stream().map(FeedPostImageCommand::imageUrl).toList(),
             saved.getImageAspectRatioValue(),
             saved.getImageAspectRatio(),
+            0,
+            false,
             saved.getCreatedAt(),
             normalizedTags
         );
@@ -131,6 +150,26 @@ public class FeedApplicationService {
         FeedPost post = loadFeedPostPort.findByIdAndUserId(postId, userId)
             .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST));
         deleteFeedPostPort.deleteById(post.getId());
+    }
+
+    @Transactional
+    public FeedPostPawResult addPaw(Long userId, Long postId) {
+        FeedPost post = loadFeedPostPort.findById(postId)
+            .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST));
+        if (!loadFeedPostPawPort.existsByPostIdAndUserId(post.getId(), userId)) {
+            saveFeedPostPawPort.save(post.getId(), userId);
+        }
+        long pawCount = loadFeedPostPawPort.countByPostIds(List.of(post.getId())).getOrDefault(post.getId(), 0L);
+        return new FeedPostPawResult(post.getId(), pawCount, true);
+    }
+
+    @Transactional
+    public FeedPostPawResult removePaw(Long userId, Long postId) {
+        FeedPost post = loadFeedPostPort.findById(postId)
+            .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST));
+        deleteFeedPostPawPort.deleteByPostIdAndUserId(post.getId(), userId);
+        long pawCount = loadFeedPostPawPort.countByPostIds(List.of(post.getId())).getOrDefault(post.getId(), 0L);
+        return new FeedPostPawResult(post.getId(), pawCount, false);
     }
 
     private List<String> normalizeTags(String content, List<String> inputTags) {

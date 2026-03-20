@@ -120,6 +120,14 @@ export interface FeedPost {
   imageUrls?: string[] | null;
   imageAspectRatioValue?: number | null;
   imageAspectRatio?: "original" | "1:1" | "4:5" | "16:9" | null;
+  pawCount: number;
+  pawedByMe: boolean;
   createdAt: string;
   hashtags?: string[] | null;
+}
+
+export interface FeedPostPawResponse {
+  postId: number;
+  pawCount: number;
+  pawedByMe: boolean;
 }

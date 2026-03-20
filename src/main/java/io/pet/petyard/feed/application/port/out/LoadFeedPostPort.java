@@ -7,5 +7,6 @@ import java.util.Optional;
 
 public interface LoadFeedPostPort {
     List<FeedPost> findByUserId(Long userId);
+    Optional<FeedPost> findById(Long id);
     Optional<FeedPost> findByIdAndUserId(Long id, Long userId);
 }

@@ -10,6 +10,8 @@ public record FeedPostView(
     List<String> imageUrls,
     Double imageAspectRatioValue,
     String imageAspectRatio,
+    long pawCount,
+    boolean pawedByMe,
     Instant createdAt,
     List<String> hashtags
 ) {

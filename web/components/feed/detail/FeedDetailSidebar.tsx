@@ -8,9 +8,11 @@ import type { FeedPost } from "@/src/features/auth/types/authTypes";
 interface FeedDetailSidebarProps {
   post: FeedPost;
   maxHeight: number;
+  onTogglePaw: () => void;
+  pawLoading?: boolean;
 }
 
-export function FeedDetailSidebar({ post, maxHeight }: FeedDetailSidebarProps) {
+export function FeedDetailSidebar({ post, maxHeight, onTogglePaw, pawLoading = false }: FeedDetailSidebarProps) {
   return (
     <div
       className="feed-detail-sidebar"
@@ -23,7 +25,13 @@ export function FeedDetailSidebar({ post, maxHeight }: FeedDetailSidebarProps) {
         <FeedDetailPostBody post={post} />
         <FeedDetailComments />
       </div>
-      <FeedDetailActionBar createdAt={post.createdAt} />
+      <FeedDetailActionBar
+        createdAt={post.createdAt}
+        pawCount={post.pawCount}
+        pawedByMe={post.pawedByMe}
+        onTogglePaw={onTogglePaw}
+        pawLoading={pawLoading}
+      />
     </div>
   );
 }

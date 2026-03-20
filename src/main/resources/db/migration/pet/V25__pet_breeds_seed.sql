@@ -1,15 +1,4 @@
-CREATE TABLE IF NOT EXISTS pet.breeds (
-  id bigserial PRIMARY KEY,
-  species varchar(16) NOT NULL,
-  name_ko varchar(120) NOT NULL,
-  name_en varchar(120),
-  created_at timestamptz NOT NULL DEFAULT now(),
-  updated_at timestamptz NOT NULL DEFAULT now()
-);
-
-CREATE INDEX IF NOT EXISTS idx_pet_breeds_species ON pet.breeds(species);
-
-INSERT INTO pet.breeds (species, name_ko, name_en) VALUES
+insert into pet.breeds (species, name_ko, name_en) values
   ('DOG', '포메라니안', 'Pomeranian'),
   ('DOG', '말티즈', 'Maltese'),
   ('DOG', '푸들', 'Poodle'),
