@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, BookOpenText, Compass, Home, PawPrint, Settings, HeartHandshake } from "lucide-react";
+import { Bell, BookOpenText, Compass, Home, PawPrint, HeartHandshake } from "lucide-react";
 
 import Image from "next/image";
 
@@ -26,7 +26,6 @@ const sidebarItems: Array<{ href: Route; label: string; icon: typeof Home }> = [
   { href: "/boarding", label: "위탁", icon: HeartHandshake },
   { href: "/knowledge", label: "지식", icon: BookOpenText },
   { href: "/notifications", label: "알림", icon: Bell },
-  { href: "/profile", label: "설정", icon: Settings }
 ];
 
 const isActiveRoute = (pathname: string | null, href: Route) => {
@@ -101,10 +100,12 @@ export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
                 onNavigate={handleNavigate}
               />
             ))}
+            <div className="app-sidebar-nav-profile-slot">
+              <SidebarProfile profile={profile} onNavigate={handleNavigate} />
+            </div>
           </nav>
 
           <div className="app-sidebar-footer">
-            <SidebarProfile profile={profile} onNavigate={handleNavigate} />
             <SidebarMoreMenu onNavigate={handleNavigate} />
           </div>
         </div>
