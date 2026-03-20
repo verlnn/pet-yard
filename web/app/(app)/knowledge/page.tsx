@@ -25,7 +25,7 @@ export default function KnowledgePage() {
         <Card className="gradient-shell">
           <CardContent className="grid gap-4 md:grid-cols-[1fr_1fr_auto] md:items-end">
             <div className="space-y-2">
-              <p className="text-xs text-ink/60">종/품종</p>
+              <p className="text-xs text-[var(--color-text-muted)]">종/품종</p>
               <Select>
                 <SelectTrigger>
                   <SelectValue placeholder="종 선택" />
@@ -37,7 +37,7 @@ export default function KnowledgePage() {
               </Select>
             </div>
             <div className="space-y-2">
-              <p className="text-xs text-ink/60">나이대</p>
+              <p className="text-xs text-[var(--color-text-muted)]">나이대</p>
               <Select>
                 <SelectTrigger>
                   <SelectValue placeholder="나이 선택" />
@@ -68,7 +68,7 @@ export default function KnowledgePage() {
               <h3 className="font-display text-xl font-semibold">
                 건강 정보는 참고용입니다
               </h3>
-              <p className="text-sm text-ink/70">
+              <p className="text-sm text-[var(--color-text-muted)]">
                 증상이 있다면 반드시 수의사의 진료를 받으세요. 멍냥마당은
                 의료 행위를 제공하지 않습니다.
               </p>

@@ -23,7 +23,7 @@ export function FeedThumbnail({
         // eslint-disable-next-line @next/next/no-img-element
         <img src={src} alt={alt} className={cn("h-full w-full object-cover object-center", imageClassName)} />
       ) : (
-        <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-xs text-ink/40">
+        <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-xs text-[var(--color-text-subtle)]">
           <ImageIcon className="h-4 w-4" />
           사진 없음
         </div>

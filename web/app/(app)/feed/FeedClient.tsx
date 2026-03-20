@@ -59,7 +59,7 @@ export function FeedClient() {
         </TabsContent>
         <TabsContent value="following">
           <Card className="gradient-shell">
-            <CardContent className="text-sm text-ink/70">
+            <CardContent className="text-sm text-[var(--color-text-muted)]">
               팔로우 기반 피드는 아직 준비 중입니다. 관심 계정을 추가하면
               맞춤형 피드가 표시됩니다.
             </CardContent>
@@ -67,7 +67,7 @@ export function FeedClient() {
         </TabsContent>
         <TabsContent value="recommend">
           <Card className="gradient-shell">
-            <CardContent className="text-sm text-ink/70">
+            <CardContent className="text-sm text-[var(--color-text-muted)]">
               추천 피드는 반려동물 유형과 활동 이력을 기반으로 구성됩니다.
             </CardContent>
           </Card>

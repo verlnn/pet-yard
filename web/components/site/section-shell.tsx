@@ -20,7 +20,7 @@ export function SectionShell({
       <div className="flex flex-col gap-3">
         {eyebrow && <p className="section-subtitle">{eyebrow}</p>}
         <h2 className="section-title">{title}</h2>
-        {description && <p className="text-ink/70">{description}</p>}
+        {description && <p className="text-[var(--color-text-muted)]">{description}</p>}
       </div>
       <div className="mt-6">{children}</div>
     </section>

@@ -25,11 +25,11 @@ export default function WalksPage() {
         <Card className="gradient-shell">
           <CardContent className="grid gap-4 md:grid-cols-[1.2fr_0.8fr_0.8fr_auto] md:items-end">
             <div className="space-y-2">
-              <p className="text-xs text-ink/60">지역</p>
+              <p className="text-xs text-[var(--color-text-muted)]">지역</p>
               <Input placeholder="동네를 입력하세요" />
             </div>
             <div className="space-y-2">
-              <p className="text-xs text-ink/60">견종</p>
+              <p className="text-xs text-[var(--color-text-muted)]">견종</p>
               <Select>
                 <SelectTrigger>
                   <SelectValue placeholder="견종 선택" />
@@ -42,7 +42,7 @@ export default function WalksPage() {
               </Select>
             </div>
             <div className="space-y-2">
-              <p className="text-xs text-ink/60">시간대</p>
+              <p className="text-xs text-[var(--color-text-muted)]">시간대</p>
               <Select>
                 <SelectTrigger>
                   <SelectValue placeholder="시간 선택" />
@@ -69,11 +69,11 @@ export default function WalksPage() {
         <Card className="gradient-shell">
           <CardContent className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="space-y-2">
-              <p className="text-sm text-ink/60">산책 호스트 가이드</p>
+              <p className="text-sm text-[var(--color-text-muted)]">산책 호스트 가이드</p>
               <h3 className="font-display text-xl font-semibold">
                 산책 모집 시 꼭 확인하세요
               </h3>
-              <p className="text-sm text-ink/70">
+              <p className="text-sm text-[var(--color-text-muted)]">
                 시간/장소/인원/견종 조건을 명확히 작성하고, 중성화 여부
                 등의 추가 조건을 안내해주세요.
               </p>

@@ -15,7 +15,7 @@ export function EmptyFeedState({ onNewPost }: EmptyFeedStateProps) {
         <ImagePlus className="h-7 w-7" />
       </div>
       <p className="mt-4 font-display text-lg font-semibold">첫 기록을 남겨보세요</p>
-      <p className="mt-2 text-sm text-ink/60">
+      <p className="mt-2 text-sm text-[var(--color-text-muted)]">
         사진과 짧은 기록만 남겨도 멍냥마당의 아카이브가 시작됩니다.
       </p>
       <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">

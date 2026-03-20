@@ -8,7 +8,7 @@ export function KnowledgeCardView({ card }: { card: KnowledgeCard }) {
       <CardContent className="flex h-full flex-col gap-3">
         <div>
           <p className="font-display text-base font-semibold">{card.title}</p>
-          <p className="mt-2 text-sm text-ink/70">{card.subtitle}</p>
+          <p className="mt-2 text-sm text-[var(--color-text-muted)]">{card.subtitle}</p>
         </div>
         <div className="mt-auto flex flex-wrap gap-2">
           {card.tags.map((tag) => (

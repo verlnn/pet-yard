@@ -19,11 +19,11 @@ export default function BoardingPage() {
         <Card className="gradient-shell">
           <CardContent className="grid gap-4 md:grid-cols-[1.2fr_1fr_auto] md:items-end">
             <div className="space-y-2">
-              <p className="text-xs text-ink/60">기간</p>
+              <p className="text-xs text-[var(--color-text-muted)]">기간</p>
               <Input placeholder="날짜 범위를 입력" />
             </div>
             <div className="space-y-2">
-              <p className="text-xs text-ink/60">지역</p>
+              <p className="text-xs text-[var(--color-text-muted)]">지역</p>
               <Input placeholder="동네를 입력" />
             </div>
             <Button size="lg">검색하기</Button>
@@ -45,7 +45,7 @@ export default function BoardingPage() {
               <p className="font-display text-lg font-semibold">
                 위탁 전 체크리스트
               </p>
-              <p className="text-sm text-ink/70">
+              <p className="text-sm text-[var(--color-text-muted)]">
                 집 구조, 응급 상황 대응, 산책 동선 등을 반드시 확인하세요.
               </p>
             </CardContent>
@@ -54,7 +54,7 @@ export default function BoardingPage() {
             <CardContent className="space-y-3">
               <Badge variant="soft">신뢰도</Badge>
               <p className="font-display text-lg font-semibold">신뢰 점수 보기</p>
-              <p className="text-sm text-ink/70">
+              <p className="text-sm text-[var(--color-text-muted)]">
                 후기, 신고 이력, 인증 정보를 기반으로 신뢰 점수를 제공합니다.
               </p>
             </CardContent>
@@ -65,11 +65,11 @@ export default function BoardingPage() {
               <p className="font-display text-lg font-semibold">
                 분쟁 예방 팁
               </p>
-              <div className="flex items-center gap-2 text-sm text-ink/70">
+              <div className="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
                 <ShieldCheck className="h-4 w-4" />
                 계약 전에 조건을 문서로 남겨주세요.
               </div>
-              <div className="flex items-center gap-2 text-sm text-ink/70">
+              <div className="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
                 <Star className="h-4 w-4" />
                 신뢰도 높은 보호자에게 먼저 제안하세요.
               </div>

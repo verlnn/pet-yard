@@ -47,15 +47,15 @@ export default function StartPage() {
         <KakaoLoginButton onClick={handleKakaoStart} disabled={loading} />
         <Link
           href="/signup"
-          className="block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-center text-sm font-semibold text-slate-700 transition hover:border-ink/30 hover:text-ink"
+          className="block w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-4 py-3 text-center text-sm font-semibold text-[var(--color-text-muted)] transition hover:border-[var(--color-primary)]/30 hover:text-[var(--color-text)]"
         >
           이메일로 가입
         </Link>
-        <div className="text-center text-sm text-slate-500">
+        <div className="text-center text-sm text-[var(--color-text-muted)]">
           이미 계정이 있나요?{" "}
           <button
             type="button"
-            className="font-semibold text-ink hover:text-ink/80"
+            className="font-semibold text-[var(--color-text)] hover:opacity-80"
             onClick={() => router.push("/login")}
           >
             로그인

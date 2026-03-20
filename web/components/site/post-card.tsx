@@ -8,13 +8,13 @@ export function PostCard({ post }: { post: FeedPost }) {
   return (
     <Card className="gradient-shell overflow-hidden">
       <CardHeader className="flex flex-col gap-2">
-        <div className="flex items-center justify-between text-sm text-ink/60">
+        <div className="flex items-center justify-between text-sm text-[var(--color-text-muted)]">
           <span>
             {post.author} · {post.petName}({post.petType})
           </span>
           <span>{post.time}</span>
         </div>
-        <p className="text-base text-ink">{post.content}</p>
+        <p className="text-base text-[var(--color-text)]">{post.content}</p>
         <div className="flex flex-wrap gap-2">
           {post.tags.map((tag) => (
             <Badge key={tag} variant="soft">
@@ -23,7 +23,7 @@ export function PostCard({ post }: { post: FeedPost }) {
           ))}
         </div>
       </CardHeader>
-      <CardContent className="flex items-center justify-between text-xs text-ink/60">
+      <CardContent className="flex items-center justify-between text-xs text-[var(--color-text-muted)]">
         <div className="flex items-center gap-2">
           <MapPin className="h-4 w-4" />
           {post.location}

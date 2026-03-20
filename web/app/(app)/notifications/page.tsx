@@ -43,8 +43,8 @@ export default function NotificationsPage() {
                 </p>
                 <Badge variant="soft">NEW</Badge>
               </div>
-              <p className="text-sm text-ink/70">{item.body}</p>
-              <div className="flex items-center gap-2 text-xs text-ink/50">
+              <p className="text-sm text-[var(--color-text-muted)]">{item.body}</p>
+              <div className="flex items-center gap-2 text-xs text-[var(--color-text-subtle)]">
                 <CheckCircle className="h-3 w-3" /> {item.time}
               </div>
             </CardContent>

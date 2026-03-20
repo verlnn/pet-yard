@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   AlertCircle,
+  ChevronLeft,
   Bookmark,
   LogOut,
   Menu,
@@ -14,6 +15,7 @@ import {
 } from "lucide-react";
 
 import { authApi } from "@/src/features/auth/api/authApi";
+import { useTheme } from "@/src/hooks/useTheme";
 
 interface SidebarMoreMenuProps {
   onNavigate?: () => void;
@@ -21,7 +23,9 @@ interface SidebarMoreMenuProps {
 
 export function SidebarMoreMenu({ onNavigate }: SidebarMoreMenuProps) {
   const [open, setOpen] = useState(false);
+  const [view, setView] = useState<"menu" | "theme">("menu");
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const { resolvedTheme, setTheme } = useTheme();
 
   useEffect(() => {
     if (!open) {
@@ -51,7 +55,22 @@ export function SidebarMoreMenu({ onNavigate }: SidebarMoreMenuProps) {
 
   const handleClose = () => {
     setOpen(false);
+    setView("menu");
     onNavigate?.();
+  };
+
+  const handleOpenChange = () => {
+    setOpen((prev) => {
+      const next = !prev;
+      if (!next) {
+        setView("menu");
+      }
+      return next;
+    });
+  };
+
+  const handleThemeToggle = () => {
+    setTheme(resolvedTheme === "dark" ? "light" : "dark");
   };
 
   const handleLogout = async () => {
@@ -76,53 +95,86 @@ export function SidebarMoreMenu({ onNavigate }: SidebarMoreMenuProps) {
     <div className="app-sidebar-more" ref={containerRef}>
       {open && (
         <div className="app-sidebar-more-panel" role="menu" aria-label="더보기 메뉴">
-          <div className="app-sidebar-more-list">
-            <Link href="/profile" className="app-sidebar-more-item" onClick={handleClose}>
-              <Settings className="app-sidebar-more-item-icon" />
-              <span>설정</span>
-            </Link>
-            <button type="button" className="app-sidebar-more-item" onClick={handleClose}>
-              <SquareActivity className="app-sidebar-more-item-icon" />
-              <span>내 활동</span>
-            </button>
-            <button type="button" className="app-sidebar-more-item" onClick={handleClose}>
-              <Bookmark className="app-sidebar-more-item-icon" />
-              <span>저장됨</span>
-            </button>
-            <button type="button" className="app-sidebar-more-item" onClick={handleClose}>
-              <Moon className="app-sidebar-more-item-icon" />
-              <span>모드 전환</span>
-            </button>
-            <button type="button" className="app-sidebar-more-item" onClick={handleClose}>
-              <AlertCircle className="app-sidebar-more-item-icon" />
-              <span>문제 신고</span>
-            </button>
-          </div>
+          {view === "menu" ? (
+            <>
+              <div className="app-sidebar-more-list">
+                <Link href="/profile" className="app-sidebar-more-item" onClick={handleClose}>
+                  <Settings className="app-sidebar-more-item-icon" />
+                  <span>설정</span>
+                </Link>
+                <button type="button" className="app-sidebar-more-item" onClick={handleClose}>
+                  <SquareActivity className="app-sidebar-more-item-icon" />
+                  <span>내 활동</span>
+                </button>
+                <button type="button" className="app-sidebar-more-item" onClick={handleClose}>
+                  <Bookmark className="app-sidebar-more-item-icon" />
+                  <span>저장됨</span>
+                </button>
+                <button type="button" className="app-sidebar-more-item" onClick={() => setView("theme")}>
+                  <Moon className="app-sidebar-more-item-icon" />
+                  <span>모드 전환</span>
+                </button>
+                <button type="button" className="app-sidebar-more-item" onClick={handleClose}>
+                  <AlertCircle className="app-sidebar-more-item-icon" />
+                  <span>문제 신고</span>
+                </button>
+              </div>
 
-          <div className="app-sidebar-more-divider" />
+              <div className="app-sidebar-more-divider" />
 
-          <button type="button" className="app-sidebar-more-item" onClick={handleClose}>
-            <RefreshCcw className="app-sidebar-more-item-icon" />
-            <span>계정 전환</span>
-          </button>
+              <button type="button" className="app-sidebar-more-item" onClick={handleClose}>
+                <RefreshCcw className="app-sidebar-more-item-icon" />
+                <span>계정 전환</span>
+              </button>
 
-          <div className="app-sidebar-more-divider" />
+              <div className="app-sidebar-more-divider" />
 
-          <button
-            type="button"
-            className="app-sidebar-more-item app-sidebar-more-item-danger"
-            onClick={handleLogout}
-          >
-            <LogOut className="app-sidebar-more-item-icon" />
-            <span>로그아웃</span>
-          </button>
+              <button
+                type="button"
+                className="app-sidebar-more-item app-sidebar-more-item-danger"
+                onClick={handleLogout}
+              >
+                <LogOut className="app-sidebar-more-item-icon" />
+                <span>로그아웃</span>
+              </button>
+            </>
+          ) : (
+            <div className="app-sidebar-theme-panel">
+              <div className="app-sidebar-theme-header">
+                <button type="button" className="app-sidebar-theme-back" onClick={() => setView("menu")}>
+                  <ChevronLeft className="app-sidebar-theme-back-icon" />
+                </button>
+                <p className="app-sidebar-theme-title">모드 전환</p>
+                <Moon className="app-sidebar-theme-mode-icon" />
+              </div>
+
+              <div className="app-sidebar-more-divider" />
+
+              <div className="app-sidebar-theme-row">
+                <div className="app-sidebar-theme-copy">
+                  <p className="app-sidebar-theme-row-title">다크 모드</p>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={resolvedTheme === "dark"}
+                  className={`app-sidebar-theme-switch ${
+                    resolvedTheme === "dark" ? "app-sidebar-theme-switch-active" : ""
+                  }`}
+                  onClick={handleThemeToggle}
+                >
+                  <span className="app-sidebar-theme-switch-thumb" />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
       <button
         type="button"
         className="app-sidebar-more-trigger"
-        onClick={() => setOpen((prev) => !prev)}
+        onClick={handleOpenChange}
         aria-haspopup="menu"
         aria-expanded={open}
       >

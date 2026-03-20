@@ -5,7 +5,6 @@ import { ChevronLeft, ChevronRight, MoreHorizontal, X } from "lucide-react";
 
 import { FeedDetailPhotoPanel } from "@/components/feed/detail/FeedDetailPhotoPanel";
 import { FeedDetailSidebar } from "@/components/feed/detail/FeedDetailSidebar";
-import { SectionShell } from "@/components/site/section-shell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FeedProfileHeader } from "@/components/feed/FeedProfileHeader";
@@ -384,11 +383,7 @@ export default function MyFeedPage() {
 
   return (
     <>
-      <SectionShell
-        eyebrow="My Feed"
-        title="나의 피드"
-        description="반려동물의 일상을 기록하고, 내 피드를 관리하세요."
-      >
+      <section className="my-feed-page">
         {error && (
           <div className="my-feed-error-alert">
             {error}
@@ -427,13 +422,13 @@ export default function MyFeedPage() {
 
           {activeTab !== "posts" && (
             <Card className="gradient-shell">
-              <CardContent className="py-12 text-center text-sm text-ink/60">
+              <CardContent className="py-12 text-center text-sm text-[var(--color-text-muted)]">
                 준비 중인 영역입니다.
               </CardContent>
             </Card>
           )}
         </div>
-      </SectionShell>
+      </section>
 
       <NewPostModal
         open={modalOpen}

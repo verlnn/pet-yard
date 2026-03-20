@@ -72,7 +72,7 @@ export default function ProfilePage() {
               <p className="font-display text-xl font-semibold">
                 {profile?.nickname ?? (loading ? "불러오는 중..." : "프로필")}
               </p>
-              <p className="text-sm text-ink/60">
+              <p className="text-sm text-[var(--color-text-muted)]">
                 {profile?.regionName ?? "지역 미설정"} · 가입일 {joinedAt}
               </p>
             </div>
@@ -88,9 +88,9 @@ export default function ProfilePage() {
         <div className="grid gap-4">
           <Card className="gradient-shell">
             <CardContent className="space-y-3">
-              <p className="text-sm text-ink/60">나의 피드</p>
+              <p className="text-sm text-[var(--color-text-muted)]">나의 피드</p>
               <p className="font-display text-lg font-semibold">기록을 이어가세요</p>
-              <p className="text-sm text-ink/70">
+              <p className="text-sm text-[var(--color-text-muted)]">
                 우리 아이의 소소한 순간을 피드로 남겨보세요.
               </p>
               <Button asChild>
@@ -100,11 +100,11 @@ export default function ProfilePage() {
           </Card>
           <Card className="gradient-shell">
             <CardContent className="space-y-3">
-              <p className="text-sm text-ink/60">반려동물 정보</p>
+              <p className="text-sm text-[var(--color-text-muted)]">반려동물 정보</p>
               <p className="font-display text-lg font-semibold">
                 {profile?.petCount ?? 0}마리 등록됨
               </p>
-              <p className="text-sm text-ink/70">
+              <p className="text-sm text-[var(--color-text-muted)]">
                 등록번호 인증을 통해 반려견 정보를 안전하게 관리할 수 있어요.
               </p>
               <Button asChild>
@@ -114,9 +114,9 @@ export default function ProfilePage() {
           </Card>
           <Card className="gradient-shell">
             <CardContent className="space-y-3">
-              <p className="text-sm text-ink/60">최근 로그인</p>
+              <p className="text-sm text-[var(--color-text-muted)]">최근 로그인</p>
               <p className="font-display text-lg font-semibold">{lastLoginAt}</p>
-              <p className="text-sm text-ink/70">
+              <p className="text-sm text-[var(--color-text-muted)]">
                 활동 내역과 안전 기록은 투명하게 관리됩니다.
               </p>
               <Button variant="secondary">신뢰도 상세 보기</Button>
