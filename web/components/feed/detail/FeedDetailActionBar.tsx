@@ -1,8 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { useRef } from "react";
-import { MessageCircle, Send } from "lucide-react";
+import { MessageCircle, PawPrint, Send } from "lucide-react";
 
 interface FeedDetailActionBarProps {
   createdAt: string;
@@ -20,13 +19,7 @@ export function FeedDetailActionBar({ createdAt }: FeedDetailActionBarProps) {
             className="feed-detail-action-button"
             aria-label="발자국 남기기"
           >
-            <Image
-              src="/images/icons/paw-solid-full.svg"
-              alt=""
-              width={22}
-              height={22}
-              className="feed-detail-paw-icon"
-            />
+            <PawPrint className="feed-detail-paw-icon" />
           </button>
           <button
             type="button"

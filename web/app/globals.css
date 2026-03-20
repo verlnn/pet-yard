@@ -204,7 +204,7 @@ body {
   }
 
   .feed-detail-paw-icon {
-    @apply h-[22px] w-[22px];
+    @apply h-[22px] w-[22px] text-ink;
   }
 
   .feed-detail-action-count {
