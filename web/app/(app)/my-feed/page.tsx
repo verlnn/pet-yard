@@ -6,7 +6,6 @@ import { ChevronLeft, ChevronRight, MoreHorizontal, X } from "lucide-react";
 import { FeedDetailPhotoPanel } from "@/components/feed/detail/FeedDetailPhotoPanel";
 import { FeedDetailSidebar } from "@/components/feed/detail/FeedDetailSidebar";
 import { SectionShell } from "@/components/site/section-shell";
-import { SiteNav } from "@/components/site/nav";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FeedProfileHeader } from "@/components/feed/FeedProfileHeader";
@@ -384,60 +383,57 @@ export default function MyFeedPage() {
   };
 
   return (
-    <div className="min-h-screen">
-      <SiteNav />
-      <main className="container py-10">
-        <SectionShell
-          eyebrow="My Feed"
-          title="나의 피드"
-          description="반려동물의 일상을 기록하고, 내 피드를 관리하세요."
-        >
-          {error && (
-            <div className="my-feed-error-alert">
-              {error}
-            </div>
+    <>
+      <SectionShell
+        eyebrow="My Feed"
+        title="나의 피드"
+        description="반려동물의 일상을 기록하고, 내 피드를 관리하세요."
+      >
+        {error && (
+          <div className="my-feed-error-alert">
+            {error}
+          </div>
+        )}
+
+        <div className="space-y-6">
+          <FeedProfileHeader
+            profile={profile}
+            postCount={posts.length}
+            onNewPost={handleRequestNewPost}
+          />
+
+          <div className="my-feed-tab-list">
+            {tabs.map((tab) => (
+              <Button
+                key={tab.id}
+                variant={activeTab === tab.id ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setActiveTab(tab.id)}
+              >
+                {tab.label}
+              </Button>
+            ))}
+          </div>
+
+          {activeTab === "posts" && (
+            <>
+              {grid.length === 0 && !loading ? (
+                <EmptyFeedState onNewPost={handleRequestNewPost} />
+              ) : (
+                <FeedGrid posts={grid} onSelect={setSelectedPost} />
+              )}
+            </>
           )}
 
-          <div className="space-y-6">
-            <FeedProfileHeader
-              profile={profile}
-              postCount={posts.length}
-              onNewPost={handleRequestNewPost}
-            />
-
-            <div className="my-feed-tab-list">
-              {tabs.map((tab) => (
-                <Button
-                  key={tab.id}
-                  variant={activeTab === tab.id ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setActiveTab(tab.id)}
-                >
-                  {tab.label}
-                </Button>
-              ))}
-            </div>
-
-            {activeTab === "posts" && (
-              <>
-                {grid.length === 0 && !loading ? (
-                  <EmptyFeedState onNewPost={handleRequestNewPost} />
-                ) : (
-                  <FeedGrid posts={grid} onSelect={setSelectedPost} />
-                )}
-              </>
-            )}
-
-            {activeTab !== "posts" && (
-              <Card className="gradient-shell">
-                <CardContent className="py-12 text-center text-sm text-ink/60">
-                  준비 중인 영역입니다.
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        </SectionShell>
-      </main>
+          {activeTab !== "posts" && (
+            <Card className="gradient-shell">
+              <CardContent className="py-12 text-center text-sm text-ink/60">
+                준비 중인 영역입니다.
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </SectionShell>
 
       <NewPostModal
         open={modalOpen}
@@ -614,6 +610,6 @@ export default function MyFeedPage() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

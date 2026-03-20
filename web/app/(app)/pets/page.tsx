@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import { BadgeCheck, PawPrint, Shield } from "lucide-react";
 
 import { SectionShell } from "@/components/site/section-shell";
-import { SiteNav } from "@/components/site/nav";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -339,26 +338,23 @@ export default function PetsPage() {
   const verified = Boolean(verificationResult);
 
   return (
-    <div>
-      <SiteNav />
-      <main className="pets-page-main">
-        <SectionShell
-          eyebrow="Pets"
-          title="반려동물 관리"
-          description="등록번호 인증을 통해 반려견 정보를 안전하게 등록하세요."
-        >
-          {error && (
-            <div className="pets-page-error">
-              {error}
-            </div>
-          )}
-          <div className="pets-page-grid">
-            <Card className="gradient-shell">
-              <CardContent className="pets-summary-card-content">
-                <p className="pets-summary-card-title">내 반려동물</p>
-                <p>가입일 {joinedAt} · 총 {profile?.petCount ?? pets.length}마리</p>
-              </CardContent>
-            </Card>
+    <SectionShell
+      eyebrow="Pets"
+      title="반려동물 관리"
+      description="등록번호 인증을 통해 반려견 정보를 안전하게 등록하세요."
+    >
+      {error && (
+        <div className="pets-page-error">
+          {error}
+        </div>
+      )}
+      <div className="pets-page-grid">
+        <Card className="gradient-shell">
+          <CardContent className="pets-summary-card-content">
+            <p className="pets-summary-card-title">내 반려동물</p>
+            <p>가입일 {joinedAt} · 총 {profile?.petCount ?? pets.length}마리</p>
+          </CardContent>
+        </Card>
             {pets.map((pet) => (
               <Card key={pet.id} className="gradient-shell">
                 <CardContent className="pets-card-content">
@@ -589,222 +585,222 @@ export default function PetsPage() {
                 </CardContent>
               </Card>
             ))}
-            <Card className="gradient-shell">
-              <CardContent className="pets-card-content pets-card-content-spacious">
-                <div className="pets-card-header">
-                  <p className="pets-summary-card-title">반려동물 추가</p>
-                  <button
-                    type="button"
-                    onClick={() => setPetFormOpen((prev) => !prev)}
-                    className="pets-inline-action"
-                  >
-                    {petFormOpen ? "접기" : "열기"}
-                  </button>
-                </div>
-                {petFormOpen && (
-                  <>
-                    <div className="pets-registration-card">
-                      <p className="pets-registration-title">반려견 등록번호 인증</p>
-                      <p className="pets-registration-description">
-                        등록번호 인증을 완료해야 반려동물을 등록할 수 있어요.
-                      </p>
-                      <div className="pets-form-grid pets-form-grid-compact-top">
-                        <label className="pets-form-field">
-                          등록번호
-                          <input
-                            className="pets-form-input"
-                            value={verification.dogRegNo}
-                            onChange={(event) =>
-                              setVerification((prev) => ({ ...prev, dogRegNo: event.target.value }))
-                            }
-                            disabled={verified}
-                          />
-                        </label>
-                        <label className="pets-form-field">
-                          RFID 코드
-                          <input
-                            className="pets-form-input"
-                            value={verification.rfidCd}
-                            onChange={(event) =>
-                              setVerification((prev) => ({ ...prev, rfidCd: event.target.value }))
-                            }
-                            disabled={verified}
-                          />
-                        </label>
-                        <label className="pets-form-field">
-                          소유자 이름
-                          <input
-                            className="pets-form-input"
-                            value={verification.ownerNm}
-                            onChange={(event) =>
-                              setVerification((prev) => ({ ...prev, ownerNm: event.target.value }))
-                            }
-                            disabled={verified}
-                          />
-                        </label>
-                        <label className="pets-form-field">
-                          소유자 생년월일(YYMMDD)
-                          <input
-                            className="pets-form-input"
-                            value={verification.ownerBirth}
-                            onChange={(event) =>
-                              setVerification((prev) => ({ ...prev, ownerBirth: event.target.value }))
-                            }
-                            disabled={verified}
-                          />
-                        </label>
-                      </div>
-                      {verificationResult && (
-                        <div className="pets-registration-result">
-                          인증 완료 · {verificationResult.name} · {verificationResult.breed ?? "품종 미상"} ·
-                          {verificationResult.gender === "MALE"
-                            ? " 수컷"
-                            : verificationResult.gender === "FEMALE"
-                            ? " 암컷"
-                            : " 성별 미상"}
-                        </div>
-                      )}
-                      {verificationError && <p className="pets-form-error pets-form-error-spaced">{verificationError}</p>}
-                      <div className="pets-action-row pets-action-row-spaced">
-                        <Button onClick={handleVerifyRegistration} disabled={verifying || verified}>
-                          {verifying ? "인증 중..." : verified ? "인증 완료" : "등록번호 인증"}
-                        </Button>
-                        {verified && (
-                          <Button variant="secondary" onClick={resetVerification}>
-                            다시 인증
-                          </Button>
-                        )}
-                      </div>
+        <Card className="gradient-shell">
+          <CardContent className="pets-card-content pets-card-content-spacious">
+            <div className="pets-card-header">
+              <p className="pets-summary-card-title">반려동물 추가</p>
+              <button
+                type="button"
+                onClick={() => setPetFormOpen((prev) => !prev)}
+                className="pets-inline-action"
+              >
+                {petFormOpen ? "접기" : "열기"}
+              </button>
+            </div>
+            {petFormOpen && (
+              <>
+                <div className="pets-registration-card">
+                  <p className="pets-registration-title">반려견 등록번호 인증</p>
+                  <p className="pets-registration-description">
+                    등록번호 인증을 완료해야 반려동물을 등록할 수 있어요.
+                  </p>
+                  <div className="pets-form-grid pets-form-grid-compact-top">
+                    <label className="pets-form-field">
+                      등록번호
+                      <input
+                        className="pets-form-input"
+                        value={verification.dogRegNo}
+                        onChange={(event) =>
+                          setVerification((prev) => ({ ...prev, dogRegNo: event.target.value }))
+                        }
+                        disabled={verified}
+                      />
+                    </label>
+                    <label className="pets-form-field">
+                      RFID 코드
+                      <input
+                        className="pets-form-input"
+                        value={verification.rfidCd}
+                        onChange={(event) =>
+                          setVerification((prev) => ({ ...prev, rfidCd: event.target.value }))
+                        }
+                        disabled={verified}
+                      />
+                    </label>
+                    <label className="pets-form-field">
+                      소유자 이름
+                      <input
+                        className="pets-form-input"
+                        value={verification.ownerNm}
+                        onChange={(event) =>
+                          setVerification((prev) => ({ ...prev, ownerNm: event.target.value }))
+                        }
+                        disabled={verified}
+                      />
+                    </label>
+                    <label className="pets-form-field">
+                      소유자 생년월일(YYMMDD)
+                      <input
+                        className="pets-form-input"
+                        value={verification.ownerBirth}
+                        onChange={(event) =>
+                          setVerification((prev) => ({ ...prev, ownerBirth: event.target.value }))
+                        }
+                        disabled={verified}
+                      />
+                    </label>
+                  </div>
+                  {verificationResult && (
+                    <div className="pets-registration-result">
+                      인증 완료 · {verificationResult.name} · {verificationResult.breed ?? "품종 미상"} ·
+                      {verificationResult.gender === "MALE"
+                        ? " 수컷"
+                        : verificationResult.gender === "FEMALE"
+                        ? " 암컷"
+                        : " 성별 미상"}
                     </div>
+                  )}
+                  {verificationError && <p className="pets-form-error pets-form-error-spaced">{verificationError}</p>}
+                  <div className="pets-action-row pets-action-row-spaced">
+                    <Button onClick={handleVerifyRegistration} disabled={verifying || verified}>
+                      {verifying ? "인증 중..." : verified ? "인증 완료" : "등록번호 인증"}
+                    </Button>
                     {verified && (
-                      <>
-                        <div className="pets-form-grid">
-                          <label className="pets-form-field">
-                            이름
-                            <input
-                              className="pets-form-input"
-                              value={form.name}
-                              onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
-                              disabled
-                            />
-                          </label>
-                          <label className="pets-form-field">
-                            생일
-                            <input
-                              type="date"
-                              className="pets-form-input"
-                              value={form.birthDate}
-                              onChange={(event) => setForm((prev) => ({ ...prev, birthDate: event.target.value }))}
-                              disabled
-                            />
-                          </label>
-                          <label className="pets-form-field">
-                            체중(kg)
-                            <input
-                              type="number"
-                              step="0.1"
-                              className="pets-form-input"
-                              value={form.weightKg}
-                              onChange={(event) => setForm((prev) => ({ ...prev, weightKg: event.target.value }))}
-                            />
-                          </label>
-                          <label className="pets-form-field">
-                            종
-                            <select
-                              className="pets-form-select"
-                              value={form.species}
-                              onChange={(event) => setForm((prev) => ({ ...prev, species: event.target.value }))}
-                              disabled
-                            >
-                              <option value="DOG">강아지</option>
-                              <option value="CAT">고양이</option>
-                              <option value="OTHER">기타</option>
-                            </select>
-                          </label>
-                          <label className="pets-form-field pets-form-field-span">
-                            품종
-                            <select
-                              className="pets-form-select"
-                              value={form.breed}
-                              onChange={(event) => setForm((prev) => ({ ...prev, breed: event.target.value }))}
-                              disabled={form.species === "OTHER"}
-                            >
-                              <option value="">
-                                {form.species === "OTHER" ? "기타 종은 품종 선택 없음" : "선택 안함"}
-                              </option>
-                              {form.breed && !breeds.some((breed) => breed.nameKo === form.breed) && (
-                                <option value={form.breed}>{form.breed}</option>
-                              )}
-                              {breeds.map((breed) => (
-                                <option key={breed.id} value={breed.nameKo}>
-                                  {breed.nameKo}
-                                </option>
-                              ))}
-                            </select>
-                          </label>
-                          <label className="pets-form-field">
-                            성별
-                            <select
-                              className="pets-form-select"
-                              value={form.gender}
-                              onChange={(event) => setForm((prev) => ({ ...prev, gender: event.target.value }))}
-                              disabled
-                            >
-                              <option value="MALE">수컷</option>
-                              <option value="FEMALE">암컷</option>
-                              <option value="UNKNOWN">모름</option>
-                            </select>
-                          </label>
-                        <label className="pets-form-field">
-                          중성화
-                          <select
-                            className="pets-form-select"
-                            value={form.neutered}
-                            onChange={(event) => setForm((prev) => ({ ...prev, neutered: event.target.value }))}
-                            disabled
-                          >
-                            <option value="">선택 안함</option>
-                            <option value="true">완료</option>
-                            <option value="false">미완료</option>
-                          </select>
-                        </label>
-                        <label className="pets-form-field">
-                          예방접종
-                          <select
-                            className="pets-form-select"
-                            value={form.vaccinationComplete}
-                            onChange={(event) =>
-                              setForm((prev) => ({ ...prev, vaccinationComplete: event.target.value }))
-                            }
-                          >
-                            <option value="">미설정</option>
-                            <option value="true">완료</option>
-                            <option value="false">미완료</option>
-                          </select>
-                        </label>
-                        <label className="pets-form-field">
-                          산책 안전
-                          <select
-                            className="pets-form-select"
-                            value={form.walkSafetyChecked}
-                            onChange={(event) =>
-                              setForm((prev) => ({ ...prev, walkSafetyChecked: event.target.value }))
-                            }
-                          >
-                            <option value="">미설정</option>
-                            <option value="true">확인</option>
-                            <option value="false">미확인</option>
-                          </select>
-                        </label>
-                        </div>
-                        <label className="pets-form-field">
-                          소개
-                          <input
-                            className="pets-form-input"
-                            value={form.intro}
-                            onChange={(event) => setForm((prev) => ({ ...prev, intro: event.target.value }))}
-                          />
-                        </label>
+                      <Button variant="secondary" onClick={resetVerification}>
+                        다시 인증
+                      </Button>
+                    )}
+                  </div>
+                </div>
+                {verified && (
+                  <>
+                    <div className="pets-form-grid">
+                      <label className="pets-form-field">
+                        이름
+                        <input
+                          className="pets-form-input"
+                          value={form.name}
+                          onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
+                          disabled
+                        />
+                      </label>
+                      <label className="pets-form-field">
+                        생일
+                        <input
+                          type="date"
+                          className="pets-form-input"
+                          value={form.birthDate}
+                          onChange={(event) => setForm((prev) => ({ ...prev, birthDate: event.target.value }))}
+                          disabled
+                        />
+                      </label>
+                      <label className="pets-form-field">
+                        체중(kg)
+                        <input
+                          type="number"
+                          step="0.1"
+                          className="pets-form-input"
+                          value={form.weightKg}
+                          onChange={(event) => setForm((prev) => ({ ...prev, weightKg: event.target.value }))}
+                        />
+                      </label>
+                      <label className="pets-form-field">
+                        종
+                        <select
+                          className="pets-form-select"
+                          value={form.species}
+                          onChange={(event) => setForm((prev) => ({ ...prev, species: event.target.value }))}
+                          disabled
+                        >
+                          <option value="DOG">강아지</option>
+                          <option value="CAT">고양이</option>
+                          <option value="OTHER">기타</option>
+                        </select>
+                      </label>
+                      <label className="pets-form-field pets-form-field-span">
+                        품종
+                        <select
+                          className="pets-form-select"
+                          value={form.breed}
+                          onChange={(event) => setForm((prev) => ({ ...prev, breed: event.target.value }))}
+                          disabled={form.species === "OTHER"}
+                        >
+                          <option value="">
+                            {form.species === "OTHER" ? "기타 종은 품종 선택 없음" : "선택 안함"}
+                          </option>
+                          {form.breed && !breeds.some((breed) => breed.nameKo === form.breed) && (
+                            <option value={form.breed}>{form.breed}</option>
+                          )}
+                          {breeds.map((breed) => (
+                            <option key={breed.id} value={breed.nameKo}>
+                              {breed.nameKo}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label className="pets-form-field">
+                        성별
+                        <select
+                          className="pets-form-select"
+                          value={form.gender}
+                          onChange={(event) => setForm((prev) => ({ ...prev, gender: event.target.value }))}
+                          disabled
+                        >
+                          <option value="MALE">수컷</option>
+                          <option value="FEMALE">암컷</option>
+                          <option value="UNKNOWN">모름</option>
+                        </select>
+                      </label>
+                      <label className="pets-form-field">
+                        중성화
+                        <select
+                          className="pets-form-select"
+                          value={form.neutered}
+                          onChange={(event) => setForm((prev) => ({ ...prev, neutered: event.target.value }))}
+                          disabled
+                        >
+                          <option value="">선택 안함</option>
+                          <option value="true">완료</option>
+                          <option value="false">미완료</option>
+                        </select>
+                      </label>
+                      <label className="pets-form-field">
+                        예방접종
+                        <select
+                          className="pets-form-select"
+                          value={form.vaccinationComplete}
+                          onChange={(event) =>
+                            setForm((prev) => ({ ...prev, vaccinationComplete: event.target.value }))
+                          }
+                        >
+                          <option value="">미설정</option>
+                          <option value="true">완료</option>
+                          <option value="false">미완료</option>
+                        </select>
+                      </label>
+                      <label className="pets-form-field">
+                        산책 안전
+                        <select
+                          className="pets-form-select"
+                          value={form.walkSafetyChecked}
+                          onChange={(event) =>
+                            setForm((prev) => ({ ...prev, walkSafetyChecked: event.target.value }))
+                          }
+                        >
+                          <option value="">미설정</option>
+                          <option value="true">확인</option>
+                          <option value="false">미확인</option>
+                        </select>
+                      </label>
+                    </div>
+                    <label className="pets-form-field">
+                      소개
+                      <input
+                        className="pets-form-input"
+                        value={form.intro}
+                        onChange={(event) => setForm((prev) => ({ ...prev, intro: event.target.value }))}
+                      />
+                    </label>
                     <div className="pets-photo-row">
                       <div className="pets-photo-preview">
                         {form.photoUrl ? (
@@ -826,22 +822,20 @@ export default function PetsPage() {
                         />
                       </label>
                     </div>
-                        {petImageError && <p className="pets-form-error">{petImageError}</p>}
-                        <Button onClick={handlePetSubmit} disabled={savingPet}>
-                          {savingPet ? "저장 중..." : "반려동물 등록"}
-                        </Button>
-                      </>
-                    )}
+                    {petImageError && <p className="pets-form-error">{petImageError}</p>}
+                    <Button onClick={handlePetSubmit} disabled={savingPet}>
+                      {savingPet ? "저장 중..." : "반려동물 등록"}
+                    </Button>
                   </>
                 )}
-              </CardContent>
-            </Card>
-          </div>
-          {!loading && pets.length === 0 && (
-            <p className="pets-empty-message">등록된 반려동물이 없습니다.</p>
-          )}
-        </SectionShell>
-      </main>
-    </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+      {!loading && pets.length === 0 && (
+        <p className="pets-empty-message">등록된 반려동물이 없습니다.</p>
+      )}
+    </SectionShell>
   );
 }
