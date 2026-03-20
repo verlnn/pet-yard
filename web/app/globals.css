@@ -346,4 +346,176 @@ body {
   .onboarding-pet-notice {
     @apply rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600;
   }
+
+  .onboarding-profile-form {
+    @apply space-y-6;
+  }
+
+  .onboarding-profile-progress {
+    @apply space-y-2;
+  }
+
+  .onboarding-profile-progress-header {
+    @apply flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-400;
+  }
+
+  .onboarding-profile-progress-track {
+    @apply h-2 w-full rounded-full bg-slate-200/70;
+  }
+
+  .onboarding-profile-progress-fill {
+    @apply h-full rounded-full bg-ink transition-all duration-300;
+  }
+
+  .onboarding-profile-step-shell {
+    @apply relative min-h-[520px] overflow-hidden pb-2;
+  }
+
+  .onboarding-profile-step-panel {
+    @apply absolute inset-0 flex min-h-full flex-col transition-[opacity,transform] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)];
+  }
+
+  .onboarding-profile-step-panel-active {
+    @apply z-10 translate-x-0 opacity-100;
+  }
+
+  .onboarding-profile-step-panel-hidden-left {
+    @apply pointer-events-none z-0 -translate-x-8 opacity-0;
+  }
+
+  .onboarding-profile-step-panel-hidden-right {
+    @apply pointer-events-none z-0 translate-x-8 opacity-0;
+  }
+
+  .onboarding-profile-step-content {
+    @apply space-y-4;
+  }
+
+  .onboarding-profile-field {
+    @apply flex flex-col gap-2 text-xs font-semibold text-slate-500;
+  }
+
+  .onboarding-profile-field-block {
+    @apply space-y-2 text-xs font-semibold text-slate-500;
+  }
+
+  .onboarding-profile-input {
+    @apply w-full rounded-2xl border border-slate-200/70 bg-white/90 px-4 py-3.5 text-sm text-slate-900 shadow-[0_14px_30px_-24px_rgba(15,23,42,0.25)] transition placeholder:text-slate-400 focus:border-ink/30 focus:outline-none focus:ring-4 focus:ring-ink/10;
+  }
+
+  .onboarding-profile-combobox {
+    @apply space-y-2;
+  }
+
+  .onboarding-profile-combobox-label {
+    @apply text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-400;
+  }
+
+  .onboarding-profile-combobox-shell {
+    @apply relative;
+  }
+
+  .onboarding-profile-combobox-menu {
+    @apply absolute z-20 mt-2 max-h-52 w-full overflow-auto rounded-2xl border border-slate-200/70 bg-white shadow-[0_16px_40px_-24px_rgba(15,23,42,0.25)];
+  }
+
+  .onboarding-profile-combobox-empty {
+    @apply px-4 py-3 text-xs text-slate-400;
+  }
+
+  .onboarding-profile-combobox-option {
+    @apply flex w-full items-center justify-between px-4 py-2.5 text-left text-sm text-slate-700 transition hover:bg-slate-50;
+  }
+
+  .onboarding-profile-photo-row {
+    @apply flex items-center gap-4 rounded-2xl border border-slate-200/70 bg-white/80 px-4 py-3;
+  }
+
+  .onboarding-profile-photo-preview {
+    @apply h-14 w-14 overflow-hidden rounded-2xl bg-slate-100;
+  }
+
+  .onboarding-profile-photo-image {
+    @apply h-full w-full object-cover;
+  }
+
+  .onboarding-profile-photo-empty {
+    @apply flex h-full w-full items-center justify-center text-[11px] text-slate-400;
+  }
+
+  .onboarding-profile-photo-actions {
+    @apply flex flex-1 flex-col gap-2;
+  }
+
+  .onboarding-profile-photo-upload {
+    @apply inline-flex w-fit cursor-pointer items-center gap-2 rounded-full border border-slate-200/70 bg-white px-3 py-1 text-[11px] font-semibold text-slate-600;
+  }
+
+  .onboarding-profile-hidden-input {
+    @apply hidden;
+  }
+
+  .onboarding-profile-photo-remove {
+    @apply w-fit text-[11px] font-semibold text-slate-400 transition hover:text-slate-600;
+  }
+
+  .onboarding-profile-photo-error {
+    @apply text-[11px] text-rose-500;
+  }
+
+  .onboarding-profile-region-block {
+    @apply gap-3;
+  }
+
+  .onboarding-profile-region-grid {
+    @apply grid gap-4 sm:grid-cols-2;
+  }
+
+  .onboarding-profile-region-tags {
+    @apply flex flex-wrap gap-2 pt-1 text-[11px] text-slate-500;
+  }
+
+  .onboarding-profile-region-tag {
+    @apply rounded-full border border-slate-200 bg-white/80 px-2 py-1;
+  }
+
+  .onboarding-profile-toggle-row {
+    @apply flex items-center justify-between rounded-2xl border border-slate-200/70 bg-white/80 px-4 py-3 text-sm text-slate-600;
+  }
+
+  .onboarding-profile-checkbox {
+    @apply h-4 w-4 rounded border-slate-300 text-ink focus:ring-ink/20;
+  }
+
+  .onboarding-profile-choice-grid {
+    @apply grid grid-cols-2 gap-2;
+  }
+
+  .onboarding-profile-choice-button {
+    @apply rounded-2xl border px-3 py-3 text-sm font-semibold transition;
+  }
+
+  .onboarding-profile-choice-button-selected {
+    @apply border-ink/80 bg-ink text-sand shadow-[0_12px_26px_-20px_rgba(31,29,26,0.4)];
+  }
+
+  .onboarding-profile-choice-button-unselected {
+    @apply border-slate-200/70 bg-white/80 text-slate-600;
+  }
+
+  .onboarding-profile-step-actions-single {
+    @apply mt-auto pt-4;
+  }
+
+  .onboarding-profile-step-actions {
+    @apply mt-auto flex gap-2 pt-4;
+  }
+
+  .onboarding-profile-primary-button {
+    @apply flex-1 rounded-2xl bg-ink px-4 py-3 text-sm font-semibold text-sand transition hover:bg-ink/90 disabled:cursor-not-allowed disabled:bg-ink/40;
+  }
+
+  .onboarding-profile-secondary-button {
+    @apply flex-1 rounded-2xl border border-slate-200/70 bg-white/80 px-4 py-3 text-sm font-semibold text-slate-600 transition hover:bg-white;
+  }
 }

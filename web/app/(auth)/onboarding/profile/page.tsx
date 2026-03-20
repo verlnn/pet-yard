@@ -7,9 +7,6 @@ import { authApi } from "@/src/features/auth/api/authApi";
 import OnboardingLayout from "@/src/features/onboarding/components/OnboardingLayout";
 import OnboardingCard from "@/src/features/onboarding/components/OnboardingCard";
 
-const inputClassName =
-  "w-full rounded-2xl border border-slate-200/70 bg-white/90 px-4 py-3.5 text-sm text-slate-900 shadow-[0_14px_30px_-24px_rgba(15,23,42,0.25)] transition placeholder:text-slate-400 focus:border-ink/30 focus:outline-none focus:ring-4 focus:ring-ink/10";
-
 type RegionOption = {
   code: string;
   name: string;
@@ -28,9 +25,7 @@ function RegionComboBox({ label, placeholder, value, options, disabled, onChange
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const selected = options.find((opt) => opt.code === value);
-  const visible = query
-    ? options.filter((opt) => opt.name.includes(query.trim()))
-    : options;
+  const visible = query ? options.filter((opt) => opt.name.includes(query.trim())) : options;
 
   useEffect(() => {
     if (!value) return;
@@ -40,11 +35,11 @@ function RegionComboBox({ label, placeholder, value, options, disabled, onChange
   const displayValue = selected ? selected.name : query;
 
   return (
-    <div className="space-y-2">
-      <label className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-400">{label}</label>
-      <div className="relative">
+    <div className="onboarding-profile-combobox">
+      <label className="onboarding-profile-combobox-label">{label}</label>
+      <div className="onboarding-profile-combobox-shell">
         <input
-          className={inputClassName}
+          className="onboarding-profile-input"
           value={displayValue}
           placeholder={placeholder}
           onFocus={() => !disabled && setOpen(true)}
@@ -57,15 +52,15 @@ function RegionComboBox({ label, placeholder, value, options, disabled, onChange
           disabled={disabled}
         />
         {open && !disabled && (
-          <div className="absolute z-20 mt-2 max-h-52 w-full overflow-auto rounded-2xl border border-slate-200/70 bg-white shadow-[0_16px_40px_-24px_rgba(15,23,42,0.25)]">
+          <div className="onboarding-profile-combobox-menu">
             {visible.length === 0 && (
-              <div className="px-4 py-3 text-xs text-slate-400">결과가 없습니다.</div>
+              <div className="onboarding-profile-combobox-empty">결과가 없습니다.</div>
             )}
             {visible.map((opt) => (
               <button
                 type="button"
                 key={opt.code}
-                className="flex w-full items-center justify-between px-4 py-2.5 text-left text-sm text-slate-700 hover:bg-slate-50"
+                className="onboarding-profile-combobox-option"
                 onMouseDown={() => {
                   onChange(opt.code);
                   setQuery("");
@@ -189,6 +184,7 @@ export default function OnboardingProfilePage() {
   const selectedCity = cities.find((city) => city.code === cityCode);
   const selectedDistrict = districts.find((district) => district.code === districtCode);
   const selectedDong = dongs.find((dong) => dong.code === dongCode);
+
   useEffect(() => {
     setDistrictCode("");
     setDongCode("");
@@ -198,7 +194,7 @@ export default function OnboardingProfilePage() {
     setDongCode("");
   }, [districtCode]);
 
-  const handleNextStep = () => {
+  const handleProfileStepNext = () => {
     if (!nickname.trim()) {
       setError("닉네임을 입력해 주세요.");
       return;
@@ -220,17 +216,20 @@ export default function OnboardingProfilePage() {
       setError("반려동물 유무를 선택해 주세요.");
       return;
     }
+
     setError(null);
     setLoading(true);
+
     try {
       const selectedRegion = dongCode || districtCode || cityCode || null;
-        const result = await authApi.signupProfile(signupToken, {
-          nickname: nickname.trim(),
-          regionCode: selectedRegion,
-          profileImageUrl: profileImageUrl.trim() || null,
-          marketingOptIn,
-          hasPet: hasPetChoice ?? false
-        });
+      const result = await authApi.signupProfile(signupToken, {
+        nickname: nickname.trim(),
+        regionCode: selectedRegion,
+        profileImageUrl: profileImageUrl.trim() || null,
+        marketingOptIn,
+        hasPet: hasPetChoice ?? false
+      });
+
       if (result.nextStep === "CONSENTS") {
         router.push("/onboarding/consents");
       }
@@ -241,6 +240,24 @@ export default function OnboardingProfilePage() {
     }
   };
 
+  const stepPanelClassName = (targetStep: 1 | 2 | 3, hiddenDirection: "left" | "right") =>
+    [
+      "onboarding-profile-step-panel",
+      step === targetStep
+        ? "onboarding-profile-step-panel-active"
+        : hiddenDirection === "left"
+          ? "onboarding-profile-step-panel-hidden-left"
+          : "onboarding-profile-step-panel-hidden-right"
+    ].join(" ");
+
+  const petChoiceButtonClassName = (selected: boolean) =>
+    [
+      "onboarding-profile-choice-button",
+      selected
+        ? "onboarding-profile-choice-button-selected"
+        : "onboarding-profile-choice-button-unselected"
+    ].join(" ");
+
   return (
     <OnboardingLayout>
       <OnboardingCard
@@ -248,64 +265,58 @@ export default function OnboardingProfilePage() {
         subtitle="멍냥마당에서 사용할 정보를 먼저 설정합니다."
         error={error}
       >
-        <form className="space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-400">
+        <form className="onboarding-profile-form" onSubmit={handleSubmit}>
+          <div className="onboarding-profile-progress">
+            <div className="onboarding-profile-progress-header">
               <span>진행 단계</span>
               <span>{step}/3</span>
             </div>
             <div
-              className="h-2 w-full rounded-full bg-slate-200/70"
+              className="onboarding-profile-progress-track"
               role="progressbar"
               aria-valuenow={step}
               aria-valuemin={1}
               aria-valuemax={3}
             >
               <div
-                className="h-full rounded-full bg-ink transition-all duration-300"
+                className="onboarding-profile-progress-fill"
                 style={{ width: `${(step / 3) * 100}%` }}
               />
             </div>
           </div>
-          <div className="relative min-h-[520px] overflow-hidden pb-2">
-            <div
-              className={`absolute inset-0 flex min-h-full flex-col transition-[opacity,transform] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                step === 1
-                  ? "z-10 translate-x-0 opacity-100"
-                  : "pointer-events-none z-0 -translate-x-8 opacity-0"
-              }`}
-            >
-              <div className="space-y-4">
-              <label className="flex flex-col gap-2 text-xs font-semibold text-slate-500">
-                닉네임
-                <input
-                  className={inputClassName}
-                  value={nickname}
-                  onChange={(event) => setNickname(event.target.value)}
-                  placeholder="멍냥마당에서 사용할 이름"
-                  required
-                />
-              </label>
-                <div className="space-y-2 text-xs font-semibold text-slate-500">
+
+          <div className="onboarding-profile-step-shell">
+            <div className={stepPanelClassName(1, "left")}>
+              <div className="onboarding-profile-step-content">
+                <label className="onboarding-profile-field">
+                  닉네임
+                  <input
+                    className="onboarding-profile-input"
+                    value={nickname}
+                    onChange={(event) => setNickname(event.target.value)}
+                    placeholder="멍냥마당에서 사용할 이름"
+                    required
+                  />
+                </label>
+
+                <div className="onboarding-profile-field-block">
                   프로필 이미지 (선택)
-                  <div className="flex items-center gap-4 rounded-2xl border border-slate-200/70 bg-white/80 px-4 py-3">
-                    <div className="h-14 w-14 overflow-hidden rounded-2xl bg-slate-100">
+                  <div className="onboarding-profile-photo-row">
+                    <div className="onboarding-profile-photo-preview">
                       {profileImageUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={profileImageUrl} alt="프로필 미리보기" className="h-full w-full object-cover" />
+                        <img src={profileImageUrl} alt="프로필 미리보기" className="onboarding-profile-photo-image" />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center text-[11px] text-slate-400">
-                          없음
-                        </div>
+                        <div className="onboarding-profile-photo-empty">없음</div>
                       )}
                     </div>
-                    <div className="flex flex-1 flex-col gap-2">
-                      <label className="inline-flex w-fit cursor-pointer items-center gap-2 rounded-full border border-slate-200/70 bg-white px-3 py-1 text-[11px] font-semibold text-slate-600">
+                    <div className="onboarding-profile-photo-actions">
+                      <label className="onboarding-profile-photo-upload">
                         사진 업로드
                         <input
                           type="file"
                           accept="image/*"
-                          className="hidden"
+                          className="onboarding-profile-hidden-input"
                           onChange={(event) => {
                             const file = event.target.files?.[0];
                             if (!file) return;
@@ -317,6 +328,7 @@ export default function OnboardingProfilePage() {
                               setProfileImageError("2MB 이하 이미지로 업로드해 주세요.");
                               return;
                             }
+
                             const reader = new FileReader();
                             reader.onload = () => {
                               setProfileImageUrl(typeof reader.result === "string" ? reader.result : "");
@@ -329,7 +341,7 @@ export default function OnboardingProfilePage() {
                       {profileImageUrl && (
                         <button
                           type="button"
-                          className="w-fit text-[11px] font-semibold text-slate-400 hover:text-slate-600"
+                          className="onboarding-profile-photo-remove"
                           onClick={() => setProfileImageUrl("")}
                         >
                           삭제
@@ -337,130 +349,103 @@ export default function OnboardingProfilePage() {
                       )}
                     </div>
                   </div>
-                  {profileImageError && <p className="text-[11px] text-rose-500">{profileImageError}</p>}
+                  {profileImageError && <p className="onboarding-profile-photo-error">{profileImageError}</p>}
                 </div>
               </div>
-              <div className="mt-auto pt-4">
+
+              <div className="onboarding-profile-step-actions-single">
                 <button
                   type="button"
-                  onClick={handleNextStep}
-                  className="w-full rounded-2xl bg-ink px-4 py-3 text-sm font-semibold text-sand transition hover:bg-ink/90"
+                  onClick={handleProfileStepNext}
+                  className="onboarding-profile-primary-button"
                 >
                   다음 단계
                 </button>
               </div>
             </div>
 
-            <div
-              className={`absolute inset-0 flex min-h-full flex-col transition-[opacity,transform] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                step === 2
-                  ? "z-10 translate-x-0 opacity-100"
-                  : "pointer-events-none z-0 translate-x-8 opacity-0"
-              }`}
-            >
-              <div className="space-y-4">
-              <label className="flex flex-col gap-3 text-xs font-semibold text-slate-500">
-                지역 선택
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <RegionComboBox
-                    label="시/도"
-                    placeholder="시/도 검색"
-                    value={cityCode}
-                    options={cities}
-                    onChange={setCityCode}
+            <div className={stepPanelClassName(2, "right")}>
+              <div className="onboarding-profile-step-content">
+                <label className="onboarding-profile-field-block onboarding-profile-region-block">
+                  지역 선택
+                  <div className="onboarding-profile-region-grid">
+                    <RegionComboBox
+                      label="시/도"
+                      placeholder="시/도 검색"
+                      value={cityCode}
+                      options={cities}
+                      onChange={setCityCode}
+                    />
+                    <RegionComboBox
+                      label="구/군"
+                      placeholder="구/군 검색"
+                      value={districtCode}
+                      options={districts}
+                      disabled={!cityCode}
+                      onChange={setDistrictCode}
+                    />
+                    <RegionComboBox
+                      label="읍/면/동"
+                      placeholder="읍/면/동 검색"
+                      value={dongCode}
+                      options={dongs}
+                      disabled={!districtCode}
+                      onChange={setDongCode}
+                    />
+                  </div>
+                  <div className="onboarding-profile-region-tags">
+                    {selectedCity && <span className="onboarding-profile-region-tag">{selectedCity.name}</span>}
+                    {selectedDistrict && (
+                      <span className="onboarding-profile-region-tag">{selectedDistrict.name}</span>
+                    )}
+                    {selectedDong && <span className="onboarding-profile-region-tag">{selectedDong.name}</span>}
+                  </div>
+                </label>
+
+                <label className="onboarding-profile-toggle-row">
+                  <span>마케팅 수신 동의 (선택)</span>
+                  <input
+                    type="checkbox"
+                    checked={marketingOptIn}
+                    onChange={(event) => setMarketingOptIn(event.target.checked)}
+                    className="onboarding-profile-checkbox"
                   />
-                  <RegionComboBox
-                    label="구/군"
-                    placeholder="구/군 검색"
-                    value={districtCode}
-                    options={districts}
-                    disabled={!cityCode}
-                    onChange={setDistrictCode}
-                  />
-                  <RegionComboBox
-                    label="읍/면/동"
-                    placeholder="읍/면/동 검색"
-                    value={dongCode}
-                    options={dongs}
-                    disabled={!districtCode}
-                    onChange={setDongCode}
-                  />
-                </div>
-                <div className="flex flex-wrap gap-2 pt-1 text-[11px] text-slate-500">
-                  {selectedCity && (
-                    <span className="rounded-full border border-slate-200 bg-white/80 px-2 py-1">
-                      {selectedCity.name}
-                    </span>
-                  )}
-                  {selectedDistrict && (
-                    <span className="rounded-full border border-slate-200 bg-white/80 px-2 py-1">
-                      {selectedDistrict.name}
-                    </span>
-                  )}
-                  {selectedDong && (
-                    <span className="rounded-full border border-slate-200 bg-white/80 px-2 py-1">
-                      {selectedDong.name}
-                    </span>
-                )}
+                </label>
               </div>
-            </label>
-              <label className="flex items-center justify-between rounded-2xl border border-slate-200/70 bg-white/80 px-4 py-3 text-sm text-slate-600">
-                <span>마케팅 수신 동의 (선택)</span>
-                <input
-                  type="checkbox"
-                  checked={marketingOptIn}
-                  onChange={(event) => setMarketingOptIn(event.target.checked)}
-                  className="h-4 w-4 rounded border-slate-300 text-ink focus:ring-ink/20"
-                />
-              </label>
-              </div>
-              <div className="mt-auto flex gap-2 pt-4">
+
+              <div className="onboarding-profile-step-actions">
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="flex-1 rounded-2xl border border-slate-200/70 bg-white/80 px-4 py-3 text-sm font-semibold text-slate-600 transition hover:bg-white"
+                  className="onboarding-profile-secondary-button"
                 >
                   이전
                 </button>
                 <button
                   type="button"
                   onClick={handleRegionStepNext}
-                  className="flex-1 rounded-2xl bg-ink px-4 py-3 text-sm font-semibold text-sand transition hover:bg-ink/90 disabled:cursor-not-allowed disabled:bg-ink/40"
+                  className="onboarding-profile-primary-button"
                 >
                   다음
                 </button>
               </div>
             </div>
 
-            <div
-              className={`absolute inset-0 flex min-h-full flex-col transition-[opacity,transform] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                step === 3
-                  ? "z-10 translate-x-0 opacity-100"
-                  : "pointer-events-none z-0 translate-x-8 opacity-0"
-              }`}
-            >
-              <div className="space-y-4">
-                <div className="space-y-2 text-xs font-semibold text-slate-500">
+            <div className={stepPanelClassName(3, "right")}>
+              <div className="onboarding-profile-step-content">
+                <div className="onboarding-profile-field-block">
                   반려동물 유무
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="onboarding-profile-choice-grid">
                     <button
                       type="button"
-                      className={`rounded-2xl border px-3 py-3 text-sm font-semibold transition ${
-                        hasPetChoice === true
-                          ? "border-ink/80 bg-ink text-sand shadow-[0_12px_26px_-20px_rgba(31,29,26,0.4)]"
-                          : "border-slate-200/70 bg-white/80 text-slate-600"
-                      }`}
+                      className={petChoiceButtonClassName(hasPetChoice === true)}
                       onClick={() => setHasPetChoice(true)}
                     >
                       반려동물이 있어요
                     </button>
                     <button
                       type="button"
-                      className={`rounded-2xl border px-3 py-3 text-sm font-semibold transition ${
-                        hasPetChoice === false
-                          ? "border-ink/80 bg-ink text-sand shadow-[0_12px_26px_-20px_rgba(31,29,26,0.4)]"
-                          : "border-slate-200/70 bg-white/80 text-slate-600"
-                      }`}
+                      className={petChoiceButtonClassName(hasPetChoice === false)}
                       onClick={() => setHasPetChoice(false)}
                     >
                       나중에 등록할게요
@@ -468,17 +453,18 @@ export default function OnboardingProfilePage() {
                   </div>
                 </div>
               </div>
-              <div className="mt-auto flex gap-2 pt-4">
+
+              <div className="onboarding-profile-step-actions">
                 <button
                   type="button"
                   onClick={() => setStep(2)}
-                  className="flex-1 rounded-2xl border border-slate-200/70 bg-white/80 px-4 py-3 text-sm font-semibold text-slate-600 transition hover:bg-white"
+                  className="onboarding-profile-secondary-button"
                 >
                   이전
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 rounded-2xl bg-ink px-4 py-3 text-sm font-semibold text-sand transition hover:bg-ink/90 disabled:cursor-not-allowed disabled:bg-ink/40"
+                  className="onboarding-profile-primary-button"
                   disabled={loading}
                 >
                   {loading ? "저장 중..." : "다음"}
@@ -486,7 +472,6 @@ export default function OnboardingProfilePage() {
               </div>
             </div>
           </div>
-
         </form>
       </OnboardingCard>
     </OnboardingLayout>
