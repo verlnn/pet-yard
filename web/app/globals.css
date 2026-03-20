@@ -21,7 +21,7 @@
   --color-input-border: rgba(15, 23, 42, 0.12);
   --color-input-placeholder: #94a3b8;
   --color-overlay-backdrop: rgba(15, 23, 42, 0.45);
-  --color-menu-surface: #1e293b;
+  --color-menu-surface: #222324;
   --color-menu-text: #f8fafc;
   --shadow-soft-token: 0 20px 50px -35px rgba(15, 23, 42, 0.2);
   --shadow-card-token: 0 24px 56px -42px rgba(15, 23, 42, 0.12);
@@ -46,7 +46,7 @@
   --color-input-border: rgba(255, 255, 255, 0.12);
   --color-input-placeholder: #94a3b8;
   --color-overlay-backdrop: rgba(2, 6, 23, 0.68);
-  --color-menu-surface: #1e293b;
+  --color-menu-surface: #222324;
   --color-menu-text: #f8fafc;
   --shadow-soft-token: 0 20px 50px -35px rgba(2, 6, 23, 0.55);
   --shadow-card-token: 0 24px 56px -42px rgba(2, 6, 23, 0.5);
