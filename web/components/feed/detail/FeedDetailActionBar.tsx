@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useRef } from "react";
 import { MessageCircle, Send } from "lucide-react";
 
 interface FeedDetailActionBarProps {
@@ -8,6 +9,8 @@ interface FeedDetailActionBarProps {
 }
 
 export function FeedDetailActionBar({ createdAt }: FeedDetailActionBarProps) {
+  const commentInputRef = useRef<HTMLInputElement | null>(null);
+
   return (
     <div className="feed-detail-action-bar">
       <div className="feed-detail-action-content">
@@ -29,6 +32,7 @@ export function FeedDetailActionBar({ createdAt }: FeedDetailActionBarProps) {
             type="button"
             className="feed-detail-action-button"
             aria-label="댓글 보기"
+            onClick={() => commentInputRef.current?.focus()}
           >
             <MessageCircle className="h-5 w-5 text-ink" />
           </button>
@@ -51,6 +55,7 @@ export function FeedDetailActionBar({ createdAt }: FeedDetailActionBarProps) {
         <div className="feed-detail-comment-composer-inner">
           <MessageCircle className="feed-detail-comment-icon" />
           <input
+            ref={commentInputRef}
             type="text"
             placeholder="댓글을 남겨보세요."
             className="feed-detail-comment-input"
