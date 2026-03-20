@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, MoreHorizontal, X } from "lucide-react";
 
 import { SectionShell } from "@/components/site/section-shell";
@@ -84,6 +84,7 @@ export default function MyFeedPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
   const [postActionMenuOpen, setPostActionMenuOpen] = useState(false);
+  const postActionMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -192,6 +193,17 @@ export default function MyFeedPage() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [selectedPost, hasPrevPost, hasNextPost, selectedPostIndex, posts]);
+
+  useEffect(() => {
+    if (!postActionMenuOpen) return;
+    const handlePointerDown = (event: MouseEvent) => {
+      if (!postActionMenuRef.current?.contains(event.target as Node)) {
+        setPostActionMenuOpen(false);
+      }
+    };
+    window.addEventListener("mousedown", handlePointerDown);
+    return () => window.removeEventListener("mousedown", handlePointerDown);
+  }, [postActionMenuOpen]);
 
   const handleAddImages = async (files?: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -433,7 +445,7 @@ export default function MyFeedPage() {
             >
               <X className="h-5 w-5" />
             </button>
-            <div className="absolute right-5 top-5 z-20">
+            <div ref={postActionMenuRef} className="absolute right-5 top-5 z-20">
               <button
                 type="button"
                 onClick={() => setPostActionMenuOpen((prev) => !prev)}
@@ -442,8 +454,13 @@ export default function MyFeedPage() {
               >
                 <MoreHorizontal className="h-5 w-5" />
               </button>
-              {postActionMenuOpen && (
-                <div className="absolute right-0 top-12 w-48 overflow-hidden rounded-2xl border border-slate-200 bg-white py-2 shadow-xl">
+              <div
+                className={`absolute right-0 top-12 w-48 origin-top-right overflow-hidden rounded-2xl border border-slate-200 bg-white py-2 shadow-xl transition duration-200 ${
+                  postActionMenuOpen
+                    ? "pointer-events-auto translate-y-0 scale-100 opacity-100"
+                    : "pointer-events-none -translate-y-1 scale-95 opacity-0"
+                }`}
+              >
                   <button
                     type="button"
                     onClick={handleDelete}
@@ -488,7 +505,6 @@ export default function MyFeedPage() {
                     취소
                   </button>
                 </div>
-              )}
             </div>
           <div className="flex overflow-hidden rounded-[32px] bg-white">
             <div
