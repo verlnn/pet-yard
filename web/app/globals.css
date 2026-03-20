@@ -303,14 +303,6 @@ body {
     @apply min-h-[500px];
   }
 
-  .onboarding-pet-step-shell-medium {
-    @apply min-h-[560px];
-  }
-
-  .onboarding-pet-step-shell-regular {
-    @apply min-h-[640px];
-  }
-
   .onboarding-pet-step-panel {
     @apply absolute inset-0 flex min-h-full flex-col transition-[opacity,transform] duration-300;
     transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);

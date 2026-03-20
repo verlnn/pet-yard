@@ -163,15 +163,7 @@ export default function OnboardingPetPage() {
         <form className="onboarding-pet-form" onSubmit={handleSubmit}>
           <OnboardingPetProgress step={step} />
 
-          <div
-            className={`onboarding-pet-step-shell ${
-              step === 1
-                ? "onboarding-pet-step-shell-compact"
-                : step === 2
-                  ? "onboarding-pet-step-shell-medium"
-                  : "onboarding-pet-step-shell-regular"
-            }`}
-          >
+          <div className="onboarding-pet-step-shell onboarding-pet-step-shell-compact">
             <div className={stepPanelClassName(1, "left")}>
               <OnboardingPetVerificationStep
                 verification={verification}
