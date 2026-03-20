@@ -321,7 +321,7 @@ body {
   }
 
   .onboarding-pet-step-content {
-    @apply space-y-4;
+    @apply flex-1 space-y-4;
   }
 
   .onboarding-pet-step-actions-single {
