@@ -84,6 +84,7 @@ export default function MyFeedPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
   const [postActionMenuOpen, setPostActionMenuOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const postActionMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -177,6 +178,7 @@ export default function MyFeedPage() {
   const handleCloseSelectedPost = () => {
     setSelectedPost(null);
     setPostActionMenuOpen(false);
+    setDeleteConfirmOpen(false);
   };
 
   useEffect(() => {
@@ -328,6 +330,7 @@ export default function MyFeedPage() {
       setPosts((prev) => prev.filter((post) => post.id !== selectedPost.id));
       setSelectedPost(null);
       setPostActionMenuOpen(false);
+      setDeleteConfirmOpen(false);
     } catch (err) {
       setImageError(err instanceof Error ? err.message : "삭제에 실패했습니다.");
     } finally {
@@ -467,7 +470,10 @@ export default function MyFeedPage() {
               >
                   <button
                     type="button"
-                    onClick={handleDelete}
+                    onClick={() => {
+                      setPostActionMenuOpen(false);
+                      setDeleteConfirmOpen(true);
+                    }}
                     disabled={deleting}
                     className="flex w-full items-center px-4 py-3 text-left text-sm font-semibold text-rose-600 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-60"
                   >
@@ -571,6 +577,36 @@ export default function MyFeedPage() {
                 )}
               </div>
           </div>
+          {deleteConfirmOpen && (
+            <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/35">
+              <div className="w-full max-w-sm overflow-hidden rounded-[28px] bg-white shadow-2xl">
+                <div className="px-6 py-7">
+                  <p className="text-center text-base font-semibold text-ink">
+                    이 게시물을 삭제하시겠습니까?
+                  </p>
+                </div>
+                <div className="border-t border-slate-200" />
+                <div className="grid grid-cols-2">
+                  <button
+                    type="button"
+                    onClick={() => setDeleteConfirmOpen(false)}
+                    disabled={deleting}
+                    className="flex h-14 items-center justify-center text-sm font-medium text-ink transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    취소
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleDelete}
+                    disabled={deleting}
+                    className="flex h-14 items-center justify-center border-l border-slate-200 text-sm font-semibold text-rose-600 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {deleting ? "삭제 중..." : "삭제"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
           </div>
         </div>
       )}
