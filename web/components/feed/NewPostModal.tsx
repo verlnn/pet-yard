@@ -94,6 +94,17 @@ export function NewPostModal({
     return () => window.removeEventListener("mousedown", handleClick);
   }, [showRatioPanel]);
 
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [open, onClose]);
+
   const handleRatioSelect = (ratio: ComposerImage["aspectRatio"]) => {
     if (images.length === 0) return;
     const next = { aspectRatio: ratio };
