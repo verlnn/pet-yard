@@ -296,7 +296,15 @@ body {
   }
 
   .onboarding-pet-step-shell {
-    @apply relative min-h-[640px] overflow-hidden pb-2;
+    @apply relative overflow-hidden pb-2;
+  }
+
+  .onboarding-pet-step-shell-compact {
+    @apply min-h-[500px];
+  }
+
+  .onboarding-pet-step-shell-regular {
+    @apply min-h-[640px];
   }
 
   .onboarding-pet-step-panel {
