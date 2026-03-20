@@ -346,6 +346,22 @@ export const authApi = {
       }
     });
   },
+  addFeedPostPaw(accessToken: string, id: number) {
+    return request<import("../types/authTypes").FeedPostPawResponse>(`/api/feeds/${id}/paws`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+  },
+  removeFeedPostPaw(accessToken: string, id: number) {
+    return request<import("../types/authTypes").FeedPostPawResponse>(`/api/feeds/${id}/paws`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+  },
   verifyPetRegistration(
     accessToken: string,
     payload: { dogRegNo: string; rfidCd: string; ownerNm: string; ownerBirth: string }

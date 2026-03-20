@@ -203,8 +203,12 @@ body {
     @apply flex h-10 w-10 items-center justify-center rounded-full transition hover:bg-slate-100;
   }
 
+  .feed-detail-action-button-active {
+    @apply bg-rose-50 text-rose-600;
+  }
+
   .feed-detail-paw-icon {
-    @apply h-[22px] w-[22px] text-ink;
+    @apply h-[22px] w-[22px];
   }
 
   .feed-detail-action-count {

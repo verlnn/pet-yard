@@ -12,6 +12,8 @@ public record FeedPostResponse(
     List<String> imageUrls,
     Double imageAspectRatioValue,
     String imageAspectRatio,
+    long pawCount,
+    boolean pawedByMe,
     Instant createdAt,
     List<String> hashtags
 ) {
@@ -23,6 +25,8 @@ public record FeedPostResponse(
             post.imageUrls(),
             post.imageAspectRatioValue(),
             post.imageAspectRatio(),
+            post.pawCount(),
+            post.pawedByMe(),
             post.createdAt(),
             post.hashtags()
         );

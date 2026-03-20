@@ -85,6 +85,7 @@ export default function MyFeedPage() {
   const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
   const [postActionMenuOpen, setPostActionMenuOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [pawLoading, setPawLoading] = useState(false);
   const postActionMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -338,6 +339,33 @@ export default function MyFeedPage() {
     }
   };
 
+  const handleTogglePaw = async () => {
+    if (!accessToken || !selectedPost || pawLoading) return;
+    setPawLoading(true);
+    try {
+      const response = selectedPost.pawedByMe
+        ? await authApi.removeFeedPostPaw(accessToken, selectedPost.id)
+        : await authApi.addFeedPostPaw(accessToken, selectedPost.id);
+
+      setPosts((prev) =>
+        prev.map((post) =>
+          post.id === response.postId
+            ? { ...post, pawCount: response.pawCount, pawedByMe: response.pawedByMe }
+            : post
+        )
+      );
+      setSelectedPost((prev) =>
+        prev && prev.id === response.postId
+          ? { ...prev, pawCount: response.pawCount, pawedByMe: response.pawedByMe }
+          : prev
+      );
+    } catch (err) {
+      setImageError(err instanceof Error ? err.message : "발자국 처리에 실패했습니다.");
+    } finally {
+      setPawLoading(false);
+    }
+  };
+
   const primaryPet = profile?.pets?.[0];
 
   return (
@@ -525,6 +553,8 @@ export default function MyFeedPage() {
             <FeedDetailSidebar
               post={selectedPost}
               maxHeight={selectedPostPhotoSize.height || 480}
+              onTogglePaw={handleTogglePaw}
+              pawLoading={pawLoading}
             />
           </div>
           {deleteConfirmOpen && (

@@ -85,6 +85,18 @@ public class FeedController {
         return FeedPostResponse.from(post);
     }
 
+    @RequirePermission(Permission.FEED_READ)
+    @PostMapping("/{id}/paws")
+    public FeedPostPawResponse addPaw(@AuthenticationPrincipal AuthPrincipal principal, @PathVariable Long id) {
+        return FeedPostPawResponse.from(feedApplicationService.addPaw(principal.userId(), id));
+    }
+
+    @RequirePermission(Permission.FEED_READ)
+    @DeleteMapping("/{id}/paws")
+    public FeedPostPawResponse removePaw(@AuthenticationPrincipal AuthPrincipal principal, @PathVariable Long id) {
+        return FeedPostPawResponse.from(feedApplicationService.removePaw(principal.userId(), id));
+    }
+
     @RequirePermission(Permission.FEED_CREATE)
     @DeleteMapping("/{id}")
     public void delete(@AuthenticationPrincipal AuthPrincipal principal, @PathVariable Long id) {

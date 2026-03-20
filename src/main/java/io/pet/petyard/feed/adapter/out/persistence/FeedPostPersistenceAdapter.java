@@ -25,6 +25,11 @@ public class FeedPostPersistenceAdapter implements LoadFeedPostPort, SaveFeedPos
     }
 
     @Override
+    public Optional<FeedPost> findById(Long id) {
+        return repository.findById(id);
+    }
+
+    @Override
     public Optional<FeedPost> findByIdAndUserId(Long id, Long userId) {
         return repository.findByIdAndUserId(id, userId);
     }
