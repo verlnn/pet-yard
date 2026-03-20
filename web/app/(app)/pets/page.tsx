@@ -140,6 +140,13 @@ export default function PetsPage() {
     return new Date(profile.joinedAt).toLocaleDateString("ko-KR");
   }, [profile?.joinedAt]);
 
+  const editingPet = useMemo(
+    () => pets.find((pet) => pet.id === editingPetId) ?? null,
+    [pets, editingPetId]
+  );
+  const isPetIdentityLocked = editingPet !== null;
+  const isNeuteredLocked = editingPet?.neutered === true;
+
   const handlePetImageUpload = (file?: File) => {
     if (!file) return;
     if (!file.type.startsWith("image/")) {
@@ -332,54 +339,54 @@ export default function PetsPage() {
   return (
     <div>
       <SiteNav />
-      <main className="container py-10">
+      <main className="pets-page-main">
         <SectionShell
           eyebrow="Pets"
           title="반려동물 관리"
           description="등록번호 인증을 통해 반려견 정보를 안전하게 등록하세요."
         >
           {error && (
-            <div className="mb-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
+            <div className="pets-page-error">
               {error}
             </div>
           )}
-          <div className="grid gap-4">
+          <div className="pets-page-grid">
             <Card className="gradient-shell">
-              <CardContent className="space-y-2 text-sm text-ink/70">
-                <p className="font-display text-lg font-semibold">내 반려동물</p>
+              <CardContent className="pets-summary-card-content">
+                <p className="pets-summary-card-title">내 반려동물</p>
                 <p>가입일 {joinedAt} · 총 {profile?.petCount ?? pets.length}마리</p>
               </CardContent>
             </Card>
             {pets.map((pet) => (
               <Card key={pet.id} className="gradient-shell">
-                <CardContent className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <div className="h-12 w-12 overflow-hidden rounded-2xl bg-white/70 shadow-inner">
+                <CardContent className="pets-card-content">
+                  <div className="pets-pet-header">
+                    <div className="pets-photo-preview pets-photo-preview-small">
                       {pet.photoUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={pet.photoUrl} alt={pet.name} className="h-full w-full object-cover" />
+                        <img src={pet.photoUrl} alt={pet.name} className="pets-photo-image" />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center text-[10px] text-ink/40">
+                        <div className="pets-photo-empty">
                           No Photo
                         </div>
                       )}
                     </div>
-                    <div className="flex flex-col">
-                      <div className="flex items-center gap-2">
+                    <div className="pets-pet-header-main">
+                      <div className="pets-pet-title-row">
                         <PawPrint className="h-4 w-4" />
-                        <p className="font-display text-lg font-semibold">{pet.name}</p>
+                        <p className="pets-pet-title">{pet.name}</p>
                         <Badge variant="soft">{speciesLabel[pet.species] ?? pet.species}</Badge>
                       </div>
-                      <p className="text-xs text-ink/60">{pet.breed ?? "품종 미설정"}</p>
+                      <p className="pets-pet-breed">{pet.breed ?? "품종 미설정"}</p>
                     </div>
                   </div>
-                  <p className="text-sm text-ink/70">
+                  <p className="pets-pet-meta">
                     {getAgeText(pet.birthDate) ? `${getAgeText(pet.birthDate)} · ` : ""}
                     {genderLabel[pet.gender] ?? pet.gender} {pet.neutered ? "· 중성화 완료" : ""}
                     {pet.weightKg ? ` · 체중 ${pet.weightKg}kg` : ""}
                   </p>
-                  <div className="flex flex-wrap gap-2 text-sm text-ink/60">
-                    <span className="inline-flex items-center gap-2">
+                  <div className="pets-status-row">
+                    <span className="pets-status-item">
                       <BadgeCheck className="h-4 w-4" />
                       {pet.vaccinationComplete === true
                         ? "예방접종 완료"
@@ -387,7 +394,7 @@ export default function PetsPage() {
                         ? "예방접종 미완료"
                         : "예방접종 미확인"}
                     </span>
-                    <span className="inline-flex items-center gap-2">
+                    <span className="pets-status-item">
                       <Shield className="h-4 w-4" />
                       {pet.walkSafetyChecked === true
                         ? "산책 안전 확인"
@@ -396,72 +403,74 @@ export default function PetsPage() {
                         : "산책 안전 미설정"}
                     </span>
                   </div>
-                  <div className="flex justify-end">
+                  <div className="pets-inline-action-row">
                     <button
                       type="button"
                       onClick={() => startEdit(pet)}
-                      className="text-xs font-semibold text-ink/60 hover:text-ink"
+                      className="pets-inline-action"
                     >
                       수정
                     </button>
                   </div>
                   {editingPetId === pet.id && (
-                    <div className="mt-4 space-y-3 rounded-2xl border border-slate-200/70 bg-white/70 p-4">
-                      <div className="grid gap-3 md:grid-cols-2">
-                        <label className="text-sm text-ink/70">
+                    <div className="pets-edit-panel">
+                      <div className="pets-form-grid">
+                        <label className="pets-form-field">
                           이름
                           <input
-                            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                            className="pets-form-input"
                             value={editForm.name}
                             onChange={(event) => setEditForm((prev) => ({ ...prev, name: event.target.value }))}
                           />
                         </label>
-                        <label className="text-sm text-ink/70">
+                        <label className="pets-form-field">
                           생일
                           <input
                             type="date"
-                            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                            className="pets-form-input"
                             value={editForm.birthDate}
                             onChange={(event) =>
                               setEditForm((prev) => ({ ...prev, birthDate: event.target.value }))
                             }
+                            disabled={isPetIdentityLocked}
                           />
                         </label>
-                        <label className="text-sm text-ink/70">
+                        <label className="pets-form-field">
                           체중(kg)
                           <input
                             type="number"
                             step="0.1"
-                            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                            className="pets-form-input"
                             value={editForm.weightKg}
                             onChange={(event) =>
                               setEditForm((prev) => ({ ...prev, weightKg: event.target.value }))
                             }
                           />
                         </label>
-                        <label className="text-sm text-ink/70">
+                        <label className="pets-form-field">
                           종
                           <select
-                            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                            className="pets-form-select"
                             value={editForm.species}
                             onChange={(event) =>
                               setEditForm((prev) => ({ ...prev, species: event.target.value }))
                             }
+                            disabled={isPetIdentityLocked}
                           >
                             <option value="DOG">강아지</option>
                             <option value="CAT">고양이</option>
                             <option value="OTHER">기타</option>
                           </select>
                         </label>
-                        <label className="text-sm text-ink/70 md:col-span-2">
+                        <label className="pets-form-field pets-form-field-span">
                           품종
                           <select
-                            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                            className="pets-form-select"
                             value={editForm.breed}
                             onChange={(event) =>
                               setEditForm((prev) => ({ ...prev, breed: event.target.value }))
                             }
-                            disabled={editForm.species === "OTHER"}
+                            disabled={isPetIdentityLocked || editForm.species === "OTHER"}
                           >
                             <option value="">
                               {editForm.species === "OTHER" ? "기타 종은 품종 선택 없음" : "선택 안함"}
@@ -473,38 +482,40 @@ export default function PetsPage() {
                             ))}
                           </select>
                         </label>
-                        <label className="text-sm text-ink/70">
+                        <label className="pets-form-field">
                           성별
                           <select
-                            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                            className="pets-form-select"
                             value={editForm.gender}
                             onChange={(event) =>
                               setEditForm((prev) => ({ ...prev, gender: event.target.value }))
                             }
+                            disabled={isPetIdentityLocked}
                           >
                             <option value="MALE">수컷</option>
                             <option value="FEMALE">암컷</option>
                             <option value="UNKNOWN">모름</option>
                           </select>
                         </label>
-                        <label className="text-sm text-ink/70">
+                        <label className="pets-form-field">
                           중성화
                           <select
-                            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                            className="pets-form-select"
                             value={editForm.neutered}
                             onChange={(event) =>
                               setEditForm((prev) => ({ ...prev, neutered: event.target.value }))
                             }
+                            disabled={isNeuteredLocked}
                           >
                             <option value="">선택 안함</option>
                             <option value="true">완료</option>
                             <option value="false">미완료</option>
                           </select>
                         </label>
-                        <label className="text-sm text-ink/70">
+                        <label className="pets-form-field">
                           예방접종
                           <select
-                            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                            className="pets-form-select"
                             value={editForm.vaccinationComplete}
                             onChange={(event) =>
                               setEditForm((prev) => ({ ...prev, vaccinationComplete: event.target.value }))
@@ -515,10 +526,10 @@ export default function PetsPage() {
                             <option value="false">미완료</option>
                           </select>
                         </label>
-                        <label className="text-sm text-ink/70">
+                        <label className="pets-form-field">
                           산책 안전
                           <select
-                            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                            className="pets-form-select"
                             value={editForm.walkSafetyChecked}
                             onChange={(event) =>
                               setEditForm((prev) => ({ ...prev, walkSafetyChecked: event.target.value }))
@@ -530,37 +541,40 @@ export default function PetsPage() {
                           </select>
                         </label>
                       </div>
-                      <label className="text-sm text-ink/70">
+                      <p className="pets-helper-text">
+                        생일, 종, 품종, 성별은 인증 정보를 기준으로 고정되며, 중성화는 완료 처리된 이후에는 변경할 수 없어요.
+                      </p>
+                      <label className="pets-form-field">
                         소개
                         <input
-                          className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                          className="pets-form-input"
                           value={editForm.intro}
                           onChange={(event) => setEditForm((prev) => ({ ...prev, intro: event.target.value }))}
                         />
                       </label>
-                      <div className="flex items-center gap-3">
-                        <div className="h-14 w-14 overflow-hidden rounded-2xl bg-white/70 shadow-inner">
+                      <div className="pets-photo-row">
+                        <div className="pets-photo-preview">
                           {editForm.photoUrl ? (
                             // eslint-disable-next-line @next/next/no-img-element
-                            <img src={editForm.photoUrl} alt="반려동물 사진" className="h-full w-full object-cover" />
+                            <img src={editForm.photoUrl} alt="반려동물 사진" className="pets-photo-image" />
                           ) : (
-                            <div className="flex h-full w-full items-center justify-center text-[10px] text-ink/40">
+                            <div className="pets-photo-empty">
                               No Photo
                             </div>
                           )}
                         </div>
-                        <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-xs font-semibold text-ink/70">
+                        <label className="pets-photo-upload">
                           사진 변경
                           <input
                             type="file"
                             accept="image/*"
-                            className="hidden"
+                            className="pets-hidden-input"
                             onChange={(event) => handleEditImageUpload(event.target.files?.[0])}
                           />
                         </label>
                       </div>
-                      {editError && <p className="text-xs text-rose-500">{editError}</p>}
-                      <div className="flex gap-2">
+                      {editError && <p className="pets-form-error">{editError}</p>}
+                      <div className="pets-action-row">
                         <Button variant="secondary" onClick={cancelEdit}>
                           취소
                         </Button>
@@ -574,29 +588,29 @@ export default function PetsPage() {
               </Card>
             ))}
             <Card className="gradient-shell">
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <p className="font-display text-lg font-semibold">반려동물 추가</p>
+              <CardContent className="pets-card-content pets-card-content-spacious">
+                <div className="pets-card-header">
+                  <p className="pets-summary-card-title">반려동물 추가</p>
                   <button
                     type="button"
                     onClick={() => setPetFormOpen((prev) => !prev)}
-                    className="text-xs font-semibold text-ink/60 hover:text-ink"
+                    className="pets-inline-action"
                   >
                     {petFormOpen ? "접기" : "열기"}
                   </button>
                 </div>
                 {petFormOpen && (
                   <>
-                    <div className="rounded-2xl border border-emerald-100 bg-emerald-50/60 p-4">
-                      <p className="font-display text-sm font-semibold text-emerald-700">반려견 등록번호 인증</p>
-                      <p className="mt-1 text-xs text-emerald-600">
+                    <div className="pets-registration-card">
+                      <p className="pets-registration-title">반려견 등록번호 인증</p>
+                      <p className="pets-registration-description">
                         등록번호 인증을 완료해야 반려동물을 등록할 수 있어요.
                       </p>
-                      <div className="mt-3 grid gap-3 md:grid-cols-2">
-                        <label className="text-sm text-ink/70">
+                      <div className="pets-form-grid pets-form-grid-compact-top">
+                        <label className="pets-form-field">
                           등록번호
                           <input
-                            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                            className="pets-form-input"
                             value={verification.dogRegNo}
                             onChange={(event) =>
                               setVerification((prev) => ({ ...prev, dogRegNo: event.target.value }))
@@ -604,10 +618,10 @@ export default function PetsPage() {
                             disabled={verified}
                           />
                         </label>
-                        <label className="text-sm text-ink/70">
+                        <label className="pets-form-field">
                           RFID 코드
                           <input
-                            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                            className="pets-form-input"
                             value={verification.rfidCd}
                             onChange={(event) =>
                               setVerification((prev) => ({ ...prev, rfidCd: event.target.value }))
@@ -615,10 +629,10 @@ export default function PetsPage() {
                             disabled={verified}
                           />
                         </label>
-                        <label className="text-sm text-ink/70">
+                        <label className="pets-form-field">
                           소유자 이름
                           <input
-                            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                            className="pets-form-input"
                             value={verification.ownerNm}
                             onChange={(event) =>
                               setVerification((prev) => ({ ...prev, ownerNm: event.target.value }))
@@ -626,10 +640,10 @@ export default function PetsPage() {
                             disabled={verified}
                           />
                         </label>
-                        <label className="text-sm text-ink/70">
+                        <label className="pets-form-field">
                           소유자 생년월일(YYMMDD)
                           <input
-                            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                            className="pets-form-input"
                             value={verification.ownerBirth}
                             onChange={(event) =>
                               setVerification((prev) => ({ ...prev, ownerBirth: event.target.value }))
@@ -639,7 +653,7 @@ export default function PetsPage() {
                         </label>
                       </div>
                       {verificationResult && (
-                        <div className="mt-3 rounded-2xl bg-white/70 px-3 py-2 text-xs text-emerald-700">
+                        <div className="pets-registration-result">
                           인증 완료 · {verificationResult.name} · {verificationResult.breed ?? "품종 미상"} ·
                           {verificationResult.gender === "MALE"
                             ? " 수컷"
@@ -648,8 +662,8 @@ export default function PetsPage() {
                             : " 성별 미상"}
                         </div>
                       )}
-                      {verificationError && <p className="mt-2 text-xs text-rose-500">{verificationError}</p>}
-                      <div className="mt-3 flex gap-2">
+                      {verificationError && <p className="pets-form-error pets-form-error-spaced">{verificationError}</p>}
+                      <div className="pets-action-row pets-action-row-spaced">
                         <Button onClick={handleVerifyRegistration} disabled={verifying || verified}>
                           {verifying ? "인증 중..." : verified ? "인증 완료" : "등록번호 인증"}
                         </Button>
@@ -662,40 +676,40 @@ export default function PetsPage() {
                     </div>
                     {verified && (
                       <>
-                        <div className="grid gap-3 md:grid-cols-2">
-                          <label className="text-sm text-ink/70">
+                        <div className="pets-form-grid">
+                          <label className="pets-form-field">
                             이름
                             <input
-                              className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                              className="pets-form-input"
                               value={form.name}
                               onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
                               disabled
                             />
                           </label>
-                          <label className="text-sm text-ink/70">
+                          <label className="pets-form-field">
                             생일
                             <input
                               type="date"
-                              className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                              className="pets-form-input"
                               value={form.birthDate}
                               onChange={(event) => setForm((prev) => ({ ...prev, birthDate: event.target.value }))}
                               disabled
                             />
                           </label>
-                          <label className="text-sm text-ink/70">
+                          <label className="pets-form-field">
                             체중(kg)
                             <input
                               type="number"
                               step="0.1"
-                              className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                              className="pets-form-input"
                               value={form.weightKg}
                               onChange={(event) => setForm((prev) => ({ ...prev, weightKg: event.target.value }))}
                             />
                           </label>
-                          <label className="text-sm text-ink/70">
+                          <label className="pets-form-field">
                             종
                             <select
-                              className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                              className="pets-form-select"
                               value={form.species}
                               onChange={(event) => setForm((prev) => ({ ...prev, species: event.target.value }))}
                               disabled
@@ -705,10 +719,10 @@ export default function PetsPage() {
                               <option value="OTHER">기타</option>
                             </select>
                           </label>
-                          <label className="text-sm text-ink/70 md:col-span-2">
+                          <label className="pets-form-field pets-form-field-span">
                             품종
                             <select
-                              className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                              className="pets-form-select"
                               value={form.breed}
                               onChange={(event) => setForm((prev) => ({ ...prev, breed: event.target.value }))}
                               disabled={form.species === "OTHER"}
@@ -726,10 +740,10 @@ export default function PetsPage() {
                               ))}
                             </select>
                           </label>
-                          <label className="text-sm text-ink/70">
+                          <label className="pets-form-field">
                             성별
                             <select
-                              className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                              className="pets-form-select"
                               value={form.gender}
                               onChange={(event) => setForm((prev) => ({ ...prev, gender: event.target.value }))}
                               disabled
@@ -739,10 +753,10 @@ export default function PetsPage() {
                               <option value="UNKNOWN">모름</option>
                             </select>
                           </label>
-                        <label className="text-sm text-ink/70">
+                        <label className="pets-form-field">
                           중성화
                           <select
-                            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                            className="pets-form-select"
                             value={form.neutered}
                             onChange={(event) => setForm((prev) => ({ ...prev, neutered: event.target.value }))}
                             disabled
@@ -752,10 +766,10 @@ export default function PetsPage() {
                             <option value="false">미완료</option>
                           </select>
                         </label>
-                        <label className="text-sm text-ink/70">
+                        <label className="pets-form-field">
                           예방접종
                           <select
-                            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                            className="pets-form-select"
                             value={form.vaccinationComplete}
                             onChange={(event) =>
                               setForm((prev) => ({ ...prev, vaccinationComplete: event.target.value }))
@@ -766,10 +780,10 @@ export default function PetsPage() {
                             <option value="false">미완료</option>
                           </select>
                         </label>
-                        <label className="text-sm text-ink/70">
+                        <label className="pets-form-field">
                           산책 안전
                           <select
-                            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                            className="pets-form-select"
                             value={form.walkSafetyChecked}
                             onChange={(event) =>
                               setForm((prev) => ({ ...prev, walkSafetyChecked: event.target.value }))
@@ -781,36 +795,36 @@ export default function PetsPage() {
                           </select>
                         </label>
                         </div>
-                        <label className="text-sm text-ink/70">
+                        <label className="pets-form-field">
                           소개
                           <input
-                            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 text-sm"
+                            className="pets-form-input"
                             value={form.intro}
                             onChange={(event) => setForm((prev) => ({ ...prev, intro: event.target.value }))}
                           />
                         </label>
-                    <div className="flex items-center gap-3">
-                      <div className="h-14 w-14 overflow-hidden rounded-2xl bg-white/70 shadow-inner">
+                    <div className="pets-photo-row">
+                      <div className="pets-photo-preview">
                         {form.photoUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img src={form.photoUrl} alt="반려동물 사진" className="h-full w-full object-cover" />
+                          <img src={form.photoUrl} alt="반려동물 사진" className="pets-photo-image" />
                         ) : (
-                          <div className="flex h-full w-full items-center justify-center text-[10px] text-ink/40">
+                          <div className="pets-photo-empty">
                             No Photo
                           </div>
                         )}
                       </div>
-                      <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-xs font-semibold text-ink/70">
+                      <label className="pets-photo-upload">
                         사진 업로드
                         <input
                           type="file"
                           accept="image/*"
-                          className="hidden"
+                          className="pets-hidden-input"
                           onChange={(event) => handlePetImageUpload(event.target.files?.[0])}
                         />
                       </label>
                     </div>
-                        {petImageError && <p className="text-xs text-rose-500">{petImageError}</p>}
+                        {petImageError && <p className="pets-form-error">{petImageError}</p>}
                         <Button onClick={handlePetSubmit} disabled={savingPet}>
                           {savingPet ? "저장 중..." : "반려동물 등록"}
                         </Button>
@@ -822,7 +836,7 @@ export default function PetsPage() {
             </Card>
           </div>
           {!loading && pets.length === 0 && (
-            <p className="mt-4 text-sm text-ink/60">등록된 반려동물이 없습니다.</p>
+            <p className="pets-empty-message">등록된 반려동물이 없습니다.</p>
           )}
         </SectionShell>
       </main>
