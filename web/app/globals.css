@@ -243,6 +243,55 @@ body {
     @apply space-y-4;
   }
 
+  .onboarding-pet-progress {
+    @apply space-y-2;
+  }
+
+  .onboarding-pet-progress-header {
+    @apply flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-400;
+  }
+
+  .onboarding-pet-progress-track {
+    @apply h-2 w-full rounded-full bg-slate-200/70;
+  }
+
+  .onboarding-pet-progress-fill {
+    @apply h-full rounded-full bg-ink transition-all duration-300;
+  }
+
+  .onboarding-pet-step-shell {
+    @apply relative min-h-[760px] overflow-hidden pb-2;
+  }
+
+  .onboarding-pet-step-panel {
+    @apply absolute inset-0 flex min-h-full flex-col transition-[opacity,transform] duration-300;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .onboarding-pet-step-panel-active {
+    @apply z-10 translate-x-0 opacity-100;
+  }
+
+  .onboarding-pet-step-panel-hidden-left {
+    @apply pointer-events-none z-0 -translate-x-8 opacity-0;
+  }
+
+  .onboarding-pet-step-panel-hidden-right {
+    @apply pointer-events-none z-0 translate-x-8 opacity-0;
+  }
+
+  .onboarding-pet-step-content {
+    @apply space-y-4;
+  }
+
+  .onboarding-pet-step-actions-single {
+    @apply mt-auto pt-4;
+  }
+
+  .onboarding-pet-step-actions {
+    @apply mt-auto flex gap-2 pt-4;
+  }
+
   .onboarding-pet-verification-card {
     @apply rounded-2xl border border-emerald-100 bg-emerald-50/60 p-4;
   }
@@ -267,8 +316,24 @@ body {
     @apply flex flex-col gap-2;
   }
 
+  .onboarding-pet-section-title {
+    @apply text-sm font-semibold text-slate-700;
+  }
+
+  .onboarding-pet-section-description {
+    @apply mt-1 text-xs text-slate-500;
+  }
+
   .onboarding-pet-input {
     @apply mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition focus:border-ink focus:outline-none focus:ring-4 focus:ring-ink/10 disabled:cursor-not-allowed disabled:bg-slate-100;
+  }
+
+  .onboarding-pet-details-grid {
+    @apply grid gap-3 md:grid-cols-2;
+  }
+
+  .onboarding-pet-field-span {
+    @apply md:col-span-2;
   }
 
   .onboarding-pet-verification-result {
@@ -293,6 +358,10 @@ body {
 
   .onboarding-pet-submit-button {
     @apply w-full rounded-2xl bg-ink px-4 py-3 text-sm font-semibold text-sand transition hover:bg-ink/90 disabled:cursor-not-allowed disabled:bg-ink/40;
+  }
+
+  .onboarding-pet-submit-button-half {
+    @apply flex-1;
   }
 
   .onboarding-pet-lockable {

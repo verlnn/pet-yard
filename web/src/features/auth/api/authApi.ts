@@ -211,8 +211,10 @@ export const authApi = {
       rfidCd: string;
       ownerNm: string;
       ownerBirth: string;
-      intro?: string | null;
       photoUrl?: string | null;
+      weightKg?: number | null;
+      vaccinationComplete?: boolean | null;
+      walkSafetyChecked?: boolean | null;
     }
   ) {
     return request<SignupStepResponse>("/api/auth/signup/pet", {

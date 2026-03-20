@@ -293,11 +293,11 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
             null,
             result.gender(),
             result.neutered(),
-            command.intro(),
+            null,
             command.photoUrl(),
-            null,
-            null,
-            null
+            command.weightKg() == null ? null : java.math.BigDecimal.valueOf(command.weightKg()),
+            command.vaccinationComplete(),
+            command.walkSafetyChecked()
         );
         savePetProfilePort.save(profile);
 

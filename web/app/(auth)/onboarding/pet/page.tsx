@@ -5,8 +5,11 @@ import { useRouter } from "next/navigation";
 
 import { authApi } from "@/src/features/auth/api/authApi";
 import type { PetRegistrationVerificationResponse } from "@/src/features/auth/types/authTypes";
-import OnboardingLayout from "@/src/features/onboarding/components/OnboardingLayout";
 import OnboardingCard from "@/src/features/onboarding/components/OnboardingCard";
+import OnboardingLayout from "@/src/features/onboarding/components/OnboardingLayout";
+import OnboardingPetDetailsStep from "@/src/features/onboarding/components/pet/OnboardingPetDetailsStep";
+import OnboardingPetProgress from "@/src/features/onboarding/components/pet/OnboardingPetProgress";
+import OnboardingPetVerificationStep from "@/src/features/onboarding/components/pet/OnboardingPetVerificationStep";
 
 const emptyVerification = {
   dogRegNo: "",
@@ -15,17 +18,24 @@ const emptyVerification = {
   ownerBirth: ""
 };
 
+const emptyDetailsForm = {
+  photoUrl: "",
+  weightKg: "",
+  vaccinationComplete: "" as "" | "true" | "false",
+  walkSafetyChecked: "" as "" | "true" | "false"
+};
+
 export default function OnboardingPetPage() {
   const router = useRouter();
   const [signupToken, setSignupToken] = useState<string | null>(null);
+  const [step, setStep] = useState<1 | 2>(1);
   const [verification, setVerification] = useState(emptyVerification);
   const [verificationResult, setVerificationResult] = useState<PetRegistrationVerificationResponse | null>(null);
-  const [photoUrl, setPhotoUrl] = useState("");
+  const [detailsForm, setDetailsForm] = useState(emptyDetailsForm);
   const [photoError, setPhotoError] = useState<string | null>(null);
   const [verifying, setVerifying] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const verified = Boolean(verificationResult);
 
   useEffect(() => {
     const token = localStorage.getItem("signupToken");
@@ -35,6 +45,10 @@ export default function OnboardingPetPage() {
     }
     setSignupToken(token);
   }, [router]);
+
+  const handleVerificationChange = (field: keyof typeof emptyVerification, value: string) => {
+    setVerification((prev) => ({ ...prev, [field]: value }));
+  };
 
   const handleVerify = async () => {
     if (!verification.dogRegNo.trim() || !verification.rfidCd.trim() || !verification.ownerNm.trim() || !verification.ownerBirth.trim()) {
@@ -61,7 +75,16 @@ export default function OnboardingPetPage() {
     }
   };
 
-  const handlePetImageUpload = (file?: File) => {
+  const handleResetVerification = () => {
+    setVerification(emptyVerification);
+    setVerificationResult(null);
+    setDetailsForm(emptyDetailsForm);
+    setPhotoError(null);
+    setError(null);
+    setStep(1);
+  };
+
+  const handlePetImageUpload = (file: File | null) => {
     if (!file) return;
     if (!file.type.startsWith("image/")) {
       setPhotoError("이미지 파일만 업로드할 수 있어요.");
@@ -74,7 +97,10 @@ export default function OnboardingPetPage() {
 
     const reader = new FileReader();
     reader.onload = () => {
-      setPhotoUrl(typeof reader.result === "string" ? reader.result : "");
+      setDetailsForm((prev) => ({
+        ...prev,
+        photoUrl: typeof reader.result === "string" ? reader.result : ""
+      }));
       setPhotoError(null);
     };
     reader.readAsDataURL(file);
@@ -82,8 +108,7 @@ export default function OnboardingPetPage() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!signupToken) return;
-    if (!verificationResult) {
+    if (!signupToken || !verificationResult) {
       setError("반려동물 등록번호 인증을 먼저 완료해 주세요.");
       return;
     }
@@ -97,8 +122,18 @@ export default function OnboardingPetPage() {
         rfidCd: verification.rfidCd.trim(),
         ownerNm: verification.ownerNm.trim(),
         ownerBirth: verification.ownerBirth.trim(),
-        photoUrl: photoUrl || null
+        photoUrl: detailsForm.photoUrl || null,
+        weightKg: detailsForm.weightKg ? Number(detailsForm.weightKg) : null,
+        vaccinationComplete:
+          detailsForm.vaccinationComplete === ""
+            ? null
+            : detailsForm.vaccinationComplete === "true",
+        walkSafetyChecked:
+          detailsForm.walkSafetyChecked === ""
+            ? null
+            : detailsForm.walkSafetyChecked === "true"
       });
+
       if (result.nextStep === "COMPLETE") {
         router.push("/onboarding/complete");
       }
@@ -109,136 +144,66 @@ export default function OnboardingPetPage() {
     }
   };
 
+  const stepPanelClassName = (targetStep: 1 | 2, hiddenDirection: "left" | "right") =>
+    [
+      "onboarding-pet-step-panel",
+      step === targetStep
+        ? "onboarding-pet-step-panel-active"
+        : hiddenDirection === "left"
+          ? "onboarding-pet-step-panel-hidden-left"
+          : "onboarding-pet-step-panel-hidden-right"
+    ].join(" ");
+
   return (
     <OnboardingLayout>
       <OnboardingCard
         title="반려동물 정보"
-        subtitle="등록번호 인증으로 반려동물 정보를 확인한 뒤 저장해 주세요."
+        subtitle="1단계에서 등록번호를 인증하고, 2단계에서 기본정보와 사진을 저장해 주세요."
         error={error}
       >
         <form className="onboarding-pet-form" onSubmit={handleSubmit}>
-          <div className="onboarding-pet-verification-card">
-            <p className="onboarding-pet-verification-title">반려견 등록번호 인증</p>
-            <p className="onboarding-pet-verification-description">
-              프로필 페이지와 동일하게 등록번호 인증을 완료해야 반려동물을 저장할 수 있어요.
-            </p>
-            <div className="onboarding-pet-verification-grid">
-              <label className="onboarding-pet-field">
-                등록번호
-                <input
-                  className="onboarding-pet-input"
-                  value={verification.dogRegNo}
-                  onChange={(event) => setVerification((prev) => ({ ...prev, dogRegNo: event.target.value }))}
-                  disabled={verified}
-                />
-              </label>
-              <label className="onboarding-pet-field">
-                RFID 코드
-                <input
-                  className="onboarding-pet-input"
-                  value={verification.rfidCd}
-                  onChange={(event) => setVerification((prev) => ({ ...prev, rfidCd: event.target.value }))}
-                  disabled={verified}
-                />
-              </label>
-              <label className="onboarding-pet-field">
-                소유자 이름
-                <input
-                  className="onboarding-pet-input"
-                  value={verification.ownerNm}
-                  onChange={(event) => setVerification((prev) => ({ ...prev, ownerNm: event.target.value }))}
-                  disabled={verified}
-                />
-              </label>
-              <label className="onboarding-pet-field">
-                소유자 생년월일(YYMMDD)
-                <input
-                  className="onboarding-pet-input"
-                  value={verification.ownerBirth}
-                  onChange={(event) => setVerification((prev) => ({ ...prev, ownerBirth: event.target.value }))}
-                  placeholder="예: 990101"
-                  disabled={verified}
-                />
-              </label>
+          <OnboardingPetProgress step={step} />
+
+          <div className="onboarding-pet-step-shell">
+            <div className={stepPanelClassName(1, "left")}>
+              <OnboardingPetVerificationStep
+                verification={verification}
+                verificationResult={verificationResult}
+                verifying={verifying}
+                onChange={handleVerificationChange}
+                onVerify={handleVerify}
+                onReset={handleResetVerification}
+                onNext={() => {
+                  if (!verificationResult) {
+                    setError("반려동물 등록번호 인증을 먼저 완료해 주세요.");
+                    return;
+                  }
+                  setError(null);
+                  setStep(2);
+                }}
+              />
             </div>
 
-            {verificationResult && (
-              <div className="onboarding-pet-verification-result">
-                인증 완료 · {verificationResult.name} · {verificationResult.breed ?? "품종 미상"} ·
-                {verificationResult.gender === "MALE"
-                  ? " 수컷"
-                  : verificationResult.gender === "FEMALE"
-                    ? " 암컷"
-                    : " 성별 미상"}
-              </div>
-            )}
-
-            <div className="onboarding-pet-verification-actions">
-              {!verified ? (
-                <button
-                  type="button"
-                  className="onboarding-pet-verify-button"
-                  onClick={handleVerify}
-                  disabled={verifying}
-                >
-                  {verifying ? "인증 중..." : "등록번호 인증"}
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  className="onboarding-pet-reset-button onboarding-pet-reset-button-wide"
-                  onClick={() => {
-                    setVerification(emptyVerification);
-                    setVerificationResult(null);
-                    setError(null);
-                  }}
-                >
-                  다시 인증
-                </button>
+            <div className={stepPanelClassName(2, "right")}>
+              {verificationResult && (
+                <OnboardingPetDetailsStep
+                  verificationResult={verificationResult}
+                  form={detailsForm}
+                  photoError={photoError}
+                  loading={loading}
+                  onPhotoSelect={handlePetImageUpload}
+                  onWeightChange={(value) => setDetailsForm((prev) => ({ ...prev, weightKg: value }))}
+                  onVaccinationChange={(value) =>
+                    setDetailsForm((prev) => ({ ...prev, vaccinationComplete: value }))
+                  }
+                  onWalkSafetyChange={(value) =>
+                    setDetailsForm((prev) => ({ ...prev, walkSafetyChecked: value }))
+                  }
+                  onPrev={() => setStep(1)}
+                />
               )}
             </div>
           </div>
-
-          <div className={`onboarding-pet-lockable ${!verified ? "onboarding-pet-lockable-locked" : ""}`}>
-            {!verified && (
-              <div className="onboarding-pet-lock-overlay">
-                등록번호 인증 후 입력할 수 있어요
-              </div>
-            )}
-            <div className="onboarding-pet-photo-row">
-              <div className="onboarding-pet-photo-preview">
-                {photoUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={photoUrl} alt="반려동물 사진" className="onboarding-pet-photo-image" />
-                ) : (
-                  <div className="onboarding-pet-photo-empty">No Photo</div>
-                )}
-              </div>
-              <label className={`onboarding-pet-photo-upload ${!verified ? "onboarding-pet-photo-upload-disabled" : ""}`}>
-                사진 업로드
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="onboarding-pet-hidden-input"
-                  onChange={(event) => handlePetImageUpload(event.target.files?.[0])}
-                  disabled={!verified}
-                />
-              </label>
-            </div>
-          </div>
-          {photoError && <p className="onboarding-pet-photo-error">{photoError}</p>}
-
-          <div className="onboarding-pet-notice">
-            온보딩에서는 반려동물 1마리만 먼저 등록할 수 있어요. 추가 등록은 가입 완료 후 설정 페이지에서 할 수 있습니다.
-          </div>
-
-          <button
-            type="submit"
-            className="onboarding-pet-submit-button"
-            disabled={loading}
-          >
-            {loading ? "저장 중..." : "완료로 이동"}
-          </button>
         </form>
       </OnboardingCard>
     </OnboardingLayout>

@@ -124,8 +124,10 @@ public class SignupController {
                 request.rfidCd(),
                 request.ownerNm(),
                 request.ownerBirth(),
-                request.intro(),
-                request.photoUrl()
+                request.photoUrl(),
+                request.weightKg(),
+                request.vaccinationComplete(),
+                request.walkSafetyChecked()
             )
         );
         return new SignupStepResponse(result.nextStep());

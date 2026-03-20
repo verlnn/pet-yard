@@ -7,7 +7,9 @@ public record SignupPetRequest(
     @NotBlank String rfidCd,
     @NotBlank String ownerNm,
     @NotBlank String ownerBirth,
-    String intro,
-    String photoUrl
+    String photoUrl,
+    Double weightKg,
+    Boolean vaccinationComplete,
+    Boolean walkSafetyChecked
 ) {
 }

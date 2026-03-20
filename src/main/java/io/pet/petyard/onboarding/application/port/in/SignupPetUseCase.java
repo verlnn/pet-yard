@@ -9,8 +9,10 @@ public interface SignupPetUseCase {
         String rfidCd,
         String ownerNm,
         String ownerBirth,
-        String intro,
-        String photoUrl
+        String photoUrl,
+        Double weightKg,
+        Boolean vaccinationComplete,
+        Boolean walkSafetyChecked
     ) {
     }
 
