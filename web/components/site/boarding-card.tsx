@@ -12,14 +12,14 @@ export function BoardingCard({ request }: { request: BoardingRequest }) {
           <p className="font-display text-base font-semibold">{request.title}</p>
           <Badge variant="outline">위탁 요청</Badge>
         </div>
-        <div className="flex flex-col gap-2 text-sm text-ink/70">
+        <div className="flex flex-col gap-2 text-sm text-[var(--color-text-muted)]">
           <span className="flex items-center gap-2">
             <CalendarRange className="h-4 w-4" /> {request.date}
           </span>
           <span className="flex items-center gap-2">
             <Wallet className="h-4 w-4" /> {request.price}
           </span>
-          <span className="text-ink/60">{request.requirement}</span>
+          <span className="text-[var(--color-text-muted)]">{request.requirement}</span>
         </div>
       </CardContent>
     </Card>

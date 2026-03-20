@@ -49,7 +49,7 @@ export default function VerifyEmailForm({
 
   return (
     <form className="space-y-5" onSubmit={handleSubmit}>
-      <label className="flex flex-col gap-2 text-xs font-semibold text-slate-500">
+      <label className="flex flex-col gap-2 text-xs font-semibold text-[var(--color-text-muted)]">
         인증 코드
         <input
           type="text"
@@ -70,9 +70,9 @@ export default function VerifyEmailForm({
       >
         {loading ? "인증 중..." : "이메일 인증"}
       </button>
-      <div className="flex items-center justify-between rounded-2xl border border-slate-200/70 bg-white/80 px-4 py-3 text-sm text-slate-500 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.4)]">
+      <div className="flex items-center justify-between rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-4 py-3 text-sm text-[var(--color-text-muted)] shadow-[var(--shadow-card-token)]">
         <span>남은 시간</span>
-        <span className="font-semibold text-slate-900">{formatTime(remainingSeconds)}</span>
+        <span className="font-semibold text-[var(--color-text)]">{formatTime(remainingSeconds)}</span>
       </div>
       <button
         type="button"
@@ -83,7 +83,7 @@ export default function VerifyEmailForm({
         {isExtendCooling ? `연장 대기 ${extendCooldownSeconds}s` : "인증 시간 1분 연장"}
       </button>
       {isExtendCooling && (
-        <div className="relative h-2 overflow-hidden rounded-full bg-slate-100">
+        <div className="relative h-2 overflow-hidden rounded-full bg-[var(--color-surface-muted)]">
           <div
             className="h-full rounded-full bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 transition-[width] duration-300"
             style={{ width: `${Math.max(0, Math.min(100, ((3 - extendCooldownSeconds) / 3) * 100))}%` }}
@@ -91,10 +91,10 @@ export default function VerifyEmailForm({
         </div>
       )}
       {isExtendCooling && (
-        <p className="text-center text-xs text-slate-500">잠시만 기다려 주세요…</p>
+        <p className="text-center text-xs text-[var(--color-text-muted)]">잠시만 기다려 주세요…</p>
       )}
       {!isExpired && (
-        <p className="text-center text-xs text-slate-400">만료 후 재전송 버튼이 표시됩니다.</p>
+        <p className="text-center text-xs text-[var(--color-text-subtle)]">만료 후 재전송 버튼이 표시됩니다.</p>
       )}
       {isExpired && (
         <button

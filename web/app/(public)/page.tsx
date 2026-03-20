@@ -26,7 +26,7 @@ export default function HomePage() {
             <h1 className="font-display text-4xl font-semibold leading-tight md:text-5xl">
               반려동물 성장 기록과 안전한 이웃 매칭을 한 번에.
             </h1>
-            <p className="text-base text-ink/70">
+            <p className="text-base text-[var(--color-text-muted)]">
               멍냥마당은 성장 기록을 중심으로, 산책/위탁 매칭과 지식
               가이드를 연결하는 반려동물 전용 SNS입니다. 동네 기반으로
               연결되고, 안전 정책과 신고 시스템으로 신뢰를 지켜요.
@@ -41,7 +41,7 @@ export default function HomePage() {
                 </Button>
               </Link>
             </div>
-            <div className="flex flex-wrap gap-4 text-sm text-ink/60">
+            <div className="flex flex-wrap gap-4 text-sm text-[var(--color-text-muted)]">
               <span className="flex items-center gap-2">
                 <MapPin className="h-4 w-4" /> 동 단위 노출
               </span>
@@ -56,11 +56,11 @@ export default function HomePage() {
           <div className="grid gap-4">
             <Card className="gradient-shell">
               <CardContent className="space-y-4">
-                <p className="text-sm text-ink/60">오늘 가장 많이 본 기록</p>
+                <p className="text-sm text-[var(--color-text-muted)]">오늘 가장 많이 본 기록</p>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-display text-lg font-semibold">콩이 첫 산책</p>
-                    <p className="text-xs text-ink/60">성수동 · 124 좋아요</p>
+                    <p className="text-xs text-[var(--color-text-muted)]">성수동 · 124 좋아요</p>
                   </div>
                   <Badge>상승중</Badge>
                 </div>

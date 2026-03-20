@@ -427,7 +427,7 @@ export default function MyFeedPage() {
 
           {activeTab !== "posts" && (
             <Card className="gradient-shell">
-              <CardContent className="py-12 text-center text-sm text-ink/60">
+              <CardContent className="py-12 text-center text-sm text-[var(--color-text-muted)]">
                 준비 중인 영역입니다.
               </CardContent>
             </Card>

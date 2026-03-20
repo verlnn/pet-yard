@@ -101,7 +101,8 @@ body {
   }
 
   .onboarding-layout-brandbar {
-    @apply mb-8 flex items-center justify-between text-slate-500;
+    color: var(--color-text-muted);
+    @apply mb-8 flex items-center justify-between;
   }
 
   .onboarding-layout-brandlink {
@@ -109,7 +110,10 @@ body {
   }
 
   .onboarding-layout-brandmark {
-    @apply flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-white shadow-[0_12px_30px_-24px_rgba(15,23,42,0.12)];
+    border-color: var(--color-border);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card-token);
+    @apply flex h-10 w-10 items-center justify-center rounded-2xl;
   }
 
   .onboarding-layout-brandmark-image {
@@ -117,11 +121,13 @@ body {
   }
 
   .onboarding-layout-brandtitle {
-    @apply text-lg font-semibold text-slate-800;
+    color: var(--color-text);
+    @apply text-lg font-semibold;
   }
 
   .onboarding-layout-wordmark {
-    @apply text-xs tracking-[0.3em] text-slate-400;
+    color: var(--color-text-subtle);
+    @apply text-xs tracking-[0.3em];
   }
 
   .auth-brand-panel {
@@ -137,15 +143,20 @@ body {
   }
 
   .auth-brand-panel-badge {
-    @apply inline-flex items-center gap-3 rounded-full border border-slate-200 bg-white px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.34em] text-slate-600;
+    border-color: var(--color-border);
+    background: var(--color-surface-elevated);
+    color: var(--color-text-muted);
+    @apply inline-flex items-center gap-3 rounded-full px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.34em];
   }
 
   .auth-brand-panel-copy {
-    @apply text-base leading-relaxed text-slate-600;
+    color: var(--color-text-muted);
+    @apply text-base leading-relaxed;
   }
 
   .auth-brand-panel-footer {
-    @apply mt-10 space-y-4 text-xs font-medium text-slate-600;
+    color: var(--color-text-muted);
+    @apply mt-10 space-y-4 text-xs font-medium;
   }
 
   .auth-brand-panel-taglist {
@@ -153,11 +164,17 @@ body {
   }
 
   .auth-brand-panel-tag {
-    @apply rounded-full border border-slate-200 bg-white px-4 py-2;
+    border-color: var(--color-border);
+    background: var(--color-surface-elevated);
+    @apply rounded-full px-4 py-2;
   }
 
   .auth-brand-panel-quote {
-    @apply rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm text-slate-600 shadow-[0_16px_40px_-30px_rgba(31,29,26,0.12)];
+    border-color: var(--color-border);
+    background: var(--color-surface-elevated);
+    color: var(--color-text-muted);
+    box-shadow: var(--shadow-card-token);
+    @apply rounded-2xl px-5 py-4 text-sm;
   }
 
   .auth-card {
@@ -172,15 +189,20 @@ body {
   }
 
   .auth-card-brand-badge {
-    @apply inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.34em] text-slate-500;
+    border-color: var(--color-border);
+    background: var(--color-surface-elevated);
+    color: var(--color-text-subtle);
+    @apply inline-flex items-center gap-2 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.34em];
   }
 
   .auth-card-title {
-    @apply text-2xl font-semibold text-slate-900;
+    color: var(--color-text);
+    @apply text-2xl font-semibold;
   }
 
   .auth-card-subtitle {
-    @apply text-sm leading-relaxed text-slate-600;
+    color: var(--color-text-muted);
+    @apply text-sm leading-relaxed;
   }
 
   .auth-card-tabs {
