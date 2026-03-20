@@ -271,10 +271,6 @@ body {
     @apply mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition focus:border-ink focus:outline-none focus:ring-4 focus:ring-ink/10 disabled:cursor-not-allowed disabled:bg-slate-100;
   }
 
-  .onboarding-pet-textarea {
-    @apply min-h-28 w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition focus:border-ink focus:outline-none focus:ring-4 focus:ring-ink/10;
-  }
-
   .onboarding-pet-verification-result {
     @apply mt-3 rounded-2xl bg-white/70 px-3 py-2 text-xs text-emerald-700;
   }

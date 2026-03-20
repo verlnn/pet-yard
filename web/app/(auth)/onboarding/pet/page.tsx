@@ -20,7 +20,6 @@ export default function OnboardingPetPage() {
   const [signupToken, setSignupToken] = useState<string | null>(null);
   const [verification, setVerification] = useState(emptyVerification);
   const [verificationResult, setVerificationResult] = useState<PetRegistrationVerificationResponse | null>(null);
-  const [intro, setIntro] = useState("");
   const [photoUrl, setPhotoUrl] = useState("");
   const [photoError, setPhotoError] = useState<string | null>(null);
   const [verifying, setVerifying] = useState(false);
@@ -98,7 +97,6 @@ export default function OnboardingPetPage() {
         rfidCd: verification.rfidCd.trim(),
         ownerNm: verification.ownerNm.trim(),
         ownerBirth: verification.ownerBirth.trim(),
-        intro: intro || null,
         photoUrl: photoUrl || null
       });
       if (result.nextStep === "COMPLETE") {
@@ -207,15 +205,6 @@ export default function OnboardingPetPage() {
                 등록번호 인증 후 입력할 수 있어요
               </div>
             )}
-            <label className="onboarding-pet-field onboarding-pet-field-block">
-              소개글 (선택)
-              <textarea
-                className="onboarding-pet-textarea"
-                value={intro}
-                onChange={(event) => setIntro(event.target.value)}
-                disabled={!verified}
-              />
-            </label>
             <div className="onboarding-pet-photo-row">
               <div className="onboarding-pet-photo-preview">
                 {photoUrl ? (
