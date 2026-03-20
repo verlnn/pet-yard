@@ -346,4 +346,8 @@ body {
   .onboarding-pet-photo-error {
     @apply text-xs text-rose-500;
   }
+
+  .onboarding-pet-notice {
+    @apply rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600;
+  }
 }
