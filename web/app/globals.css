@@ -232,6 +232,6 @@ body {
   }
 
   .feed-detail-comment-submit {
-    @apply text-xs font-semibold text-pine transition opacity-90 hover:opacity-100;
+    @apply shrink-0 whitespace-nowrap text-xs font-semibold text-pine transition opacity-90 hover:opacity-100;
   }
 }
