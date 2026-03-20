@@ -9,6 +9,7 @@ This document defines the default front-end working rules for Codex in this repo
 ## Commit Rules
 - Commit automatically after completing a user-requested implementation task unless the user explicitly says not to commit.
 - Write commit messages in Korean.
+- If the user requests multiple distinct features or changes in one turn, make separate commits for each logically independent feature when practical.
 - Prefer the format: `type(scope): 설명`
 - Examples:
   - `feat(onboarding): 반려동물 온보딩 등록번호 인증 흐름 추가`
