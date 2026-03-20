@@ -87,7 +87,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 export default function OnboardingProfilePage() {
   const router = useRouter();
   const [signupToken, setSignupToken] = useState<string | null>(null);
-  const [step, setStep] = useState<1 | 2>(1);
+  const [step, setStep] = useState<1 | 2 | 3>(1);
   const [nickname, setNickname] = useState("");
   const [cityCode, setCityCode] = useState("");
   const [districtCode, setDistrictCode] = useState("");
@@ -203,18 +203,23 @@ export default function OnboardingProfilePage() {
       setError("닉네임을 입력해 주세요.");
       return;
     }
-    if (hasPetChoice === null) {
-      setError("반려동물 유무를 선택해 주세요.");
-      return;
-    }
     setError(null);
     setStep(2);
+  };
+
+  const handleRegionStepNext = () => {
+    setError(null);
+    setStep(3);
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!signupToken) return;
     if (!nickname.trim()) return;
+    if (hasPetChoice === null) {
+      setError("반려동물 유무를 선택해 주세요.");
+      return;
+    }
     setError(null);
     setLoading(true);
     try {
@@ -247,18 +252,18 @@ export default function OnboardingProfilePage() {
           <div className="space-y-2">
             <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-400">
               <span>진행 단계</span>
-              <span>{step}/2</span>
+              <span>{step}/3</span>
             </div>
             <div
               className="h-2 w-full rounded-full bg-slate-200/70"
               role="progressbar"
               aria-valuenow={step}
               aria-valuemin={1}
-              aria-valuemax={2}
+              aria-valuemax={3}
             >
               <div
                 className="h-full rounded-full bg-ink transition-all duration-300"
-                style={{ width: step === 1 ? "50%" : "100%" }}
+                style={{ width: `${(step / 3) * 100}%` }}
               />
             </div>
           </div>
@@ -333,33 +338,6 @@ export default function OnboardingProfilePage() {
                     </div>
                   </div>
                   {profileImageError && <p className="text-[11px] text-rose-500">{profileImageError}</p>}
-                </div>
-                <div className="space-y-2 text-xs font-semibold text-slate-500">
-                  반려동물 유무
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      className={`rounded-2xl border px-3 py-3 text-sm font-semibold transition ${
-                        hasPetChoice === true
-                          ? "border-ink/80 bg-ink text-sand shadow-[0_12px_26px_-20px_rgba(31,29,26,0.4)]"
-                          : "border-slate-200/70 bg-white/80 text-slate-600"
-                      }`}
-                      onClick={() => setHasPetChoice(true)}
-                    >
-                      반려동물이 있어요
-                    </button>
-                    <button
-                      type="button"
-                      className={`rounded-2xl border px-3 py-3 text-sm font-semibold transition ${
-                        hasPetChoice === false
-                          ? "border-ink/80 bg-ink text-sand shadow-[0_12px_26px_-20px_rgba(31,29,26,0.4)]"
-                          : "border-slate-200/70 bg-white/80 text-slate-600"
-                      }`}
-                      onClick={() => setHasPetChoice(false)}
-                    >
-                      나중에 등록할게요
-                    </button>
-                  </div>
                 </div>
               </div>
               <div className="mt-auto pt-4">
@@ -440,6 +418,60 @@ export default function OnboardingProfilePage() {
                 <button
                   type="button"
                   onClick={() => setStep(1)}
+                  className="flex-1 rounded-2xl border border-slate-200/70 bg-white/80 px-4 py-3 text-sm font-semibold text-slate-600 transition hover:bg-white"
+                >
+                  이전
+                </button>
+                <button
+                  type="button"
+                  onClick={handleRegionStepNext}
+                  className="flex-1 rounded-2xl bg-ink px-4 py-3 text-sm font-semibold text-sand transition hover:bg-ink/90 disabled:cursor-not-allowed disabled:bg-ink/40"
+                >
+                  다음
+                </button>
+              </div>
+            </div>
+
+            <div
+              className={`absolute inset-0 flex min-h-full flex-col transition-[opacity,transform] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                step === 3
+                  ? "z-10 translate-x-0 opacity-100"
+                  : "pointer-events-none z-0 translate-x-8 opacity-0"
+              }`}
+            >
+              <div className="space-y-4">
+                <div className="space-y-2 text-xs font-semibold text-slate-500">
+                  반려동물 유무
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      className={`rounded-2xl border px-3 py-3 text-sm font-semibold transition ${
+                        hasPetChoice === true
+                          ? "border-ink/80 bg-ink text-sand shadow-[0_12px_26px_-20px_rgba(31,29,26,0.4)]"
+                          : "border-slate-200/70 bg-white/80 text-slate-600"
+                      }`}
+                      onClick={() => setHasPetChoice(true)}
+                    >
+                      반려동물이 있어요
+                    </button>
+                    <button
+                      type="button"
+                      className={`rounded-2xl border px-3 py-3 text-sm font-semibold transition ${
+                        hasPetChoice === false
+                          ? "border-ink/80 bg-ink text-sand shadow-[0_12px_26px_-20px_rgba(31,29,26,0.4)]"
+                          : "border-slate-200/70 bg-white/80 text-slate-600"
+                      }`}
+                      onClick={() => setHasPetChoice(false)}
+                    >
+                      나중에 등록할게요
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-auto flex gap-2 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setStep(2)}
                   className="flex-1 rounded-2xl border border-slate-200/70 bg-white/80 px-4 py-3 text-sm font-semibold text-slate-600 transition hover:bg-white"
                 >
                   이전
