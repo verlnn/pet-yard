@@ -76,7 +76,7 @@ public class FeedApplicationService {
             result.add(new FeedPostView(
                 post.getId(),
                 post.getContent(),
-                imageUrls.isEmpty() ? null : imageUrls.get(0),
+                imageUrls.isEmpty() ? null : imageUrls.getFirst(),
                 imageUrls,
                 post.getImageAspectRatioValue(),
                 post.getImageAspectRatio(),

@@ -9,8 +9,8 @@ interface FeedGridItemProps {
 }
 
 export function FeedGridItem({ post, onSelect }: FeedGridItemProps) {
-  const thumbnail = post.imageUrls?.[0] ?? post.imageUrl ?? null;
-  const totalImages = post.imageUrls?.length ?? (post.imageUrl ? 1 : 0);
+  const thumbnail = post.thumbnailImageUrl ?? null;
+  const totalImages = post.imageUrls?.length ?? (post.thumbnailImageUrl ? 1 : 0);
 
   return (
     <button

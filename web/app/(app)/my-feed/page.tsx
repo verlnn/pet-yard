@@ -94,7 +94,7 @@ export default function MyFeedPage() {
     const load = async () => {
       try {
         const [feedResponse, profileResponse] = await Promise.all([
-          authApi.getMyFeed(accessToken),
+          authApi.getOwnPosts(accessToken),
           authApi.getMyProfile(accessToken)
         ]);
         setPosts(feedResponse);
@@ -107,6 +107,12 @@ export default function MyFeedPage() {
     };
     load();
   }, [accessToken]);
+
+  const refreshOwnPosts = async (token: string) => {
+    const ownPosts = await authApi.getOwnPosts(token);
+    setPosts(ownPosts);
+    return ownPosts;
+  };
 
   useEffect(() => {
     const updateViewportSize = () => {
@@ -266,8 +272,7 @@ export default function MyFeedPage() {
 
   const handleCreate = async () => {
     if (!accessToken) return;
-    const imageUrls = images.map((image) => image.originalUrl);
-    if (imageUrls.length === 0) {
+    if (images.length === 0) {
       setImageError("사진을 한 장 이상 추가해 주세요.");
       return;
     }
@@ -286,15 +291,8 @@ export default function MyFeedPage() {
         formData.append("imageAspectRatio", image.aspectRatio);
       });
 
-      const created = await authApi.createFeedPost(accessToken, formData);
-      const createdWithImages: FeedPost = {
-        ...created,
-        imageUrl: created.imageUrls?.[0] ?? created.imageUrl ?? null,
-        imageAspectRatioValue: images[0] ? getAspectRatioValue(images[0]) : null,
-        imageAspectRatio: images[0]?.aspectRatio ?? null,
-        imageUrls: created.imageUrls?.length ? created.imageUrls : created.imageUrl ? [created.imageUrl] : null
-      };
-      setPosts((prev) => [createdWithImages, ...prev]);
+      await authApi.createFeedPost(accessToken, formData);
+      await refreshOwnPosts(accessToken);
       resetForm();
       setModalOpen(false);
     } catch (err) {
@@ -434,9 +432,9 @@ export default function MyFeedPage() {
                     aspectRatio={selectedPost.imageAspectRatio}
                     aspectRatioValue={selectedPost.imageAspectRatioValue}
                   />
-                ) : selectedPost.imageUrl ? (
+                ) : selectedPost.thumbnailImageUrl ? (
                   <FeedImageFrame
-                    src={selectedPost.imageUrl}
+                    src={selectedPost.thumbnailImageUrl}
                     alt="피드 이미지"
                     aspectRatio={selectedPost.imageAspectRatio}
                     aspectRatioValue={selectedPost.imageAspectRatioValue}
