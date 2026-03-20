@@ -110,6 +110,10 @@ export default function OnboardingPetVerificationStep({
             )}
           </div>
         </div>
+
+        <div className="onboarding-pet-notice">
+          온보딩에서는 반려동물 1마리만 먼저 등록할 수 있어요. 추가 등록은 가입 완료 후 설정 페이지에서 할 수 있습니다.
+        </div>
       </div>
 
       <div className="onboarding-pet-step-actions-single">

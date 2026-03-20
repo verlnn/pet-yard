@@ -8,6 +8,7 @@ import type { PetRegistrationVerificationResponse } from "@/src/features/auth/ty
 import OnboardingCard from "@/src/features/onboarding/components/OnboardingCard";
 import OnboardingLayout from "@/src/features/onboarding/components/OnboardingLayout";
 import OnboardingPetDetailsStep from "@/src/features/onboarding/components/pet/OnboardingPetDetailsStep";
+import OnboardingPetPhotoStep from "@/src/features/onboarding/components/pet/OnboardingPetPhotoStep";
 import OnboardingPetProgress from "@/src/features/onboarding/components/pet/OnboardingPetProgress";
 import OnboardingPetVerificationStep from "@/src/features/onboarding/components/pet/OnboardingPetVerificationStep";
 
@@ -19,7 +20,6 @@ const emptyVerification = {
 };
 
 const emptyDetailsForm = {
-  photoUrl: "",
   weightKg: "",
   vaccinationComplete: "" as "" | "true" | "false",
   walkSafetyChecked: "" as "" | "true" | "false"
@@ -28,10 +28,11 @@ const emptyDetailsForm = {
 export default function OnboardingPetPage() {
   const router = useRouter();
   const [signupToken, setSignupToken] = useState<string | null>(null);
-  const [step, setStep] = useState<1 | 2>(1);
+  const [step, setStep] = useState<1 | 2 | 3>(1);
   const [verification, setVerification] = useState(emptyVerification);
   const [verificationResult, setVerificationResult] = useState<PetRegistrationVerificationResponse | null>(null);
   const [detailsForm, setDetailsForm] = useState(emptyDetailsForm);
+  const [photoUrl, setPhotoUrl] = useState("");
   const [photoError, setPhotoError] = useState<string | null>(null);
   const [verifying, setVerifying] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -79,6 +80,7 @@ export default function OnboardingPetPage() {
     setVerification(emptyVerification);
     setVerificationResult(null);
     setDetailsForm(emptyDetailsForm);
+    setPhotoUrl("");
     setPhotoError(null);
     setError(null);
     setStep(1);
@@ -97,10 +99,7 @@ export default function OnboardingPetPage() {
 
     const reader = new FileReader();
     reader.onload = () => {
-      setDetailsForm((prev) => ({
-        ...prev,
-        photoUrl: typeof reader.result === "string" ? reader.result : ""
-      }));
+      setPhotoUrl(typeof reader.result === "string" ? reader.result : "");
       setPhotoError(null);
     };
     reader.readAsDataURL(file);
@@ -122,7 +121,7 @@ export default function OnboardingPetPage() {
         rfidCd: verification.rfidCd.trim(),
         ownerNm: verification.ownerNm.trim(),
         ownerBirth: verification.ownerBirth.trim(),
-        photoUrl: detailsForm.photoUrl || null,
+        photoUrl: photoUrl || null,
         weightKg: detailsForm.weightKg ? Number(detailsForm.weightKg) : null,
         vaccinationComplete:
           detailsForm.vaccinationComplete === ""
@@ -144,7 +143,7 @@ export default function OnboardingPetPage() {
     }
   };
 
-  const stepPanelClassName = (targetStep: 1 | 2, hiddenDirection: "left" | "right") =>
+  const stepPanelClassName = (targetStep: 1 | 2 | 3, hiddenDirection: "left" | "right") =>
     [
       "onboarding-pet-step-panel",
       step === targetStep
@@ -158,7 +157,7 @@ export default function OnboardingPetPage() {
     <OnboardingLayout>
       <OnboardingCard
         title="반려동물 정보"
-        subtitle="1단계에서 등록번호를 인증하고, 2단계에서 기본정보와 사진을 저장해 주세요."
+        subtitle="1단계에서 등록번호를 인증하고, 2단계와 3단계에서 기본정보와 사진을 저장해 주세요."
         error={error}
       >
         <form className="onboarding-pet-form" onSubmit={handleSubmit}>
@@ -189,9 +188,6 @@ export default function OnboardingPetPage() {
                 <OnboardingPetDetailsStep
                   verificationResult={verificationResult}
                   form={detailsForm}
-                  photoError={photoError}
-                  loading={loading}
-                  onPhotoSelect={handlePetImageUpload}
                   onWeightChange={(value) => setDetailsForm((prev) => ({ ...prev, weightKg: value }))}
                   onVaccinationChange={(value) =>
                     setDetailsForm((prev) => ({ ...prev, vaccinationComplete: value }))
@@ -200,6 +196,22 @@ export default function OnboardingPetPage() {
                     setDetailsForm((prev) => ({ ...prev, walkSafetyChecked: value }))
                   }
                   onPrev={() => setStep(1)}
+                  onNext={() => {
+                    setError(null);
+                    setStep(3);
+                  }}
+                />
+              )}
+            </div>
+
+            <div className={stepPanelClassName(3, "right")}>
+              {verificationResult && (
+                <OnboardingPetPhotoStep
+                  photoUrl={photoUrl}
+                  photoError={photoError}
+                  loading={loading}
+                  onPhotoSelect={handlePetImageUpload}
+                  onPrev={() => setStep(2)}
                 />
               )}
             </div>
