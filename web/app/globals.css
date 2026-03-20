@@ -96,7 +96,7 @@ body {
   }
 
   .app-layout-content-shell {
-    @apply flex min-h-screen flex-col px-4 pb-10 pt-20 lg:ml-[104px] lg:px-10 lg:pt-8 xl:flex-row xl:items-start xl:gap-8;
+    @apply flex min-h-screen flex-col px-4 pb-10 pt-20 lg:ml-[116px] lg:px-10 lg:pt-8 xl:flex-row xl:items-start xl:gap-8;
   }
 
   .app-layout-main {
@@ -116,7 +116,7 @@ body {
   }
 
   .app-sidebar {
-    @apply fixed inset-y-0 left-0 z-50 w-[248px] -translate-x-full border-r border-white/65 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(246,242,234,0.94))] px-3 py-4 shadow-[0_28px_60px_-36px_rgba(15,23,42,0.45)] backdrop-blur transition-[transform,width] duration-300 lg:w-[72px] lg:translate-x-0 lg:rounded-r-[32px];
+    @apply fixed inset-y-0 left-0 z-50 w-[248px] -translate-x-full border-r border-white/65 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(246,242,234,0.94))] px-3 py-4 shadow-[0_28px_60px_-36px_rgba(15,23,42,0.45)] backdrop-blur transition-[transform,width] duration-300 lg:w-[84px] lg:translate-x-0 lg:rounded-r-[32px];
     transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
   }
 
