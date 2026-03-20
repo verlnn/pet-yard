@@ -87,6 +87,71 @@ body {
     @apply flex flex-wrap gap-3 rounded-full border border-slate-200/70 bg-white/80 p-2;
   }
 
+  .feed-profile-header {
+    @apply rounded-[32px] border border-slate-200/70 bg-white/70 p-6 shadow-[0_18px_50px_-40px_rgba(30,41,59,0.6)] backdrop-blur;
+  }
+
+  .feed-profile-header-layout {
+    @apply flex flex-col gap-6 md:flex-row md:items-center md:justify-between;
+  }
+
+  .feed-profile-header-identity {
+    @apply flex items-center gap-5;
+  }
+
+  .feed-profile-header-avatar-stack {
+    @apply relative;
+  }
+
+  .feed-profile-header-avatar {
+    @apply h-20 w-20 ring-2 ring-white;
+  }
+
+  .feed-profile-header-pet-avatar {
+    @apply absolute -bottom-2 -right-2 h-9 w-9 overflow-hidden rounded-2xl border border-white bg-white shadow-sm;
+  }
+
+  .feed-profile-header-pet-avatar-image {
+    @apply h-full w-full object-cover;
+  }
+
+  .feed-profile-header-copy {
+    @apply min-w-0;
+  }
+
+  .feed-profile-header-title-row {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  .feed-profile-header-title {
+    @apply font-display text-xl font-semibold;
+  }
+
+  .feed-profile-header-subtitle {
+    @apply mt-1 text-sm text-ink/60;
+  }
+
+  .feed-profile-header-stats {
+    @apply mt-3 flex flex-wrap gap-4 text-sm text-ink/70;
+  }
+
+  .feed-profile-header-stat {
+    @apply text-sm text-ink/70;
+  }
+
+  .feed-profile-header-stat-value {
+    @apply font-semibold text-ink;
+  }
+
+  .feed-profile-header-actions {
+    @apply flex flex-wrap gap-3;
+  }
+
+  .feed-profile-header-secondary-action,
+  .feed-profile-header-primary-action {
+    @apply gap-2;
+  }
+
   .app-layout {
     @apply relative min-h-screen;
   }
