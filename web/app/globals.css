@@ -29,20 +29,20 @@
 
 [data-theme="dark"] {
   color-scheme: dark;
-  --color-bg: #1e293b;
-  --color-bg-muted: #1e293b;
-  --color-surface: #1e293b;
-  --color-surface-muted: #334155;
-  --color-surface-elevated: #273449;
+  --color-bg: #000000;
+  --color-bg-muted: #000000;
+  --color-surface: #000000;
+  --color-surface-muted: #000000;
+  --color-surface-elevated: #000000;
   --color-border: rgba(255, 255, 255, 0.12);
   --color-text: #f8fafc;
   --color-text-muted: #cbd5e1;
   --color-text-subtle: #94a3b8;
   --color-primary: #f8fafc;
   --color-primary-contrast: #111827;
-  --color-hover-surface: #334155;
-  --color-press-surface: #3f4d63;
-  --color-input-bg: #273449;
+  --color-hover-surface: #111111;
+  --color-press-surface: #1a1a1a;
+  --color-input-bg: #000000;
   --color-input-border: rgba(255, 255, 255, 0.12);
   --color-input-placeholder: #94a3b8;
   --color-overlay-backdrop: rgba(2, 6, 23, 0.68);
