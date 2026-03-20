@@ -23,7 +23,7 @@ export default function AuthTabs({ mode, onChange }: AuthTabsProps) {
         aria-selected={mode === "login"}
         className={`${tabBase} ${
           mode === "login"
-            ? "bg-[var(--color-primary)] text-[var(--color-primary-contrast)] shadow-[var(--shadow-soft-token)]"
+            ? "bg-[var(--color-button-bg)] text-[var(--color-button-text)] shadow-[var(--shadow-soft-token)]"
             : "text-[var(--color-text-muted)] hover:bg-[var(--color-hover-surface)]"
         }`}
         onClick={() => onChange("login")}
@@ -36,7 +36,7 @@ export default function AuthTabs({ mode, onChange }: AuthTabsProps) {
         aria-selected={mode === "signup"}
         className={`${tabBase} ${
           mode === "signup"
-            ? "bg-[var(--color-primary)] text-[var(--color-primary-contrast)] shadow-[var(--shadow-soft-token)]"
+            ? "bg-[var(--color-button-bg)] text-[var(--color-button-text)] shadow-[var(--shadow-soft-token)]"
             : "text-[var(--color-text-muted)] hover:bg-[var(--color-hover-surface)]"
         }`}
         onClick={() => onChange("signup")}

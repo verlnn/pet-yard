@@ -20,6 +20,14 @@
   --color-input-bg: #ffffff;
   --color-input-border: rgba(15, 23, 42, 0.12);
   --color-input-placeholder: #94a3b8;
+  --color-button-bg: #111827;
+  --color-button-text: #f8fafc;
+  --color-button-secondary-bg: #ffffff;
+  --color-button-secondary-text: #111827;
+  --color-button-secondary-border: rgba(15, 23, 42, 0.12);
+  --color-button-ghost-bg: transparent;
+  --color-button-ghost-text: #111827;
+  --color-button-ghost-hover-bg: #f8fafc;
   --color-overlay-backdrop: rgba(15, 23, 42, 0.45);
   --color-menu-surface: #222324;
   --color-menu-text: #f8fafc;
@@ -45,6 +53,14 @@
   --color-input-bg: #000000;
   --color-input-border: rgba(255, 255, 255, 0.12);
   --color-input-placeholder: #94a3b8;
+  --color-button-bg: #222324;
+  --color-button-text: #f8fafc;
+  --color-button-secondary-bg: #222324;
+  --color-button-secondary-text: #f8fafc;
+  --color-button-secondary-border: rgba(255, 255, 255, 0.12);
+  --color-button-ghost-bg: #222324;
+  --color-button-ghost-text: #f8fafc;
+  --color-button-ghost-hover-bg: #2c2d2e;
   --color-overlay-backdrop: rgba(2, 6, 23, 0.68);
   --color-menu-surface: #222324;
   --color-menu-text: #f8fafc;
@@ -288,7 +304,10 @@ body {
   }
 
   .onboarding-complete-button {
-    @apply w-full rounded-2xl bg-ink px-4 py-3.5 text-sm font-semibold text-sand shadow-[0_18px_40px_-28px_rgba(31,29,26,0.7)] transition hover:-translate-y-0.5 hover:bg-ink/95 disabled:cursor-not-allowed disabled:bg-ink/40;
+    background: var(--color-button-bg);
+    color: var(--color-button-text);
+    box-shadow: var(--shadow-soft-token);
+    @apply w-full rounded-2xl px-4 py-3.5 text-sm font-semibold transition hover:-translate-y-0.5 hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-45;
   }
 
   .my-feed-error-alert {
@@ -990,11 +1009,16 @@ body {
   }
 
   .feed-post-permission-close {
-    @apply text-ink hover:bg-slate-50;
+    background: var(--color-button-secondary-bg);
+    color: var(--color-button-secondary-text);
+    @apply hover:opacity-90;
   }
 
   .feed-post-permission-confirm {
-    @apply border-l border-slate-200 text-pine hover:bg-emerald-50;
+    background: var(--color-button-bg);
+    color: var(--color-button-text);
+    border-left-color: var(--color-button-secondary-border);
+    @apply border-l hover:opacity-90;
   }
 
   .feed-detail-photo-panel {
@@ -1223,11 +1247,16 @@ body {
   }
 
   .onboarding-pet-verify-button {
-    @apply w-full rounded-2xl bg-ink px-6 py-3 text-sm font-semibold text-sand transition hover:bg-ink/90 disabled:cursor-not-allowed disabled:bg-ink/40;
+    background: var(--color-button-bg);
+    color: var(--color-button-text);
+    @apply w-full rounded-2xl px-6 py-3 text-sm font-semibold transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-45;
   }
 
   .onboarding-pet-reset-button {
-    @apply rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50;
+    background: var(--color-button-secondary-bg);
+    color: var(--color-button-secondary-text);
+    border-color: var(--color-button-secondary-border);
+    @apply rounded-2xl border px-4 py-3 text-sm font-semibold transition hover:opacity-90;
   }
 
   .onboarding-pet-reset-button-wide {
@@ -1235,7 +1264,9 @@ body {
   }
 
   .onboarding-pet-submit-button {
-    @apply w-full rounded-2xl bg-ink px-4 py-3 text-sm font-semibold text-sand transition hover:bg-ink/90 disabled:cursor-not-allowed disabled:bg-ink/40;
+    background: var(--color-button-bg);
+    color: var(--color-button-text);
+    @apply w-full rounded-2xl px-4 py-3 text-sm font-semibold transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-45;
   }
 
   .onboarding-pet-submit-button-half {
@@ -1488,11 +1519,18 @@ body {
   }
 
   .onboarding-profile-choice-button-selected {
-    @apply border-ink/80 bg-ink text-sand shadow-[0_12px_26px_-20px_rgba(31,29,26,0.4)];
+    background: var(--color-button-bg);
+    color: var(--color-button-text);
+    border-color: var(--color-button-secondary-border);
+    box-shadow: var(--shadow-soft-token);
+    @apply border;
   }
 
   .onboarding-profile-choice-button-unselected {
-    @apply border-slate-200/70 bg-white/80 text-slate-600;
+    background: var(--color-button-secondary-bg);
+    color: var(--color-button-secondary-text);
+    border-color: var(--color-button-secondary-border);
+    @apply border;
   }
 
   .onboarding-profile-step-actions-single {
@@ -1508,10 +1546,15 @@ body {
   }
 
   .onboarding-profile-primary-button {
-    @apply flex-1 rounded-2xl bg-ink px-4 py-3 text-sm font-semibold text-sand transition hover:bg-ink/90 disabled:cursor-not-allowed disabled:bg-ink/40;
+    background: var(--color-button-bg);
+    color: var(--color-button-text);
+    @apply flex-1 rounded-2xl px-4 py-3 text-sm font-semibold transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-45;
   }
 
   .onboarding-profile-secondary-button {
-    @apply flex-1 rounded-2xl border border-slate-200/70 bg-white/80 px-4 py-3 text-sm font-semibold text-slate-600 transition hover:bg-white;
+    background: var(--color-button-secondary-bg);
+    color: var(--color-button-secondary-text);
+    border-color: var(--color-button-secondary-border);
+    @apply flex-1 rounded-2xl border px-4 py-3 text-sm font-semibold transition hover:opacity-90;
   }
 }

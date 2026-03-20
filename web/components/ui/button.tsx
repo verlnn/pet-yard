@@ -10,12 +10,13 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-[var(--color-primary)] text-[var(--color-primary-contrast)] hover:opacity-90",
+          "bg-[var(--color-button-bg)] text-[var(--color-button-text)] hover:opacity-90",
         secondary:
-          "bg-[var(--color-surface)] text-[var(--color-text)] ring-1 ring-[var(--color-border)] hover:bg-[var(--color-hover-surface)]",
-        ghost: "bg-transparent text-[var(--color-text)] hover:bg-[var(--color-hover-surface)]",
+          "bg-[var(--color-button-secondary-bg)] text-[var(--color-button-secondary-text)] ring-1 ring-[var(--color-button-secondary-border)] hover:opacity-90",
+        ghost:
+          "bg-[var(--color-button-ghost-bg)] text-[var(--color-button-ghost-text)] hover:bg-[var(--color-button-ghost-hover-bg)]",
         accent:
-          "bg-[var(--color-text)] text-[var(--color-primary-contrast)] hover:opacity-90"
+          "bg-[var(--color-button-bg)] text-[var(--color-button-text)] hover:opacity-90"
       },
       size: {
         default: "h-11 px-6",
