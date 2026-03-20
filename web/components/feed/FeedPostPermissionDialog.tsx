@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+
 interface FeedPostPermissionDialogProps {
   open: boolean;
   onClose: () => void;
@@ -11,6 +13,21 @@ export function FeedPostPermissionDialog({
   onClose,
   onGoVerify
 }: FeedPostPermissionDialogProps) {
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [open, onClose]);
+
   if (!open) {
     return null;
   }
