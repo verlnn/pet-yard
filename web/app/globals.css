@@ -385,7 +385,7 @@ body {
   }
 
   .onboarding-pet-details-card-scroll {
-    @apply max-h-[360px] overflow-y-auto pr-1;
+    @apply max-h-[300px] overflow-y-auto pr-1;
   }
 
   .onboarding-pet-verification-result {
