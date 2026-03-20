@@ -13,7 +13,7 @@ interface FeedDetailPhotoPanelProps {
 export function FeedDetailPhotoPanel({ post, width, height }: FeedDetailPhotoPanelProps) {
   return (
     <div
-      className="flex items-center justify-center bg-black"
+      className="feed-detail-photo-panel"
       style={{
         width: `${width || 480}px`,
         height: `${height || 480}px`
@@ -34,7 +34,7 @@ export function FeedDetailPhotoPanel({ post, width, height }: FeedDetailPhotoPan
           outerClassName="h-full w-full"
         />
       ) : (
-        <div className="flex h-full w-full items-center justify-center text-xs text-white/60">
+        <div className="feed-detail-image-fallback">
           이미지 없음
         </div>
       )}

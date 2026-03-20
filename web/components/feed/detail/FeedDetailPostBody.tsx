@@ -8,25 +8,25 @@ interface FeedDetailPostBodyProps {
 
 export function FeedDetailPostBody({ post }: FeedDetailPostBodyProps) {
   return (
-    <div className="space-y-4 p-6 pb-4">
+    <div className="feed-detail-post-body">
       <div>
-        <p className="text-xs text-ink/50">작성일</p>
-        <p className="text-sm font-semibold">
+        <p className="feed-detail-section-label">작성일</p>
+        <p className="feed-detail-section-value">
           {new Date(post.createdAt).toLocaleString("ko-KR")}
         </p>
       </div>
       <div>
-        <p className="text-xs text-ink/50">내용</p>
-        <p className="text-sm whitespace-pre-wrap text-ink/80">
+        <p className="feed-detail-section-label">내용</p>
+        <p className="feed-detail-content-text">
           {post.content || "작성된 내용이 없습니다."}
         </p>
       </div>
       {post.hashtags && post.hashtags.length > 0 && (
         <div>
-          <p className="text-xs text-ink/50">해시태그</p>
-          <p className="mt-1 flex flex-wrap gap-2 text-xs text-sky-700">
+          <p className="feed-detail-section-label">해시태그</p>
+          <p className="feed-detail-hashtag-list">
             {post.hashtags.map((tag) => (
-              <span key={tag} className="rounded-full bg-slate-100 px-2 py-1">
+              <span key={tag} className="feed-detail-hashtag-chip">
                 #{tag}
               </span>
             ))}

@@ -13,13 +13,13 @@ interface FeedDetailSidebarProps {
 export function FeedDetailSidebar({ post, maxHeight }: FeedDetailSidebarProps) {
   return (
     <div
-      className="flex flex-col overflow-y-auto"
+      className="feed-detail-sidebar"
       style={{
         width: "360px",
         maxHeight: `${maxHeight || 480}px`
       }}
     >
-      <div className="flex-1 overflow-y-auto">
+      <div className="feed-detail-sidebar-scroll">
         <FeedDetailPostBody post={post} />
         <FeedDetailComments />
       </div>
