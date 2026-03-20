@@ -174,12 +174,16 @@ export default function MyFeedPage() {
     setSelectedPost(posts[selectedPostIndex + 1] ?? null);
   };
 
+  const handleCloseSelectedPost = () => {
+    setSelectedPost(null);
+    setPostActionMenuOpen(false);
+  };
+
   useEffect(() => {
     if (!selectedPost) return;
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setSelectedPost(null);
-        setPostActionMenuOpen(false);
+        handleCloseSelectedPost();
         return;
       }
       if (event.key === "ArrowLeft") {
@@ -412,7 +416,10 @@ export default function MyFeedPage() {
       />
 
       {selectedPost && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4"
+          onClick={handleCloseSelectedPost}
+        >
           {hasPrevPost && (
             <button
               type="button"
@@ -433,13 +440,10 @@ export default function MyFeedPage() {
               <ChevronRight className="h-5 w-5" />
             </button>
           )}
-          <div className="relative">
+          <div className="relative" onClick={(event) => event.stopPropagation()}>
             <button
               type="button"
-              onClick={() => {
-                setSelectedPost(null);
-                setPostActionMenuOpen(false);
-              }}
+              onClick={handleCloseSelectedPost}
               className="absolute -right-3 -top-3 z-20 rounded-full bg-white p-2 text-ink shadow-lg transition hover:bg-slate-100"
               aria-label="피드 상세 닫기"
             >
