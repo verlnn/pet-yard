@@ -207,13 +207,10 @@ export const authApi = {
   signupPet(
     signupToken: string,
     payload: {
-      name: string;
-      species: string;
-      breed?: string | null;
-      birthDate?: string | null;
-      ageGroup?: string | null;
-      gender: string;
-      neutered?: boolean | null;
+      dogRegNo: string;
+      rfidCd: string;
+      ownerNm: string;
+      ownerBirth: string;
       intro?: string | null;
       photoUrl?: string | null;
     }
@@ -223,6 +220,14 @@ export const authApi = {
       headers: {
         "X-Signup-Token": signupToken
       },
+      body: JSON.stringify(payload)
+    });
+  },
+  signupVerifyPetRegistration(
+    payload: { dogRegNo: string; rfidCd: string; ownerNm: string; ownerBirth: string }
+  ) {
+    return request<PetRegistrationVerificationResponse>("/api/auth/signup/pet/verify", {
+      method: "POST",
       body: JSON.stringify(payload)
     });
   },

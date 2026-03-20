@@ -27,6 +27,8 @@ import io.pet.petyard.onboarding.domain.SignupStatus;
 import io.pet.petyard.onboarding.domain.SignupStep;
 import io.pet.petyard.onboarding.domain.model.SignupSession;
 import io.pet.petyard.pet.application.port.out.SavePetProfilePort;
+import io.pet.petyard.pet.application.service.AnimalRegistrationResult;
+import io.pet.petyard.pet.application.service.AnimalRegistrationService;
 import io.pet.petyard.pet.domain.PetGender;
 import io.pet.petyard.pet.domain.PetSpecies;
 import io.pet.petyard.pet.domain.model.PetProfile;
@@ -68,6 +70,7 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
     private final LoadTermsPort loadTermsPort;
     private final SaveTermsAgreementPort saveTermsAgreementPort;
     private final SavePetProfilePort savePetProfilePort;
+    private final AnimalRegistrationService animalRegistrationService;
     private final LoadRegionPort loadRegionPort;
     private final JwtTokenProvider tokenProvider;
     private final Clock clock;
@@ -85,6 +88,7 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
                                         LoadTermsPort loadTermsPort,
                                         SaveTermsAgreementPort saveTermsAgreementPort,
                                         SavePetProfilePort savePetProfilePort,
+                                        AnimalRegistrationService animalRegistrationService,
                                         LoadRegionPort loadRegionPort,
                                         JwtTokenProvider tokenProvider,
                                         Clock clock,
@@ -101,6 +105,7 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
         this.loadTermsPort = loadTermsPort;
         this.saveTermsAgreementPort = saveTermsAgreementPort;
         this.savePetProfilePort = savePetProfilePort;
+        this.animalRegistrationService = animalRegistrationService;
         this.loadRegionPort = loadRegionPort;
         this.tokenProvider = tokenProvider;
         this.clock = clock;
@@ -272,15 +277,22 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
         SignupSession session = findActiveSession(command.signupToken());
         ensureStep(session, SignupStep.PET);
 
+        AnimalRegistrationResult result = animalRegistrationService.verify(
+            command.dogRegNo(),
+            command.rfidCd(),
+            command.ownerNm(),
+            command.ownerBirth()
+        );
+
         PetProfile profile = new PetProfile(
             session.getUserId(),
-            command.name(),
-            PetSpecies.valueOf(command.species().toUpperCase()),
-            command.breed(),
-            command.birthDate(),
-            command.ageGroup(),
-            PetGender.valueOf(command.gender().toUpperCase()),
-            command.neutered(),
+            result.name(),
+            PetSpecies.DOG,
+            result.breed(),
+            result.birthDate(),
+            null,
+            result.gender(),
+            result.neutered(),
             command.intro(),
             command.photoUrl(),
             null,

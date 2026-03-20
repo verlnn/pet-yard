@@ -5,6 +5,10 @@ import io.pet.petyard.onboarding.application.port.in.SignupConsentsUseCase;
 import io.pet.petyard.onboarding.application.port.in.SignupPetUseCase;
 import io.pet.petyard.onboarding.application.port.in.SignupProfileUseCase;
 import io.pet.petyard.onboarding.application.port.in.SignupProgressUseCase;
+import io.pet.petyard.pet.adapter.in.web.PetRegistrationRequest;
+import io.pet.petyard.pet.adapter.in.web.PetRegistrationVerificationResponse;
+import io.pet.petyard.pet.application.service.AnimalRegistrationResult;
+import io.pet.petyard.pet.application.service.AnimalRegistrationService;
 
 import jakarta.validation.Valid;
 
@@ -26,17 +30,20 @@ public class SignupController {
     private final SignupConsentsUseCase signupConsentsUseCase;
     private final SignupPetUseCase signupPetUseCase;
     private final SignupCompleteUseCase signupCompleteUseCase;
+    private final AnimalRegistrationService animalRegistrationService;
 
     public SignupController(SignupProgressUseCase signupProgressUseCase,
                             SignupProfileUseCase signupProfileUseCase,
                             SignupConsentsUseCase signupConsentsUseCase,
                             SignupPetUseCase signupPetUseCase,
-                            SignupCompleteUseCase signupCompleteUseCase) {
+                            SignupCompleteUseCase signupCompleteUseCase,
+                            AnimalRegistrationService animalRegistrationService) {
         this.signupProgressUseCase = signupProgressUseCase;
         this.signupProfileUseCase = signupProfileUseCase;
         this.signupConsentsUseCase = signupConsentsUseCase;
         this.signupPetUseCase = signupPetUseCase;
         this.signupCompleteUseCase = signupCompleteUseCase;
+        this.animalRegistrationService = animalRegistrationService;
     }
 
     @GetMapping("/progress")
@@ -82,19 +89,41 @@ public class SignupController {
         return new SignupStepResponse(result.nextStep());
     }
 
+    @PostMapping("/pet/verify")
+    public PetRegistrationVerificationResponse verifyPet(@Valid @RequestBody PetRegistrationRequest request) {
+        AnimalRegistrationResult result = animalRegistrationService.verify(
+            request.dogRegNo(),
+            request.rfidCd(),
+            request.ownerNm(),
+            request.ownerBirth()
+        );
+
+        return new PetRegistrationVerificationResponse(
+            result.dogRegNo(),
+            result.rfidCd(),
+            result.name(),
+            result.birthDate(),
+            result.gender().name(),
+            result.breed(),
+            result.neutered(),
+            result.orgName(),
+            result.officeTel(),
+            result.approvalStatus(),
+            result.registeredAt(),
+            result.approvedAt()
+        );
+    }
+
     @PostMapping("/pet")
     public SignupStepResponse pet(@RequestHeader(SIGNUP_TOKEN_HEADER) String signupToken,
                                   @Valid @RequestBody SignupPetRequest request) {
         SignupPetUseCase.SignupPetResult result = signupPetUseCase.savePet(
             new SignupPetUseCase.SignupPetCommand(
                 signupToken,
-                request.name(),
-                request.species(),
-                request.breed(),
-                request.birthDate(),
-                request.ageGroup(),
-                request.gender(),
-                request.neutered(),
+                request.dogRegNo(),
+                request.rfidCd(),
+                request.ownerNm(),
+                request.ownerBirth(),
                 request.intro(),
                 request.photoUrl()
             )

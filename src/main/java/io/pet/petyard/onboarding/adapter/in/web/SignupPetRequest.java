@@ -1,17 +1,12 @@
 package io.pet.petyard.onboarding.adapter.in.web;
 
-import java.time.LocalDate;
-
 import jakarta.validation.constraints.NotBlank;
 
 public record SignupPetRequest(
-    @NotBlank String name,
-    @NotBlank String species,
-    String breed,
-    LocalDate birthDate,
-    String ageGroup,
-    @NotBlank String gender,
-    Boolean neutered,
+    @NotBlank String dogRegNo,
+    @NotBlank String rfidCd,
+    @NotBlank String ownerNm,
+    @NotBlank String ownerBirth,
     String intro,
     String photoUrl
 ) {
