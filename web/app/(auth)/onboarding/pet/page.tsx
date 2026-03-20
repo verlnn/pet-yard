@@ -176,18 +176,19 @@ export default function OnboardingPetPage() {
             )}
 
             <div className="onboarding-pet-verification-actions">
-              <button
-                type="button"
-                className="onboarding-pet-verify-button"
-                onClick={handleVerify}
-                disabled={verifying || verified}
-              >
-                {verifying ? "인증 중..." : verified ? "인증 완료" : "등록번호 인증"}
-              </button>
-              {verified && (
+              {!verified ? (
                 <button
                   type="button"
-                  className="onboarding-pet-reset-button"
+                  className="onboarding-pet-verify-button"
+                  onClick={handleVerify}
+                  disabled={verifying}
+                >
+                  {verifying ? "인증 중..." : "등록번호 인증"}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="onboarding-pet-reset-button onboarding-pet-reset-button-wide"
                   onClick={() => {
                     setVerification(emptyVerification);
                     setVerificationResult(null);
