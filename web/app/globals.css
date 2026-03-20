@@ -440,12 +440,12 @@ body {
   }
 
   .app-sidebar-brand-title {
-    color: var(--color-text);
+    color: #ffffff;
     @apply truncate font-display text-lg font-semibold;
   }
 
   .app-sidebar-brand-subtitle {
-    color: var(--color-text-subtle);
+    color: #ffffff;
     @apply truncate text-xs;
   }
 
