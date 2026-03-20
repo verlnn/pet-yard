@@ -372,7 +372,8 @@ body {
   }
 
   .onboarding-profile-step-panel {
-    @apply absolute inset-0 flex min-h-full flex-col transition-[opacity,transform] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)];
+    @apply absolute inset-0 flex min-h-full flex-col transition-[opacity,transform] duration-300;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .onboarding-profile-step-panel-active {
