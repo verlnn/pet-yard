@@ -508,6 +508,10 @@ body {
     @apply mt-auto pt-4;
   }
 
+  .onboarding-profile-step-actions-single .onboarding-profile-primary-button {
+    @apply w-full;
+  }
+
   .onboarding-profile-step-actions {
     @apply mt-auto flex gap-2 pt-4;
   }
