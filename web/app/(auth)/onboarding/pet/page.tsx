@@ -22,6 +22,7 @@ export default function OnboardingPetPage() {
   const [verificationResult, setVerificationResult] = useState<PetRegistrationVerificationResponse | null>(null);
   const [intro, setIntro] = useState("");
   const [photoUrl, setPhotoUrl] = useState("");
+  const [photoError, setPhotoError] = useState<string | null>(null);
   const [verifying, setVerifying] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -59,6 +60,25 @@ export default function OnboardingPetPage() {
     } finally {
       setVerifying(false);
     }
+  };
+
+  const handlePetImageUpload = (file?: File) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setPhotoError("이미지 파일만 업로드할 수 있어요.");
+      return;
+    }
+    if (file.size > 3 * 1024 * 1024) {
+      setPhotoError("3MB 이하 이미지로 업로드해 주세요.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setPhotoUrl(typeof reader.result === "string" ? reader.result : "");
+      setPhotoError(null);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -188,14 +208,26 @@ export default function OnboardingPetPage() {
               onChange={(event) => setIntro(event.target.value)}
             />
           </label>
-          <label className="onboarding-pet-field onboarding-pet-field-block">
-            사진 URL (선택)
-            <input
-              className="onboarding-pet-input"
-              value={photoUrl}
-              onChange={(event) => setPhotoUrl(event.target.value)}
-            />
-          </label>
+          <div className="onboarding-pet-photo-row">
+            <div className="onboarding-pet-photo-preview">
+              {photoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={photoUrl} alt="반려동물 사진" className="onboarding-pet-photo-image" />
+              ) : (
+                <div className="onboarding-pet-photo-empty">No Photo</div>
+              )}
+            </div>
+            <label className="onboarding-pet-photo-upload">
+              사진 업로드
+              <input
+                type="file"
+                accept="image/*"
+                className="onboarding-pet-hidden-input"
+                onChange={(event) => handlePetImageUpload(event.target.files?.[0])}
+              />
+            </label>
+          </div>
+          {photoError && <p className="onboarding-pet-photo-error">{photoError}</p>}
 
           <button
             type="submit"
