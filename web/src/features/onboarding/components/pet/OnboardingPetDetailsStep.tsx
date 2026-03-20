@@ -32,9 +32,6 @@ export default function OnboardingPetDetailsStep({
       <div className="onboarding-pet-step-content">
         <div className="onboarding-pet-field-block">
           <p className="onboarding-pet-section-title">2단계 · 반려동물 기본정보</p>
-          <p className="onboarding-pet-section-description">
-            인증된 정보는 그대로 보여주고, 추가 정보와 사진은 여기서 등록해요.
-          </p>
         </div>
 
         <div className="onboarding-pet-details-card">
