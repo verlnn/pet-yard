@@ -183,6 +183,46 @@ body {
     @apply border-l border-slate-200 font-semibold text-rose-600 hover:bg-rose-50;
   }
 
+  .feed-post-permission-overlay {
+    @apply fixed inset-0 z-50 flex items-center justify-center bg-black/45 px-4;
+  }
+
+  .feed-post-permission-dialog {
+    @apply w-full max-w-md overflow-hidden rounded-[28px] border border-white/70 bg-white/95 shadow-[0_28px_70px_-36px_rgba(15,23,42,0.45)] backdrop-blur;
+  }
+
+  .feed-post-permission-body {
+    @apply space-y-3 px-6 py-7;
+  }
+
+  .feed-post-permission-eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-400;
+  }
+
+  .feed-post-permission-title {
+    @apply font-display text-xl font-semibold text-ink;
+  }
+
+  .feed-post-permission-description {
+    @apply text-sm leading-6 text-slate-600;
+  }
+
+  .feed-post-permission-actions {
+    @apply grid grid-cols-2 border-t border-slate-200;
+  }
+
+  .feed-post-permission-button {
+    @apply flex h-14 items-center justify-center text-sm font-semibold transition;
+  }
+
+  .feed-post-permission-close {
+    @apply text-ink hover:bg-slate-50;
+  }
+
+  .feed-post-permission-confirm {
+    @apply border-l border-slate-200 text-pine hover:bg-emerald-50;
+  }
+
   .feed-detail-photo-panel {
     @apply flex items-center justify-center bg-black;
   }

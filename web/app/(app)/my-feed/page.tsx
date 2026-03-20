@@ -13,9 +13,11 @@ import { FeedProfileHeader } from "@/components/feed/FeedProfileHeader";
 import { FeedGrid } from "@/components/feed/FeedGrid";
 import { EmptyFeedState } from "@/components/feed/EmptyFeedState";
 import { NewPostModal } from "@/components/feed/NewPostModal";
+import { FeedPostPermissionDialog } from "@/components/feed/FeedPostPermissionDialog";
 import { getBoxSize, getTargetRatio } from "@/components/feed/imageSizing";
 import { authApi } from "@/src/features/auth/api/authApi";
 import type { FeedPost, MyProfileResponse } from "@/src/features/auth/types/authTypes";
+import { useRouter } from "next/navigation";
 
 const MAX_IMAGE_SIZE = 3 * 1024 * 1024;
 const MAX_IMAGES = 15;
@@ -69,6 +71,7 @@ const readFileAsDataUrl = (file: File) =>
   });
 
 export default function MyFeedPage() {
+  const router = useRouter();
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [profile, setProfile] = useState<MyProfileResponse | null>(null);
   const [posts, setPosts] = useState<FeedPost[]>([]);
@@ -82,6 +85,7 @@ export default function MyFeedPage() {
   const [deleting, setDeleting] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId>("posts");
   const [modalOpen, setModalOpen] = useState(false);
+  const [postPermissionDialogOpen, setPostPermissionDialogOpen] = useState(false);
   const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
   const [postActionMenuOpen, setPostActionMenuOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -368,6 +372,17 @@ export default function MyFeedPage() {
 
   const primaryPet = profile?.pets?.[0];
 
+  const handleRequestNewPost = () => {
+    if (loading) {
+      return;
+    }
+    if ((profile?.petCount ?? 0) > 0) {
+      setModalOpen(true);
+      return;
+    }
+    setPostPermissionDialogOpen(true);
+  };
+
   return (
     <div className="min-h-screen">
       <SiteNav />
@@ -387,7 +402,7 @@ export default function MyFeedPage() {
             <FeedProfileHeader
               profile={profile}
               postCount={posts.length}
-              onNewPost={() => setModalOpen(true)}
+              onNewPost={handleRequestNewPost}
             />
 
             <div className="my-feed-tab-list">
@@ -406,7 +421,7 @@ export default function MyFeedPage() {
             {activeTab === "posts" && (
               <>
                 {grid.length === 0 && !loading ? (
-                  <EmptyFeedState onNewPost={() => setModalOpen(true)} />
+                  <EmptyFeedState onNewPost={handleRequestNewPost} />
                 ) : (
                   <FeedGrid posts={grid} onSelect={setSelectedPost} />
                 )}
@@ -444,6 +459,15 @@ export default function MyFeedPage() {
         onContentChange={setContent}
         onSubmit={handleCreate}
         submitting={creating}
+      />
+
+      <FeedPostPermissionDialog
+        open={postPermissionDialogOpen}
+        onClose={() => setPostPermissionDialogOpen(false)}
+        onGoVerify={() => {
+          setPostPermissionDialogOpen(false);
+          router.push("/pets");
+        }}
       />
 
       {selectedPost && (
