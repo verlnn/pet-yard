@@ -901,23 +901,34 @@ body {
   }
 
   .feed-detail-content {
-    @apply flex overflow-hidden rounded-[32px] bg-white;
+    background: var(--color-surface);
+    @apply flex overflow-hidden rounded-[32px];
   }
 
   .feed-detail-close-button {
-    @apply absolute -right-3 -top-3 z-20 rounded-full bg-white p-2 text-ink shadow-lg transition hover:bg-slate-100;
+    background: var(--color-surface-elevated);
+    color: var(--color-text);
+    box-shadow: var(--shadow-card-token);
+    @apply absolute -right-3 -top-3 z-20 rounded-full p-2 transition hover:bg-[var(--color-hover-surface)];
   }
 
   .feed-detail-menu-anchor {
+    color: var(--color-text);
     @apply absolute right-5 top-5 z-20;
   }
 
   .feed-detail-menu-trigger {
-    @apply rounded-full bg-white/95 p-2 text-ink shadow-md transition duration-200 hover:-translate-y-0.5 hover:bg-white hover:shadow-lg;
+    background: var(--color-surface-elevated);
+    color: var(--color-text);
+    box-shadow: var(--shadow-card-token);
+    @apply rounded-full p-2 transition duration-200 hover:-translate-y-0.5 hover:bg-[var(--color-hover-surface)];
   }
 
   .feed-detail-menu {
-    @apply absolute right-0 top-12 w-48 origin-top-right overflow-hidden rounded-2xl border border-slate-200 bg-white py-2 shadow-xl transition duration-200;
+    border-color: var(--color-border);
+    background: var(--color-surface-elevated);
+    box-shadow: var(--shadow-card-token);
+    @apply absolute right-0 top-12 w-48 origin-top-right overflow-hidden rounded-2xl border py-2 transition duration-200;
   }
 
   .feed-detail-menu-open {
@@ -929,7 +940,8 @@ body {
   }
 
   .feed-detail-menu-item {
-    @apply flex w-full items-center px-4 py-3 text-left text-sm text-ink transition hover:bg-slate-50;
+    color: var(--color-text);
+    @apply flex w-full items-center px-4 py-3 text-left text-sm transition hover:bg-[var(--color-hover-surface)];
   }
 
   .feed-detail-menu-item-danger {
@@ -1034,15 +1046,18 @@ body {
   }
 
   .feed-detail-sidebar-scroll {
+    background: #222324;
     @apply flex-1 overflow-y-auto;
   }
 
   .feed-detail-post-body {
+    background: #222324;
     @apply space-y-4 p-6 pb-4;
   }
 
   .feed-detail-section-label {
-    @apply text-xs text-ink/50;
+    color: var(--color-text-subtle);
+    @apply text-xs;
   }
 
   .feed-detail-section-value {
@@ -1050,7 +1065,8 @@ body {
   }
 
   .feed-detail-content-text {
-    @apply whitespace-pre-wrap text-sm text-ink/80;
+    color: var(--color-text);
+    @apply whitespace-pre-wrap text-sm;
   }
 
   .feed-detail-hashtag-list {
@@ -1062,7 +1078,9 @@ body {
   }
 
   .feed-detail-comments {
-    @apply border-t border-slate-100 px-6 py-4;
+    border-top-color: var(--color-border);
+    background: #222324;
+    @apply border-t px-6 py-4;
   }
 
   .feed-detail-comments-title {
@@ -1074,7 +1092,9 @@ body {
   }
 
   .feed-detail-action-bar {
-    @apply mt-auto border-t border-slate-200/90;
+    border-top-color: var(--color-border);
+    background: #222324;
+    @apply mt-auto border-t;
   }
 
   .feed-detail-action-content {
