@@ -440,11 +440,13 @@ body {
   }
 
   .app-sidebar-brand-title {
-    @apply truncate font-display text-lg font-semibold text-ink;
+    color: var(--color-text);
+    @apply truncate font-display text-lg font-semibold;
   }
 
   .app-sidebar-brand-subtitle {
-    @apply truncate text-xs text-ink/55;
+    color: var(--color-text-subtle);
+    @apply truncate text-xs;
   }
 
   .app-sidebar-nav {
