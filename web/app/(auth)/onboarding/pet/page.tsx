@@ -133,8 +133,8 @@ export default function OnboardingPetPage() {
             : detailsForm.walkSafetyChecked === "true"
       });
 
-      if (result.nextStep === "COMPLETE") {
-        router.push("/onboarding/complete");
+      if (result.nextStep === "CONSENTS") {
+        router.push("/onboarding/consents");
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "반려동물 정보 저장에 실패했습니다.");

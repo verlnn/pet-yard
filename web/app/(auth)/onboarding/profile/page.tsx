@@ -201,7 +201,9 @@ export default function OnboardingProfilePage() {
         hasPet: hasPetChoice
       });
 
-      if (result.nextStep === "CONSENTS") {
+      if (result.nextStep === "PET") {
+        router.push("/onboarding/pet");
+      } else if (result.nextStep === "CONSENTS") {
         router.push("/onboarding/consents");
       }
     } catch (err) {

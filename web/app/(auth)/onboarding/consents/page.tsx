@@ -51,9 +51,7 @@ export default function OnboardingConsentsPage() {
     try {
       const consents = terms.map((item) => ({ code: item.code, agreed: Boolean(checked[item.code]) }));
       const result = await authApi.signupConsents(signupToken, consents);
-      if (result.nextStep === "PET") {
-        router.push("/onboarding/pet");
-      } else {
+      if (result.nextStep === "COMPLETE") {
         router.push("/onboarding/complete");
       }
     } catch (err) {

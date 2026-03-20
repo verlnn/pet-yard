@@ -218,7 +218,7 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
             command.profileImageUrl(), command.marketingOptIn(), command.hasPet());
         saveUserProfilePort.save(profile);
 
-        session.setStep(SignupStep.CONSENTS);
+        session.setStep(command.hasPet() ? SignupStep.PET : SignupStep.CONSENTS);
         session.setStatus(SignupStatus.ONBOARDING);
         saveSignupSessionPort.save(session);
 
@@ -261,11 +261,7 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
             saveTermsAgreementPort.save(new TermsAgreement(session.getUserId(), terms.getId(), now));
         }
 
-        boolean hasPet = loadUserProfilePort.findByUserId(session.getUserId())
-            .map(UserProfile::hasPet)
-            .orElse(false);
-
-        session.setStep(hasPet ? SignupStep.PET : SignupStep.COMPLETE);
+        session.setStep(SignupStep.COMPLETE);
         saveSignupSessionPort.save(session);
 
         return new SignupConsentsResult(session.getStep().name());
@@ -301,7 +297,7 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
         );
         savePetProfilePort.save(profile);
 
-        session.setStep(SignupStep.COMPLETE);
+        session.setStep(SignupStep.CONSENTS);
         saveSignupSessionPort.save(session);
 
         return new SignupPetResult(session.getStep().name());
