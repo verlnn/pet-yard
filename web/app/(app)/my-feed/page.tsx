@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, MoreHorizontal, X } from "lucide-react";
 
+import { FeedDetailPhotoPanel } from "@/components/feed/detail/FeedDetailPhotoPanel";
+import { FeedDetailSidebar } from "@/components/feed/detail/FeedDetailSidebar";
 import { SectionShell } from "@/components/site/section-shell";
 import { SiteNav } from "@/components/site/nav";
 import { Button } from "@/components/ui/button";
@@ -11,8 +13,6 @@ import { FeedProfileHeader } from "@/components/feed/FeedProfileHeader";
 import { FeedGrid } from "@/components/feed/FeedGrid";
 import { EmptyFeedState } from "@/components/feed/EmptyFeedState";
 import { NewPostModal } from "@/components/feed/NewPostModal";
-import { PostImageCarousel } from "@/components/feed/PostImageCarousel";
-import { FeedImageFrame } from "@/components/feed/FeedImageFrame";
 import { getBoxSize, getTargetRatio } from "@/components/feed/imageSizing";
 import { authApi } from "@/src/features/auth/api/authApi";
 import type { FeedPost, MyProfileResponse } from "@/src/features/auth/types/authTypes";
@@ -517,65 +517,15 @@ export default function MyFeedPage() {
                 </div>
             </div>
           <div className="flex overflow-hidden rounded-[32px] bg-white">
-            <div
-              className="flex items-center justify-center bg-black"
-              style={{
-                width: `${selectedPostPhotoSize.width || 480}px`,
-                height: `${selectedPostPhotoSize.height || 480}px`
-              }}
-            >
-                {selectedPost.imageUrls && selectedPost.imageUrls.length > 0 ? (
-                  <PostImageCarousel
-                    images={selectedPost.imageUrls}
-                    aspectRatio={selectedPost.imageAspectRatio}
-                    aspectRatioValue={selectedPost.imageAspectRatioValue}
-                  />
-                ) : selectedPost.thumbnailImageUrl ? (
-                  <FeedImageFrame
-                    src={selectedPost.thumbnailImageUrl}
-                    alt="피드 이미지"
-                    aspectRatio={selectedPost.imageAspectRatio}
-                    aspectRatioValue={selectedPost.imageAspectRatioValue}
-                    outerClassName="h-full w-full"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center text-xs text-white/60">
-                    이미지 없음
-                  </div>
-                )}
-              </div>
-              <div
-                className="flex flex-col gap-4 overflow-y-auto p-6"
-                style={{
-                  width: "360px",
-                  maxHeight: `${selectedPostPhotoSize.height || 480}px`
-                }}
-              >
-                <div>
-                  <p className="text-xs text-ink/50">작성일</p>
-                  <p className="text-sm font-semibold">
-                    {new Date(selectedPost.createdAt).toLocaleString("ko-KR")}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs text-ink/50">내용</p>
-                  <p className="text-sm text-ink/80 whitespace-pre-wrap">
-                    {selectedPost.content || "작성된 내용이 없습니다."}
-                  </p>
-                </div>
-                {selectedPost.hashtags && selectedPost.hashtags.length > 0 && (
-                  <div>
-                    <p className="text-xs text-ink/50">해시태그</p>
-                    <p className="mt-1 flex flex-wrap gap-2 text-xs text-sky-700">
-                      {selectedPost.hashtags.map((tag) => (
-                        <span key={tag} className="rounded-full bg-slate-100 px-2 py-1">
-                          #{tag}
-                        </span>
-                      ))}
-                    </p>
-                  </div>
-                )}
-              </div>
+            <FeedDetailPhotoPanel
+              post={selectedPost}
+              width={selectedPostPhotoSize.width || 480}
+              height={selectedPostPhotoSize.height || 480}
+            />
+            <FeedDetailSidebar
+              post={selectedPost}
+              maxHeight={selectedPostPhotoSize.height || 480}
+            />
           </div>
           {deleteConfirmOpen && (
             <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/35">
