@@ -1088,7 +1088,16 @@ body {
   }
 
   .feed-detail-comments-empty {
-    @apply mt-3 rounded-2xl bg-slate-50 px-4 py-5 text-sm text-ink/45;
+    color: #ffffff;
+    @apply mt-3 flex min-h-[320px] flex-col items-center justify-center px-6 py-12 text-center;
+  }
+
+  .feed-detail-comments-empty-title {
+    @apply text-[2rem] font-extrabold leading-tight tracking-[-0.03em];
+  }
+
+  .feed-detail-comments-empty-description {
+    @apply mt-3 text-lg font-semibold text-white/80;
   }
 
   .feed-detail-action-bar {
