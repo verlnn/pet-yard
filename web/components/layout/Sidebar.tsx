@@ -8,6 +8,7 @@ import { Bell, BookOpenText, Compass, Home, PawPrint, Settings, HeartHandshake }
 
 import Image from "next/image";
 
+import { SidebarMoreMenu } from "@/components/layout/SidebarMoreMenu";
 import { SidebarItem } from "@/components/layout/SidebarItem";
 import { SidebarProfile } from "@/components/layout/SidebarProfile";
 import { authApi } from "@/src/features/auth/api/authApi";
@@ -104,6 +105,7 @@ export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
 
           <div className="app-sidebar-footer">
             <SidebarProfile profile={profile} onNavigate={handleNavigate} />
+            <SidebarMoreMenu onNavigate={handleNavigate} />
           </div>
         </div>
       </aside>
