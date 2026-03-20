@@ -1,5 +1,6 @@
 package io.pet.petyard.auth.security;
 
+import io.pet.petyard.auth.application.port.out.LoadUserPort;
 import io.pet.petyard.auth.jwt.JwtTokenProvider;
 import io.pet.petyard.common.ErrorCode;
 
@@ -30,6 +31,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtTokenProvider tokenProvider,
+                                                   LoadUserPort loadUserPort,
                                                    ErrorResponseWriter errorResponseWriter) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
@@ -49,7 +51,7 @@ public class SecurityConfig {
                 .authenticationEntryPoint(authenticationEntryPoint(errorResponseWriter))
                 .accessDeniedHandler(accessDeniedHandler(errorResponseWriter))
             )
-            .addFilterBefore(new JwtAuthenticationFilter(tokenProvider, errorResponseWriter),
+            .addFilterBefore(new JwtAuthenticationFilter(tokenProvider, loadUserPort, errorResponseWriter),
                 UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

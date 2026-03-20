@@ -17,3 +17,9 @@ jwt:
   secret: dev-secret-change-me-please-32bytes-minimum
   access-ttl-seconds: 3600
   refresh-ttl-seconds: 1209600
+
+app:
+  frontend-origin: http://localhost:3000
+  storage:
+    upload-dir: /tmp/petyard-test-uploads
+    public-url-prefix: /uploads

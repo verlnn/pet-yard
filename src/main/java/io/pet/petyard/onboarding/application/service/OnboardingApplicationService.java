@@ -296,6 +296,7 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
             command.walkSafetyChecked()
         );
         savePetProfilePort.save(profile);
+        promoteTierIfNeeded(session.getUserId());
 
         session.setStep(SignupStep.CONSENTS);
         saveSignupSessionPort.save(session);
@@ -354,6 +355,15 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
             throw new ApiException(ErrorCode.BAD_REQUEST);
         }
         return client;
+    }
+
+    private void promoteTierIfNeeded(Long userId) {
+        User user = loadUserPort.findById(userId)
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+        if (user.getTier() == UserTier.TIER_0) {
+            user.setTier(UserTier.TIER_1);
+            saveUserPort.save(user);
+        }
     }
 
     private String encodeMetadata(OAuthUserInfo userInfo) {
