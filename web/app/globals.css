@@ -295,8 +295,20 @@ body {
     @apply w-full rounded-2xl bg-ink px-4 py-3 text-sm font-semibold text-sand transition hover:bg-ink/90 disabled:cursor-not-allowed disabled:bg-ink/40;
   }
 
-  .onboarding-pet-locked-section {
-    @apply opacity-50;
+  .onboarding-pet-lockable {
+    @apply relative space-y-4 rounded-2xl transition;
+  }
+
+  .onboarding-pet-lockable-locked {
+    @apply overflow-hidden rounded-2xl bg-slate-100/70 p-3;
+  }
+
+  .onboarding-pet-lockable-locked > :not(.onboarding-pet-lock-overlay) {
+    @apply pointer-events-none blur-[2px] opacity-45;
+  }
+
+  .onboarding-pet-lock-overlay {
+    @apply absolute inset-0 z-10 flex items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white/55 px-4 text-center text-sm font-semibold text-slate-700 backdrop-blur-[1px];
   }
 
   .onboarding-pet-photo-row {

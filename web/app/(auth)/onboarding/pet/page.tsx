@@ -200,34 +200,41 @@ export default function OnboardingPetPage() {
             </div>
           </div>
 
-          <label className={`onboarding-pet-field onboarding-pet-field-block ${!verified ? "onboarding-pet-locked-section" : ""}`}>
-            소개글 (선택)
-            <textarea
-              className="onboarding-pet-textarea"
-              value={intro}
-              onChange={(event) => setIntro(event.target.value)}
-              disabled={!verified}
-            />
-          </label>
-          <div className={`onboarding-pet-photo-row ${!verified ? "onboarding-pet-locked-section" : ""}`}>
-            <div className="onboarding-pet-photo-preview">
-              {photoUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={photoUrl} alt="반려동물 사진" className="onboarding-pet-photo-image" />
-              ) : (
-                <div className="onboarding-pet-photo-empty">No Photo</div>
-              )}
-            </div>
-            <label className={`onboarding-pet-photo-upload ${!verified ? "onboarding-pet-photo-upload-disabled" : ""}`}>
-              사진 업로드
-              <input
-                type="file"
-                accept="image/*"
-                className="onboarding-pet-hidden-input"
-                onChange={(event) => handlePetImageUpload(event.target.files?.[0])}
+          <div className={`onboarding-pet-lockable ${!verified ? "onboarding-pet-lockable-locked" : ""}`}>
+            {!verified && (
+              <div className="onboarding-pet-lock-overlay">
+                등록번호 인증 후 입력할 수 있어요
+              </div>
+            )}
+            <label className="onboarding-pet-field onboarding-pet-field-block">
+              소개글 (선택)
+              <textarea
+                className="onboarding-pet-textarea"
+                value={intro}
+                onChange={(event) => setIntro(event.target.value)}
                 disabled={!verified}
               />
             </label>
+            <div className="onboarding-pet-photo-row">
+              <div className="onboarding-pet-photo-preview">
+                {photoUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={photoUrl} alt="반려동물 사진" className="onboarding-pet-photo-image" />
+                ) : (
+                  <div className="onboarding-pet-photo-empty">No Photo</div>
+                )}
+              </div>
+              <label className={`onboarding-pet-photo-upload ${!verified ? "onboarding-pet-photo-upload-disabled" : ""}`}>
+                사진 업로드
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="onboarding-pet-hidden-input"
+                  onChange={(event) => handlePetImageUpload(event.target.files?.[0])}
+                  disabled={!verified}
+                />
+              </label>
+            </div>
           </div>
           {photoError && <p className="onboarding-pet-photo-error">{photoError}</p>}
 
