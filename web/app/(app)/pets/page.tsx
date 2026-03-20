@@ -16,6 +16,8 @@ import type {
   PetRegistrationVerificationResponse
 } from "@/src/features/auth/types/authTypes";
 
+const MAX_PET_IMAGE_SIZE_BYTES = 3 * 1024 * 1024;
+
 const emptyForm = {
   name: "",
   species: "DOG",
@@ -153,7 +155,7 @@ export default function PetsPage() {
       setPetImageError("이미지 파일만 업로드할 수 있어요.");
       return;
     }
-    if (file.size > 3 * 1024 * 1024) {
+    if (file.size > MAX_PET_IMAGE_SIZE_BYTES) {
       setPetImageError("3MB 이하 이미지로 업로드해 주세요.");
       return;
     }
@@ -171,7 +173,7 @@ export default function PetsPage() {
       setEditError("이미지 파일만 업로드할 수 있어요.");
       return;
     }
-    if (file.size > 3 * 1024 * 1024) {
+    if (file.size > MAX_PET_IMAGE_SIZE_BYTES) {
       setEditError("3MB 이하 이미지로 업로드해 주세요.");
       return;
     }
