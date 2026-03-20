@@ -50,15 +50,12 @@ export default function OnboardingPetPhotoStep({
               <span className="onboarding-pet-photo-card-meta-dot" />
               <span>{photoUrl ? "업로드된 사진 있음" : "아직 업로드한 사진 없음"}</span>
             </div>
-            <span className="onboarding-pet-photo-card-cta">
-              {photoUrl ? "다른 사진 선택" : "사진 선택"}
-              <input
-                type="file"
-                accept="image/*"
-                className="onboarding-pet-hidden-input"
-                onChange={(event) => onPhotoSelect(event.target.files?.[0] ?? null)}
-              />
-            </span>
+            <input
+              type="file"
+              accept="image/*"
+              className="onboarding-pet-hidden-input"
+              onChange={(event) => onPhotoSelect(event.target.files?.[0] ?? null)}
+            />
           </div>
         </label>
 

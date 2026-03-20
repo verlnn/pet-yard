@@ -465,11 +465,15 @@ body {
   }
 
   .onboarding-pet-photo-card {
-    @apply flex cursor-pointer items-center gap-4 rounded-2xl border border-slate-200/80 bg-white/85 p-4 shadow-[0_16px_36px_-28px_rgba(15,23,42,0.28)] transition hover:-translate-y-0.5 hover:border-ink/15 hover:bg-white;
+    @apply flex cursor-pointer items-center gap-4 rounded-2xl border border-slate-200/80 bg-white/85 p-4 shadow-[0_16px_36px_-28px_rgba(15,23,42,0.28)] transition hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50/90 hover:shadow-[0_20px_44px_-28px_rgba(15,23,42,0.34)];
   }
 
   .onboarding-pet-photo-card-preview {
-    @apply h-36 w-36 overflow-hidden rounded-[24px] bg-slate-100;
+    @apply h-36 w-36 overflow-hidden rounded-[24px] bg-slate-100 transition;
+  }
+
+  .onboarding-pet-photo-card:hover .onboarding-pet-photo-card-preview {
+    @apply bg-slate-200;
   }
 
   .onboarding-pet-photo-card-image {
@@ -506,10 +510,6 @@ body {
 
   .onboarding-pet-photo-card-meta-dot {
     @apply h-2 w-2 rounded-full bg-moss;
-  }
-
-  .onboarding-pet-photo-card-cta {
-    @apply inline-flex w-fit items-center rounded-full bg-ink px-3 py-1.5 text-xs font-semibold text-sand;
   }
 
   .onboarding-pet-notice {
