@@ -8,9 +8,6 @@ import type { PetRegistrationVerificationResponse } from "@/src/features/auth/ty
 import OnboardingLayout from "@/src/features/onboarding/components/OnboardingLayout";
 import OnboardingCard from "@/src/features/onboarding/components/OnboardingCard";
 
-const inputClassName =
-  "w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition focus:border-ink focus:outline-none focus:ring-4 focus:ring-ink/10";
-
 const emptyVerification = {
   dogRegNo: "",
   rfidCd: "",
@@ -101,44 +98,44 @@ export default function OnboardingPetPage() {
         subtitle="등록번호 인증으로 반려동물 정보를 확인한 뒤 저장해 주세요."
         error={error}
       >
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <div className="rounded-2xl border border-emerald-100 bg-emerald-50/60 p-4">
-            <p className="font-display text-sm font-semibold text-emerald-700">반려견 등록번호 인증</p>
-            <p className="mt-1 text-xs text-emerald-600">
+        <form className="onboarding-pet-form" onSubmit={handleSubmit}>
+          <div className="onboarding-pet-verification-card">
+            <p className="onboarding-pet-verification-title">반려견 등록번호 인증</p>
+            <p className="onboarding-pet-verification-description">
               프로필 페이지와 동일하게 등록번호 인증을 완료해야 반려동물을 저장할 수 있어요.
             </p>
-            <div className="mt-3 grid gap-3 md:grid-cols-2">
-              <label className="text-sm text-slate-700">
+            <div className="onboarding-pet-verification-grid">
+              <label className="onboarding-pet-field">
                 등록번호
                 <input
-                  className={`${inputClassName} mt-2`}
+                  className="onboarding-pet-input"
                   value={verification.dogRegNo}
                   onChange={(event) => setVerification((prev) => ({ ...prev, dogRegNo: event.target.value }))}
                   disabled={verified}
                 />
               </label>
-              <label className="text-sm text-slate-700">
+              <label className="onboarding-pet-field">
                 RFID 코드
                 <input
-                  className={`${inputClassName} mt-2`}
+                  className="onboarding-pet-input"
                   value={verification.rfidCd}
                   onChange={(event) => setVerification((prev) => ({ ...prev, rfidCd: event.target.value }))}
                   disabled={verified}
                 />
               </label>
-              <label className="text-sm text-slate-700">
+              <label className="onboarding-pet-field">
                 소유자 이름
                 <input
-                  className={`${inputClassName} mt-2`}
+                  className="onboarding-pet-input"
                   value={verification.ownerNm}
                   onChange={(event) => setVerification((prev) => ({ ...prev, ownerNm: event.target.value }))}
                   disabled={verified}
                 />
               </label>
-              <label className="text-sm text-slate-700">
+              <label className="onboarding-pet-field">
                 소유자 생년월일(YYMMDD)
                 <input
-                  className={`${inputClassName} mt-2`}
+                  className="onboarding-pet-input"
                   value={verification.ownerBirth}
                   onChange={(event) => setVerification((prev) => ({ ...prev, ownerBirth: event.target.value }))}
                   placeholder="예: 990101"
@@ -148,7 +145,7 @@ export default function OnboardingPetPage() {
             </div>
 
             {verificationResult && (
-              <div className="mt-3 rounded-2xl bg-white/70 px-3 py-2 text-xs text-emerald-700">
+              <div className="onboarding-pet-verification-result">
                 인증 완료 · {verificationResult.name} · {verificationResult.breed ?? "품종 미상"} ·
                 {verificationResult.gender === "MALE"
                   ? " 수컷"
@@ -158,10 +155,10 @@ export default function OnboardingPetPage() {
               </div>
             )}
 
-            <div className="mt-3 flex gap-2">
+            <div className="onboarding-pet-verification-actions">
               <button
                 type="button"
-                className="w-full rounded-2xl bg-ink px-6 py-3 text-sm font-semibold text-sand transition hover:bg-ink/90 disabled:cursor-not-allowed disabled:bg-ink/40"
+                className="onboarding-pet-verify-button"
                 onClick={handleVerify}
                 disabled={verifying || verified}
               >
@@ -170,7 +167,7 @@ export default function OnboardingPetPage() {
               {verified && (
                 <button
                   type="button"
-                  className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                  className="onboarding-pet-reset-button"
                   onClick={() => {
                     setVerification(emptyVerification);
                     setVerificationResult(null);
@@ -183,18 +180,18 @@ export default function OnboardingPetPage() {
             </div>
           </div>
 
-          <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+          <label className="onboarding-pet-field onboarding-pet-field-block">
             소개글 (선택)
             <textarea
-              className={`${inputClassName} min-h-28 resize-none`}
+              className="onboarding-pet-textarea"
               value={intro}
               onChange={(event) => setIntro(event.target.value)}
             />
           </label>
-          <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+          <label className="onboarding-pet-field onboarding-pet-field-block">
             사진 URL (선택)
             <input
-              className={inputClassName}
+              className="onboarding-pet-input"
               value={photoUrl}
               onChange={(event) => setPhotoUrl(event.target.value)}
             />
@@ -202,7 +199,7 @@ export default function OnboardingPetPage() {
 
           <button
             type="submit"
-            className="w-full rounded-2xl bg-ink px-4 py-3 text-sm font-semibold text-sand transition hover:bg-ink/90 disabled:cursor-not-allowed disabled:bg-ink/40"
+            className="onboarding-pet-submit-button"
             disabled={loading}
           >
             {loading ? "저장 중..." : "완료로 이동"}

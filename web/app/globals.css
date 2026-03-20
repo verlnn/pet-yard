@@ -238,4 +238,60 @@ body {
   .feed-detail-comment-submit {
     @apply shrink-0 whitespace-nowrap text-xs font-semibold text-pine transition opacity-90 hover:opacity-100;
   }
+
+  .onboarding-pet-form {
+    @apply space-y-4;
+  }
+
+  .onboarding-pet-verification-card {
+    @apply rounded-2xl border border-emerald-100 bg-emerald-50/60 p-4;
+  }
+
+  .onboarding-pet-verification-title {
+    @apply font-display text-sm font-semibold text-emerald-700;
+  }
+
+  .onboarding-pet-verification-description {
+    @apply mt-1 text-xs text-emerald-600;
+  }
+
+  .onboarding-pet-verification-grid {
+    @apply mt-3 grid gap-3 md:grid-cols-2;
+  }
+
+  .onboarding-pet-field {
+    @apply text-sm font-medium text-slate-700;
+  }
+
+  .onboarding-pet-field-block {
+    @apply flex flex-col gap-2;
+  }
+
+  .onboarding-pet-input {
+    @apply mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition focus:border-ink focus:outline-none focus:ring-4 focus:ring-ink/10 disabled:cursor-not-allowed disabled:bg-slate-100;
+  }
+
+  .onboarding-pet-textarea {
+    @apply min-h-28 w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition focus:border-ink focus:outline-none focus:ring-4 focus:ring-ink/10;
+  }
+
+  .onboarding-pet-verification-result {
+    @apply mt-3 rounded-2xl bg-white/70 px-3 py-2 text-xs text-emerald-700;
+  }
+
+  .onboarding-pet-verification-actions {
+    @apply mt-3 flex gap-2;
+  }
+
+  .onboarding-pet-verify-button {
+    @apply w-full rounded-2xl bg-ink px-6 py-3 text-sm font-semibold text-sand transition hover:bg-ink/90 disabled:cursor-not-allowed disabled:bg-ink/40;
+  }
+
+  .onboarding-pet-reset-button {
+    @apply rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50;
+  }
+
+  .onboarding-pet-submit-button {
+    @apply w-full rounded-2xl bg-ink px-4 py-3 text-sm font-semibold text-sand transition hover:bg-ink/90 disabled:cursor-not-allowed disabled:bg-ink/40;
+  }
 }
