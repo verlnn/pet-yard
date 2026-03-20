@@ -295,6 +295,10 @@ body {
     @apply mb-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600;
   }
 
+  .my-feed-page {
+    @apply space-y-6 py-6;
+  }
+
   .my-feed-tab-list {
     border-color: var(--color-border);
     background: var(--color-surface);
@@ -302,71 +306,81 @@ body {
   }
 
   .feed-profile-header {
-    border-color: var(--color-border);
-    background: var(--color-surface);
-    box-shadow: var(--shadow-card-token);
-    @apply rounded-[32px] p-6;
+    @apply py-2;
   }
 
   .feed-profile-header-layout {
-    @apply flex flex-col gap-6 md:flex-row md:items-center md:justify-between;
+    @apply flex flex-col gap-6 lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:items-end;
   }
 
   .feed-profile-header-identity {
-    @apply flex items-center gap-5;
-  }
-
-  .feed-profile-header-avatar-stack {
-    @apply relative;
+    @apply flex flex-col gap-5 md:flex-row md:items-start;
   }
 
   .feed-profile-header-avatar {
-    @apply h-20 w-20 ring-2 ring-white;
-  }
-
-  .feed-profile-header-pet-avatar {
-    @apply absolute -bottom-2 -right-2 h-9 w-9 overflow-hidden rounded-2xl border border-white bg-white shadow-sm;
-  }
-
-  .feed-profile-header-pet-avatar-image {
-    @apply h-full w-full object-cover;
+    @apply h-28 w-28 border border-[var(--color-border)] ring-0;
   }
 
   .feed-profile-header-copy {
+    @apply min-w-0 flex-1 space-y-4;
+  }
+
+  .feed-profile-header-heading-row {
+    @apply flex flex-wrap items-center gap-3;
+  }
+
+  .feed-profile-header-title-group {
     @apply min-w-0;
   }
 
-  .feed-profile-header-title-row {
-    @apply flex flex-wrap items-center gap-2;
+  .feed-profile-header-title {
+    @apply truncate font-display text-3xl font-semibold tracking-[-0.04em];
   }
 
-  .feed-profile-header-title {
-    @apply font-display text-xl font-semibold;
+  .feed-profile-header-settings-link {
+    color: var(--color-text);
+    @apply inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] transition hover:bg-[var(--color-hover-surface)];
   }
 
   .feed-profile-header-subtitle {
-    @apply mt-1 text-sm text-ink/60;
+    color: var(--color-text);
+    @apply text-base font-medium;
   }
 
   .feed-profile-header-stats {
-    @apply mt-3 flex flex-wrap gap-4 text-sm text-ink/70;
+    @apply flex flex-wrap gap-6;
   }
 
   .feed-profile-header-stat {
-    @apply text-sm text-ink/70;
+    @apply flex items-baseline gap-2;
   }
 
   .feed-profile-header-stat-value {
-    @apply font-semibold text-ink;
+    color: var(--color-text);
+    @apply text-xl font-semibold;
+  }
+
+  .feed-profile-header-stat-label {
+    color: var(--color-text-muted);
+    @apply text-sm font-medium;
+  }
+
+  .feed-profile-header-meta {
+    @apply space-y-1;
+  }
+
+  .feed-profile-header-meta-line {
+    color: var(--color-text-muted);
+    @apply text-sm;
   }
 
   .feed-profile-header-actions {
-    @apply flex flex-wrap gap-3;
+    @apply flex flex-col gap-3 md:flex-row lg:justify-end;
   }
 
   .feed-profile-header-secondary-action,
   .feed-profile-header-primary-action {
-    @apply gap-2;
+    @apply h-12 flex-1 gap-2 rounded-2xl;
   }
 
   .app-layout {

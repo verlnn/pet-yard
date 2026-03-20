@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Plus, Settings } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { MyProfileResponse } from "@/src/features/auth/types/authTypes";
 
@@ -36,36 +35,35 @@ interface FeedProfileIdentityProps {
 function FeedProfileIdentity({ profile, primaryPet, postCount }: FeedProfileIdentityProps) {
   return (
     <div className="feed-profile-header-identity">
-      <div className="feed-profile-header-avatar-stack">
-        <Avatar className="feed-profile-header-avatar">
-          {profile?.profileImageUrl ? (
-            <AvatarImage src={profile.profileImageUrl} alt={profile.nickname} />
-          ) : (
-            <AvatarFallback>{profile?.nickname?.[0] ?? "MY"}</AvatarFallback>
-          )}
-        </Avatar>
-        {primaryPet?.photoUrl && (
-          <div className="feed-profile-header-pet-avatar">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={primaryPet.photoUrl} alt={primaryPet.name} className="feed-profile-header-pet-avatar-image" />
-          </div>
+      <Avatar className="feed-profile-header-avatar">
+        {profile?.profileImageUrl ? (
+          <AvatarImage src={profile.profileImageUrl} alt={profile.nickname} />
+        ) : (
+          <AvatarFallback>{profile?.nickname?.[0] ?? "MY"}</AvatarFallback>
         )}
-      </div>
+      </Avatar>
 
       <div className="feed-profile-header-copy">
-        <div className="feed-profile-header-title-row">
-          <p className="feed-profile-header-title">{profile?.nickname ?? "멍냥마당"}</p>
-          {primaryPet?.breed && <Badge variant="soft">{primaryPet.breed}</Badge>}
+        <div className="feed-profile-header-heading-row">
+          <div className="feed-profile-header-title-group">
+            <p className="feed-profile-header-title">{profile?.nickname ?? "멍냥마당"}</p>
+          </div>
+          <Link href="/profile" className="feed-profile-header-settings-link" aria-label="프로필 설정">
+            <Settings className="h-4 w-4" />
+          </Link>
         </div>
-
-        <p className="feed-profile-header-subtitle">
-          {primaryPet?.name ? `${primaryPet.name}와 함께하는 일상` : "반려동물과의 기록을 남겨보세요."}
-        </p>
 
         <div className="feed-profile-header-stats">
           <FeedProfileStat label="게시물" value={postCount} />
           <FeedProfileStat label="반려동물" value={profile?.petCount ?? 0} />
           <FeedProfileStat label="지역" value={profile?.regionName ?? "미설정"} />
+        </div>
+
+        <div className="feed-profile-header-meta">
+          <p className="feed-profile-header-subtitle">
+            {primaryPet?.name ? `${primaryPet.name}와 함께하는 일상` : "반려동물과의 기록을 남겨보세요."}
+          </p>
+          {primaryPet?.breed && <p className="feed-profile-header-meta-line">{primaryPet.breed}</p>}
         </div>
       </div>
     </div>
@@ -77,7 +75,7 @@ function FeedProfileActions({ onNewPost }: Pick<FeedProfileHeaderProps, "onNewPo
     <div className="feed-profile-header-actions">
       <Button variant="secondary" className="feed-profile-header-secondary-action" asChild>
         <Link href="/profile">
-          <Settings className="h-4 w-4" /> 프로필 편집
+          프로필 편집
         </Link>
       </Button>
       <Button onClick={onNewPost} className="feed-profile-header-primary-action">
@@ -95,7 +93,8 @@ interface FeedProfileStatProps {
 function FeedProfileStat({ label, value }: FeedProfileStatProps) {
   return (
     <span className="feed-profile-header-stat">
-      {label} <strong className="feed-profile-header-stat-value">{value}</strong>
+      <strong className="feed-profile-header-stat-value">{value}</strong>
+      <span className="feed-profile-header-stat-label">{label}</span>
     </span>
   );
 }
