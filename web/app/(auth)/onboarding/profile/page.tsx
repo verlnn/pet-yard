@@ -194,8 +194,12 @@ export default function OnboardingProfilePage() {
     setDongCode("");
   }, [districtCode]);
 
+  const isProfileStepComplete = nickname.trim().length > 0;
+  const isRegionStepComplete = Boolean(cityCode && districtCode && dongCode);
+  const isPetStepComplete = hasPetChoice !== null;
+
   const handleProfileStepNext = () => {
-    if (!nickname.trim()) {
+    if (!isProfileStepComplete) {
       setError("닉네임을 입력해 주세요.");
       return;
     }
@@ -204,6 +208,10 @@ export default function OnboardingProfilePage() {
   };
 
   const handleRegionStepNext = () => {
+    if (!isRegionStepComplete) {
+      setError("지역 정보를 모두 선택해 주세요.");
+      return;
+    }
     setError(null);
     setStep(3);
   };
@@ -211,8 +219,12 @@ export default function OnboardingProfilePage() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!signupToken) return;
-    if (!nickname.trim()) return;
-    if (hasPetChoice === null) {
+    if (!isProfileStepComplete) return;
+    if (!isRegionStepComplete) {
+      setError("지역 정보를 모두 선택해 주세요.");
+      return;
+    }
+    if (!isPetStepComplete) {
       setError("반려동물 유무를 선택해 주세요.");
       return;
     }
@@ -358,6 +370,7 @@ export default function OnboardingProfilePage() {
                   type="button"
                   onClick={handleProfileStepNext}
                   className="onboarding-profile-primary-button"
+                  disabled={!isProfileStepComplete}
                 >
                   다음 단계
                 </button>
@@ -425,6 +438,7 @@ export default function OnboardingProfilePage() {
                   type="button"
                   onClick={handleRegionStepNext}
                   className="onboarding-profile-primary-button"
+                  disabled={!isRegionStepComplete}
                 >
                   다음
                 </button>
@@ -465,7 +479,7 @@ export default function OnboardingProfilePage() {
                 <button
                   type="submit"
                   className="onboarding-profile-primary-button"
-                  disabled={loading}
+                  disabled={loading || !isPetStepComplete}
                 >
                   {loading ? "저장 중..." : "다음"}
                 </button>
