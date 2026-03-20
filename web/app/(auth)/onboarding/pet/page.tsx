@@ -28,6 +28,7 @@ export default function OnboardingPetPage() {
   const [verifying, setVerifying] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const verified = Boolean(verificationResult);
 
   useEffect(() => {
     const token = localStorage.getItem("signupToken");
@@ -101,57 +102,86 @@ export default function OnboardingPetPage() {
         error={error}
       >
         <form className="space-y-4" onSubmit={handleSubmit}>
-          <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
-            반려동물 등록번호
-            <input
-              className={inputClassName}
-              value={verification.dogRegNo}
-              onChange={(event) => setVerification((prev) => ({ ...prev, dogRegNo: event.target.value }))}
-            />
-          </label>
-          <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
-            RFID 코드
-            <input
-              className={inputClassName}
-              value={verification.rfidCd}
-              onChange={(event) => setVerification((prev) => ({ ...prev, rfidCd: event.target.value }))}
-            />
-          </label>
-          <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
-            소유자 이름
-            <input
-              className={inputClassName}
-              value={verification.ownerNm}
-              onChange={(event) => setVerification((prev) => ({ ...prev, ownerNm: event.target.value }))}
-            />
-          </label>
-          <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
-            소유자 생년월일
-            <input
-              className={inputClassName}
-              value={verification.ownerBirth}
-              onChange={(event) => setVerification((prev) => ({ ...prev, ownerBirth: event.target.value }))}
-              placeholder="예: 19990101"
-            />
-          </label>
-
-          <button
-            type="button"
-            className="w-full rounded-2xl border border-ink px-4 py-3 text-sm font-semibold text-ink transition hover:bg-ink/5 disabled:cursor-not-allowed disabled:opacity-50"
-            onClick={handleVerify}
-            disabled={verifying}
-          >
-            {verifying ? "인증 중..." : "등록번호 인증"}
-          </button>
-
-          {verificationResult && (
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-              <p className="font-semibold text-slate-900">{verificationResult.name || "이름 없음"}</p>
-              <p>품종 {verificationResult.breed || "-"}</p>
-              <p>성별 {verificationResult.gender || "-"}</p>
-              <p>생년월일 {verificationResult.birthDate || "-"}</p>
+          <div className="rounded-2xl border border-emerald-100 bg-emerald-50/60 p-4">
+            <p className="font-display text-sm font-semibold text-emerald-700">반려견 등록번호 인증</p>
+            <p className="mt-1 text-xs text-emerald-600">
+              프로필 페이지와 동일하게 등록번호 인증을 완료해야 반려동물을 저장할 수 있어요.
+            </p>
+            <div className="mt-3 grid gap-3 md:grid-cols-2">
+              <label className="text-sm text-slate-700">
+                등록번호
+                <input
+                  className={`${inputClassName} mt-2`}
+                  value={verification.dogRegNo}
+                  onChange={(event) => setVerification((prev) => ({ ...prev, dogRegNo: event.target.value }))}
+                  disabled={verified}
+                />
+              </label>
+              <label className="text-sm text-slate-700">
+                RFID 코드
+                <input
+                  className={`${inputClassName} mt-2`}
+                  value={verification.rfidCd}
+                  onChange={(event) => setVerification((prev) => ({ ...prev, rfidCd: event.target.value }))}
+                  disabled={verified}
+                />
+              </label>
+              <label className="text-sm text-slate-700">
+                소유자 이름
+                <input
+                  className={`${inputClassName} mt-2`}
+                  value={verification.ownerNm}
+                  onChange={(event) => setVerification((prev) => ({ ...prev, ownerNm: event.target.value }))}
+                  disabled={verified}
+                />
+              </label>
+              <label className="text-sm text-slate-700">
+                소유자 생년월일(YYMMDD)
+                <input
+                  className={`${inputClassName} mt-2`}
+                  value={verification.ownerBirth}
+                  onChange={(event) => setVerification((prev) => ({ ...prev, ownerBirth: event.target.value }))}
+                  placeholder="예: 990101"
+                  disabled={verified}
+                />
+              </label>
             </div>
-          )}
+
+            {verificationResult && (
+              <div className="mt-3 rounded-2xl bg-white/70 px-3 py-2 text-xs text-emerald-700">
+                인증 완료 · {verificationResult.name} · {verificationResult.breed ?? "품종 미상"} ·
+                {verificationResult.gender === "MALE"
+                  ? " 수컷"
+                  : verificationResult.gender === "FEMALE"
+                    ? " 암컷"
+                    : " 성별 미상"}
+              </div>
+            )}
+
+            <div className="mt-3 flex gap-2">
+              <button
+                type="button"
+                className="rounded-2xl bg-ink px-4 py-3 text-sm font-semibold text-sand transition hover:bg-ink/90 disabled:cursor-not-allowed disabled:bg-ink/40"
+                onClick={handleVerify}
+                disabled={verifying || verified}
+              >
+                {verifying ? "인증 중..." : verified ? "인증 완료" : "등록번호 인증"}
+              </button>
+              {verified && (
+                <button
+                  type="button"
+                  className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                  onClick={() => {
+                    setVerification(emptyVerification);
+                    setVerificationResult(null);
+                    setError(null);
+                  }}
+                >
+                  다시 인증
+                </button>
+              )}
+            </div>
+          </div>
 
           <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
             소개글 (선택)
