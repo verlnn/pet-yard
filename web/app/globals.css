@@ -52,6 +52,13 @@
   --shadow-card-token: 0 24px 56px -42px rgba(2, 6, 23, 0.5);
 }
 
+[data-theme="dark"] .feed-profile-header-subtitle,
+[data-theme="dark"] .feed-profile-header-stats,
+[data-theme="dark"] .feed-profile-header-stat,
+[data-theme="dark"] .feed-profile-header-stat-value {
+  color: #ffffff;
+}
+
 body {
   background: var(--color-bg);
   color: var(--color-text);
