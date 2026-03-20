@@ -39,14 +39,14 @@ export function FeedDetailActionBar({
             aria-label="댓글 보기"
             onClick={() => commentInputRef.current?.focus()}
           >
-            <MessageCircle className="h-5 w-5 text-ink" />
+            <MessageCircle className="feed-detail-action-icon" />
           </button>
           <button
             type="button"
             className="feed-detail-action-button"
             aria-label="공유하기"
           >
-            <Send className="h-5 w-5 text-ink" />
+            <Send className="feed-detail-action-icon" />
           </button>
         </div>
         <div>

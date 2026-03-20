@@ -1118,6 +1118,11 @@ body {
     @apply h-[22px] w-[22px];
   }
 
+  .feed-detail-action-icon {
+    color: #ffffff;
+    @apply h-5 w-5;
+  }
+
   .feed-detail-action-count {
     color: #ffffff;
     @apply text-sm font-semibold;
