@@ -8,7 +8,7 @@ import java.util.List;
 public record FeedPostResponse(
     Long id,
     String content,
-    String imageUrl,
+    String thumbnailImageUrl,
     List<String> imageUrls,
     Double imageAspectRatioValue,
     String imageAspectRatio,
@@ -19,7 +19,7 @@ public record FeedPostResponse(
         return new FeedPostResponse(
             post.id(),
             post.content(),
-            post.imageUrl(),
+            post.thumbnailImageUrl(),
             post.imageUrls(),
             post.imageAspectRatioValue(),
             post.imageAspectRatio(),

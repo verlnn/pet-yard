@@ -318,8 +318,8 @@ export const authApi = {
       }
     });
   },
-  getMyFeed(accessToken: string) {
-    return request<FeedPost[]>("/api/feeds/me", {
+  getOwnPosts(accessToken: string) {
+    return request<FeedPost[]>("/api/feeds/own-posts", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${accessToken}`

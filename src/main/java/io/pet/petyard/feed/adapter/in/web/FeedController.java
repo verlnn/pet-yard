@@ -36,8 +36,8 @@ public class FeedController {
     }
 
     @RequirePermission(Permission.FEED_READ)
-    @GetMapping("/me")
-    public List<FeedPostResponse> myFeed(@AuthenticationPrincipal AuthPrincipal principal) {
+    @GetMapping("/own-posts")
+    public List<FeedPostResponse> ownPosts(@AuthenticationPrincipal AuthPrincipal principal) {
         List<FeedPostView> posts = feedApplicationService.listMyFeed(principal.userId());
         return posts.stream()
             .map(FeedPostResponse::from)

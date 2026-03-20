@@ -116,7 +116,7 @@ export interface MyProfileResponse {
 export interface FeedPost {
   id: number;
   content?: string | null;
-  imageUrl?: string | null;
+  thumbnailImageUrl?: string | null;
   imageUrls?: string[] | null;
   imageAspectRatioValue?: number | null;
   imageAspectRatio?: "original" | "1:1" | "4:5" | "16:9" | null;

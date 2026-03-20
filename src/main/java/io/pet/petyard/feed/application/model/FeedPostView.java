@@ -6,7 +6,7 @@ import java.util.List;
 public record FeedPostView(
     Long id,
     String content,
-    String imageUrl,
+    String thumbnailImageUrl,
     List<String> imageUrls,
     Double imageAspectRatioValue,
     String imageAspectRatio,
