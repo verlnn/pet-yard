@@ -161,7 +161,7 @@ export default function OnboardingPetPage() {
             <div className="mt-3 flex gap-2">
               <button
                 type="button"
-                className="rounded-2xl bg-ink px-4 py-3 text-sm font-semibold text-sand transition hover:bg-ink/90 disabled:cursor-not-allowed disabled:bg-ink/40"
+                className="w-full rounded-2xl bg-ink px-6 py-3 text-sm font-semibold text-sand transition hover:bg-ink/90 disabled:cursor-not-allowed disabled:bg-ink/40"
                 onClick={handleVerify}
                 disabled={verifying || verified}
               >
