@@ -1106,7 +1106,8 @@ body {
   }
 
   .feed-detail-action-button {
-    @apply flex h-10 w-10 items-center justify-center rounded-full transition hover:bg-slate-100;
+    color: #ffffff;
+    @apply flex h-10 w-10 items-center justify-center rounded-full transition hover:bg-white/10;
   }
 
   .feed-detail-action-button-active {
