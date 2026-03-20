@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, MoreHorizontal, X } from "lucide-react";
 
 import { SectionShell } from "@/components/site/section-shell";
 import { SiteNav } from "@/components/site/nav";
@@ -83,6 +83,7 @@ export default function MyFeedPage() {
   const [activeTab, setActiveTab] = useState<TabId>("posts");
   const [modalOpen, setModalOpen] = useState(false);
   const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
+  const [postActionMenuOpen, setPostActionMenuOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -177,6 +178,7 @@ export default function MyFeedPage() {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setSelectedPost(null);
+        setPostActionMenuOpen(false);
         return;
       }
       if (event.key === "ArrowLeft") {
@@ -309,6 +311,7 @@ export default function MyFeedPage() {
       await authApi.deleteFeedPost(accessToken, selectedPost.id);
       setPosts((prev) => prev.filter((post) => post.id !== selectedPost.id));
       setSelectedPost(null);
+      setPostActionMenuOpen(false);
     } catch (err) {
       setImageError(err instanceof Error ? err.message : "삭제에 실패했습니다.");
     } finally {
@@ -418,6 +421,75 @@ export default function MyFeedPage() {
               <ChevronRight className="h-5 w-5" />
             </button>
           )}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedPost(null);
+                setPostActionMenuOpen(false);
+              }}
+              className="absolute -right-3 -top-3 z-20 rounded-full bg-white p-2 text-ink shadow-lg transition hover:bg-slate-100"
+              aria-label="피드 상세 닫기"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <div className="absolute right-5 top-5 z-20">
+              <button
+                type="button"
+                onClick={() => setPostActionMenuOpen((prev) => !prev)}
+                className="rounded-full bg-white/95 p-2 text-ink shadow-md transition duration-200 hover:-translate-y-0.5 hover:bg-white hover:shadow-lg"
+                aria-label="게시물 메뉴 열기"
+              >
+                <MoreHorizontal className="h-5 w-5" />
+              </button>
+              {postActionMenuOpen && (
+                <div className="absolute right-0 top-12 w-48 overflow-hidden rounded-2xl border border-slate-200 bg-white py-2 shadow-xl">
+                  <button
+                    type="button"
+                    onClick={handleDelete}
+                    disabled={deleting}
+                    className="flex w-full items-center px-4 py-3 text-left text-sm font-semibold text-rose-600 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {deleting ? "삭제 중..." : "삭제"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPostActionMenuOpen(false)}
+                    className="flex w-full items-center px-4 py-3 text-left text-sm text-ink transition hover:bg-slate-50"
+                  >
+                    좋아요 수 숨기기
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPostActionMenuOpen(false)}
+                    className="flex w-full items-center px-4 py-3 text-left text-sm text-ink transition hover:bg-slate-50"
+                  >
+                    댓글기능 해제
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPostActionMenuOpen(false)}
+                    className="flex w-full items-center px-4 py-3 text-left text-sm text-ink transition hover:bg-slate-50"
+                  >
+                    공유기능 해제
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPostActionMenuOpen(false)}
+                    className="flex w-full items-center px-4 py-3 text-left text-sm text-ink transition hover:bg-slate-50"
+                  >
+                    수정
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPostActionMenuOpen(false)}
+                    className="flex w-full items-center px-4 py-3 text-left text-sm text-ink/70 transition hover:bg-slate-50"
+                  >
+                    취소
+                  </button>
+                </div>
+              )}
+            </div>
           <div className="flex overflow-hidden rounded-[32px] bg-white">
             <div
               className="flex items-center justify-center bg-black"
@@ -477,20 +549,8 @@ export default function MyFeedPage() {
                     </p>
                   </div>
                 )}
-                <div className="mt-auto flex gap-2">
-                  <Button variant="secondary" onClick={() => setSelectedPost(null)}>
-                    닫기
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    onClick={handleDelete}
-                    disabled={deleting}
-                    className="text-rose-600 hover:bg-rose-50"
-                  >
-                    {deleting ? "삭제 중..." : "삭제"}
-                  </Button>
-                </div>
               </div>
+          </div>
           </div>
         </div>
       )}
