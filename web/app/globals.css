@@ -488,10 +488,6 @@ body {
     @apply flex flex-1 flex-col gap-3;
   }
 
-  .onboarding-pet-photo-card-badge {
-    @apply inline-flex w-fit items-center rounded-full border border-clay/40 bg-clay/20 px-3 py-1 text-[11px] font-semibold tracking-[0.18em] text-ember;
-  }
-
   .onboarding-pet-photo-card-copy {
     @apply space-y-1;
   }

@@ -35,9 +35,6 @@ export default function OnboardingPetPhotoStep({
             )}
           </div>
           <div className="onboarding-pet-photo-card-actions">
-            <div className="onboarding-pet-photo-card-badge">
-              {photoUrl ? "사진 변경" : "사진 추가"}
-            </div>
             <div className="onboarding-pet-photo-card-copy">
               <p className="onboarding-pet-photo-card-title">
                 {photoUrl ? "사진을 바꾸려면 이 영역을 눌러주세요" : "사진 영역을 눌러 업로드하세요"}
