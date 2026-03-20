@@ -28,7 +28,8 @@
 - 기존 프론트 파일을 수정할 때 class naming이 읽기 어렵거나 utility 나열 위주라면, 가능한 범위에서 semantic class 중심으로 같이 정리한다.
 
 ## 디자인 일관성 규칙
-- 시각적 기준은 `web/DESIGN_GUIDE.md`를 따른다.
+- 시각적 기준은 `web/docs/DESIGN_GUIDE.md`를 따른다.
+- 다크모드 작업이 포함되면 `web/docs/DARK_MODE_GUIDE.md`도 함께 따른다.
 - 새 세션마다 다른 스타일을 만들지 말고, 현재 PetYard 디자인 언어와 최대한 일관되게 작업한다.
 - 특별한 이유가 없으면 기존 색상 팔레트, radius, shadow, 입력창 스타일, 버튼 위계를 재사용한다.
 - 새로운 화면을 만들 때도 먼저 현재 디자인 시스템에 맞는 형태로 풀 수 있는지 확인한다.

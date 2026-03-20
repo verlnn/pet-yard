@@ -23,7 +23,8 @@ This document defines the default front-end working rules for Codex in this repo
 - If you touch an existing front-end file and its class naming is unclear or purely utility-stacked, refactor it toward semantic class names as part of the task when practical.
 
 ## Design Consistency Rules
-- Follow the visual system documented in `web/DESIGN_GUIDE.md`.
+- Follow the visual system documented in `web/docs/DESIGN_GUIDE.md`.
+- Follow dark mode conventions from `web/docs/DARK_MODE_GUIDE.md` when dark mode work is in scope.
 - Keep new UI visually consistent with the existing PetYard language instead of inventing a new style per session.
 - Before introducing a different look, first check whether the task really requires a new visual treatment.
 - Reuse the existing color palette, radius scale, shadow style, input style, and button hierarchy whenever possible.
