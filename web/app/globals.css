@@ -1119,11 +1119,13 @@ body {
   }
 
   .feed-detail-action-count {
-    @apply text-sm font-semibold text-ink;
+    color: #ffffff;
+    @apply text-sm font-semibold;
   }
 
   .feed-detail-action-date {
-    @apply mt-1 text-[11px] text-ink/45;
+    color: var(--color-text-subtle);
+    @apply mt-1 text-[11px];
   }
 
   .feed-detail-comment-composer {
