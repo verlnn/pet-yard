@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight, MoreHorizontal, X } from "lucide-react";
 
 import { SectionShell } from "@/components/site/section-shell";
 import { SiteNav } from "@/components/site/nav";
@@ -83,6 +83,8 @@ export default function MyFeedPage() {
   const [activeTab, setActiveTab] = useState<TabId>("posts");
   const [modalOpen, setModalOpen] = useState(false);
   const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
+  const [postActionMenuOpen, setPostActionMenuOpen] = useState(false);
+  const postActionMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -172,11 +174,16 @@ export default function MyFeedPage() {
     setSelectedPost(posts[selectedPostIndex + 1] ?? null);
   };
 
+  const handleCloseSelectedPost = () => {
+    setSelectedPost(null);
+    setPostActionMenuOpen(false);
+  };
+
   useEffect(() => {
     if (!selectedPost) return;
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setSelectedPost(null);
+        handleCloseSelectedPost();
         return;
       }
       if (event.key === "ArrowLeft") {
@@ -190,6 +197,17 @@ export default function MyFeedPage() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [selectedPost, hasPrevPost, hasNextPost, selectedPostIndex, posts]);
+
+  useEffect(() => {
+    if (!postActionMenuOpen) return;
+    const handlePointerDown = (event: MouseEvent) => {
+      if (!postActionMenuRef.current?.contains(event.target as Node)) {
+        setPostActionMenuOpen(false);
+      }
+    };
+    window.addEventListener("mousedown", handlePointerDown);
+    return () => window.removeEventListener("mousedown", handlePointerDown);
+  }, [postActionMenuOpen]);
 
   const handleAddImages = async (files?: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -309,6 +327,7 @@ export default function MyFeedPage() {
       await authApi.deleteFeedPost(accessToken, selectedPost.id);
       setPosts((prev) => prev.filter((post) => post.id !== selectedPost.id));
       setSelectedPost(null);
+      setPostActionMenuOpen(false);
     } catch (err) {
       setImageError(err instanceof Error ? err.message : "삭제에 실패했습니다.");
     } finally {
@@ -397,7 +416,10 @@ export default function MyFeedPage() {
       />
 
       {selectedPost && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4"
+          onClick={handleCloseSelectedPost}
+        >
           {hasPrevPost && (
             <button
               type="button"
@@ -418,6 +440,76 @@ export default function MyFeedPage() {
               <ChevronRight className="h-5 w-5" />
             </button>
           )}
+          <div className="relative" onClick={(event) => event.stopPropagation()}>
+            <button
+              type="button"
+              onClick={handleCloseSelectedPost}
+              className="absolute -right-3 -top-3 z-20 rounded-full bg-white p-2 text-ink shadow-lg transition hover:bg-slate-100"
+              aria-label="피드 상세 닫기"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <div ref={postActionMenuRef} className="absolute right-5 top-5 z-20">
+              <button
+                type="button"
+                onClick={() => setPostActionMenuOpen((prev) => !prev)}
+                className="rounded-full bg-white/95 p-2 text-ink shadow-md transition duration-200 hover:-translate-y-0.5 hover:bg-white hover:shadow-lg"
+                aria-label="게시물 메뉴 열기"
+              >
+                <MoreHorizontal className="h-5 w-5" />
+              </button>
+              <div
+                className={`absolute right-0 top-12 w-48 origin-top-right overflow-hidden rounded-2xl border border-slate-200 bg-white py-2 shadow-xl transition duration-200 ${
+                  postActionMenuOpen
+                    ? "pointer-events-auto translate-y-0 scale-100 opacity-100"
+                    : "pointer-events-none -translate-y-1 scale-95 opacity-0"
+                }`}
+              >
+                  <button
+                    type="button"
+                    onClick={handleDelete}
+                    disabled={deleting}
+                    className="flex w-full items-center px-4 py-3 text-left text-sm font-semibold text-rose-600 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {deleting ? "삭제 중..." : "삭제"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPostActionMenuOpen(false)}
+                    className="flex w-full items-center px-4 py-3 text-left text-sm text-ink transition hover:bg-slate-50"
+                  >
+                    좋아요 수 숨기기
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPostActionMenuOpen(false)}
+                    className="flex w-full items-center px-4 py-3 text-left text-sm text-ink transition hover:bg-slate-50"
+                  >
+                    댓글기능 해제
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPostActionMenuOpen(false)}
+                    className="flex w-full items-center px-4 py-3 text-left text-sm text-ink transition hover:bg-slate-50"
+                  >
+                    공유기능 해제
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPostActionMenuOpen(false)}
+                    className="flex w-full items-center px-4 py-3 text-left text-sm text-ink transition hover:bg-slate-50"
+                  >
+                    수정
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPostActionMenuOpen(false)}
+                    className="flex w-full items-center px-4 py-3 text-left text-sm text-ink/70 transition hover:bg-slate-50"
+                  >
+                    취소
+                  </button>
+                </div>
+            </div>
           <div className="flex overflow-hidden rounded-[32px] bg-white">
             <div
               className="flex items-center justify-center bg-black"
@@ -477,20 +569,8 @@ export default function MyFeedPage() {
                     </p>
                   </div>
                 )}
-                <div className="mt-auto flex gap-2">
-                  <Button variant="secondary" onClick={() => setSelectedPost(null)}>
-                    닫기
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    onClick={handleDelete}
-                    disabled={deleting}
-                    className="text-rose-600 hover:bg-rose-50"
-                  >
-                    {deleting ? "삭제 중..." : "삭제"}
-                  </Button>
-                </div>
               </div>
+          </div>
           </div>
         </div>
       )}
