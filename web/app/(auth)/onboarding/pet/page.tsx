@@ -165,7 +165,11 @@ export default function OnboardingPetPage() {
 
           <div
             className={`onboarding-pet-step-shell ${
-              step === 1 ? "onboarding-pet-step-shell-compact" : "onboarding-pet-step-shell-regular"
+              step === 1
+                ? "onboarding-pet-step-shell-compact"
+                : step === 2
+                  ? "onboarding-pet-step-shell-medium"
+                  : "onboarding-pet-step-shell-regular"
             }`}
           >
             <div className={stepPanelClassName(1, "left")}>

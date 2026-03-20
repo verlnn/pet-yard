@@ -303,6 +303,10 @@ body {
     @apply min-h-[500px];
   }
 
+  .onboarding-pet-step-shell-medium {
+    @apply min-h-[560px];
+  }
+
   .onboarding-pet-step-shell-regular {
     @apply min-h-[640px];
   }
@@ -334,6 +338,10 @@ body {
 
   .onboarding-pet-step-actions {
     @apply mt-auto flex gap-2 pt-4;
+  }
+
+  .onboarding-pet-step-actions > * {
+    @apply flex-1;
   }
 
   .onboarding-pet-verification-card {
@@ -413,7 +421,7 @@ body {
   }
 
   .onboarding-pet-submit-button-half {
-    @apply flex-1;
+    @apply w-full;
   }
 
   .onboarding-pet-lockable {
