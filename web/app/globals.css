@@ -1047,12 +1047,16 @@ body {
 
   .feed-detail-sidebar-scroll {
     background: #222324;
-    @apply flex-1 overflow-y-auto;
+    @apply flex min-h-0 flex-1 flex-col overflow-y-auto;
   }
 
   .feed-detail-post-body {
     background: #222324;
-    @apply space-y-4 p-6 pb-4;
+    @apply shrink-0 space-y-4 p-6 pb-4;
+  }
+
+  .feed-detail-comments-panel {
+    @apply flex min-h-0 flex-1 flex-col;
   }
 
   .feed-detail-section-label {
