@@ -113,12 +113,12 @@ function AuthPageContent({ initialMode = "login" }: AuthPageProps) {
             error={displayError}
           >
             <div className="auth-page-actions">
-              <KakaoLoginButton onClick={() => handleOAuthLogin("kakao")} />
               <div className="auth-page-social-panel">
                 <p className="auth-page-social-title">
                   다른 계정으로 계속
                 </p>
                 <div className="auth-page-social-actions">
+                  <KakaoLoginButton onClick={() => handleOAuthLogin("kakao")} />
                   <AuthEntryActions
                     onGoogleLogin={() => handleOAuthLogin("google")}
                     onAppleLogin={() => handleOAuthLogin("apple")}

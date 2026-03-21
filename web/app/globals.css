@@ -418,7 +418,7 @@ body {
   }
 
   .auth-page-social-actions {
-    @apply mt-4;
+    @apply mt-4 space-y-3;
   }
 
   .auth-page-helper-text {
