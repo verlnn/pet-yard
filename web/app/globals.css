@@ -114,6 +114,36 @@ body {
     @apply w-full max-w-md;
   }
 
+  .auth-page {
+    @apply min-h-screen;
+  }
+
+  .auth-page-brandbar {
+    color: var(--color-text-muted);
+    @apply flex w-full max-w-md items-center justify-between;
+  }
+
+  .auth-page-brandlink {
+    @apply flex items-center gap-3;
+  }
+
+  .auth-page-brandmark {
+    border-color: var(--color-border);
+    background: color-mix(in srgb, var(--color-surface) 70%, transparent);
+    color: var(--color-text-muted);
+    @apply inline-flex h-8 w-8 items-center justify-center rounded-full border text-xs font-semibold;
+  }
+
+  .auth-page-brandtitle {
+    color: var(--color-text);
+    @apply text-sm font-semibold;
+  }
+
+  .auth-page-wordmark {
+    color: var(--color-text-subtle);
+    @apply text-xs tracking-[0.3em];
+  }
+
   .onboarding-layout {
     background: var(--color-bg);
     @apply min-h-screen px-6 py-12;
@@ -242,6 +272,46 @@ body {
 
   .auth-card-error {
     @apply mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600;
+  }
+
+  .auth-page-actions {
+    @apply space-y-6;
+  }
+
+  .auth-page-social-panel {
+    border-color: color-mix(in srgb, var(--color-border) 80%, transparent);
+    background: color-mix(in srgb, var(--color-surface) 80%, transparent);
+    @apply rounded-2xl border px-4 py-4;
+  }
+
+  .auth-page-social-title {
+    color: var(--color-text-muted);
+    @apply text-[11px] font-semibold uppercase tracking-[0.3em];
+  }
+
+  .auth-page-social-actions {
+    @apply mt-4;
+  }
+
+  .auth-page-helper-text {
+    color: var(--color-text-muted);
+    @apply text-center text-sm;
+  }
+
+  .auth-page-mode-button {
+    border-color: color-mix(in srgb, var(--color-border) 80%, transparent);
+    background: color-mix(in srgb, var(--color-surface) 80%, transparent);
+    color: var(--color-text-muted);
+    @apply w-full rounded-2xl border py-3 text-sm font-semibold transition;
+  }
+
+  .auth-page-mode-button:hover {
+    background: var(--color-surface);
+  }
+
+  .auth-page-mode-button:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 20%, transparent);
   }
 
   .ui-avatar {

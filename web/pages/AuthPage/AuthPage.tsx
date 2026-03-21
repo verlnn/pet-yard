@@ -53,17 +53,17 @@ function AuthPageContent({ initialMode = "login" }: AuthPageProps) {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="auth-page">
       <AuthLayout
         brand={
-          <div className="flex w-full max-w-md items-center justify-between text-slate-500">
-            <div className="flex items-center gap-3">
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white/70 text-xs font-semibold text-slate-500">
+          <div className="auth-page-brandbar">
+            <div className="auth-page-brandlink">
+              <span className="auth-page-brandmark">
                 M
               </span>
-              <span className="text-sm font-semibold text-slate-700">멍냥마당</span>
+              <span className="auth-page-brandtitle">멍냥마당</span>
             </div>
-            <span className="text-xs tracking-[0.3em] text-slate-400">PetYard</span>
+            <span className="auth-page-wordmark">PetYard</span>
           </div>
         }
         card={
@@ -73,13 +73,13 @@ function AuthPageContent({ initialMode = "login" }: AuthPageProps) {
             message={message}
             error={displayError}
           >
-            <div className="space-y-6">
+            <div className="auth-page-actions">
               <KakaoLoginButton onClick={() => handleOAuthLogin("kakao")} />
-              <div className="rounded-2xl border border-slate-200/70 bg-white/80 px-4 py-4">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-500">
+              <div className="auth-page-social-panel">
+                <p className="auth-page-social-title">
                   다른 계정으로 계속
                 </p>
-                <div className="mt-4">
+                <div className="auth-page-social-actions">
                   <AuthEntryActions
                     onGoogleLogin={() => handleOAuthLogin("google")}
                     onAppleLogin={() => handleOAuthLogin("apple")}
@@ -87,14 +87,14 @@ function AuthPageContent({ initialMode = "login" }: AuthPageProps) {
                   />
                 </div>
               </div>
-              <p className="text-center text-sm text-slate-500">
+              <p className="auth-page-helper-text">
                 멍냥마당은 소셜 계정으로만 가입 및 로그인할 수 있어요.
               </p>
               {mode === "login" && (
                 <button
                   type="button"
                   onClick={() => router.push("/signup")}
-                  className="w-full rounded-2xl border border-slate-200/70 bg-white/80 py-3 text-sm font-semibold text-slate-600 transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/20"
+                  className="auth-page-mode-button"
                 >
                   회원가입으로 이동
                 </button>
@@ -103,7 +103,7 @@ function AuthPageContent({ initialMode = "login" }: AuthPageProps) {
                 <button
                   type="button"
                   onClick={() => router.push("/login")}
-                  className="w-full rounded-2xl border border-slate-200/70 bg-white/80 py-3 text-sm font-semibold text-slate-600 transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/20"
+                  className="auth-page-mode-button"
                 >
                   로그인으로 이동
                 </button>
