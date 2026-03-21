@@ -1098,7 +1098,7 @@ body {
   }
 
   .feed-detail-comments-empty-title {
-    @apply text-[2.1rem] font-extrabold leading-tight tracking-[-0.03em];
+    @apply text-[1.7rem] font-extrabold leading-tight tracking-[-0.03em];
   }
 
   .feed-detail-comments-empty-description {
