@@ -2,6 +2,7 @@
 
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 
 import AuthLayout from "@/src/features/auth/components/AuthLayout/AuthLayout";
 import AuthCard from "@/src/features/auth/components/AuthCard/AuthCard";
@@ -56,14 +57,52 @@ function AuthPageContent({ initialMode = "login" }: AuthPageProps) {
     <div className="auth-page">
       <AuthLayout
         brand={
-          <div className="auth-page-brandbar">
-            <div className="auth-page-brandlink">
-              <span className="auth-page-brandmark">
-                M
-              </span>
-              <span className="auth-page-brandtitle">멍냥마당</span>
+          <div className="auth-page-hero">
+            <div className="auth-page-hero-header">
+              <div className="auth-page-hero-brand">
+                <Image
+                  src="/images/brand/petyard-logo.png"
+                  alt="멍냥마당 로고"
+                  width={72}
+                  height={72}
+                  className="auth-page-hero-logo"
+                  priority
+                />
+                <div className="auth-page-hero-brand-copy">
+                  <span className="auth-page-hero-brand-name">멍냥마당</span>
+                  <span className="auth-page-hero-brand-tag">PetYard</span>
+                </div>
+              </div>
             </div>
-            <span className="auth-page-wordmark">PetYard</span>
+            <div className="auth-page-hero-copy">
+              <p className="auth-page-hero-eyebrow">PetYard Social Login</p>
+              <h1 className="auth-page-hero-title">
+                <span className="auth-page-hero-title-accent">친한 이웃</span>의 반려 일상을
+                더 가까이 만나보세요.
+              </h1>
+              <p className="auth-page-hero-description">
+                산책 메이트를 찾고, 우리 동네 반려 일상을 공유하고, 믿을 수 있는 케어 정보를
+                한곳에서 이어보는 반려생활 커뮤니티입니다.
+              </p>
+            </div>
+            <div className="auth-page-hero-showcase" aria-hidden="true">
+              <div className="auth-page-hero-card auth-page-hero-card-back">
+                <span className="auth-page-hero-card-label">동네 산책</span>
+                <span className="auth-page-hero-card-pill">Meet</span>
+              </div>
+              <div className="auth-page-hero-card auth-page-hero-card-middle">
+                <span className="auth-page-hero-card-label">산책 기록</span>
+                <span className="auth-page-hero-card-pill">Daily</span>
+              </div>
+              <div className="auth-page-hero-card auth-page-hero-card-front">
+                <div className="auth-page-hero-card-badge">PAW</div>
+                <span className="auth-page-hero-card-label">우리 동네 피드</span>
+                <span className="auth-page-hero-card-pill">PetYard</span>
+              </div>
+              <div className="auth-page-hero-orb auth-page-hero-orb-orange" />
+              <div className="auth-page-hero-orb auth-page-hero-orb-teal" />
+              <div className="auth-page-hero-heart" />
+            </div>
           </div>
         }
         card={

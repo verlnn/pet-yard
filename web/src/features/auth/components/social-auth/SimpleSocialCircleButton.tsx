@@ -23,19 +23,19 @@ export default function SimpleSocialCircleButton({
       onClick={onClick}
       aria-label={ariaLabel}
       disabled={disabled}
-      className={`flex h-16 w-16 items-center justify-center rounded-2xl bg-transparent transition ${
-        disabled
-          ? "cursor-not-allowed opacity-40"
-          : "hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/20"
-      }`}
+      className="auth-social-provider-button"
     >
-      <Image
-        src={iconSrc}
-        alt={label}
-        width={44}
-        height={44}
-        className="h-11 w-11 object-contain"
-      />
+      <span className="auth-social-provider-button-inner">
+        <Image
+          src={iconSrc}
+          alt={label}
+          width={22}
+          height={22}
+          className="auth-social-provider-button-icon"
+        />
+        <span className="auth-social-provider-button-label">{label}로 계속</span>
+      </span>
+      {disabled && <span className="auth-social-provider-button-badge">준비 중</span>}
     </button>
   );
 }

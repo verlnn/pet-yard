@@ -17,9 +17,9 @@ const providerHandlers = {
 
 export default function AuthEntryActions(props: AuthEntryActionsProps) {
   return (
-    <div className="flex items-center justify-center gap-8">
-      {SOCIAL_PROVIDERS.map((provider, index) => (
-        <div key={provider.id} className="flex items-center gap-8">
+    <div className="auth-social-provider-list">
+      {SOCIAL_PROVIDERS.map((provider) => (
+        <div key={provider.id} className="auth-social-provider-item">
           <SimpleSocialCircleButton
             label={provider.label}
             ariaLabel={provider.ariaLabel}
@@ -27,9 +27,6 @@ export default function AuthEntryActions(props: AuthEntryActionsProps) {
             iconSrc={provider.iconSrc}
             disabled
           />
-          {index < SOCIAL_PROVIDERS.length - 1 && (
-            <span className="h-7 w-px rounded-full bg-black/20" aria-hidden="true" />
-          )}
         </div>
       ))}
     </div>
