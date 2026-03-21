@@ -111,12 +111,12 @@ body {
   }
 
   .auth-layout-brand-shell {
-    @apply flex min-h-[52vh] items-center justify-center px-8 py-14;
+    @apply flex min-h-[48vh] items-center justify-center px-8 py-10;
   }
 
   .auth-layout-card-shell {
     background: #222324;
-    @apply flex items-center justify-center px-8 py-14;
+    @apply flex items-center justify-center px-8 py-10;
   }
 
   .auth-page {
@@ -124,7 +124,7 @@ body {
   }
 
   .auth-page-hero {
-    @apply flex w-full max-w-[620px] flex-col gap-10;
+    @apply flex w-full max-w-[620px] flex-col gap-7;
   }
 
   .auth-page-hero-header {
@@ -153,7 +153,7 @@ body {
   }
 
   .auth-page-hero-copy {
-    @apply max-w-[560px] space-y-5;
+    @apply max-w-[560px] space-y-4;
   }
 
   .auth-page-hero-eyebrow {
@@ -162,7 +162,7 @@ body {
   }
 
   .auth-page-hero-title {
-    @apply font-display text-4xl font-semibold leading-[1.16] text-white md:text-[4rem];
+    @apply font-display text-4xl font-semibold leading-[1.12] text-white md:text-[3.5rem];
   }
 
   .auth-page-hero-title-accent {
@@ -174,11 +174,11 @@ body {
 
   .auth-page-hero-description {
     color: rgba(255, 255, 255, 0.6);
-    @apply max-w-[480px] text-base leading-7;
+    @apply max-w-[460px] text-[15px] leading-6;
   }
 
   .auth-page-hero-showcase {
-    @apply relative mt-4 h-[340px] w-full max-w-[520px];
+    @apply relative mt-2 h-[280px] w-full max-w-[460px];
   }
 
   .auth-page-hero-card {
@@ -202,7 +202,7 @@ body {
       linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%),
       linear-gradient(145deg, rgba(255, 133, 54, 0.96) 0%, rgba(255, 98, 0, 0.36) 100%);
     transform: rotate(-9deg);
-    @apply left-4 top-16 h-[220px] w-[170px];
+    @apply left-4 top-14 h-[188px] w-[146px];
   }
 
   .auth-page-hero-card-middle {
@@ -210,7 +210,7 @@ body {
       linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 100%),
       linear-gradient(155deg, rgba(249, 188, 96, 0.98) 0%, rgba(122, 74, 18, 0.62) 100%);
     transform: rotate(1deg);
-    @apply left-[104px] top-0 z-[2] h-[290px] w-[210px];
+    @apply left-[92px] top-0 z-[2] h-[238px] w-[176px];
   }
 
   .auth-page-hero-card-front {
@@ -218,7 +218,7 @@ body {
       linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%),
       linear-gradient(155deg, rgba(31, 210, 199, 0.96) 0%, rgba(17, 118, 141, 0.62) 100%);
     transform: rotate(8deg);
-    @apply left-[240px] top-[64px] z-[3] h-[240px] w-[180px];
+    @apply left-[212px] top-[52px] z-[3] h-[202px] w-[152px];
   }
 
   .auth-page-hero-card-badge {
@@ -244,25 +244,25 @@ body {
 
   .auth-page-hero-orb-orange {
     background: linear-gradient(135deg, #ffb14a 0%, #ff4d6d 100%);
-    @apply bottom-10 left-0 h-14 w-14;
+    @apply bottom-8 left-0 h-12 w-12;
   }
 
   .auth-page-hero-orb-teal {
     background: linear-gradient(135deg, #39d7c5 0%, #17768d 100%);
-    @apply right-10 top-10 h-16 w-16;
+    @apply right-10 top-8 h-14 w-14;
   }
 
   .auth-page-hero-heart {
     background: linear-gradient(135deg, #ff9a44 0%, #ff2f92 100%);
     transform: rotate(-18deg);
-    @apply absolute bottom-12 left-4 h-12 w-12 rounded-[18px];
+    @apply absolute bottom-10 left-4 h-10 w-10 rounded-[16px];
   }
 
   .auth-page-hero-heart::before,
   .auth-page-hero-heart::after {
     content: "";
     background: inherit;
-    @apply absolute h-12 w-12 rounded-full;
+    @apply absolute h-10 w-10 rounded-full;
   }
 
   .auth-page-hero-heart::before {
@@ -403,7 +403,7 @@ body {
   }
 
   .auth-page-actions {
-    @apply space-y-6;
+    @apply space-y-5;
   }
 
   .auth-page-social-panel {
@@ -508,11 +508,11 @@ body {
     }
 
     .auth-layout-brand-shell {
-      @apply px-14 py-16;
+      @apply px-12 py-10;
     }
 
     .auth-layout-card-shell {
-      @apply px-14 py-16;
+      @apply px-12 py-10;
     }
   }
 
@@ -522,19 +522,19 @@ body {
     }
 
     .auth-page-hero-showcase {
-      @apply h-[300px] max-w-[440px];
+      @apply h-[260px] max-w-[400px];
     }
 
     .auth-page-hero-card-back {
-      @apply left-0 top-16;
+      @apply left-0 top-12;
     }
 
     .auth-page-hero-card-middle {
-      @apply left-[84px];
+      @apply left-[70px];
     }
 
     .auth-page-hero-card-front {
-      @apply left-[210px];
+      @apply left-[178px];
     }
   }
 
@@ -545,11 +545,11 @@ body {
     }
 
     .auth-page-hero {
-      @apply gap-8;
+      @apply gap-6;
     }
 
     .auth-page-hero-title {
-      @apply text-[2.5rem];
+      @apply text-[2.2rem];
     }
 
     .auth-page-hero-description {
@@ -557,19 +557,19 @@ body {
     }
 
     .auth-page-hero-showcase {
-      @apply h-[250px] max-w-[340px];
+      @apply h-[220px] max-w-[310px];
     }
 
     .auth-page-hero-card-back {
-      @apply top-12 h-[170px] w-[132px];
+      @apply top-10 h-[148px] w-[116px];
     }
 
     .auth-page-hero-card-middle {
-      @apply left-[62px] h-[218px] w-[162px];
+      @apply left-[56px] h-[184px] w-[138px];
     }
 
     .auth-page-hero-card-front {
-      @apply left-[168px] top-[52px] h-[180px] w-[134px];
+      @apply left-[146px] top-[44px] h-[156px] w-[118px];
     }
   }
 
