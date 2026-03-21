@@ -7,7 +7,7 @@ interface KakaoLoginButtonProps {
   disabled?: boolean;
 }
 
-const KAKAO_BUTTON_SRC = "/images/auth/kakao-sign.png";
+const KAKAO_BUTTON_SRC = "/images/auth/kakao-sign2.png";
 
 export default function KakaoLoginButton({ onClick, disabled }: KakaoLoginButtonProps) {
   return (
@@ -15,17 +15,20 @@ export default function KakaoLoginButton({ onClick, disabled }: KakaoLoginButton
       type="button"
       onClick={onClick}
       disabled={disabled}
-      aria-label="카카오로 시작"
+      aria-label="카카오로 계속"
       aria-busy={disabled}
-      className="auth-kakao-button"
+      className="auth-social-provider-button"
     >
-      <Image
-        src={KAKAO_BUTTON_SRC}
-        alt="카카오로 시작"
-        width={400}
-        height={56}
-        className="auth-kakao-button-image"
-      />
+      <span className="auth-social-provider-button-inner">
+        <Image
+          src={KAKAO_BUTTON_SRC}
+          alt="카카오"
+          width={22}
+          height={22}
+          className="auth-social-provider-button-icon"
+        />
+        <span className="auth-social-provider-button-label">카카오로 계속</span>
+      </span>
     </button>
   );
 }
