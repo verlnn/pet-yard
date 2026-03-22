@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Image from "next/image";
 import { ChevronDown, Lock, Search, ShieldAlert, UserRound, Bell } from "lucide-react";
 
 import { authApi } from "@/src/features/auth/api/authApi";
@@ -54,13 +53,6 @@ export default function SettingsPage() {
       <div className="settings-page-layout">
         <aside className="settings-page-sidebar">
           <div className="settings-page-sidebar-header">
-            <Image
-              src="/images/brand/petyard-symbol.png"
-              alt="멍냥마당 로고"
-              width={28}
-              height={28}
-              className="settings-page-sidebar-logo"
-            />
             <h1 className="settings-page-sidebar-title">설정</h1>
           </div>
 
