@@ -1924,9 +1924,8 @@ body {
   }
 
   .feed-empty-state {
-    border-color: rgb(226 232 240);
     background: rgba(255, 255, 255, 0.7);
-    @apply rounded-[28px] border border-dashed p-8 text-center;
+    @apply rounded-[28px] p-8 text-center;
   }
 
   .feed-empty-state-icon {
@@ -1961,7 +1960,6 @@ body {
   }
 
   [data-theme="dark"] .feed-empty-state {
-    border-color: #ffffff;
     background: #000000;
   }
 
