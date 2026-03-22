@@ -436,6 +436,36 @@ body {
     @apply text-center text-sm leading-6;
   }
 
+  .auth-page-dev-login-panel {
+    border-color: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.02);
+    @apply rounded-[24px] border p-4;
+  }
+
+  .auth-page-dev-login-title {
+    color: rgba(255, 255, 255, 0.55);
+    @apply text-[11px] font-semibold uppercase tracking-[0.24em];
+  }
+
+  .auth-page-dev-login-actions {
+    @apply mt-3 grid gap-2;
+  }
+
+  .auth-page-dev-login-button {
+    color: rgba(255, 255, 255, 0.88);
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+    @apply w-full rounded-2xl border px-4 py-3 text-sm font-semibold transition;
+  }
+
+  .auth-page-dev-login-button:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .auth-page-dev-login-button:disabled {
+    @apply cursor-not-allowed opacity-60;
+  }
+
   .auth-page-mode-button {
     @apply w-full rounded-full border border-[#31b5ac] bg-transparent py-3.5 text-sm font-semibold text-[#58d5c7] transition;
   }

@@ -17,6 +17,12 @@ interface AuthPageProps {
   initialMode?: AuthMode;
 }
 
+const LOCAL_TEST_ACCOUNTS = [
+  { email: "feed-test-1@petyard.local", password: "petyard123!", label: "테스트 계정 1" },
+  { email: "feed-test-2@petyard.local", password: "petyard123!", label: "테스트 계정 2" },
+  { email: "feed-test-3@petyard.local", password: "petyard123!", label: "테스트 계정 3" }
+] as const;
+
 function AuthPageContent({ initialMode = "login" }: AuthPageProps) {
   const [mode, setMode] = useState<AuthMode>(initialMode);
   const [socialError, setSocialError] = useState<string | null>(null);
@@ -27,10 +33,13 @@ function AuthPageContent({ initialMode = "login" }: AuthPageProps) {
     title,
     subtitle,
     message,
-    error
+    error,
+    loading,
+    handleLogin
   } = useAuthForms({ mode, onModeChange: setMode, nextPath });
 
   const displayError = error ?? socialError;
+  const showLocalTestAccounts = process.env.NODE_ENV !== "production" && mode === "login";
 
   const handleOAuthLogin = async (provider: OAuthProvider) => {
     setSocialError(null);
@@ -129,6 +138,24 @@ function AuthPageContent({ initialMode = "login" }: AuthPageProps) {
               <p className="auth-page-helper-text">
                 멍냥마당은 소셜 계정으로만 가입 및 로그인할 수 있어요.
               </p>
+              {showLocalTestAccounts ? (
+                <div className="auth-page-dev-login-panel">
+                  <p className="auth-page-dev-login-title">로컬 테스트 계정</p>
+                  <div className="auth-page-dev-login-actions">
+                    {LOCAL_TEST_ACCOUNTS.map((account) => (
+                      <button
+                        key={account.email}
+                        type="button"
+                        className="auth-page-dev-login-button"
+                        disabled={loading}
+                        onClick={() => handleLogin(account.email, account.password)}
+                      >
+                        {account.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
               {mode === "login" && (
                 <button
                   type="button"
