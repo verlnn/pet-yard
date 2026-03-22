@@ -83,6 +83,10 @@ public class User {
         return passwordHash;
     }
 
+    public void changePasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
     public UserTier getTier() {
         return tier;
     }
