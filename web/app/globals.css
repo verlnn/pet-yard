@@ -1792,10 +1792,12 @@ body {
   }
 
   .home-feed-ad-iframe-shell {
-    @apply mx-auto mt-3 h-[400px] w-[500px] max-w-full overflow-hidden rounded-[12px] bg-white;
+    @apply mx-auto mt-3 h-[320px] w-[400px] max-w-full overflow-hidden rounded-[12px] bg-white;
   }
 
   .home-feed-ad-iframe {
+    transform: scale(0.8);
+    transform-origin: top left;
     @apply block h-[400px] w-[500px] max-w-none;
   }
 
