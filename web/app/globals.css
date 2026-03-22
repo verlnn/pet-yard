@@ -2084,4 +2084,310 @@ body {
     border-color: var(--color-button-secondary-border);
     @apply flex-1 rounded-2xl border px-4 py-3 text-sm font-semibold transition hover:opacity-90;
   }
+
+  .settings-page {
+    background: var(--color-bg);
+    min-height: calc(100vh - 2rem);
+    @apply px-4 py-6 md:px-6;
+  }
+
+  .settings-page-layout {
+    @apply mx-auto grid max-w-[1380px] gap-8 lg:grid-cols-[300px_minmax(0,1fr)];
+  }
+
+  .settings-page-sidebar {
+    @apply space-y-5;
+  }
+
+  .settings-page-sidebar-header {
+    @apply flex items-center gap-3;
+  }
+
+  .settings-page-sidebar-logo {
+    @apply h-7 w-7 object-contain;
+  }
+
+  .settings-page-sidebar-title {
+    color: var(--color-text);
+    @apply font-display text-[1.7rem] font-semibold;
+  }
+
+  .settings-page-search {
+    border-color: var(--color-input-border);
+    background: var(--color-surface-muted);
+    @apply flex items-center gap-3 rounded-2xl border px-4 py-3;
+  }
+
+  .settings-page-search-icon {
+    color: var(--color-text-muted);
+    @apply h-4 w-4;
+  }
+
+  .settings-page-search-input {
+    color: var(--color-text);
+    @apply w-full bg-transparent text-sm outline-none placeholder:text-[var(--color-input-placeholder)];
+  }
+
+  .settings-page-account-center {
+    border-color: var(--color-border);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card-token);
+    @apply rounded-[28px] border p-5;
+  }
+
+  .settings-page-account-center-brand {
+    color: var(--color-primary);
+    @apply text-lg font-semibold;
+  }
+
+  .settings-page-account-center-title {
+    color: var(--color-text);
+    @apply mt-1 text-xl font-semibold;
+  }
+
+  .settings-page-account-center-description {
+    color: var(--color-text-muted);
+    @apply mt-2 text-sm leading-6;
+  }
+
+  .settings-page-account-center-list {
+    @apply mt-5 space-y-3;
+  }
+
+  .settings-page-account-center-item {
+    color: var(--color-text-muted);
+    @apply flex items-center gap-3 text-sm;
+  }
+
+  .settings-page-account-center-dot {
+    background: var(--color-text-subtle);
+    @apply h-2 w-2 rounded-full;
+  }
+
+  .settings-page-account-center-link {
+    color: var(--color-primary);
+    @apply mt-5 text-sm font-semibold;
+  }
+
+  .settings-page-nav {
+    @apply space-y-7;
+  }
+
+  .settings-page-nav-section {
+    @apply space-y-3;
+  }
+
+  .settings-page-nav-section-title {
+    color: var(--color-text-muted);
+    @apply text-sm font-medium;
+  }
+
+  .settings-page-nav-list {
+    @apply space-y-2;
+  }
+
+  .settings-page-nav-item {
+    color: var(--color-text);
+    @apply flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-medium transition;
+  }
+
+  .settings-page-nav-item:hover {
+    background: var(--color-hover-surface);
+  }
+
+  .settings-page-nav-item-active {
+    background: var(--color-surface-muted);
+    @apply font-semibold;
+  }
+
+  .settings-page-nav-item-icon {
+    @apply inline-flex h-8 w-8 items-center justify-center rounded-full;
+  }
+
+  .settings-page-nav-item-icon-mark {
+    @apply h-4 w-4;
+  }
+
+  .settings-page-content {
+    @apply space-y-6;
+  }
+
+  .settings-page-content-header {
+    @apply space-y-1;
+  }
+
+  .settings-page-content-eyebrow {
+    color: var(--color-text-muted);
+    @apply text-xs uppercase tracking-[0.24em];
+  }
+
+  .settings-page-content-title {
+    color: var(--color-text);
+    @apply font-display text-[2rem] font-semibold;
+  }
+
+  .settings-page-editor-card {
+    @apply space-y-8 rounded-[32px];
+  }
+
+  .settings-page-profile-row {
+    border-color: var(--color-border);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card-token);
+    @apply flex flex-col gap-4 rounded-[28px] border p-5 md:flex-row md:items-center md:justify-between;
+  }
+
+  .settings-page-profile-summary {
+    @apply flex items-center gap-4;
+  }
+
+  .settings-page-profile-avatar {
+    border-color: var(--color-border);
+    background: var(--color-surface-muted);
+    @apply flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border;
+  }
+
+  .settings-page-profile-avatar-image {
+    @apply h-full w-full object-cover;
+  }
+
+  .settings-page-profile-avatar-fallback {
+    color: var(--color-text);
+    @apply text-lg font-semibold;
+  }
+
+  .settings-page-profile-copy {
+    @apply space-y-1;
+  }
+
+  .settings-page-profile-name {
+    color: var(--color-text);
+    @apply text-lg font-semibold;
+  }
+
+  .settings-page-profile-handle,
+  .settings-page-profile-region {
+    color: var(--color-text-muted);
+    @apply text-sm;
+  }
+
+  .settings-page-profile-action {
+    background: var(--color-button-bg);
+    color: var(--color-button-text);
+    @apply rounded-2xl px-4 py-3 text-sm font-semibold transition hover:opacity-90;
+  }
+
+  .settings-page-field {
+    @apply space-y-3;
+  }
+
+  .settings-page-field-label {
+    color: var(--color-text);
+    @apply block text-lg font-semibold;
+  }
+
+  .settings-page-input,
+  .settings-page-textarea,
+  .settings-page-select-shell {
+    border-color: var(--color-input-border);
+    background: var(--color-input-bg);
+    box-shadow: var(--shadow-soft-token);
+  }
+
+  .settings-page-input {
+    color: var(--color-text);
+    @apply w-full rounded-2xl border px-4 py-3 text-sm outline-none placeholder:text-[var(--color-input-placeholder)];
+  }
+
+  .settings-page-field-helper {
+    color: var(--color-text-muted);
+    @apply text-sm leading-6;
+  }
+
+  .settings-page-textarea-shell {
+    @apply relative;
+  }
+
+  .settings-page-textarea {
+    color: var(--color-text);
+    @apply min-h-[140px] w-full rounded-2xl border px-4 py-4 pr-20 text-sm outline-none;
+  }
+
+  .settings-page-textarea-count {
+    color: var(--color-text-muted);
+    @apply absolute bottom-4 right-4 text-sm;
+  }
+
+  .settings-page-select-shell {
+    @apply relative flex items-center rounded-2xl border;
+  }
+
+  .settings-page-select {
+    color: var(--color-text);
+    @apply w-full appearance-none bg-transparent px-4 py-3 text-sm outline-none;
+  }
+
+  .settings-page-select-icon {
+    color: var(--color-text-muted);
+    @apply pointer-events-none absolute right-4 h-4 w-4;
+  }
+
+  .settings-page-preference-card {
+    border-color: var(--color-border);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card-token);
+    @apply flex items-center justify-between gap-4 rounded-[28px] border p-5;
+  }
+
+  .settings-page-preference-copy {
+    @apply space-y-2;
+  }
+
+  .settings-page-preference-title {
+    color: var(--color-text);
+    @apply text-lg font-semibold;
+  }
+
+  .settings-page-preference-description {
+    color: var(--color-text-muted);
+    @apply max-w-[680px] text-sm leading-6;
+  }
+
+  .settings-page-switch {
+    background: var(--color-press-surface);
+    @apply relative h-8 w-14 shrink-0 rounded-full transition;
+  }
+
+  .settings-page-switch-active {
+    background: var(--color-button-bg);
+  }
+
+  .settings-page-switch-thumb {
+    background: var(--color-surface);
+    @apply absolute left-1 top-1 h-6 w-6 rounded-full transition;
+  }
+
+  .settings-page-switch-active .settings-page-switch-thumb {
+    @apply translate-x-6;
+  }
+
+  @media (max-width: 1023px) {
+    .settings-page-layout {
+      @apply grid-cols-1;
+    }
+  }
+
+  @media (max-width: 639px) {
+    .settings-page {
+      @apply px-4 py-5;
+    }
+
+    .settings-page-content-title {
+      @apply text-[1.7rem];
+    }
+
+    .settings-page-preference-card {
+      @apply flex-col items-start;
+    }
+  }
 }
