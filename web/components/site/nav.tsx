@@ -11,13 +11,14 @@ import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { authApi } from "@/src/features/auth/api/authApi";
+import { ROUTES } from "@/src/lib/routes";
 
 const links: Array<{ href: Route; label: string; icon: LucideIcon }> = [
-  { href: "/feed", label: "피드", icon: PawPrint },
-  { href: "/my-feed", label: "내 피드", icon: PawPrint },
-  { href: "/walks", label: "산책", icon: Compass },
-  { href: "/boarding", label: "위탁", icon: HeartHandshake },
-  { href: "/knowledge", label: "지식", icon: Shield }
+  { href: ROUTES.feed, label: "피드", icon: PawPrint },
+  { href: ROUTES.myFeed, label: "내 피드", icon: PawPrint },
+  { href: ROUTES.walks, label: "산책", icon: Compass },
+  { href: ROUTES.boarding, label: "위탁", icon: HeartHandshake },
+  { href: ROUTES.knowledge, label: "지식", icon: Shield }
 ];
 
 export function SiteNav() {
@@ -42,14 +43,14 @@ export function SiteNav() {
       localStorage.removeItem("refreshToken");
       document.cookie = "accessToken=; path=/; max-age=0";
       setHasToken(false);
-      router.push("/login");
+      router.push(ROUTES.login);
     }
   }, [router]);
 
   return (
     <header className="sticky top-0 z-40 border-b border-ink/10 bg-white/70 backdrop-blur">
       <div className="container flex items-center justify-between py-4">
-        <Link href="/" className="flex items-center gap-3">
+        <Link href={ROUTES.home} className="flex items-center gap-3">
           <Image
             src="/images/brand/petyard-symbol.png"
             alt="멍냥마당 로고"
@@ -90,7 +91,7 @@ export function SiteNav() {
               로그아웃
             </Button>
           )}
-          <Link href="/profile">
+          <Link href={ROUTES.myFeed}>
             <Button variant="secondary" size="sm">
               내 프로필
             </Button>
