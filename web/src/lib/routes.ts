@@ -5,10 +5,15 @@ export const ROUTES = {
   start: "/start",
   verify: "/verify",
   onboarding: "/onboarding",
+  onboardingProfile: "/onboarding/profile",
   oauth: "/oauth",
   feed: "/feed",
   myFeed: "/my-feed",
   walks: "/walks",
+  boarding: "/boarding",
+  knowledge: "/knowledge",
+  notifications: "/notifications",
+  pets: "/pets",
   profile: "/profile"
 } as const;
 

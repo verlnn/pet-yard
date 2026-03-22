@@ -16,6 +16,7 @@ import {
 
 import { authApi } from "@/src/features/auth/api/authApi";
 import { useTheme } from "@/src/hooks/useTheme";
+import { ROUTES } from "@/src/lib/routes";
 
 interface SidebarMoreMenuProps {
   onNavigate?: () => void;
@@ -87,7 +88,7 @@ export function SidebarMoreMenu({ onNavigate }: SidebarMoreMenuProps) {
       document.cookie = "accessToken=; path=/; max-age=0";
       document.cookie = "refreshToken=; path=/; max-age=0";
       handleClose();
-      window.location.href = "/login";
+      window.location.href = ROUTES.login;
     }
   };
 
@@ -98,7 +99,7 @@ export function SidebarMoreMenu({ onNavigate }: SidebarMoreMenuProps) {
           {view === "menu" ? (
             <>
               <div className="app-sidebar-more-list">
-                <Link href="/profile" className="app-sidebar-more-item" onClick={handleClose}>
+                <Link href={ROUTES.profile} className="app-sidebar-more-item" onClick={handleClose}>
                   <Settings className="app-sidebar-more-item-icon" />
                   <span>설정</span>
                 </Link>
