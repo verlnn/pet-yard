@@ -1742,11 +1742,11 @@ body {
   }
 
   .home-feed-ad-card {
-    @apply p-3;
+    @apply pb-3;
   }
 
   .home-feed-ad-header {
-    @apply flex items-start justify-between gap-3;
+    @apply flex items-start justify-between gap-3 px-3 pt-3;
   }
 
   .home-feed-ad-badge {
@@ -1770,7 +1770,7 @@ body {
   }
 
   .home-feed-ad-media {
-    @apply mt-3 overflow-hidden rounded-[12px] bg-[var(--color-surface-muted)];
+    @apply mx-3 mt-3 overflow-hidden rounded-[12px] bg-[var(--color-surface-muted)];
   }
 
   .home-feed-ad-image {
@@ -1778,7 +1778,7 @@ body {
   }
 
   .home-feed-ad-body {
-    @apply mt-3 space-y-1.5;
+    @apply mx-3 mt-3 space-y-1.5;
   }
 
   .home-feed-ad-title {
@@ -1792,11 +1792,11 @@ body {
   }
 
   .home-feed-ad-iframe-shell {
-    @apply mt-3 overflow-hidden rounded-[12px] bg-white;
+    @apply mx-auto mt-3 h-[400px] w-[500px] max-w-full overflow-hidden rounded-[12px] bg-white;
   }
 
   .home-feed-ad-iframe {
-    @apply block aspect-[3/4] h-auto w-full;
+    @apply block h-[400px] w-[500px] max-w-none;
   }
 
   .home-feed-sidebar {

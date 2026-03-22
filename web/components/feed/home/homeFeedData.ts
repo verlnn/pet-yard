@@ -46,8 +46,8 @@ export const HOME_FEED_ADS: HomeFeedAd[] = [
     ctaLabel: "자세히 보기",
     embed: {
       type: "iframe",
-      src: "https://ads-partners.coupang.com/widgets.html?id=974617&template=carousel&trackingCode=AF8275210&subId=&width=300&height=400&tsource=",
-      width: 300,
+      src: "https://ads-partners.coupang.com/widgets.html?id=974617&template=carousel&trackingCode=AF8275210&subId=&width=500&height=400&tsource=",
+      width: 500,
       height: 400
     },
     tracking: {
@@ -67,8 +67,8 @@ export const HOME_FEED_ADS: HomeFeedAd[] = [
     ctaLabel: "알림 설정",
     embed: {
       type: "iframe",
-      src: "https://ads-partners.coupang.com/widgets.html?id=974617&template=carousel&trackingCode=AF8275210&subId=&width=300&height=400&tsource=",
-      width: 300,
+      src: "https://ads-partners.coupang.com/widgets.html?id=974617&template=carousel&trackingCode=AF8275210&subId=&width=500&height=400&tsource=",
+      width: 500,
       height: 400
     },
     tracking: {
