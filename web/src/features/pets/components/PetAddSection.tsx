@@ -44,7 +44,7 @@ export function PetAddSection({
   return (
     <>
       <h2 className="settings-page-content-title">반려동물 추가</h2>
-      <div className="pets-registration-card">
+      <div className="pets-registration-card pets-registration-card-standalone">
         <p className="pets-registration-title">반려견 등록번호 인증</p>
         <p className="pets-registration-description">
           등록번호 인증을 완료해야 반려동물을 등록할 수 있어요.
@@ -109,7 +109,7 @@ export function PetAddSection({
           ) : null}
         </div>
         {verified ? (
-          <>
+          <div className="pets-registration-form-section">
             <div className="pets-form-grid">
               <label className="pets-form-field">
                 이름
@@ -262,7 +262,7 @@ export function PetAddSection({
             <Button onClick={onPetSubmit} disabled={savingPet}>
               {savingPet ? "저장 중..." : "반려동물 등록"}
             </Button>
-          </>
+          </div>
         ) : null}
       </div>
     </>
