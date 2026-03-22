@@ -1325,7 +1325,7 @@ body {
   }
 
   .pets-action-row {
-    @apply flex gap-2;
+    @apply flex justify-end gap-2;
   }
 
   .pets-edit-action-row {
@@ -1343,7 +1343,7 @@ body {
   }
 
   .pets-action-row-spaced {
-    @apply mt-3;
+    @apply mt-5;
   }
 
   .pets-registration-card {
