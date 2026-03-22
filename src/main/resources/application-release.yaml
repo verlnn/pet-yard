@@ -38,6 +38,8 @@ spring:
       mail.smtp.starttls.enable: ${MAIL_SMTP_STARTTLS}
 
 app:
+  feed:
+    initial-load-size: ${APP_FEED_INITIAL_LOAD_SIZE:10}
   frontend-origin: ${FRONTEND_ORIGIN}
   frontend-origin-www: ${FRONTEND_ORIGIN_WWW}
   storage:
