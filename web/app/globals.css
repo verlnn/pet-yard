@@ -2144,7 +2144,8 @@ body {
   }
 
   .feed-detail-action-button-active {
-    @apply bg-rose-50 text-rose-600;
+    color: var(--color-primary);
+    @apply bg-transparent;
   }
 
   .feed-detail-paw-icon {
