@@ -990,15 +990,15 @@ body {
     background: var(--color-menu-surface);
     color: var(--color-menu-text);
     box-shadow: 0 28px 80px -34px rgba(15, 23, 42, 0.65);
-    @apply w-full max-w-[360px] rounded-[24px] border border-white/10 p-6;
+    @apply w-full max-w-[260px] overflow-hidden rounded-[24px] py-3;
   }
 
   .app-confirm-dialog-copy {
-    @apply space-y-2;
+    @apply space-y-2 px-6 py-3;
   }
 
   .app-confirm-dialog-title {
-    @apply text-lg font-semibold text-white;
+    @apply text-sm font-semibold text-white;
   }
 
   .app-confirm-dialog-description {
@@ -1006,15 +1006,15 @@ body {
   }
 
   .app-confirm-dialog-actions {
-    @apply mt-5 flex gap-3;
+    @apply flex flex-col;
   }
 
-  .app-confirm-dialog-button {
-    @apply flex-1 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/10;
+  .app-confirm-dialog-action {
+    @apply w-full px-6 py-4 text-left text-sm font-medium text-white/95 transition hover:bg-white/5;
   }
 
-  .app-confirm-dialog-button-danger {
-    @apply bg-white text-slate-950 hover:bg-white/90;
+  .app-confirm-dialog-action-danger {
+    @apply text-white;
   }
 
   .app-sidebar-theme-panel {

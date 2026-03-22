@@ -62,13 +62,16 @@ export function AppConfirmDialog({
           </p>
         </div>
 
+        <div className="app-sidebar-more-divider" />
+
         <div className="app-confirm-dialog-actions">
-          <button type="button" className="app-confirm-dialog-button" onClick={onClose}>
+          <button type="button" className="app-confirm-dialog-action" onClick={onClose}>
             {cancelLabel}
           </button>
+          <div className="app-sidebar-more-divider" />
           <button
             type="button"
-            className="app-confirm-dialog-button app-confirm-dialog-button-danger"
+            className="app-confirm-dialog-action app-confirm-dialog-action-danger"
             onClick={onConfirm}
           >
             {confirmLabel}
