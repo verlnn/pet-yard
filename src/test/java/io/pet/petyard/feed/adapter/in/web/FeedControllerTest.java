@@ -25,6 +25,7 @@ import io.pet.petyard.feed.application.model.HomeFeedMediaView;
 import io.pet.petyard.feed.application.model.HomeFeedPostView;
 import io.pet.petyard.feed.application.model.HomeFeedReactionView;
 import io.pet.petyard.feed.application.model.HomeFeedSlice;
+import io.pet.petyard.feed.application.service.FeedCommentApplicationService;
 import io.pet.petyard.feed.application.service.FeedApplicationService;
 import io.pet.petyard.support.WebMvcSliceTestConfig;
 
@@ -55,6 +56,7 @@ class FeedControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean private FeedApplicationService feedApplicationService;
+    @MockitoBean private FeedCommentApplicationService feedCommentApplicationService;
     @MockitoBean private LocalFileStorage localFileStorage;
     @MockitoBean private ErrorLogService errorLogService;
 
@@ -68,9 +70,9 @@ class FeedControllerTest {
                     "산책 기록",
                     Instant.parse("2026-03-23T03:20:00Z"),
                     List.of("산책"),
-                    new HomeFeedAuthorView(11L, "멍냥집사", "/profile.jpg"),
+                    new HomeFeedAuthorView(11L, "멍냥집사", "/profile.jpg", false),
                     new HomeFeedMediaView("/thumb.jpg", List.of("/thumb.jpg"), List.of(), 1.0, "1:1"),
-                    new HomeFeedReactionView(3L, true)
+                    new HomeFeedReactionView(3L, true, 2L)
                 )),
                 Instant.parse("2026-03-23T03:20:00Z"),
                 101L,
@@ -83,6 +85,7 @@ class FeedControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.items[0].id").value(101))
             .andExpect(jsonPath("$.items[0].authorNickname").value("멍냥집사"))
+            .andExpect(jsonPath("$.items[0].commentCount").value(2))
             .andExpect(jsonPath("$.nextCursor.id").value(101))
             .andExpect(jsonPath("$.hasMore").value(true));
     }

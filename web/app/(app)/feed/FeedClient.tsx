@@ -25,6 +25,7 @@ import { loadHomeFeedScrollState, saveHomeFeedScrollState } from "./homeFeedScro
 
 export function FeedClient() {
   const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [viewerUserId, setViewerUserId] = useState<number | null>(null);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const fetchLockRef = useRef(false);
   const hasNextPageRef = useRef(false);
@@ -37,6 +38,30 @@ export function FeedClient() {
   useEffect(() => {
     setAccessToken(localStorage.getItem("accessToken"));
   }, []);
+
+  useEffect(() => {
+    if (!accessToken) {
+      setViewerUserId(null);
+      return;
+    }
+
+    let cancelled = false;
+    void authApi.me(accessToken)
+      .then((response) => {
+        if (!cancelled) {
+          setViewerUserId(response.userId);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setViewerUserId(null);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [accessToken]);
 
   const {
     data,
@@ -231,6 +256,8 @@ export function FeedClient() {
                 <HomeFeedPostCard
                   key={item.id}
                   post={item.post}
+                  accessToken={accessToken}
+                  viewerUserId={viewerUserId}
                   eagerImage={index < 2}
                 />
               ) : (

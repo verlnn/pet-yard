@@ -25,6 +25,7 @@ vi.mock("@/components/feed/home/HomeFeedAdCard", () => ({
 
 vi.mock("@/src/features/auth/api/authApi", () => ({
   authApi: {
+    me: vi.fn(),
     getHomeFeed: vi.fn()
   }
 }));
@@ -53,6 +54,8 @@ function post(id: number): HomeFeedPost {
     id,
     authorId: id,
     authorNickname: `user-${id}`,
+    guardianRegisteredByMe: false,
+    commentCount: 0,
     pawCount: 0,
     pawedByMe: false,
     createdAt: "2026-03-23T00:00:00Z",
@@ -62,8 +65,10 @@ function post(id: number): HomeFeedPost {
 
 describe("FeedClient", () => {
   const mockedGetHomeFeed = vi.mocked(authApi.getHomeFeed);
+  const mockedMe = vi.mocked(authApi.me);
 
   beforeEach(() => {
+    mockedMe.mockReset();
     mockedGetHomeFeed.mockReset();
     localStorage.clear();
   });
@@ -77,6 +82,11 @@ describe("FeedClient", () => {
 
   it("requests the first home feed page when an access token exists", async () => {
     localStorage.setItem("accessToken", "token-1");
+    mockedMe.mockResolvedValueOnce({
+      userId: 99,
+      tier: "TIER_1",
+      permissions: ["FEED_READ", "FEED_CREATE"]
+    });
     mockedGetHomeFeed.mockResolvedValueOnce({
       items: [post(1)],
       nextCursor: { createdAt: "2026-03-23T00:00:00Z", id: 1 },
@@ -95,6 +105,11 @@ describe("FeedClient", () => {
 
   it("keeps rendering fallback ads when the feed response has no posts", async () => {
     localStorage.setItem("accessToken", "token-1");
+    mockedMe.mockResolvedValueOnce({
+      userId: 99,
+      tier: "TIER_1",
+      permissions: ["FEED_READ", "FEED_CREATE"]
+    });
     mockedGetHomeFeed.mockResolvedValueOnce({
       items: [],
       nextCursor: null,

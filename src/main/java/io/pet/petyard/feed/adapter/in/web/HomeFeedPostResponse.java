@@ -36,7 +36,11 @@ public record HomeFeedPostResponse(
     @Schema(description = "작성자 닉네임", example = "멍냥집사")
     String authorNickname,
     @Schema(description = "작성자 프로필 이미지 URL", nullable = true)
-    String authorProfileImageUrl
+    String authorProfileImageUrl,
+    @Schema(description = "현재 사용자의 집사 등록 여부", example = "false")
+    boolean guardianRegisteredByMe,
+    @Schema(description = "댓글 수", example = "3")
+    long commentCount
 ) {
     public static HomeFeedPostResponse from(HomeFeedPostView post) {
         return new HomeFeedPostResponse(
@@ -53,7 +57,9 @@ public record HomeFeedPostResponse(
             post.hashtags(),
             post.author().id(),
             post.author().nickname(),
-            post.author().profileImageUrl()
+            post.author().profileImageUrl(),
+            post.author().guardianRegisteredByMe(),
+            post.reaction().commentCount()
         );
     }
 

@@ -13,6 +13,8 @@ function post(id: number): HomeFeedPost {
     id,
     authorId: id,
     authorNickname: `user-${id}`,
+    guardianRegisteredByMe: false,
+    commentCount: 0,
     pawCount: 0,
     pawedByMe: false,
     createdAt: "2026-03-23T00:00:00Z"

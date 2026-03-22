@@ -17,10 +17,12 @@ import io.pet.petyard.feed.application.port.out.LoadFeedPostImagePort;
 import io.pet.petyard.feed.application.port.out.LoadFeedPostPawPort;
 import io.pet.petyard.feed.application.port.out.LoadFeedPostHashtagPort;
 import io.pet.petyard.feed.application.port.out.LoadFeedPostPort;
+import io.pet.petyard.feed.application.port.out.LoadFeedPostCommentPort;
 import io.pet.petyard.feed.application.port.out.SaveFeedPostImagePort;
 import io.pet.petyard.feed.application.port.out.SaveFeedPostPawPort;
 import io.pet.petyard.feed.application.port.out.SaveFeedPostHashtagPort;
 import io.pet.petyard.feed.application.port.out.SaveFeedPostPort;
+import io.pet.petyard.user.application.port.out.LoadGuardianRegistrationPort;
 import io.pet.petyard.feed.domain.model.FeedPost;
 import io.pet.petyard.feed.domain.model.FeedPostImage;
 import io.pet.petyard.user.application.port.out.LoadUserProfilePort;
@@ -58,7 +60,9 @@ public class FeedApplicationService {
     private final DeleteFeedPostPawPort deleteFeedPostPawPort;
     private final SaveFeedPostHashtagPort saveFeedPostHashtagPort;
     private final LoadFeedPostHashtagPort loadFeedPostHashtagPort;
+    private final LoadFeedPostCommentPort loadFeedPostCommentPort;
     private final LoadUserProfilePort loadUserProfilePort;
+    private final LoadGuardianRegistrationPort loadGuardianRegistrationPort;
     private final FeedProperties feedProperties;
 
     public FeedApplicationService(LoadFeedPostPort loadFeedPostPort,
@@ -71,7 +75,9 @@ public class FeedApplicationService {
                                   DeleteFeedPostPawPort deleteFeedPostPawPort,
                                   SaveFeedPostHashtagPort saveFeedPostHashtagPort,
                                   LoadFeedPostHashtagPort loadFeedPostHashtagPort,
+                                  LoadFeedPostCommentPort loadFeedPostCommentPort,
                                   LoadUserProfilePort loadUserProfilePort,
+                                  LoadGuardianRegistrationPort loadGuardianRegistrationPort,
                                   FeedProperties feedProperties) {
         this.loadFeedPostPort = loadFeedPostPort;
         this.saveFeedPostPort = saveFeedPostPort;
@@ -83,7 +89,9 @@ public class FeedApplicationService {
         this.deleteFeedPostPawPort = deleteFeedPostPawPort;
         this.saveFeedPostHashtagPort = saveFeedPostHashtagPort;
         this.loadFeedPostHashtagPort = loadFeedPostHashtagPort;
+        this.loadFeedPostCommentPort = loadFeedPostCommentPort;
         this.loadUserProfilePort = loadUserProfilePort;
+        this.loadGuardianRegistrationPort = loadGuardianRegistrationPort;
         this.feedProperties = feedProperties;
     }
 
@@ -148,10 +156,17 @@ public class FeedApplicationService {
         Map<Long, List<FeedPostImage>> imagesByPost = loadFeedPostImagePort.findByPostIds(postIds);
         Map<Long, Long> pawCountsByPost = loadFeedPostPawPort.countByPostIds(postIds);
         Set<Long> pawedPostIds = new HashSet<>(loadFeedPostPawPort.findPawedPostIds(userId, postIds));
+        Map<Long, Long> commentCountsByPost = loadFeedPostCommentPort.countByPostIds(postIds);
         Map<Long, List<String>> tagsByPost = loadFeedPostHashtagPort.findTagNamesByPostIds(postIds);
         Map<Long, UserProfile> profilesByUserId = loadUserProfilePort.findByUserIds(
             pagePosts.stream().map(FeedPost::getUserId).collect(java.util.stream.Collectors.toSet())
         ).stream().collect(java.util.stream.Collectors.toMap(UserProfile::getUserId, profile -> profile));
+        Set<Long> guardianRegisteredAuthorIds = new HashSet<>(
+            loadGuardianRegistrationPort.findRegisteredTargetUserIds(
+                userId,
+                pagePosts.stream().map(FeedPost::getUserId).distinct().toList()
+            )
+        );
         trace = trace.markRelatedDataLoaded();
 
         List<HomeFeedPostView> result = new ArrayList<>();
@@ -167,7 +182,8 @@ public class FeedApplicationService {
                 new HomeFeedAuthorView(
                     post.getUserId(),
                     authorProfile == null ? "멍냥마당" : authorProfile.getNickname(),
-                    authorProfile == null ? null : authorProfile.getProfileImageUrl()
+                    authorProfile == null ? null : authorProfile.getProfileImageUrl(),
+                    guardianRegisteredAuthorIds.contains(post.getUserId())
                 ),
                 new HomeFeedMediaView(
                     imageUrls.isEmpty() ? null : imageUrls.getFirst(),
@@ -188,7 +204,8 @@ public class FeedApplicationService {
                 ),
                 new HomeFeedReactionView(
                     pawCountsByPost.getOrDefault(post.getId(), 0L),
-                    pawedPostIds.contains(post.getId())
+                    pawedPostIds.contains(post.getId()),
+                    commentCountsByPost.getOrDefault(post.getId(), 0L)
                 )
             ));
         }

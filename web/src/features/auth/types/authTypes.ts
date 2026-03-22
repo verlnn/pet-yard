@@ -144,6 +144,8 @@ export interface HomeFeedPost extends FeedPost {
   authorId: number;
   authorNickname: string;
   authorProfileImageUrl?: string | null;
+  guardianRegisteredByMe: boolean;
+  commentCount: number;
 }
 
 export interface HomeFeedCursor {
@@ -161,4 +163,19 @@ export interface FeedPostPawResponse {
   postId: number;
   pawCount: number;
   pawedByMe: boolean;
+}
+
+export interface FeedPostComment {
+  id: number;
+  postId: number;
+  content: string;
+  createdAt: string;
+  authorId: number;
+  authorNickname: string;
+  authorProfileImageUrl?: string | null;
+}
+
+export interface GuardianRegistrationResponse {
+  targetUserId: number;
+  guardianRegisteredByMe: boolean;
 }

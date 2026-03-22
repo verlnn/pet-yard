@@ -7,6 +7,7 @@ import io.pet.petyard.common.storage.LocalFileStorage;
 import io.pet.petyard.feed.application.model.HomeFeedSlice;
 import io.pet.petyard.feed.application.model.FeedPostImageCommand;
 import io.pet.petyard.feed.application.model.FeedPostView;
+import io.pet.petyard.feed.application.service.FeedCommentApplicationService;
 import io.pet.petyard.feed.application.service.FeedApplicationService;
 import io.pet.petyard.auth.security.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,6 +26,7 @@ import java.util.List;
 
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/feeds")
@@ -41,11 +44,14 @@ import org.springframework.web.multipart.MultipartFile;
 public class FeedController {
 
     private final FeedApplicationService feedApplicationService;
+    private final FeedCommentApplicationService feedCommentApplicationService;
     private final LocalFileStorage localFileStorage;
 
     public FeedController(FeedApplicationService feedApplicationService,
+                          FeedCommentApplicationService feedCommentApplicationService,
                           LocalFileStorage localFileStorage) {
         this.feedApplicationService = feedApplicationService;
+        this.feedCommentApplicationService = feedCommentApplicationService;
         this.localFileStorage = localFileStorage;
     }
 
@@ -172,6 +178,38 @@ public class FeedController {
     })
     public FeedPostPawResponse removePaw(@AuthenticationPrincipal AuthPrincipal principal, @PathVariable Long id) {
         return FeedPostPawResponse.from(feedApplicationService.removePaw(principal.userId(), id));
+    }
+
+    @RequirePermission(Permission.FEED_READ)
+    @GetMapping("/{id}/comments")
+    @Operation(summary = "게시물 댓글 목록 조회", description = "특정 게시물의 댓글을 오래된 순으로 조회합니다.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "조회 성공",
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = FeedPostCommentResponse.class)))),
+        @ApiResponse(responseCode = "400", description = "대상 게시물이 없음",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public List<FeedPostCommentResponse> comments(@PathVariable Long id) {
+        return feedCommentApplicationService.listComments(id).stream()
+            .map(FeedPostCommentResponse::from)
+            .toList();
+    }
+
+    @RequirePermission(Permission.FEED_CREATE)
+    @PostMapping("/{id}/comments")
+    @Operation(summary = "게시물 댓글 작성", description = "특정 게시물에 댓글을 작성합니다.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "작성 성공",
+            content = @Content(schema = @Schema(implementation = FeedPostCommentResponse.class))),
+        @ApiResponse(responseCode = "400", description = "대상 게시물이 없거나 댓글 본문이 잘못됨",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public FeedPostCommentResponse addComment(@AuthenticationPrincipal AuthPrincipal principal,
+                                              @PathVariable Long id,
+                                              @Valid @RequestBody FeedPostCommentRequest request) {
+        return FeedPostCommentResponse.from(
+            feedCommentApplicationService.addComment(principal.userId(), id, request.content())
+        );
     }
 
     @RequirePermission(Permission.FEED_CREATE)

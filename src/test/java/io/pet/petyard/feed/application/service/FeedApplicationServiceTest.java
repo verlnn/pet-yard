@@ -13,6 +13,7 @@ import io.pet.petyard.feed.application.port.out.DeleteFeedPostPawPort;
 import io.pet.petyard.feed.application.port.out.DeleteFeedPostPort;
 import io.pet.petyard.feed.application.port.out.LoadFeedPostHashtagPort;
 import io.pet.petyard.feed.application.port.out.LoadFeedPostImagePort;
+import io.pet.petyard.feed.application.port.out.LoadFeedPostCommentPort;
 import io.pet.petyard.feed.application.port.out.LoadFeedPostPawPort;
 import io.pet.petyard.feed.application.port.out.LoadFeedPostPort;
 import io.pet.petyard.feed.application.port.out.SaveFeedPostHashtagPort;
@@ -21,6 +22,7 @@ import io.pet.petyard.feed.application.port.out.SaveFeedPostPawPort;
 import io.pet.petyard.feed.application.port.out.SaveFeedPostPort;
 import io.pet.petyard.feed.domain.model.FeedPost;
 import io.pet.petyard.feed.domain.model.FeedPostImage;
+import io.pet.petyard.user.application.port.out.LoadGuardianRegistrationPort;
 import io.pet.petyard.user.application.port.out.LoadUserProfilePort;
 import io.pet.petyard.user.domain.model.UserProfile;
 
@@ -51,7 +53,9 @@ class FeedApplicationServiceTest {
     @Mock private DeleteFeedPostPawPort deleteFeedPostPawPort;
     @Mock private SaveFeedPostHashtagPort saveFeedPostHashtagPort;
     @Mock private LoadFeedPostHashtagPort loadFeedPostHashtagPort;
+    @Mock private LoadFeedPostCommentPort loadFeedPostCommentPort;
     @Mock private LoadUserProfilePort loadUserProfilePort;
+    @Mock private LoadGuardianRegistrationPort loadGuardianRegistrationPort;
 
     private FeedApplicationService service;
 
@@ -68,7 +72,9 @@ class FeedApplicationServiceTest {
             deleteFeedPostPawPort,
             saveFeedPostHashtagPort,
             loadFeedPostHashtagPort,
+            loadFeedPostCommentPort,
             loadUserProfilePort,
+            loadGuardianRegistrationPort,
             new FeedProperties(10, 20)
         );
     }
@@ -103,11 +109,13 @@ class FeedApplicationServiceTest {
         when(loadFeedPostImagePort.findByPostIds(List.of(301L, 300L))).thenReturn(Map.of());
         when(loadFeedPostPawPort.countByPostIds(List.of(301L, 300L))).thenReturn(Map.of());
         when(loadFeedPostPawPort.findPawedPostIds(55L, List.of(301L, 300L))).thenReturn(List.of());
+        when(loadFeedPostCommentPort.countByPostIds(List.of(301L, 300L))).thenReturn(Map.of());
         when(loadFeedPostHashtagPort.findTagNamesByPostIds(List.of(301L, 300L))).thenReturn(Map.of());
         when(loadUserProfilePort.findByUserIds(anyCollection())).thenReturn(List.of(
             new UserProfile(21L, "보호자1", null, null, false, true),
             new UserProfile(22L, "보호자2", null, null, false, true)
         ));
+        when(loadGuardianRegistrationPort.findRegisteredTargetUserIds(eq(55L), anyCollection())).thenReturn(List.of());
 
         HomeFeedSlice result = service.listHomeFeed(55L, null, null, 2);
 
@@ -128,11 +136,13 @@ class FeedApplicationServiceTest {
         ));
         when(loadFeedPostPawPort.countByPostIds(List.of(101L, 100L))).thenReturn(Map.of(101L, 3L));
         when(loadFeedPostPawPort.findPawedPostIds(77L, List.of(101L, 100L))).thenReturn(List.of(101L));
+        when(loadFeedPostCommentPort.countByPostIds(List.of(101L, 100L))).thenReturn(Map.of(101L, 2L));
         when(loadFeedPostHashtagPort.findTagNamesByPostIds(List.of(101L, 100L))).thenReturn(Map.of(101L, List.of("강아지")));
         when(loadUserProfilePort.findByUserIds(anyCollection())).thenReturn(List.of(
             new UserProfile(21L, "멍이", null, "/pet-1.jpg", false, true),
             new UserProfile(22L, "냥이", null, "/pet-2.jpg", false, true)
         ));
+        when(loadGuardianRegistrationPort.findRegisteredTargetUserIds(eq(77L), anyCollection())).thenReturn(List.of(21L));
 
         HomeFeedSlice result = service.listHomeFeed(77L, null, null, 2);
 
@@ -141,10 +151,13 @@ class FeedApplicationServiceTest {
         assertThat(result.items().getFirst().media().images()).hasSize(1);
         assertThat(result.items().getFirst().media().images().getFirst().thumbnailUrl()).isEqualTo("/a.jpg");
         assertThat(result.items().getFirst().media().images().getFirst().originalUrl()).isEqualTo("/a.jpg");
+        assertThat(result.items().getFirst().author().guardianRegisteredByMe()).isTrue();
         assertThat(result.items().getFirst().reaction().pawCount()).isEqualTo(3);
+        assertThat(result.items().getFirst().reaction().commentCount()).isEqualTo(2);
         verify(loadFeedPostImagePort, times(1)).findByPostIds(List.of(101L, 100L));
         verify(loadFeedPostPawPort, times(1)).countByPostIds(List.of(101L, 100L));
         verify(loadFeedPostPawPort, times(1)).findPawedPostIds(77L, List.of(101L, 100L));
+        verify(loadFeedPostCommentPort, times(1)).countByPostIds(List.of(101L, 100L));
         verify(loadFeedPostHashtagPort, times(1)).findTagNamesByPostIds(List.of(101L, 100L));
         verify(loadUserProfilePort, times(1)).findByUserIds(anyCollection());
     }

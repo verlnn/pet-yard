@@ -5,7 +5,9 @@ import type {
   OAuthStartResponse,
   OAuthProvider,
   FeedPost,
+  FeedPostComment,
   HomeFeedPage,
+  GuardianRegistrationResponse,
   PetBreed,
   PetProfile,
   PetRegistrationVerificationResponse,
@@ -407,6 +409,39 @@ export const authApi = {
   },
   removeFeedPostPaw(accessToken: string, id: number) {
     return request<import("../types/authTypes").FeedPostPawResponse>(`/api/feeds/${id}/paws`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+  },
+  getFeedPostComments(accessToken: string, id: number) {
+    return request<FeedPostComment[]>(`/api/feeds/${id}/comments`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+  },
+  addFeedPostComment(accessToken: string, id: number, content: string) {
+    return request<FeedPostComment>(`/api/feeds/${id}/comments`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      },
+      body: JSON.stringify({ content })
+    });
+  },
+  registerGuardian(accessToken: string, targetUserId: number) {
+    return request<GuardianRegistrationResponse>(`/api/users/${targetUserId}/guardians`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+  },
+  unregisterGuardian(accessToken: string, targetUserId: number) {
+    return request<GuardianRegistrationResponse>(`/api/users/${targetUserId}/guardians`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${accessToken}`

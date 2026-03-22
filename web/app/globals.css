@@ -1664,6 +1664,10 @@ body {
     @apply flex items-center justify-between px-3 py-3;
   }
 
+  .home-feed-post-header-actions {
+    @apply flex items-center gap-1.5;
+  }
+
   .home-feed-post-author {
     @apply flex items-center gap-3;
   }
@@ -1692,9 +1696,22 @@ body {
     @apply inline-flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-[var(--color-hover-surface)];
   }
 
+  .home-feed-post-action-button-active {
+    color: var(--color-primary);
+  }
+
   .home-feed-post-menu-icon,
   .home-feed-post-action-icon {
     @apply h-5 w-5;
+  }
+
+  .home-feed-post-guardian-button {
+    color: var(--color-primary);
+    @apply inline-flex h-9 items-center rounded-full px-3 text-xs font-semibold transition hover:bg-[var(--color-hover-surface)];
+  }
+
+  .home-feed-post-guardian-button-active {
+    color: var(--color-text-muted);
   }
 
   .home-feed-post-media {
@@ -1732,6 +1749,11 @@ body {
     @apply mr-1 font-semibold;
   }
 
+  .home-feed-post-comment-count {
+    color: var(--color-text-muted);
+    @apply text-left text-sm font-medium;
+  }
+
   .home-feed-post-hashtags {
     @apply flex flex-wrap gap-2;
   }
@@ -1739,6 +1761,55 @@ body {
   .home-feed-post-hashtag {
     color: var(--color-primary);
     @apply text-sm font-medium;
+  }
+
+  .home-feed-post-comments {
+    @apply space-y-3 pt-1;
+  }
+
+  .home-feed-post-comment-list {
+    @apply space-y-2;
+  }
+
+  .home-feed-post-comment-item {
+    color: var(--color-text);
+    @apply text-sm leading-6;
+  }
+
+  .home-feed-post-comment-author {
+    @apply mr-1 font-semibold;
+  }
+
+  .home-feed-post-comment-content {
+    color: var(--color-text);
+  }
+
+  .home-feed-post-comment-status {
+    color: var(--color-text-muted);
+    @apply text-sm;
+  }
+
+  .home-feed-post-comment-composer {
+    border-color: var(--color-border);
+    @apply flex items-center gap-3 rounded-full border px-4 py-2.5;
+  }
+
+  .home-feed-post-comment-input {
+    color: var(--color-text);
+    @apply min-w-0 flex-1 bg-transparent text-sm outline-none;
+  }
+
+  .home-feed-post-comment-input::placeholder {
+    color: var(--color-text-subtle);
+  }
+
+  .home-feed-post-comment-submit {
+    color: var(--color-primary);
+    @apply text-sm font-semibold disabled:opacity-40;
+  }
+
+  .home-feed-post-comment-error {
+    @apply text-xs text-rose-500;
   }
 
   .home-feed-ad-card {
