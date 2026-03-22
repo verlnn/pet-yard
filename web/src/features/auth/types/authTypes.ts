@@ -106,6 +106,7 @@ export interface MyProfileResponse {
   nickname: string;
   regionName?: string | null;
   profileImageUrl?: string | null;
+  bio?: string | null;
   tier: string;
   joinedAt: string;
   lastLoginAt?: string | null;

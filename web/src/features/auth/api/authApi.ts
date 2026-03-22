@@ -268,6 +268,20 @@ export const authApi = {
       }
     });
   },
+  updateMyProfileSettings(
+    accessToken: string,
+    payload: {
+      bio?: string | null;
+    }
+  ) {
+    return request<MyProfileResponse>("/api/users/me/profile", {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      },
+      body: JSON.stringify(payload)
+    });
+  },
   createPetProfile(
     accessToken: string,
     payload: {

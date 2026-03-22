@@ -10,6 +10,7 @@ public record UserProfileResponse(
     String nickname,
     String regionName,
     String profileImageUrl,
+    String bio,
     String tier,
     Instant joinedAt,
     Instant lastLoginAt,

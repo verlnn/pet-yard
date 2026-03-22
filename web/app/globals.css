@@ -2480,6 +2480,21 @@ body {
     @apply text-sm leading-6;
   }
 
+  .settings-page-field-action-row {
+    @apply flex items-center gap-3;
+  }
+
+  .settings-page-inline-action {
+    background: var(--color-button-bg);
+    color: var(--color-button-text);
+    @apply inline-flex items-center rounded-full px-4 py-2 text-xs font-semibold transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .settings-page-inline-feedback {
+    color: var(--color-text-muted);
+    @apply text-xs;
+  }
+
   .settings-page-textarea-shell {
     @apply relative;
   }

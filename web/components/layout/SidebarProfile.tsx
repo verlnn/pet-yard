@@ -14,7 +14,9 @@ interface SidebarProfileProps {
 export function SidebarProfile({ profile, onNavigate }: SidebarProfileProps) {
   const primaryPet = profile?.pets?.[0] ?? null;
   const nickname = profile?.nickname ?? "멍냥마당";
-  const subtitle = primaryPet?.name
+  const subtitle = profile?.bio?.trim()
+    ? profile.bio
+    : primaryPet?.name
     ? `${primaryPet.name}와 함께하는 일상`
     : profile?.regionName ?? "프로필을 확인해 보세요";
 

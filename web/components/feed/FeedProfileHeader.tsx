@@ -87,7 +87,11 @@ function FeedProfileIdentity({ profile, primaryPet, postCount, onProfileImageCli
 
         <div className="feed-profile-header-meta">
           <p className="feed-profile-header-subtitle">
-            {primaryPet?.name ? `${primaryPet.name}와 함께하는 일상` : "반려동물과의 기록을 남겨보세요."}
+            {profile?.bio?.trim()
+              ? profile.bio
+              : primaryPet?.name
+              ? `${primaryPet.name}와 함께하는 일상`
+              : "반려동물과의 기록을 남겨보세요."}
           </p>
           {primaryPet?.breed && <p className="feed-profile-header-meta-line">{primaryPet.breed}</p>}
         </div>

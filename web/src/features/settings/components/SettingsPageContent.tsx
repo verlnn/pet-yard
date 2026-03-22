@@ -67,13 +67,19 @@ interface SettingsPageContentProps {
 
 export function SettingsPageContent({ activeSection }: SettingsPageContentProps) {
   const router = useRouter();
+  const [accessToken, setAccessToken] = useState<string | null>(null);
   const [profile, setProfile] = useState<MyProfileResponse | null>(null);
   const [loading, setLoading] = useState(true);
-  const [bio, setBio] = useState("반려생활 기록을 차곡차곡 쌓는 중");
+  const [bio, setBio] = useState("");
   const [gender, setGender] = useState("밝히고 싶지 않음");
+  const [savingBio, setSavingBio] = useState(false);
+  const [saveMessage, setSaveMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
+    setAccessToken(localStorage.getItem("accessToken"));
+  }, []);
+
+  useEffect(() => {
     if (!accessToken) {
       setLoading(false);
       return;
@@ -83,13 +89,14 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
       try {
         const response = await authApi.getMyProfile(accessToken);
         setProfile(response);
+        setBio(response.bio ?? "");
       } finally {
         setLoading(false);
       }
     };
 
     loadProfile();
-  }, []);
+  }, [accessToken]);
 
   const profileName = profile?.nickname ?? (loading ? "불러오는 중..." : "멍냥마당");
   const profileHandle = useMemo(() => profileName.replace(/\s+/g, "_").toLowerCase(), [profileName]);
@@ -98,6 +105,27 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
     settingsSections.flatMap((section) => section.items).find((item) => item.key === activeSection)?.label ?? "프로필 편집";
   const isPetSection = activeSection === "pet-add" || activeSection === "pet-manage";
   const isProfileSection = activeSection === "profile";
+  const bioChanged = (profile?.bio ?? "") !== bio;
+
+  const handleSaveBio = async () => {
+    if (!accessToken || savingBio || !bioChanged) {
+      return;
+    }
+    setSavingBio(true);
+    setSaveMessage(null);
+    try {
+      const response = await authApi.updateMyProfileSettings(accessToken, {
+        bio: bio.trim() || null
+      });
+      setProfile(response);
+      setBio(response.bio ?? "");
+      setSaveMessage("소개가 저장되었습니다.");
+    } catch (error) {
+      setSaveMessage(error instanceof Error ? error.message : "소개 저장에 실패했습니다.");
+    } finally {
+      setSavingBio(false);
+    }
+  };
 
   return (
     <section className="settings-page">
@@ -199,6 +227,17 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
                       onChange={(event) => setBio(event.target.value)}
                     />
                     <span className="settings-page-textarea-count">{bio.length} / 150</span>
+                  </div>
+                  <div className="settings-page-field-action-row">
+                    <button
+                      type="button"
+                      className="settings-page-inline-action"
+                      onClick={handleSaveBio}
+                      disabled={!bioChanged || savingBio}
+                    >
+                      {savingBio ? "저장 중..." : "소개 저장"}
+                    </button>
+                    {saveMessage ? <p className="settings-page-inline-feedback">{saveMessage}</p> : null}
                   </div>
                 </div>
 
