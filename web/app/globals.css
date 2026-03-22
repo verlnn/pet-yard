@@ -1330,6 +1330,10 @@ body {
     @apply mt-4 text-sm text-ink/60;
   }
 
+  .pets-settings-panel {
+    @apply space-y-6;
+  }
+
   .feed-detail-overlay {
     @apply fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4;
   }
@@ -2639,5 +2643,48 @@ body {
 
   [data-theme="dark"] .settings-page-switch-active .settings-page-switch-thumb {
     background: #0b0d10;
+  }
+
+  [data-theme="dark"] .pets-summary-card-content,
+  [data-theme="dark"] .pets-pet-meta,
+  [data-theme="dark"] .pets-status-row,
+  [data-theme="dark"] .pets-form-field,
+  [data-theme="dark"] .pets-empty-message {
+    color: var(--color-text-muted);
+  }
+
+  [data-theme="dark"] .pets-summary-card-title,
+  [data-theme="dark"] .pets-pet-title,
+  [data-theme="dark"] .pets-inline-action {
+    color: var(--color-text);
+  }
+
+  [data-theme="dark"] .pets-pet-breed,
+  [data-theme="dark"] .pets-helper-text,
+  [data-theme="dark"] .pets-photo-empty {
+    color: var(--color-text-subtle);
+  }
+
+  [data-theme="dark"] .pets-edit-panel,
+  [data-theme="dark"] .pets-registration-result {
+    border-color: var(--color-border);
+    background: var(--color-surface-muted);
+  }
+
+  [data-theme="dark"] .pets-form-input,
+  [data-theme="dark"] .pets-form-select,
+  [data-theme="dark"] .pets-photo-upload {
+    border-color: var(--color-input-border);
+    background: var(--color-surface);
+    color: var(--color-text);
+  }
+
+  [data-theme="dark"] .pets-photo-preview {
+    background: var(--color-surface);
+  }
+
+  [data-theme="dark"] .pets-registration-card {
+    border-color: rgba(16, 185, 129, 0.28);
+    background: rgba(16, 185, 129, 0.12);
   }
 }
