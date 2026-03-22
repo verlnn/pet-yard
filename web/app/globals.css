@@ -1060,14 +1060,18 @@ body {
     @apply space-y-2 px-6 py-3.5;
   }
 
+  .app-alert-dialog-visual {
+    @apply flex justify-center pb-1;
+  }
+
   .app-alert-dialog-title {
     color: var(--color-menu-text);
-    @apply text-base font-semibold;
+    @apply text-center text-base font-semibold;
   }
 
   .app-alert-dialog-description {
     color: var(--color-menu-text-muted);
-    @apply text-sm leading-6;
+    @apply text-center text-sm leading-6;
   }
 
   .app-alert-dialog-actions {

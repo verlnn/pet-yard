@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 interface AppAlertAction {
@@ -13,6 +13,7 @@ interface AppAlertDialogProps {
   open: boolean;
   title: string;
   description?: string;
+  visual?: ReactNode;
   confirmLabel?: string;
   cancelLabel?: string;
   actionsClassName?: string;
@@ -25,6 +26,7 @@ export function AppAlertDialog({
   open,
   title,
   description,
+  visual,
   confirmLabel,
   cancelLabel = "취소",
   actionsClassName = "app-alert-dialog-actions-vertical",
@@ -70,6 +72,7 @@ export function AppAlertDialog({
         onClick={(event) => event.stopPropagation()}
       >
         <div className="app-alert-dialog-copy">
+          {visual ? <div className="app-alert-dialog-visual">{visual}</div> : null}
           <h2 id="app-alert-dialog-title" className="app-alert-dialog-title">
             {title}
           </h2>

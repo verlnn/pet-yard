@@ -4,6 +4,7 @@ import { memo, useEffect, useState } from "react";
 import { MessageCircle, MoreHorizontal, PawPrint, Send } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { AppAlertDialog } from "@/components/ui/AppAlertDialog";
 import { authApi } from "@/src/features/auth/api/authApi";
 import type { HomeFeedPost } from "@/src/features/auth/types/authTypes";
 import {
@@ -68,6 +69,7 @@ export const HomeFeedPostCard = memo(function HomeFeedPostCard({
   const [pawLoading, setPawLoading] = useState(false);
   const [guardianRegisteredByMe, setGuardianRegisteredByMe] = useState(post.guardianRegisteredByMe);
   const [guardianLoading, setGuardianLoading] = useState(false);
+  const [guardianUnregisterAlertOpen, setGuardianUnregisterAlertOpen] = useState(false);
 
   useEffect(() => {
     setPawedByMe(post.pawedByMe);
@@ -91,25 +93,59 @@ export const HomeFeedPostCard = memo(function HomeFeedPostCard({
     }
   };
 
-  const handleToggleGuardian = async () => {
+  const updateGuardianRegistration = async (nextRegistered: boolean) => {
     if (guardianLoading) {
       return;
     }
     setGuardianLoading(true);
     try {
-      const response = guardianRegisteredByMe
-        ? await authApi.unregisterGuardian(accessToken, post.authorId)
-        : await authApi.registerGuardian(accessToken, post.authorId);
+      const response = nextRegistered
+        ? await authApi.registerGuardian(accessToken, post.authorId)
+        : await authApi.unregisterGuardian(accessToken, post.authorId);
       setGuardianRegisteredByMe(response.guardianRegisteredByMe);
     } finally {
       setGuardianLoading(false);
     }
   };
 
+  const handleGuardianButtonClick = async () => {
+    if (guardianRegisteredByMe) {
+      setGuardianUnregisterAlertOpen(true);
+      return;
+    }
+    await updateGuardianRegistration(true);
+  };
+
+  const handleConfirmGuardianUnregister = async () => {
+    await updateGuardianRegistration(false);
+    setGuardianUnregisterAlertOpen(false);
+  };
+
   const shouldShowGuardianButton = viewerUserId !== null && viewerUserId !== post.authorId;
 
   return (
     <article className="home-feed-post-card">
+      <AppAlertDialog
+        open={guardianUnregisterAlertOpen}
+        title={`@${post.authorNickname}님의 집사 등록을 해제하시겠어요?`}
+        visual={(
+          <Avatar className="size-16 border-0 bg-[#f25d95] p-1.5 text-white">
+            {post.authorProfileImageUrl ? (
+              <AvatarImage src={post.authorProfileImageUrl} alt={post.authorNickname} />
+            ) : (
+              <AvatarFallback className="bg-[#f25d95] text-sm font-semibold text-white">
+                {post.authorNickname[0] ?? "멍"}
+              </AvatarFallback>
+            )}
+          </Avatar>
+        )}
+        actionsClassName="app-alert-dialog-actions-vertical"
+        actions={[
+          { label: "집사 해제", onClick: handleConfirmGuardianUnregister, tone: "danger" },
+          { label: "취소", onClick: () => setGuardianUnregisterAlertOpen(false) }
+        ]}
+        onClose={() => setGuardianUnregisterAlertOpen(false)}
+      />
       <header className="home-feed-post-header">
         <div className="home-feed-post-author">
           <Avatar className="home-feed-post-avatar">
@@ -129,7 +165,7 @@ export const HomeFeedPostCard = memo(function HomeFeedPostCard({
             <button
               type="button"
               className={`home-feed-post-guardian-button ${guardianRegisteredByMe ? "home-feed-post-guardian-button-active" : ""}`}
-              onClick={handleToggleGuardian}
+              onClick={handleGuardianButtonClick}
               disabled={guardianLoading}
             >
               {guardianRegisteredByMe ? "집사 해제" : "집사 등록"}
