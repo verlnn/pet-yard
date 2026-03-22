@@ -15,6 +15,14 @@ import io.pet.petyard.user.application.port.out.LoadUserProfileSettingsPort;
 import io.pet.petyard.user.application.port.out.SaveUserProfileSettingsPort;
 import io.pet.petyard.user.domain.model.UserProfile;
 import io.pet.petyard.user.domain.model.UserProfileSettings;
+import io.pet.petyard.auth.security.ErrorResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
 
@@ -29,6 +37,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/users/me")
+@Tag(name = "User Profile", description = "내 프로필 조회 및 소개/성별/대표 반려동물 설정 API")
+@SecurityRequirement(name = "bearerAuth")
 public class UserProfileController {
 
     private final LoadUserPort loadUserPort;
@@ -53,6 +63,13 @@ public class UserProfileController {
     }
 
     @GetMapping("/profile")
+    @Operation(summary = "내 프로필 조회", description = "현재 로그인 사용자의 프로필과 프로필 설정, 반려동물 목록을 함께 조회합니다.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "조회 성공",
+            content = @Content(schema = @Schema(implementation = UserProfileResponse.class))),
+        @ApiResponse(responseCode = "401", description = "인증 필요",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     public UserProfileResponse profile(@AuthenticationPrincipal AuthPrincipal principal) {
         User user = loadUserPort.findById(principal.userId())
             .orElseThrow(() -> new ApiException(ErrorCode.UNAUTHORIZED));
@@ -92,6 +109,15 @@ public class UserProfileController {
     }
 
     @PatchMapping("/profile")
+    @Operation(summary = "내 프로필 설정 변경", description = "소개, 성별, 대표 반려동물을 한 번에 저장합니다.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "저장 성공",
+            content = @Content(schema = @Schema(implementation = UserProfileResponse.class))),
+        @ApiResponse(responseCode = "400", description = "잘못된 입력 또는 반려동물 소유 불일치",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "401", description = "인증 필요",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     public UserProfileResponse updateProfileSettings(@AuthenticationPrincipal AuthPrincipal principal,
                                                      @Valid @RequestBody UserProfileSettingsRequest request) {
         User user = loadUserPort.findById(principal.userId())

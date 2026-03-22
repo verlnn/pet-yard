@@ -61,6 +61,12 @@ logging:
     root: INFO
     io.pet.petyard: INFO
 
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
 server:
   tomcat:
     max-part-count: 15
