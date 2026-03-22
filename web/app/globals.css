@@ -1306,6 +1306,20 @@ body {
     @apply flex gap-2;
   }
 
+  .pets-edit-action-row {
+    background: var(--color-menu-surface);
+    @apply mt-2 flex overflow-hidden rounded-[20px];
+  }
+
+  .pets-edit-action {
+    @apply flex-1;
+  }
+
+  .pets-edit-action-divider {
+    background: var(--color-menu-divider);
+    @apply h-auto w-px self-stretch;
+  }
+
   .pets-action-row-spaced {
     @apply mt-3;
   }

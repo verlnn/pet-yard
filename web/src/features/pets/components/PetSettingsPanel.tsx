@@ -568,13 +568,19 @@ export function PetSettingsPanel({ mode = "manage" }: PetSettingsPanelProps) {
                         </label>
                       </div>
                       {editError && <p className="pets-form-error">{editError}</p>}
-                      <div className="pets-action-row">
-                        <Button variant="secondary" onClick={cancelEdit}>
+                      <div className="pets-edit-action-row">
+                        <button type="button" className="pets-edit-action app-alert-dialog-action" onClick={cancelEdit}>
                           취소
-                        </Button>
-                        <Button onClick={handlePetUpdate} disabled={savingEdit}>
+                        </button>
+                        <div className="pets-edit-action-divider" />
+                        <button
+                          type="button"
+                          className="pets-edit-action app-alert-dialog-action app-alert-dialog-action-accent"
+                          onClick={handlePetUpdate}
+                          disabled={savingEdit}
+                        >
                           {savingEdit ? "저장 중..." : "수정 완료"}
-                        </Button>
+                        </button>
                       </div>
                     </div>
                   )}
