@@ -1007,7 +1007,7 @@ body {
     background: var(--color-menu-surface);
     color: var(--color-menu-text);
     box-shadow: 0 28px 80px -34px rgba(15, 23, 42, 0.3);
-    @apply w-full max-w-[328px] overflow-hidden rounded-[24px] py-3;
+    @apply w-full max-w-[368px] overflow-hidden rounded-[24px] py-3;
   }
 
   .app-alert-dialog-copy {
