@@ -1532,6 +1532,57 @@ body {
     @apply text-xs text-rose-500;
   }
 
+  [data-theme="dark"] .feed-new-post-modal-shell {
+    background: #000000;
+    color: #ffffff;
+  }
+
+  [data-theme="dark"] .feed-new-post-modal-header {
+    border-bottom-color: rgba(255, 255, 255, 0.12);
+    background: #000000;
+  }
+
+  [data-theme="dark"] .feed-new-post-modal-close {
+    color: #ffffff;
+  }
+
+  [data-theme="dark"] .feed-new-post-modal-close:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  [data-theme="dark"] .feed-new-post-modal-title {
+    color: #ffffff;
+  }
+
+  [data-theme="dark"] .feed-new-post-modal-stage-panel {
+    background: #111111;
+  }
+
+  [data-theme="dark"] .feed-new-post-modal-stage-title {
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  [data-theme="dark"] .feed-new-post-modal-add-trigger {
+    border-color: rgba(255, 255, 255, 0.12);
+    background: #222324;
+    color: rgba(255, 255, 255, 0.78);
+  }
+
+  [data-theme="dark"] .feed-new-post-modal-stage-shell {
+    border-color: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  [data-theme="dark"] .feed-new-post-modal-empty-upload {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  [data-theme="dark"] .feed-new-post-modal-empty-upload-button {
+    border-color: rgba(255, 255, 255, 0.12);
+    background: #222324;
+    color: #ffffff;
+  }
+
   .feed-detail-action-bar {
     border-top-color: var(--color-border);
     background: #222324;
