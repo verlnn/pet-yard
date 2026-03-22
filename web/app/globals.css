@@ -735,6 +735,10 @@ body {
     @apply mx-auto w-full max-w-6xl;
   }
 
+  .app-layout-main-wide {
+    @apply max-w-none;
+  }
+
   .app-layout-right-panel {
     @apply hidden w-full max-w-[320px] shrink-0 xl:block;
   }

@@ -2,6 +2,9 @@
 
 import type { ReactNode } from "react";
 import { Menu } from "lucide-react";
+import { usePathname } from "next/navigation";
+
+import { ROUTES } from "@/src/lib/routes";
 
 interface SidebarLayoutProps {
   sidebar: ReactNode;
@@ -16,6 +19,9 @@ export function SidebarLayout({
   rightPanel,
   onOpenMobileSidebar
 }: SidebarLayoutProps) {
+  const pathname = usePathname();
+  const isWideCanvasRoute = pathname === ROUTES.setting;
+
   return (
     <div className="app-layout">
       {sidebar}
@@ -28,7 +34,7 @@ export function SidebarLayout({
         <Menu className="h-5 w-5" />
       </button>
       <div className="app-layout-content-shell">
-        <main className="app-layout-main">{children}</main>
+        <main className={`app-layout-main ${isWideCanvasRoute ? "app-layout-main-wide" : ""}`}>{children}</main>
         {rightPanel ? <aside className="app-layout-right-panel">{rightPanel}</aside> : null}
       </div>
     </div>
