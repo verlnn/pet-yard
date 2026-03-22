@@ -20,7 +20,7 @@ export function SidebarLayout({
   onOpenMobileSidebar
 }: SidebarLayoutProps) {
   const pathname = usePathname();
-  const isFullCanvasRoute = pathname === ROUTES.setting;
+  const isFullCanvasRoute = pathname?.startsWith("/accounts") ?? false;
 
   return (
     <div className="app-layout">
