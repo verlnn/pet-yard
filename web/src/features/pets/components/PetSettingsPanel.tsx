@@ -138,11 +138,6 @@ export function PetSettingsPanel({ mode = "manage" }: PetSettingsPanelProps) {
     loadEditBreeds();
   }, [accessToken, editForm.species, editingPetId]);
 
-  const joinedAt = useMemo(() => {
-    if (!profile?.joinedAt) return "-";
-    return new Date(profile.joinedAt).toLocaleDateString("ko-KR");
-  }, [profile?.joinedAt]);
-
   const editingPet = useMemo(
     () => pets.find((pet) => pet.id === editingPetId) ?? null,
     [pets, editingPetId]
@@ -339,19 +334,9 @@ export function PetSettingsPanel({ mode = "manage" }: PetSettingsPanelProps) {
 
   const verified = Boolean(verificationResult);
   const isAddMode = mode === "add";
-  const contentTitle = "반려동물 관리";
-  const contentDescription = "등록된 반려동물 정보를 수정하고 새 반려동물을 추가할 수 있습니다.";
 
   return (
     <div className="pets-settings-panel">
-      {!isAddMode ? (
-        <div className="settings-page-content-header">
-          <p className="settings-page-content-eyebrow">Pets</p>
-          <h2 className="settings-page-content-title">{contentTitle}</h2>
-          <p className="settings-page-field-helper">{contentDescription}</p>
-        </div>
-      ) : null}
-
       {error && (
         <div className="pets-page-error">
           {error}
@@ -360,12 +345,6 @@ export function PetSettingsPanel({ mode = "manage" }: PetSettingsPanelProps) {
       <div className="pets-page-grid">
         {!isAddMode ? (
           <>
-            <Card className="gradient-shell">
-              <CardContent className="pets-summary-card-content">
-                <p className="pets-summary-card-title">내 반려동물</p>
-                <p>가입일 {joinedAt} · 총 {profile?.petCount ?? pets.length}마리</p>
-              </CardContent>
-            </Card>
             {pets.map((pet) => (
               <Card key={pet.id} className="gradient-shell">
                 <CardContent className="pets-card-content">
