@@ -1418,6 +1418,43 @@ body {
     @apply mt-2 text-sm font-semibold text-white/80;
   }
 
+  .feed-empty-state {
+    border-color: rgb(226 232 240);
+    background: rgba(255, 255, 255, 0.7);
+    @apply rounded-[28px] border border-dashed p-8 text-center;
+  }
+
+  .feed-empty-state-icon {
+    background: rgb(196 85 61 / 0.1);
+    color: rgb(196 85 61);
+    @apply mx-auto flex h-16 w-16 items-center justify-center rounded-2xl;
+  }
+
+  .feed-empty-state-icon-mark {
+    @apply h-7 w-7;
+  }
+
+  .feed-empty-state-title {
+    @apply mt-4 font-display text-lg font-semibold;
+  }
+
+  .feed-empty-state-description {
+    color: var(--color-text-muted);
+    @apply mt-2 text-sm;
+  }
+
+  .feed-empty-state-actions {
+    @apply mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row;
+  }
+
+  .feed-empty-state-preview-grid {
+    @apply mt-6 grid grid-cols-3 gap-3 opacity-60;
+  }
+
+  .feed-empty-state-preview-tile {
+    @apply aspect-square rounded-2xl bg-slate-100;
+  }
+
   .feed-detail-action-bar {
     border-top-color: var(--color-border);
     background: #222324;
