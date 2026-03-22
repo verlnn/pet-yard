@@ -121,12 +121,23 @@ export interface FeedPost {
   content?: string | null;
   thumbnailImageUrl?: string | null;
   imageUrls?: string[] | null;
+  images?: FeedImageAsset[] | null;
   imageAspectRatioValue?: number | null;
   imageAspectRatio?: "original" | "1:1" | "4:5" | "16:9" | null;
   pawCount: number;
   pawedByMe: boolean;
   createdAt: string;
   hashtags?: string[] | null;
+}
+
+export interface FeedImageAsset {
+  thumbnailUrl?: string | null;
+  mediumUrl?: string | null;
+  originalUrl?: string | null;
+  width?: number | null;
+  height?: number | null;
+  aspectRatio?: number | null;
+  aspectRatioCode?: "original" | "1:1" | "4:5" | "16:9" | null;
 }
 
 export interface HomeFeedPost extends FeedPost {

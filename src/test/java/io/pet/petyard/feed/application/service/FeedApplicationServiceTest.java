@@ -138,6 +138,9 @@ class FeedApplicationServiceTest {
 
         assertThat(result.items()).hasSize(2);
         assertThat(result.items().getFirst().author().nickname()).isEqualTo("멍이");
+        assertThat(result.items().getFirst().media().images()).hasSize(1);
+        assertThat(result.items().getFirst().media().images().getFirst().thumbnailUrl()).isEqualTo("/a.jpg");
+        assertThat(result.items().getFirst().media().images().getFirst().originalUrl()).isEqualTo("/a.jpg");
         assertThat(result.items().getFirst().reaction().pawCount()).isEqualTo(3);
         verify(loadFeedPostImagePort, times(1)).findByPostIds(List.of(101L, 100L));
         verify(loadFeedPostPawPort, times(1)).countByPostIds(List.of(101L, 100L));

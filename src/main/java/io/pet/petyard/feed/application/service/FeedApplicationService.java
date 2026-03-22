@@ -6,6 +6,7 @@ import io.pet.petyard.feed.application.model.FeedPostView;
 import io.pet.petyard.feed.application.model.FeedPostImageCommand;
 import io.pet.petyard.feed.application.model.FeedPostPawResult;
 import io.pet.petyard.feed.application.model.HomeFeedAuthorView;
+import io.pet.petyard.feed.application.model.HomeFeedImageView;
 import io.pet.petyard.feed.application.model.HomeFeedMediaView;
 import io.pet.petyard.feed.application.model.HomeFeedPostView;
 import io.pet.petyard.feed.application.model.HomeFeedReactionView;
@@ -155,6 +156,17 @@ public class FeedApplicationService {
                 new HomeFeedMediaView(
                     imageUrls.isEmpty() ? null : imageUrls.getFirst(),
                     imageUrls,
+                    postImages.stream()
+                        .map(image -> new HomeFeedImageView(
+                            image.getImageUrl(),
+                            image.getImageUrl(),
+                            image.getImageUrl(),
+                            null,
+                            null,
+                            image.getImageAspectRatioValue(),
+                            image.getImageAspectRatio()
+                        ))
+                        .toList(),
                     post.getImageAspectRatioValue(),
                     post.getImageAspectRatio()
                 ),

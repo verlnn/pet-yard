@@ -5,13 +5,16 @@ import { Heart, MessageCircle, MoreHorizontal, Send, Bookmark } from "lucide-rea
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { HomeFeedPost } from "@/src/features/auth/types/authTypes";
+import {
+  getHomeFeedImageLoadingStrategy,
+  getPreferredHomeFeedImageUrl,
+  resolveHomeFeedAspectRatio
+} from "@/components/feed/home/homeFeedImage";
 
 interface HomeFeedPostCardProps {
   post: HomeFeedPost;
   eagerImage?: boolean;
 }
-
-const DEFAULT_HOME_FEED_ASPECT_RATIO = 4 / 5;
 
 const formatRelativeTime = (value?: string) => {
   if (!value) {
@@ -44,29 +47,14 @@ const formatRelativeTime = (value?: string) => {
   return target.toLocaleDateString("ko-KR");
 };
 
-function resolveAspectRatio(post: HomeFeedPost) {
-  if (typeof post.imageAspectRatioValue === "number" && post.imageAspectRatioValue > 0) {
-    return post.imageAspectRatioValue;
-  }
-  switch (post.imageAspectRatio) {
-    case "16:9":
-      return 16 / 9;
-    case "1:1":
-      return 1;
-    case "4:5":
-      return 4 / 5;
-    default:
-      return DEFAULT_HOME_FEED_ASPECT_RATIO;
-  }
-}
-
 export const HomeFeedPostCard = memo(function HomeFeedPostCard({
   post,
   eagerImage = false
 }: HomeFeedPostCardProps) {
   const hashtags = post.hashtags ?? [];
-  const imageUrl = post.thumbnailImageUrl ?? post.imageUrls?.[0] ?? null;
-  const mediaStyle = imageUrl ? { aspectRatio: resolveAspectRatio(post) } : undefined;
+  const imageUrl = getPreferredHomeFeedImageUrl(post);
+  const mediaStyle = imageUrl ? { aspectRatio: resolveHomeFeedAspectRatio(post) } : undefined;
+  const imageLoadingStrategy = getHomeFeedImageLoadingStrategy(eagerImage);
 
   return (
     <article className="home-feed-post-card">
@@ -96,8 +84,9 @@ export const HomeFeedPostCard = memo(function HomeFeedPostCard({
             src={imageUrl}
             alt={post.content ?? `${post.authorNickname}의 게시물`}
             className="home-feed-post-image"
-            loading={eagerImage ? "eager" : "lazy"}
+            loading={imageLoadingStrategy.loading}
             decoding="async"
+            fetchPriority={imageLoadingStrategy.fetchPriority}
           />
         </div>
       ) : null}
