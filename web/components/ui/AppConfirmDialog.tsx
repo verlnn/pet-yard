@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 interface AppConfirmDialogProps {
   open: boolean;
@@ -21,6 +22,12 @@ export function AppConfirmDialog({
   onConfirm,
   onClose
 }: AppConfirmDialogProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     if (!open) return undefined;
 
@@ -34,9 +41,9 @@ export function AppConfirmDialog({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open, onClose]);
 
-  if (!open) return null;
+  if (!open || !mounted) return null;
 
-  return (
+  return createPortal(
     <div className="app-confirm-dialog-overlay" role="presentation" onClick={onClose}>
       <div
         className="app-confirm-dialog"
@@ -68,6 +75,7 @@ export function AppConfirmDialog({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
