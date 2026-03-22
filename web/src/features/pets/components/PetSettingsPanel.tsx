@@ -337,6 +337,12 @@ export function PetSettingsPanel({ mode = "manage" }: PetSettingsPanelProps) {
 
   return (
     <div className="pets-settings-panel">
+      {!isAddMode ? (
+        <div className="settings-page-content-header">
+          <h2 className="settings-page-content-title">반려동물 관리</h2>
+        </div>
+      ) : null}
+
       {error && (
         <div className="pets-page-error">
           {error}
