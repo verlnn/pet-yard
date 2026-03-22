@@ -338,19 +338,19 @@ export function PetSettingsPanel({ mode = "manage" }: PetSettingsPanelProps) {
   };
 
   const verified = Boolean(verificationResult);
-  const contentTitle = mode === "add" ? "반려동물 추가" : "반려동물 관리";
-  const contentDescription =
-    mode === "add"
-      ? "등록번호 인증을 거쳐 새 반려동물 프로필을 추가할 수 있습니다."
-      : "등록된 반려동물 정보를 수정하고 새 반려동물을 추가할 수 있습니다.";
+  const isAddMode = mode === "add";
+  const contentTitle = "반려동물 관리";
+  const contentDescription = "등록된 반려동물 정보를 수정하고 새 반려동물을 추가할 수 있습니다.";
 
   return (
     <div className="pets-settings-panel">
-      <div className="settings-page-content-header">
-        <p className="settings-page-content-eyebrow">Pets</p>
-        <h2 className="settings-page-content-title">{contentTitle}</h2>
-        <p className="settings-page-field-helper">{contentDescription}</p>
-      </div>
+      {!isAddMode ? (
+        <div className="settings-page-content-header">
+          <p className="settings-page-content-eyebrow">Pets</p>
+          <h2 className="settings-page-content-title">{contentTitle}</h2>
+          <p className="settings-page-field-helper">{contentDescription}</p>
+        </div>
+      ) : null}
 
       {error && (
         <div className="pets-page-error">
@@ -358,12 +358,14 @@ export function PetSettingsPanel({ mode = "manage" }: PetSettingsPanelProps) {
         </div>
       )}
       <div className="pets-page-grid">
-        <Card className="gradient-shell">
-          <CardContent className="pets-summary-card-content">
-            <p className="pets-summary-card-title">내 반려동물</p>
-            <p>가입일 {joinedAt} · 총 {profile?.petCount ?? pets.length}마리</p>
-          </CardContent>
-        </Card>
+        {!isAddMode ? (
+          <>
+            <Card className="gradient-shell">
+              <CardContent className="pets-summary-card-content">
+                <p className="pets-summary-card-title">내 반려동물</p>
+                <p>가입일 {joinedAt} · 총 {profile?.petCount ?? pets.length}마리</p>
+              </CardContent>
+            </Card>
             {pets.map((pet) => (
               <Card key={pet.id} className="gradient-shell">
                 <CardContent className="pets-card-content">
@@ -594,6 +596,8 @@ export function PetSettingsPanel({ mode = "manage" }: PetSettingsPanelProps) {
                 </CardContent>
               </Card>
             ))}
+          </>
+        ) : null}
         {mode === "add" && (
           <Card className="gradient-shell">
             <CardContent className="pets-card-content pets-card-content-spacious">
