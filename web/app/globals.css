@@ -34,6 +34,7 @@
   --color-menu-text-muted: #475569;
   --color-menu-hover: #f8fafc;
   --color-menu-divider: rgba(15, 23, 42, 0.08);
+  --color-menu-danger: #dc2626;
   --shadow-soft-token: 0 20px 50px -35px rgba(15, 23, 42, 0.2);
   --shadow-card-token: 0 24px 56px -42px rgba(15, 23, 42, 0.12);
 }
@@ -70,6 +71,7 @@
   --color-menu-text-muted: rgba(248, 250, 252, 0.72);
   --color-menu-hover: rgba(255, 255, 255, 0.05);
   --color-menu-divider: rgba(255, 255, 255, 0.1);
+  --color-menu-danger: #f87171;
   --shadow-soft-token: 0 20px 50px -35px rgba(2, 6, 23, 0.55);
   --shadow-card-token: 0 24px 56px -42px rgba(2, 6, 23, 0.5);
 }
@@ -1062,7 +1064,7 @@ body {
   }
 
   .app-alert-dialog-action-danger {
-    color: var(--color-menu-text);
+    color: var(--color-menu-danger);
   }
 
   .app-sidebar-theme-panel {
