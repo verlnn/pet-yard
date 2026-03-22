@@ -1346,6 +1346,10 @@ body {
     @apply mt-5;
   }
 
+  .pets-registration-action-row {
+    @apply mt-8;
+  }
+
   .pets-registration-card {
     background: var(--color-surface);
     @apply rounded-2xl border border-[var(--color-border)] p-4 shadow-[var(--shadow-card-token)];
