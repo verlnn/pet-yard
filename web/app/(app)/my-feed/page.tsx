@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import { ChevronLeft, ChevronRight, MoreHorizontal, X } from "lucide-react";
 
 import { FeedDetailPhotoPanel } from "@/components/feed/detail/FeedDetailPhotoPanel";
@@ -12,6 +12,7 @@ import { FeedGrid } from "@/components/feed/FeedGrid";
 import { EmptyFeedState } from "@/components/feed/EmptyFeedState";
 import { NewPostModal } from "@/components/feed/NewPostModal";
 import { FeedPostPermissionDialog } from "@/components/feed/FeedPostPermissionDialog";
+import { AppAlertDialog } from "@/components/ui/AppAlertDialog";
 import { getBoxSize, getTargetRatio } from "@/components/feed/imageSizing";
 import { authApi } from "@/src/features/auth/api/authApi";
 import type { FeedPost, MyProfileResponse } from "@/src/features/auth/types/authTypes";
@@ -89,6 +90,8 @@ export default function MyFeedPage() {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [pawLoading, setPawLoading] = useState(false);
   const postActionMenuRef = useRef<HTMLDivElement | null>(null);
+  const profileImageInputRef = useRef<HTMLInputElement | null>(null);
+  const [profileImageAlertOpen, setProfileImageAlertOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -381,8 +384,63 @@ export default function MyFeedPage() {
     setPostPermissionDialogOpen(true);
   };
 
+  const handleProfileImageFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) {
+      return;
+    }
+    if (!file.type.startsWith("image/")) {
+      setError("이미지 파일만 선택할 수 있습니다.");
+      return;
+    }
+    if (file.size > MAX_IMAGE_SIZE) {
+      setError("프로필 사진은 3MB 이하 이미지로 선택해 주세요.");
+      return;
+    }
+
+    try {
+      const nextProfileImageUrl = await readFileAsDataUrl(file);
+      setProfile((prev) => prev ? { ...prev, profileImageUrl: nextProfileImageUrl } : prev);
+      setProfileImageAlertOpen(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "이미지 읽기에 실패했습니다.");
+    }
+  };
+
+  const handleRequestProfileImageUpload = () => {
+    setProfileImageAlertOpen(false);
+    profileImageInputRef.current?.click();
+  };
+
+  const handleRemoveProfileImage = () => {
+    setProfile((prev) => prev ? { ...prev, profileImageUrl: null } : prev);
+    setProfileImageAlertOpen(false);
+  };
+
   return (
     <>
+      <AppAlertDialog
+        open={profileImageAlertOpen}
+        title="프로필 사진 바꾸기"
+        description="프로필 사진에 적용할 작업을 선택해 주세요."
+        actionsClassName="app-alert-dialog-actions-vertical"
+        actions={[
+          { label: "사진 업로드", onClick: handleRequestProfileImageUpload },
+          { label: "현재 사진 삭제", onClick: handleRemoveProfileImage, tone: "danger" },
+          { label: "취소", onClick: () => setProfileImageAlertOpen(false) }
+        ]}
+        onClose={() => setProfileImageAlertOpen(false)}
+      />
+
+      <input
+        ref={profileImageInputRef}
+        type="file"
+        accept="image/*"
+        className="sr-only"
+        onChange={handleProfileImageFileChange}
+      />
+
       <section className="my-feed-page">
         {error && (
           <div className="my-feed-error-alert">
@@ -395,6 +453,7 @@ export default function MyFeedPage() {
             profile={profile}
             postCount={posts.length}
             onNewPost={handleRequestNewPost}
+            onProfileImageClick={() => setProfileImageAlertOpen(true)}
           />
 
           <div className="my-feed-tab-list">

@@ -11,15 +11,21 @@ interface FeedProfileHeaderProps {
   profile?: MyProfileResponse | null;
   postCount: number;
   onNewPost: () => void;
+  onProfileImageClick?: () => void;
 }
 
-export function FeedProfileHeader({ profile, postCount, onNewPost }: FeedProfileHeaderProps) {
+export function FeedProfileHeader({ profile, postCount, onNewPost, onProfileImageClick }: FeedProfileHeaderProps) {
   const primaryPet = profile?.pets?.[0];
 
   return (
     <section className="feed-profile-header">
       <div className="feed-profile-header-layout">
-        <FeedProfileIdentity profile={profile} primaryPet={primaryPet} postCount={postCount} />
+        <FeedProfileIdentity
+          profile={profile}
+          primaryPet={primaryPet}
+          postCount={postCount}
+          onProfileImageClick={onProfileImageClick}
+        />
         <FeedProfileActions onNewPost={onNewPost} />
       </div>
     </section>
@@ -30,18 +36,34 @@ interface FeedProfileIdentityProps {
   profile?: MyProfileResponse | null;
   primaryPet?: MyProfileResponse["pets"][number];
   postCount: number;
+  onProfileImageClick?: () => void;
 }
 
-function FeedProfileIdentity({ profile, primaryPet, postCount }: FeedProfileIdentityProps) {
+function FeedProfileIdentity({ profile, primaryPet, postCount, onProfileImageClick }: FeedProfileIdentityProps) {
+  const avatar = (
+    <Avatar className="feed-profile-header-avatar">
+      {profile?.profileImageUrl ? (
+        <AvatarImage src={profile.profileImageUrl} alt={profile.nickname} />
+      ) : (
+        <AvatarFallback>{profile?.nickname?.[0] ?? "MY"}</AvatarFallback>
+      )}
+    </Avatar>
+  );
+
   return (
     <div className="feed-profile-header-identity">
-      <Avatar className="feed-profile-header-avatar">
-        {profile?.profileImageUrl ? (
-          <AvatarImage src={profile.profileImageUrl} alt={profile.nickname} />
-        ) : (
-          <AvatarFallback>{profile?.nickname?.[0] ?? "MY"}</AvatarFallback>
-        )}
-      </Avatar>
+      {onProfileImageClick ? (
+        <button
+          type="button"
+          className="feed-profile-header-avatar-button"
+          onClick={onProfileImageClick}
+          aria-label="프로필 사진 바꾸기"
+        >
+          {avatar}
+        </button>
+      ) : (
+        avatar
+      )}
 
       <div className="feed-profile-header-copy">
         <div className="feed-profile-header-heading-row">

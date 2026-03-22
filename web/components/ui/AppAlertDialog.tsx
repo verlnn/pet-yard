@@ -3,14 +3,21 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
+interface AppAlertAction {
+  label: string;
+  onClick: () => void | Promise<void>;
+  tone?: "default" | "danger";
+}
+
 interface AppAlertDialogProps {
   open: boolean;
   title: string;
-  description: string;
-  confirmLabel: string;
+  description?: string;
+  confirmLabel?: string;
   cancelLabel?: string;
   actionsClassName?: string;
-  onConfirm: () => void | Promise<void>;
+  actions?: AppAlertAction[];
+  onConfirm?: () => void | Promise<void>;
   onClose: () => void;
 }
 
@@ -21,6 +28,7 @@ export function AppAlertDialog({
   confirmLabel,
   cancelLabel = "취소",
   actionsClassName = "app-alert-dialog-actions-vertical",
+  actions,
   onConfirm,
   onClose
 }: AppAlertDialogProps) {
@@ -46,6 +54,10 @@ export function AppAlertDialog({
   if (!open || !mounted) return null;
 
   const actionsClassNames = `app-alert-dialog-actions ${actionsClassName}`.trim();
+  const resolvedActions = actions ?? [
+    { label: cancelLabel, onClick: onClose },
+    { label: confirmLabel ?? "확인", onClick: onConfirm ?? onClose, tone: "danger" as const }
+  ];
 
   return createPortal(
     <div className="app-alert-dialog-overlay" role="presentation" onClick={onClose}>
@@ -54,32 +66,35 @@ export function AppAlertDialog({
         role="alertdialog"
         aria-modal="true"
         aria-labelledby="app-alert-dialog-title"
-        aria-describedby="app-alert-dialog-description"
+        aria-describedby={description ? "app-alert-dialog-description" : undefined}
         onClick={(event) => event.stopPropagation()}
       >
         <div className="app-alert-dialog-copy">
           <h2 id="app-alert-dialog-title" className="app-alert-dialog-title">
             {title}
           </h2>
-          <p id="app-alert-dialog-description" className="app-alert-dialog-description">
-            {description}
-          </p>
+          {description ? (
+            <p id="app-alert-dialog-description" className="app-alert-dialog-description">
+              {description}
+            </p>
+          ) : null}
         </div>
 
         <div className="app-sidebar-more-divider" />
 
         <div className={actionsClassNames}>
-          <button type="button" className="app-alert-dialog-action" onClick={onClose}>
-            {cancelLabel}
-          </button>
-          <div className="app-alert-dialog-actions-divider" />
-          <button
-            type="button"
-            className="app-alert-dialog-action app-alert-dialog-action-danger"
-            onClick={onConfirm}
-          >
-            {confirmLabel}
-          </button>
+          {resolvedActions.map((action, index) => (
+            <div key={`${action.label}-${index}`} className="app-alert-dialog-action-slot">
+              {index > 0 ? <div className="app-alert-dialog-actions-divider" /> : null}
+              <button
+                type="button"
+                className={`app-alert-dialog-action ${action.tone === "danger" ? "app-alert-dialog-action-danger" : ""}`}
+                onClick={action.onClick}
+              >
+                {action.label}
+              </button>
+            </div>
+          ))}
         </div>
       </div>
     </div>,

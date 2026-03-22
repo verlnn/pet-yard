@@ -659,6 +659,10 @@ body {
     @apply h-28 w-28 border border-[var(--color-border)] ring-0;
   }
 
+  .feed-profile-header-avatar-button {
+    @apply inline-flex rounded-full transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border)];
+  }
+
   .feed-profile-header-copy {
     @apply min-w-0 flex-1 space-y-4;
   }
@@ -1022,6 +1026,10 @@ body {
 
   .app-alert-dialog-actions {
     @apply flex;
+  }
+
+  .app-alert-dialog-action-slot {
+    @apply flex flex-1 flex-col;
   }
 
   .app-alert-dialog-actions-vertical {
