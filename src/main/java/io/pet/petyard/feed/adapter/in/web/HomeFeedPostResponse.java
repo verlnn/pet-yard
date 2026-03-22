@@ -24,17 +24,17 @@ public record HomeFeedPostResponse(
         return new HomeFeedPostResponse(
             post.id(),
             post.content(),
-            post.thumbnailImageUrl(),
-            post.imageUrls(),
-            post.imageAspectRatioValue(),
-            post.imageAspectRatio(),
-            post.pawCount(),
-            post.pawedByMe(),
+            post.media().thumbnailImageUrl(),
+            post.media().imageUrls(),
+            post.media().imageAspectRatioValue(),
+            post.media().imageAspectRatio(),
+            post.reaction().pawCount(),
+            post.reaction().pawedByMe(),
             post.createdAt(),
             post.hashtags(),
-            post.authorId(),
-            post.authorNickname(),
-            post.authorProfileImageUrl()
+            post.author().id(),
+            post.author().nickname(),
+            post.author().profileImageUrl()
         );
     }
 }

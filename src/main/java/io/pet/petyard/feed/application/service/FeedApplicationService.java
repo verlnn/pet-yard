@@ -5,7 +5,10 @@ import io.pet.petyard.common.ErrorCode;
 import io.pet.petyard.feed.application.model.FeedPostView;
 import io.pet.petyard.feed.application.model.FeedPostImageCommand;
 import io.pet.petyard.feed.application.model.FeedPostPawResult;
+import io.pet.petyard.feed.application.model.HomeFeedAuthorView;
+import io.pet.petyard.feed.application.model.HomeFeedMediaView;
 import io.pet.petyard.feed.application.model.HomeFeedPostView;
+import io.pet.petyard.feed.application.model.HomeFeedReactionView;
 import io.pet.petyard.feed.application.model.HomeFeedSlice;
 import io.pet.petyard.feed.application.port.out.DeleteFeedPostPort;
 import io.pet.petyard.feed.application.port.out.DeleteFeedPostPawPort;
@@ -117,7 +120,7 @@ public class FeedApplicationService {
 
     @Transactional(readOnly = true)
     public HomeFeedSlice listHomeFeed(Long userId, Instant cursorCreatedAt, Long cursorId, Integer limit) {
-        int pageSize = limit == null || limit <= 0 ? feedProperties.initialLoadSize() : limit;
+        int pageSize = feedProperties.resolvePageSize(limit);
         List<FeedPost> posts = loadFeedPostPort.findHomeFeedPage(cursorCreatedAt, cursorId, pageSize + 1);
         if (posts.isEmpty()) {
             return new HomeFeedSlice(List.of(), null, null, false);
@@ -142,17 +145,23 @@ public class FeedApplicationService {
             result.add(new HomeFeedPostView(
                 post.getId(),
                 post.getContent(),
-                imageUrls.isEmpty() ? null : imageUrls.getFirst(),
-                imageUrls,
-                post.getImageAspectRatioValue(),
-                post.getImageAspectRatio(),
-                pawCountsByPost.getOrDefault(post.getId(), 0L),
-                pawedPostIds.contains(post.getId()),
                 post.getCreatedAt(),
                 tagsByPost.getOrDefault(post.getId(), List.of()),
-                post.getUserId(),
-                authorProfile == null ? "멍냥마당" : authorProfile.getNickname(),
-                authorProfile == null ? null : authorProfile.getProfileImageUrl()
+                new HomeFeedAuthorView(
+                    post.getUserId(),
+                    authorProfile == null ? "멍냥마당" : authorProfile.getNickname(),
+                    authorProfile == null ? null : authorProfile.getProfileImageUrl()
+                ),
+                new HomeFeedMediaView(
+                    imageUrls.isEmpty() ? null : imageUrls.getFirst(),
+                    imageUrls,
+                    post.getImageAspectRatioValue(),
+                    post.getImageAspectRatio()
+                ),
+                new HomeFeedReactionView(
+                    pawCountsByPost.getOrDefault(post.getId(), 0L),
+                    pawedPostIds.contains(post.getId())
+                )
             ));
         }
 

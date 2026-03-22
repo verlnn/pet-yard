@@ -14,6 +14,8 @@ import org.springframework.data.repository.query.Param;
 public interface FeedPostRepository extends JpaRepository<FeedPost, Long> {
     List<FeedPost> findByUserIdOrderByCreatedAtDesc(Long userId);
 
+    // First page and cursor page stay split because PostgreSQL cannot infer the null cursor type
+    // reliably in a single JPQL branch like (:cursorCreatedAt is null) or ...
     @Query("""
         select p
         from FeedPost p

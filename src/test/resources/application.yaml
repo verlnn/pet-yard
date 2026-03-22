@@ -12,6 +12,9 @@ spring:
         format_sql: false
   flyway:
     enabled: false
+  sql:
+    init:
+      mode: always
 
 jwt:
   secret: dev-secret-change-me-please-32bytes-minimum
