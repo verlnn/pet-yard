@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, MoreHorizontal, X } from "lucide-react";
 
 import { FeedDetailPhotoPanel } from "@/components/feed/detail/FeedDetailPhotoPanel";
@@ -20,6 +21,10 @@ import { useRouter } from "next/navigation";
 
 const MAX_IMAGE_SIZE = 3 * 1024 * 1024;
 const MAX_IMAGES = 15;
+const FEED_DETAIL_SHELL_TRANSITION = {
+  duration: 0.4,
+  ease: [0.22, 1.5, 0.36, 1] as const
+};
 
 const tabs = [
   { id: "posts", label: "게시물" },
@@ -520,150 +525,175 @@ export default function MyFeedPage() {
         }}
       />
 
-      {selectedPost && (
-        <div
-          className="feed-detail-overlay"
-          onClick={handleCloseSelectedPost}
-        >
-          {hasPrevPost && (
-            <button
-              type="button"
-              onClick={handleSelectPrevPost}
-              className="feed-detail-nav-button feed-detail-nav-button-prev"
-              aria-label="이전 게시물 보기"
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-          )}
-          {hasNextPost && (
-            <button
-              type="button"
-              onClick={handleSelectNextPost}
-              className="feed-detail-nav-button feed-detail-nav-button-next"
-              aria-label="다음 게시물 보기"
-            >
-              <ChevronRight className="h-5 w-5" />
-            </button>
-          )}
-          <div className="feed-detail-shell" onClick={(event) => event.stopPropagation()}>
-            <button
-              type="button"
-              onClick={handleCloseSelectedPost}
-              className="feed-detail-close-button"
-              aria-label="피드 상세 닫기"
-            >
-              <X className="h-5 w-5" />
-            </button>
-            <div ref={postActionMenuRef} className="feed-detail-menu-anchor">
+      <AnimatePresence>
+        {selectedPost ? (
+          <motion.div
+            className="feed-detail-overlay"
+            onClick={handleCloseSelectedPost}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+          >
+            {hasPrevPost && (
               <button
                 type="button"
-                onClick={() => setPostActionMenuOpen((prev) => !prev)}
-                className="feed-detail-menu-trigger"
-                aria-label="게시물 메뉴 열기"
+                onClick={handleSelectPrevPost}
+                className="feed-detail-nav-button feed-detail-nav-button-prev"
+                aria-label="이전 게시물 보기"
               >
-                <MoreHorizontal className="h-5 w-5" />
+                <ChevronLeft className="h-5 w-5" />
               </button>
-              <div
-                className={`feed-detail-menu ${
-                  postActionMenuOpen
-                    ? "feed-detail-menu-open"
-                    : "feed-detail-menu-closed"
-                }`}
+            )}
+            {hasNextPost && (
+              <button
+                type="button"
+                onClick={handleSelectNextPost}
+                className="feed-detail-nav-button feed-detail-nav-button-next"
+                aria-label="다음 게시물 보기"
               >
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setPostActionMenuOpen(false);
-                      setDeleteConfirmOpen(true);
-                    }}
-                    disabled={deleting}
-                    className="feed-detail-menu-item feed-detail-menu-item-danger"
-                  >
-                    {deleting ? "삭제 중..." : "삭제"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setPostActionMenuOpen(false)}
-                    className="feed-detail-menu-item"
-                  >
-                    좋아요 수 숨기기
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setPostActionMenuOpen(false)}
-                    className="feed-detail-menu-item"
-                  >
-                    댓글기능 해제
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setPostActionMenuOpen(false)}
-                    className="feed-detail-menu-item"
-                  >
-                    공유기능 해제
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setPostActionMenuOpen(false)}
-                    className="feed-detail-menu-item"
-                  >
-                    수정
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setPostActionMenuOpen(false)}
-                    className="feed-detail-menu-item feed-detail-menu-item-muted"
-                  >
-                    취소
-                  </button>
-                </div>
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            )}
+            <motion.div
+              className="feed-detail-shell"
+              onClick={(event) => event.stopPropagation()}
+              initial={{
+                opacity: 0,
+                scale: 0.7,
+                y: -20
+              }}
+              animate={{
+                opacity: 1,
+                scale: [0.7, 1.1, 0.95, 1],
+                y: [-20, 0]
+              }}
+              exit={{
+                opacity: 0,
+                scale: 0.94,
+                y: 10
+              }}
+              transition={FEED_DETAIL_SHELL_TRANSITION}
+            >
+              <button
+                type="button"
+                onClick={handleCloseSelectedPost}
+                className="feed-detail-close-button"
+                aria-label="피드 상세 닫기"
+              >
+                <X className="h-5 w-5" />
+              </button>
+              <div ref={postActionMenuRef} className="feed-detail-menu-anchor">
+                <button
+                  type="button"
+                  onClick={() => setPostActionMenuOpen((prev) => !prev)}
+                  className="feed-detail-menu-trigger"
+                  aria-label="게시물 메뉴 열기"
+                >
+                  <MoreHorizontal className="h-5 w-5" />
+                </button>
+                <div
+                  className={`feed-detail-menu ${
+                    postActionMenuOpen
+                      ? "feed-detail-menu-open"
+                      : "feed-detail-menu-closed"
+                  }`}
+                >
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPostActionMenuOpen(false);
+                        setDeleteConfirmOpen(true);
+                      }}
+                      disabled={deleting}
+                      className="feed-detail-menu-item feed-detail-menu-item-danger"
+                    >
+                      {deleting ? "삭제 중..." : "삭제"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPostActionMenuOpen(false)}
+                      className="feed-detail-menu-item"
+                    >
+                      좋아요 수 숨기기
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPostActionMenuOpen(false)}
+                      className="feed-detail-menu-item"
+                    >
+                      댓글기능 해제
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPostActionMenuOpen(false)}
+                      className="feed-detail-menu-item"
+                    >
+                      공유기능 해제
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPostActionMenuOpen(false)}
+                      className="feed-detail-menu-item"
+                    >
+                      수정
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPostActionMenuOpen(false)}
+                      className="feed-detail-menu-item feed-detail-menu-item-muted"
+                    >
+                      취소
+                    </button>
+                  </div>
+              </div>
+            <div className="feed-detail-content">
+              <FeedDetailPhotoPanel
+                post={selectedPost}
+                width={selectedPostPhotoSize.width || 480}
+                height={selectedPostPhotoSize.height || 480}
+              />
+              <FeedDetailSidebar
+                post={selectedPost}
+                maxHeight={selectedPostPhotoSize.height || 480}
+                onTogglePaw={handleTogglePaw}
+                pawLoading={pawLoading}
+              />
             </div>
-          <div className="feed-detail-content">
-            <FeedDetailPhotoPanel
-              post={selectedPost}
-              width={selectedPostPhotoSize.width || 480}
-              height={selectedPostPhotoSize.height || 480}
-            />
-            <FeedDetailSidebar
-              post={selectedPost}
-              maxHeight={selectedPostPhotoSize.height || 480}
-              onTogglePaw={handleTogglePaw}
-              pawLoading={pawLoading}
-            />
-          </div>
-          {deleteConfirmOpen && (
-            <div className="feed-detail-confirm-overlay">
-              <div className="feed-detail-confirm-dialog">
-                <div className="feed-detail-confirm-body">
-                  <p className="feed-detail-confirm-title">
-                    이 게시물을 삭제하시겠습니까?
-                  </p>
-                </div>
-                <div className="feed-detail-confirm-divider" />
-                <div className="feed-detail-confirm-actions">
-                  <button
-                    type="button"
-                    onClick={() => setDeleteConfirmOpen(false)}
-                    disabled={deleting}
-                    className="feed-detail-confirm-button feed-detail-confirm-cancel"
-                  >
-                    취소
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleDelete}
-                    disabled={deleting}
-                    className="feed-detail-confirm-button feed-detail-confirm-submit"
-                  >
-                    {deleting ? "삭제 중..." : "삭제"}
-                  </button>
+            {deleteConfirmOpen && (
+              <div className="feed-detail-confirm-overlay">
+                <div className="feed-detail-confirm-dialog">
+                  <div className="feed-detail-confirm-body">
+                    <p className="feed-detail-confirm-title">
+                      이 게시물을 삭제하시겠습니까?
+                    </p>
+                  </div>
+                  <div className="feed-detail-confirm-divider" />
+                  <div className="feed-detail-confirm-actions">
+                    <button
+                      type="button"
+                      onClick={() => setDeleteConfirmOpen(false)}
+                      disabled={deleting}
+                      className="feed-detail-confirm-button feed-detail-confirm-cancel"
+                    >
+                      취소
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleDelete}
+                      disabled={deleting}
+                      className="feed-detail-confirm-button feed-detail-confirm-submit"
+                    >
+                      {deleting ? "삭제 중..." : "삭제"}
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-          </div>
-        </div>
-      )}
+            )}
+            </motion.div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </>
   );
 }
