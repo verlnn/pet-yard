@@ -122,23 +122,23 @@ export function NewPostModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
-      <div className="w-full max-w-5xl overflow-hidden rounded-[32px] bg-white shadow-2xl">
-        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-          <button type="button" onClick={onClose} className="rounded-full p-2 hover:bg-slate-100">
-            <X className="h-4 w-4" />
+    <div className="feed-new-post-modal-backdrop">
+      <div className="feed-new-post-modal-shell">
+        <div className="feed-new-post-modal-header">
+          <button type="button" onClick={onClose} className="feed-new-post-modal-close">
+            <X className="feed-new-post-modal-close-icon" />
           </button>
-          <p className="text-sm font-semibold">새 게시물 만들기</p>
+          <p className="feed-new-post-modal-title">새 게시물 만들기</p>
           <Button onClick={onSubmit} disabled={submitting} size="sm">
             {submitting ? "공유 중..." : "공유"}
           </Button>
         </div>
-        <div className="grid min-h-[520px] gap-0 md:grid-cols-[1.2fr_0.8fr]">
-          <div className="flex flex-col gap-4 bg-slate-50 p-6">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold text-ink/80">사진 관리</p>
-              <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-ink/70 shadow-sm">
-                <Plus className="h-3.5 w-3.5" /> 사진 추가
+        <div className="feed-new-post-modal-body">
+          <div className="feed-new-post-modal-stage-panel">
+            <div className="feed-new-post-modal-stage-header">
+              <p className="feed-new-post-modal-stage-title">사진 관리</p>
+              <label className="feed-new-post-modal-add-trigger">
+                <Plus className="feed-new-post-modal-add-trigger-icon" /> 사진 추가
                 <input
                   type="file"
                   accept="image/*"
@@ -149,7 +149,7 @@ export function NewPostModal({
               </label>
             </div>
 
-            <div className="mx-auto flex aspect-square w-full max-w-[480px] min-h-0 flex-col gap-3 self-center rounded-3xl border border-dashed border-slate-200 bg-white/80 p-4">
+            <div className="feed-new-post-modal-stage-shell">
               {displayUrl ? (
                 <>
                   <FeedImageStage
@@ -185,9 +185,9 @@ export function NewPostModal({
                   </FeedImageStage>
                 </>
               ) : (
-                <label className="flex h-full w-full cursor-pointer flex-col items-center justify-center gap-3 text-sm text-ink/50">
-                  <span className="rounded-2xl border border-slate-200 bg-white px-4 py-2">사진 업로드</span>
-                  <span>드래그하거나 클릭해서 업로드하세요</span>
+                <label className="feed-new-post-modal-empty-upload">
+                  <span className="feed-new-post-modal-empty-upload-button">사진 업로드</span>
+                  <span className="feed-new-post-modal-empty-upload-copy">드래그하거나 클릭해서 업로드하세요</span>
                   <input
                     type="file"
                     accept="image/*"
@@ -199,7 +199,7 @@ export function NewPostModal({
               )}
             </div>
 
-            {imageError && <p className="text-xs text-rose-500">{imageError}</p>}
+            {imageError && <p className="feed-new-post-modal-image-error">{imageError}</p>}
           </div>
           <PostComposerSidebar
             nickname={nickname}
@@ -211,7 +211,6 @@ export function NewPostModal({
           />
         </div>
       </div>
-
     </div>
   );
 }
