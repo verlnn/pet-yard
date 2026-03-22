@@ -40,6 +40,7 @@ spring:
 app:
   feed:
     initial-load-size: ${APP_FEED_INITIAL_LOAD_SIZE:10}
+    max-load-size: ${APP_FEED_MAX_LOAD_SIZE:20}
   frontend-origin: ${FRONTEND_ORIGIN}
   frontend-origin-www: ${FRONTEND_ORIGIN_WWW}
   storage:
