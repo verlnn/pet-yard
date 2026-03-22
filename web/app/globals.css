@@ -664,7 +664,31 @@ body {
   }
 
   .feed-profile-header-avatar-button {
-    @apply inline-flex rounded-full transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border)];
+    @apply relative inline-flex rounded-full transition duration-200 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border)];
+  }
+
+  .feed-profile-header-avatar-button:hover .feed-profile-header-avatar,
+  .feed-profile-header-avatar-button:focus-visible .feed-profile-header-avatar {
+    box-shadow: 0 18px 40px -28px rgba(15, 23, 42, 0.35);
+    border-color: color-mix(in srgb, var(--color-text) 25%, transparent);
+  }
+
+  .feed-profile-header-avatar-overlay {
+    background: rgba(15, 23, 42, 0.68);
+    @apply pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-1 rounded-full opacity-0 transition duration-200;
+  }
+
+  .feed-profile-header-avatar-button:hover .feed-profile-header-avatar-overlay,
+  .feed-profile-header-avatar-button:focus-visible .feed-profile-header-avatar-overlay {
+    @apply opacity-100;
+  }
+
+  .feed-profile-header-avatar-overlay-icon {
+    @apply h-4 w-4 text-white;
+  }
+
+  .feed-profile-header-avatar-overlay-label {
+    @apply text-[11px] font-medium tracking-[0.02em] text-white;
   }
 
   .feed-profile-header-copy {

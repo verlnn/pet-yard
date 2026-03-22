@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Plus, Settings } from "lucide-react";
+import { Camera, Plus, Settings } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -60,6 +60,10 @@ function FeedProfileIdentity({ profile, primaryPet, postCount, onProfileImageCli
           aria-label="프로필 사진 바꾸기"
         >
           {avatar}
+          <span className="feed-profile-header-avatar-overlay" aria-hidden="true">
+            <Camera className="feed-profile-header-avatar-overlay-icon" />
+            <span className="feed-profile-header-avatar-overlay-label">사진 변경</span>
+          </span>
         </button>
       ) : (
         avatar
