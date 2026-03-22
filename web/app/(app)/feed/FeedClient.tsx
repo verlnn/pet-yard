@@ -20,6 +20,8 @@ import {
   shouldRequestNextHomeFeedPage,
   type HomeFeedPageParam
 } from "./homeFeedQuery";
+import { consoleFeedDebugLogger, createFeedRenderTimer } from "./feedObservability";
+import { loadHomeFeedScrollState, saveHomeFeedScrollState } from "./homeFeedScrollState";
 
 export function FeedClient() {
   const [accessToken, setAccessToken] = useState<string | null>(null);
@@ -27,6 +29,10 @@ export function FeedClient() {
   const fetchLockRef = useRef(false);
   const hasNextPageRef = useRef(false);
   const isFetchingNextPageRef = useRef(false);
+  const firstPageTimerRef = useRef<ReturnType<typeof createFeedRenderTimer> | null>(null);
+  const hasRestoredScrollRef = useRef(false);
+  const nextPageRequestCountRef = useRef(0);
+  const blockedFetchAttemptCountRef = useRef(0);
 
   useEffect(() => {
     setAccessToken(localStorage.getItem("accessToken"));
@@ -44,11 +50,22 @@ export function FeedClient() {
     queryKey: buildHomeFeedQueryKey(accessToken),
     enabled: Boolean(accessToken),
     initialPageParam: null as HomeFeedPageParam,
-    queryFn: ({ pageParam }) =>
-      authApi.getHomeFeed(accessToken as string, {
+    queryFn: ({ pageParam }) => {
+      if (!pageParam) {
+        firstPageTimerRef.current = createFeedRenderTimer();
+      } else {
+        nextPageRequestCountRef.current += 1;
+        consoleFeedDebugLogger.log("home-feed-next-page-request", {
+          requestCount: nextPageRequestCountRef.current,
+          cursorCreatedAt: pageParam.createdAt,
+          cursorId: pageParam.id
+        });
+      }
+      return authApi.getHomeFeed(accessToken as string, {
         cursorCreatedAt: pageParam?.createdAt ?? null,
         cursorId: pageParam?.id ?? null
-      }),
+      });
+    },
     getNextPageParam: getHomeFeedNextPageParam,
     staleTime: HOME_FEED_QUERY_STALE_TIME,
     gcTime: HOME_FEED_QUERY_GC_TIME,
@@ -75,6 +92,60 @@ export function FeedClient() {
   }, [hasNextPage, isFetchingNextPage]);
 
   useEffect(() => {
+    hasRestoredScrollRef.current = false;
+  }, [accessToken]);
+
+  useEffect(() => {
+    if (!accessToken) {
+      return;
+    }
+
+    const persistScrollState = () => {
+      saveHomeFeedScrollState(accessToken, {
+        scrollY: window.scrollY,
+        savedAt: Date.now()
+      });
+    };
+
+    window.addEventListener("scroll", persistScrollState, { passive: true });
+    return () => {
+      persistScrollState();
+      window.removeEventListener("scroll", persistScrollState);
+    };
+  }, [accessToken]);
+
+  useEffect(() => {
+    if (!accessToken || isLoading || hasRestoredScrollRef.current) {
+      return;
+    }
+    hasRestoredScrollRef.current = true;
+
+    const previousScrollState = loadHomeFeedScrollState(accessToken);
+    if (!previousScrollState) {
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: previousScrollState.scrollY, behavior: "auto" });
+      consoleFeedDebugLogger.log("home-feed-scroll-restored", {
+        scrollY: previousScrollState.scrollY,
+        savedAt: previousScrollState.savedAt
+      });
+    });
+  }, [accessToken, isLoading, posts.length]);
+
+  useEffect(() => {
+    if (isLoading || posts.length === 0 || !firstPageTimerRef.current) {
+      return;
+    }
+
+    firstPageTimerRef.current.complete("home-feed-first-page-rendered", consoleFeedDebugLogger, {
+      itemCount: posts.length
+    });
+    firstPageTimerRef.current = null;
+  }, [isLoading, posts.length]);
+
+  useEffect(() => {
     const target = loadMoreRef.current;
     if (!target) {
       return;
@@ -83,12 +154,22 @@ export function FeedClient() {
     const observer = new IntersectionObserver(
       (entries) => {
         const [entry] = entries;
-        if (!shouldRequestNextHomeFeedPage({
+        const shouldRequestNextPage = shouldRequestNextHomeFeedPage({
           isIntersecting: Boolean(entry?.isIntersecting),
           hasNextPage: hasNextPageRef.current,
           isFetchingNextPage: isFetchingNextPageRef.current,
           isFetchLocked: fetchLockRef.current
-        })) {
+        });
+        if (!shouldRequestNextPage) {
+          if (entry?.isIntersecting) {
+            blockedFetchAttemptCountRef.current += 1;
+            consoleFeedDebugLogger.log("home-feed-next-page-skipped", {
+              blockedAttempts: blockedFetchAttemptCountRef.current,
+              hasNextPage: hasNextPageRef.current,
+              isFetchingNextPage: isFetchingNextPageRef.current,
+              isFetchLocked: fetchLockRef.current
+            });
+          }
           return;
         }
 

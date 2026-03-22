@@ -37,6 +37,8 @@ import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class FeedApplicationService {
 
     private static final Pattern HASHTAG_PATTERN = Pattern.compile("#([\\p{L}0-9_]{1,50})");
+    private static final Logger log = LoggerFactory.getLogger(FeedApplicationService.class);
 
     private final LoadFeedPostPort loadFeedPostPort;
     private final SaveFeedPostPort saveFeedPostPort;
@@ -121,9 +124,21 @@ public class FeedApplicationService {
 
     @Transactional(readOnly = true)
     public HomeFeedSlice listHomeFeed(Long userId, Instant cursorCreatedAt, Long cursorId, Integer limit) {
+        FeedHomeRequestTrace trace = FeedHomeRequestTrace.start();
         int pageSize = feedProperties.resolvePageSize(limit);
         List<FeedPost> posts = loadFeedPostPort.findHomeFeedPage(cursorCreatedAt, cursorId, pageSize + 1);
+        trace = trace.markPostsLoaded();
         if (posts.isEmpty()) {
+            log.info(
+                "home_feed_request userId={} pageSize={} hasCursor={} itemCount=0 hasMore=false postQueryMs={} relatedQueryMs={} assemblyMs={} totalMs={}",
+                userId,
+                pageSize,
+                cursorCreatedAt != null && cursorId != null,
+                trace.postQueryMillis(),
+                trace.relatedQueryMillis(),
+                trace.assemblyMillis(),
+                trace.totalMillis()
+            );
             return new HomeFeedSlice(List.of(), null, null, false);
         }
 
@@ -137,6 +152,7 @@ public class FeedApplicationService {
         Map<Long, UserProfile> profilesByUserId = loadUserProfilePort.findByUserIds(
             pagePosts.stream().map(FeedPost::getUserId).collect(java.util.stream.Collectors.toSet())
         ).stream().collect(java.util.stream.Collectors.toMap(UserProfile::getUserId, profile -> profile));
+        trace = trace.markRelatedDataLoaded();
 
         List<HomeFeedPostView> result = new ArrayList<>();
         for (FeedPost post : pagePosts) {
@@ -176,8 +192,21 @@ public class FeedApplicationService {
                 )
             ));
         }
+        trace = trace.markAssemblyFinished();
 
         FeedPost lastPost = pagePosts.getLast();
+        log.info(
+            "home_feed_request userId={} pageSize={} hasCursor={} itemCount={} hasMore={} postQueryMs={} relatedQueryMs={} assemblyMs={} totalMs={}",
+            userId,
+            pageSize,
+            cursorCreatedAt != null && cursorId != null,
+            pagePosts.size(),
+            hasMore,
+            trace.postQueryMillis(),
+            trace.relatedQueryMillis(),
+            trace.assemblyMillis(),
+            trace.totalMillis()
+        );
         return new HomeFeedSlice(
             result,
             hasMore ? lastPost.getCreatedAt() : null,
