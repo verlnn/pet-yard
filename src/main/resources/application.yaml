@@ -32,6 +32,8 @@ spring:
       mail.smtp.starttls.enable: ${MAIL_SMTP_STARTTLS:false}
 
 app:
+  feed:
+    initial-load-size: ${APP_FEED_INITIAL_LOAD_SIZE:10}
   storage:
     upload-dir: uploads
     public-url-prefix: /uploads

@@ -4,11 +4,13 @@ import io.pet.petyard.auth.domain.Permission;
 import io.pet.petyard.auth.guard.RequirePermission;
 import io.pet.petyard.auth.security.AuthPrincipal;
 import io.pet.petyard.common.storage.LocalFileStorage;
+import io.pet.petyard.feed.application.model.HomeFeedSlice;
 import io.pet.petyard.feed.application.model.FeedPostImageCommand;
 import io.pet.petyard.feed.application.model.FeedPostView;
 import io.pet.petyard.feed.application.service.FeedApplicationService;
 
 import java.util.ArrayList;
+import java.time.Instant;
 import java.util.List;
 
 import org.springframework.http.MediaType;
@@ -33,6 +35,20 @@ public class FeedController {
                           LocalFileStorage localFileStorage) {
         this.feedApplicationService = feedApplicationService;
         this.localFileStorage = localFileStorage;
+    }
+
+    @RequirePermission(Permission.FEED_READ)
+    @GetMapping
+    public HomeFeedPageResponse homeFeed(@AuthenticationPrincipal AuthPrincipal principal,
+                                         @RequestParam(required = false) Instant cursorCreatedAt,
+                                         @RequestParam(required = false) Long cursorId,
+                                         @RequestParam(required = false) Integer limit) {
+        HomeFeedSlice slice = feedApplicationService.listHomeFeed(principal.userId(), cursorCreatedAt, cursorId, limit);
+        return new HomeFeedPageResponse(
+            slice.items().stream().map(HomeFeedPostResponse::from).toList(),
+            slice.hasMore() ? new HomeFeedCursorResponse(slice.nextCursorCreatedAt(), slice.nextCursorId()) : null,
+            slice.hasMore()
+        );
     }
 
     @RequirePermission(Permission.FEED_READ)

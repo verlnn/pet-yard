@@ -5,6 +5,8 @@ import io.pet.petyard.common.ErrorCode;
 import io.pet.petyard.feed.application.model.FeedPostView;
 import io.pet.petyard.feed.application.model.FeedPostImageCommand;
 import io.pet.petyard.feed.application.model.FeedPostPawResult;
+import io.pet.petyard.feed.application.model.HomeFeedPostView;
+import io.pet.petyard.feed.application.model.HomeFeedSlice;
 import io.pet.petyard.feed.application.port.out.DeleteFeedPostPort;
 import io.pet.petyard.feed.application.port.out.DeleteFeedPostPawPort;
 import io.pet.petyard.feed.application.port.out.LoadFeedPostImagePort;
@@ -17,9 +19,12 @@ import io.pet.petyard.feed.application.port.out.SaveFeedPostHashtagPort;
 import io.pet.petyard.feed.application.port.out.SaveFeedPostPort;
 import io.pet.petyard.feed.domain.model.FeedPost;
 import io.pet.petyard.feed.domain.model.FeedPostImage;
+import io.pet.petyard.user.application.port.out.LoadUserProfilePort;
+import io.pet.petyard.user.domain.model.UserProfile;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -46,6 +51,8 @@ public class FeedApplicationService {
     private final DeleteFeedPostPawPort deleteFeedPostPawPort;
     private final SaveFeedPostHashtagPort saveFeedPostHashtagPort;
     private final LoadFeedPostHashtagPort loadFeedPostHashtagPort;
+    private final LoadUserProfilePort loadUserProfilePort;
+    private final FeedProperties feedProperties;
 
     public FeedApplicationService(LoadFeedPostPort loadFeedPostPort,
                                   SaveFeedPostPort saveFeedPostPort,
@@ -56,7 +63,9 @@ public class FeedApplicationService {
                                   LoadFeedPostPawPort loadFeedPostPawPort,
                                   DeleteFeedPostPawPort deleteFeedPostPawPort,
                                   SaveFeedPostHashtagPort saveFeedPostHashtagPort,
-                                  LoadFeedPostHashtagPort loadFeedPostHashtagPort) {
+                                  LoadFeedPostHashtagPort loadFeedPostHashtagPort,
+                                  LoadUserProfilePort loadUserProfilePort,
+                                  FeedProperties feedProperties) {
         this.loadFeedPostPort = loadFeedPostPort;
         this.saveFeedPostPort = saveFeedPostPort;
         this.deleteFeedPostPort = deleteFeedPostPort;
@@ -67,6 +76,8 @@ public class FeedApplicationService {
         this.deleteFeedPostPawPort = deleteFeedPostPawPort;
         this.saveFeedPostHashtagPort = saveFeedPostHashtagPort;
         this.loadFeedPostHashtagPort = loadFeedPostHashtagPort;
+        this.loadUserProfilePort = loadUserProfilePort;
+        this.feedProperties = feedProperties;
     }
 
     @Transactional(readOnly = true)
@@ -102,6 +113,56 @@ public class FeedApplicationService {
             ));
         }
         return result;
+    }
+
+    @Transactional(readOnly = true)
+    public HomeFeedSlice listHomeFeed(Long userId, Instant cursorCreatedAt, Long cursorId, Integer limit) {
+        int pageSize = limit == null || limit <= 0 ? feedProperties.initialLoadSize() : limit;
+        List<FeedPost> posts = loadFeedPostPort.findHomeFeedPage(cursorCreatedAt, cursorId, pageSize + 1);
+        if (posts.isEmpty()) {
+            return new HomeFeedSlice(List.of(), null, null, false);
+        }
+
+        boolean hasMore = posts.size() > pageSize;
+        List<FeedPost> pagePosts = hasMore ? posts.subList(0, pageSize) : posts;
+        List<Long> postIds = pagePosts.stream().map(FeedPost::getId).toList();
+        Map<Long, List<FeedPostImage>> imagesByPost = loadFeedPostImagePort.findByPostIds(postIds);
+        Map<Long, Long> pawCountsByPost = loadFeedPostPawPort.countByPostIds(postIds);
+        Set<Long> pawedPostIds = new HashSet<>(loadFeedPostPawPort.findPawedPostIds(userId, postIds));
+        Map<Long, List<String>> tagsByPost = loadFeedPostHashtagPort.findTagNamesByPostIds(postIds);
+        Map<Long, UserProfile> profilesByUserId = loadUserProfilePort.findByUserIds(
+            pagePosts.stream().map(FeedPost::getUserId).collect(java.util.stream.Collectors.toSet())
+        ).stream().collect(java.util.stream.Collectors.toMap(UserProfile::getUserId, profile -> profile));
+
+        List<HomeFeedPostView> result = new ArrayList<>();
+        for (FeedPost post : pagePosts) {
+            List<FeedPostImage> postImages = imagesByPost.getOrDefault(post.getId(), List.of());
+            List<String> imageUrls = postImages.stream().map(FeedPostImage::getImageUrl).toList();
+            UserProfile authorProfile = profilesByUserId.get(post.getUserId());
+            result.add(new HomeFeedPostView(
+                post.getId(),
+                post.getContent(),
+                imageUrls.isEmpty() ? null : imageUrls.getFirst(),
+                imageUrls,
+                post.getImageAspectRatioValue(),
+                post.getImageAspectRatio(),
+                pawCountsByPost.getOrDefault(post.getId(), 0L),
+                pawedPostIds.contains(post.getId()),
+                post.getCreatedAt(),
+                tagsByPost.getOrDefault(post.getId(), List.of()),
+                post.getUserId(),
+                authorProfile == null ? "멍냥마당" : authorProfile.getNickname(),
+                authorProfile == null ? null : authorProfile.getProfileImageUrl()
+            ));
+        }
+
+        FeedPost lastPost = pagePosts.getLast();
+        return new HomeFeedSlice(
+            result,
+            hasMore ? lastPost.getCreatedAt() : null,
+            hasMore ? lastPost.getId() : null,
+            hasMore
+        );
     }
 
     @Transactional
