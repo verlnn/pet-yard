@@ -1375,6 +1375,7 @@ body {
   }
 
   .feed-detail-overlay {
+    animation: feed-detail-overlay-enter 220ms cubic-bezier(0.22, 1, 0.36, 1);
     @apply fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4;
   }
 
@@ -1391,12 +1392,33 @@ body {
   }
 
   .feed-detail-shell {
+    animation: feed-detail-shell-enter 260ms cubic-bezier(0.22, 1, 0.36, 1);
     @apply relative;
   }
 
   .feed-detail-content {
     background: var(--color-surface);
     @apply flex overflow-hidden rounded-[32px];
+  }
+
+  @keyframes feed-detail-overlay-enter {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes feed-detail-shell-enter {
+    from {
+      opacity: 0;
+      transform: translateY(20px) scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
   }
 
   .feed-detail-close-button {
