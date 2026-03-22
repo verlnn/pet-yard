@@ -426,7 +426,7 @@ export default function MyFeedPage() {
         description="프로필 사진에 적용할 작업을 선택해 주세요."
         actionsClassName="app-alert-dialog-actions-vertical"
         actions={[
-          { label: "사진 업로드", onClick: handleRequestProfileImageUpload },
+          { label: "사진 업로드", onClick: handleRequestProfileImageUpload, tone: 'accent' },
           { label: "현재 사진 삭제", onClick: handleRemoveProfileImage, tone: "danger" },
           { label: "취소", onClick: () => setProfileImageAlertOpen(false) }
         ]}
