@@ -1796,7 +1796,7 @@ body {
   }
 
   .home-feed-ad-iframe {
-    @apply block aspect-[2/3] h-auto w-full;
+    @apply block aspect-[3/4] h-auto w-full;
   }
 
   .home-feed-sidebar {
