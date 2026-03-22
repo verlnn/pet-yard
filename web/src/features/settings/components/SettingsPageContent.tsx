@@ -155,7 +155,6 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
           ) : !isProfileSection ? (
             <>
               <div className="settings-page-content-header">
-                <p className="settings-page-content-eyebrow">Settings</p>
                 <h2 className="settings-page-content-title">{activeItemLabel}</h2>
                 <p className="settings-page-field-helper">이 섹션은 현재 설정 페이지 구조에 맞춰 정리 중입니다.</p>
               </div>
@@ -166,7 +165,6 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
           ) : (
             <>
               <div className="settings-page-content-header">
-                <p className="settings-page-content-eyebrow">Settings</p>
                 <h2 className="settings-page-content-title">프로필 편집</h2>
               </div>
 
