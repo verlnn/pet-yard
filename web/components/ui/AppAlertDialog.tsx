@@ -6,7 +6,7 @@ import { createPortal } from "react-dom";
 interface AppAlertAction {
   label: string;
   onClick: () => void | Promise<void>;
-  tone?: "default" | "danger";
+  tone?: "default" | "danger" | "accent";
 }
 
 interface AppAlertDialogProps {
@@ -88,7 +88,7 @@ export function AppAlertDialog({
               {index > 0 ? <div className="app-alert-dialog-actions-divider" /> : null}
               <button
                 type="button"
-                className={`app-alert-dialog-action ${action.tone === "danger" ? "app-alert-dialog-action-danger" : ""}`}
+                className={`app-alert-dialog-action ${action.tone === "danger" ? "app-alert-dialog-action-danger" : ""} ${action.tone === "accent" ? "app-alert-dialog-action-accent" : ""}`}
                 onClick={action.onClick}
               >
                 {action.label}
