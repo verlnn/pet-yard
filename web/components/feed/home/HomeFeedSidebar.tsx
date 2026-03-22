@@ -17,7 +17,7 @@ const FALLBACK_USERS = [
 const SIDEBAR_NATIVE_AD = {
   sponsor: "Coupang Partners",
   iframeSrc:
-    "https://ads-partners.coupang.com/widgets.html?id=974614&template=banner&trackingCode=AF8275210&subId=&width=300&height=250"
+    "https://ads-partners.coupang.com/widgets.html?id=974615&template=carousel&trackingCode=AF8275210&subId=&width=300&height=250&tsource="
 };
 
 export function HomeFeedSidebar({ posts }: HomeFeedSidebarProps) {
