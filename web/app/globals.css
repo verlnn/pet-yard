@@ -2209,7 +2209,7 @@ body {
   }
 
   .settings-page-content {
-    @apply space-y-6;
+    @apply space-y-6 lg:max-w-[760px] lg:pl-10;
   }
 
   .settings-page-content-header {
@@ -2389,5 +2389,96 @@ body {
     .settings-page-preference-card {
       @apply flex-col items-start;
     }
+  }
+
+  @media (min-width: 1024px) {
+    .settings-page-sidebar {
+      border-right: 1px solid var(--color-border);
+      @apply pr-8;
+    }
+  }
+
+  [data-theme="dark"] .settings-page {
+    background: #0b0d10;
+  }
+
+  [data-theme="dark"] .settings-page-sidebar {
+    border-right-color: rgba(255, 255, 255, 0.12);
+  }
+
+  [data-theme="dark"] .settings-page-search {
+    border-color: rgba(255, 255, 255, 0.08);
+    background: #222324;
+  }
+
+  [data-theme="dark"] .settings-page-account-center {
+    border-color: rgba(255, 255, 255, 0.08);
+    background: #222324;
+    box-shadow: none;
+  }
+
+  [data-theme="dark"] .settings-page-account-center-brand,
+  [data-theme="dark"] .settings-page-account-center-link {
+    color: #7c8cff;
+  }
+
+  [data-theme="dark"] .settings-page-nav-item {
+    color: rgba(255, 255, 255, 0.88);
+  }
+
+  [data-theme="dark"] .settings-page-nav-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .settings-page-nav-item-active {
+    background: #222324;
+    color: #ffffff;
+  }
+
+  [data-theme="dark"] .settings-page-profile-row,
+  [data-theme="dark"] .settings-page-preference-card {
+    border-color: rgba(255, 255, 255, 0.08);
+    background: #222324;
+    box-shadow: none;
+  }
+
+  [data-theme="dark"] .settings-page-profile-avatar {
+    border-color: rgba(255, 255, 255, 0.08);
+    background: #111111;
+  }
+
+  [data-theme="dark"] .settings-page-profile-action {
+    background: #5865f2;
+    color: #ffffff;
+  }
+
+  [data-theme="dark"] .settings-page-input,
+  [data-theme="dark"] .settings-page-textarea,
+  [data-theme="dark"] .settings-page-select-shell {
+    border-color: rgba(255, 255, 255, 0.12);
+    background: #111111;
+    box-shadow: none;
+  }
+
+  [data-theme="dark"] .settings-page-input,
+  [data-theme="dark"] .settings-page-textarea,
+  [data-theme="dark"] .settings-page-select {
+    color: #ffffff;
+  }
+
+  [data-theme="dark"] .settings-page-switch {
+    background: #34363a;
+  }
+
+  [data-theme="dark"] .settings-page-switch-active {
+    background: #ffffff;
+  }
+
+  [data-theme="dark"] .settings-page-switch-thumb {
+    background: #0b0d10;
+  }
+
+  [data-theme="dark"] .settings-page-switch-active .settings-page-switch-thumb {
+    background: #0b0d10;
   }
 }
