@@ -1,12 +1,22 @@
 import type { HomeFeedPost } from "@/src/features/auth/types/authTypes";
 
+export interface HomeFeedAdTrackingMetadata {
+  source: "client-fallback" | "server-sponsored";
+  placement: "feed-inline";
+  experimentKey?: string | null;
+}
+
 export interface HomeFeedAd {
-  id: string;
+  adId: string;
+  campaignId: string;
+  slotKey: string;
   sponsor: string;
   title: string;
   description: string;
   imageUrl: string;
+  targetUrl: string;
   ctaLabel: string;
+  tracking: HomeFeedAdTrackingMetadata;
 }
 
 export type HomeFeedListItem =
@@ -17,20 +27,34 @@ export const DEFAULT_HOME_FEED_AD_INTERVAL = 4;
 
 export const HOME_FEED_ADS: HomeFeedAd[] = [
   {
-    id: "ad-training",
+    adId: "ad-training",
+    campaignId: "campaign-walk-routine",
+    slotKey: "feed-inline-1",
     sponsor: "PetYard Plus",
     title: "산책 기록을 훈련 루틴으로 이어보세요",
     description: "산책 거리, 배변 기록, 컨디션 메모를 한 번에 정리하는 프리미엄 루틴 플래너",
     imageUrl: "/images/auth/auth-hero-showcase.png",
-    ctaLabel: "자세히 보기"
+    targetUrl: "/knowledge",
+    ctaLabel: "자세히 보기",
+    tracking: {
+      source: "client-fallback",
+      placement: "feed-inline"
+    }
   },
   {
-    id: "ad-care",
+    adId: "ad-care",
+    campaignId: "campaign-health-reminder",
+    slotKey: "feed-inline-2",
     sponsor: "Paw Care",
     title: "예방접종과 건강 체크 일정을 놓치지 마세요",
     description: "반려동물 일정 캘린더와 보호자 리마인더를 홈 피드에서 바로 확인할 수 있어요.",
     imageUrl: "/images/brand/petyard-symbol.png",
-    ctaLabel: "알림 설정"
+    targetUrl: "/notifications",
+    ctaLabel: "알림 설정",
+    tracking: {
+      source: "client-fallback",
+      placement: "feed-inline"
+    }
   }
 ];
 
@@ -72,7 +96,7 @@ export function buildHomeFeedItems(
       const ad = ads[adIndex % ads.length];
       result.push({
         type: "ad",
-        id: `ad-${ad.id}-${index}`,
+        id: `ad-${ad.adId}-${index}`,
         ad
       });
       adIndex += 1;

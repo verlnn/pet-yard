@@ -222,7 +222,7 @@ export function FeedClient() {
                   eagerImage={index < 2}
                 />
               ) : (
-                <HomeFeedAdCard key={item.id} ad={item.ad} />
+                <HomeFeedAdCard key={item.id} ad={item.ad} position={index} />
               )
             )}
 

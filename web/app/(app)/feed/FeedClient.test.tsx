@@ -20,7 +20,7 @@ vi.mock("@/components/feed/home/HomeFeedPostCard", () => ({
 }));
 
 vi.mock("@/components/feed/home/HomeFeedAdCard", () => ({
-  HomeFeedAdCard: ({ ad }: { ad: { id: string } }) => <div data-testid={`ad-${ad.id}`} />
+  HomeFeedAdCard: ({ ad }: { ad: { adId: string } }) => <div data-testid={`ad-${ad.adId}`} />
 }));
 
 vi.mock("@/src/features/auth/api/authApi", () => ({

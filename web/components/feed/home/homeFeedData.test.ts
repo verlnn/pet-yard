@@ -59,4 +59,17 @@ describe("buildHomeFeedItems", () => {
   it("uses the documented default interval", () => {
     expect(DEFAULT_HOME_FEED_AD_INTERVAL).toBe(4);
   });
+
+  it("keeps the fallback ads on the future-proof contract shape", () => {
+    expect(HOME_FEED_ADS[0]).toMatchObject({
+      adId: "ad-training",
+      campaignId: expect.any(String),
+      slotKey: expect.any(String),
+      targetUrl: expect.any(String),
+      tracking: {
+        source: "client-fallback",
+        placement: "feed-inline"
+      }
+    });
+  });
 });
