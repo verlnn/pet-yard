@@ -2,14 +2,18 @@
 
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { MessageCircleMore } from "lucide-react";
+import { MessageCircleMore, X } from "lucide-react";
 
+import { FeedDetailPhotoPanel } from "@/components/feed/detail/FeedDetailPhotoPanel";
+import { FeedDetailSidebar } from "@/components/feed/detail/FeedDetailSidebar";
+import { getBoxSize, getTargetRatio } from "@/components/feed/imageSizing";
 import { HomeFeedAdCard } from "@/components/feed/home/HomeFeedAdCard";
 import { HomeFeedPostCard } from "@/components/feed/home/HomeFeedPostCard";
 import { HomeFeedSidebar } from "@/components/feed/home/HomeFeedSidebar";
 import { HomeFeedStories } from "@/components/feed/home/HomeFeedStories";
 import { buildHomeFeedItems } from "@/components/feed/home/homeFeedData";
 import { authApi } from "@/src/features/auth/api/authApi";
+import type { FeedPostComment, HomeFeedPost } from "@/src/features/auth/types/authTypes";
 import {
   buildHomeFeedQueryKey,
   getHomeFeedNextPageParam,
@@ -26,6 +30,15 @@ import { loadHomeFeedScrollState, saveHomeFeedScrollState } from "./homeFeedScro
 export function FeedClient() {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [viewerUserId, setViewerUserId] = useState<number | null>(null);
+  const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
+  const [selectedPost, setSelectedPost] = useState<HomeFeedPost | null>(null);
+  const [selectedPostComments, setSelectedPostComments] = useState<FeedPostComment[]>([]);
+  const [selectedPostCommentsLoading, setSelectedPostCommentsLoading] = useState(false);
+  const [selectedPostCommentsError, setSelectedPostCommentsError] = useState<string | null>(null);
+  const [selectedPostCommentValue, setSelectedPostCommentValue] = useState("");
+  const [selectedPostCommentSubmitting, setSelectedPostCommentSubmitting] = useState(false);
+  const [selectedPostPawLoading, setSelectedPostPawLoading] = useState(false);
+  const [commentFocusToken, setCommentFocusToken] = useState(0);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const fetchLockRef = useRef(false);
   const hasNextPageRef = useRef(false);
@@ -37,6 +50,18 @@ export function FeedClient() {
 
   useEffect(() => {
     setAccessToken(localStorage.getItem("accessToken"));
+  }, []);
+
+  useEffect(() => {
+    const updateViewportSize = () => {
+      setViewportSize({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    };
+    updateViewportSize();
+    window.addEventListener("resize", updateViewportSize);
+    return () => window.removeEventListener("resize", updateViewportSize);
   }, []);
 
   useEffect(() => {
@@ -107,6 +132,34 @@ export function FeedClient() {
   const deferredPosts = useDeferredValue(posts);
   const feedItems = useMemo(() => buildHomeFeedItems(deferredPosts), [deferredPosts]);
   const isEmptyFeed = !isLoading && deferredPosts.length === 0;
+  const selectedPostPhotoSize = useMemo(() => {
+    if (!selectedPost || !viewportSize.width || !viewportSize.height) {
+      return { width: 0, height: 0 };
+    }
+
+    const targetRatio = getTargetRatio({
+      aspectRatio: selectedPost.imageAspectRatio,
+      aspectRatioValue: selectedPost.imageAspectRatioValue
+    });
+    const modalMaxHeight = Math.min(viewportSize.height * 0.88, 820);
+    const sidebarWidth = 360;
+    const modalMaxWidth = Math.min(viewportSize.width - 32, 1280);
+    const photoMaxWidth = Math.max(280, modalMaxWidth - sidebarWidth);
+    const isWideLandscape = selectedPost.imageAspectRatio === "16:9";
+
+    if (isWideLandscape) {
+      return {
+        width: photoMaxWidth,
+        height: modalMaxHeight
+      };
+    }
+
+    return getBoxSize({
+      containerWidth: photoMaxWidth,
+      containerHeight: modalMaxHeight,
+      targetRatio
+    });
+  }, [selectedPost, viewportSize]);
 
   useEffect(() => {
     hasNextPageRef.current = Boolean(hasNextPage);
@@ -214,6 +267,89 @@ export function FeedClient() {
     return () => observer.disconnect();
   }, [fetchNextPage]);
 
+  useEffect(() => {
+    if (!selectedPost) {
+      return;
+    }
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setSelectedPost(null);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedPost]);
+
+  const loadSelectedPostComments = async (postId: number) => {
+    if (!accessToken) {
+      return;
+    }
+    setSelectedPostCommentsLoading(true);
+    setSelectedPostCommentsError(null);
+    try {
+      const response = await authApi.getFeedPostComments(accessToken, postId);
+      setSelectedPostComments(response);
+    } catch (error) {
+      setSelectedPostCommentsError(error instanceof Error ? error.message : "댓글을 불러오지 못했습니다.");
+    } finally {
+      setSelectedPostCommentsLoading(false);
+    }
+  };
+
+  const handleOpenComments = (post: HomeFeedPost) => {
+    setSelectedPost(post);
+    setSelectedPostComments([]);
+    setSelectedPostCommentsError(null);
+    setSelectedPostCommentValue("");
+    setCommentFocusToken((previous) => previous + 1);
+    void loadSelectedPostComments(post.id);
+  };
+
+  const handleToggleSelectedPostPaw = async () => {
+    if (!selectedPost || !accessToken || selectedPostPawLoading) {
+      return;
+    }
+    setSelectedPostPawLoading(true);
+    try {
+      const response = selectedPost.pawedByMe
+        ? await authApi.removeFeedPostPaw(accessToken, selectedPost.id)
+        : await authApi.addFeedPostPaw(accessToken, selectedPost.id);
+      setSelectedPost((previous) => previous ? {
+        ...previous,
+        pawCount: response.pawCount,
+        pawedByMe: response.pawedByMe
+      } : previous);
+    } finally {
+      setSelectedPostPawLoading(false);
+    }
+  };
+
+  const handleSubmitSelectedPostComment = async () => {
+    if (!selectedPost || !accessToken || selectedPostCommentSubmitting) {
+      return;
+    }
+    const trimmed = selectedPostCommentValue.trim();
+    if (!trimmed) {
+      return;
+    }
+    setSelectedPostCommentSubmitting(true);
+    setSelectedPostCommentsError(null);
+    try {
+      const created = await authApi.addFeedPostComment(accessToken, selectedPost.id, trimmed);
+      setSelectedPostComments((previous) => [...previous, created]);
+      setSelectedPost((previous) => previous ? {
+        ...previous,
+        commentCount: previous.commentCount + 1
+      } : previous);
+      setSelectedPostCommentValue("");
+      setCommentFocusToken((previous) => previous + 1);
+    } catch (error) {
+      setSelectedPostCommentsError(error instanceof Error ? error.message : "댓글을 등록하지 못했습니다.");
+    } finally {
+      setSelectedPostCommentSubmitting(false);
+    }
+  };
+
   if (!accessToken) {
     return (
       <section className="home-feed-shell">
@@ -259,6 +395,7 @@ export function FeedClient() {
                   accessToken={accessToken}
                   viewerUserId={viewerUserId}
                   eagerImage={index < 2}
+                  onOpenComments={handleOpenComments}
                 />
               ) : (
                 <HomeFeedAdCard key={item.id} ad={item.ad} position={index} />
@@ -287,6 +424,42 @@ export function FeedClient() {
         <MessageCircleMore className="home-feed-messages-bubble-icon" />
         메시지
       </button>
+
+      {selectedPost ? (
+        <div className="feed-detail-overlay" onClick={() => setSelectedPost(null)}>
+          <div className="feed-detail-shell" onClick={(event) => event.stopPropagation()}>
+            <button
+              type="button"
+              onClick={() => setSelectedPost(null)}
+              className="feed-detail-close-button"
+              aria-label="피드 상세 닫기"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <div className="feed-detail-content">
+              <FeedDetailPhotoPanel
+                post={selectedPost}
+                width={selectedPostPhotoSize.width || 480}
+                height={selectedPostPhotoSize.height || 480}
+              />
+              <FeedDetailSidebar
+                post={selectedPost}
+                maxHeight={selectedPostPhotoSize.height || 480}
+                onTogglePaw={handleToggleSelectedPostPaw}
+                pawLoading={selectedPostPawLoading}
+                comments={selectedPostComments}
+                commentsLoading={selectedPostCommentsLoading}
+                commentsErrorMessage={selectedPostCommentsError}
+                commentValue={selectedPostCommentValue}
+                onCommentValueChange={setSelectedPostCommentValue}
+                onCommentSubmit={handleSubmitSelectedPostComment}
+                commentSubmitting={selectedPostCommentSubmitting}
+                focusCommentToken={commentFocusToken}
+              />
+            </div>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }

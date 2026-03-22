@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { MessageCircle, PawPrint, Send } from "lucide-react";
 
 interface FeedDetailActionBarProps {
@@ -9,6 +9,13 @@ interface FeedDetailActionBarProps {
   pawedByMe: boolean;
   onTogglePaw: () => void;
   pawLoading?: boolean;
+  commentValue?: string;
+  onCommentValueChange?: (value: string) => void;
+  onCommentSubmit?: () => void;
+  commentSubmitting?: boolean;
+  onCommentButtonClick?: () => void;
+  focusCommentToken?: number;
+  commentPlaceholder?: string;
 }
 
 export function FeedDetailActionBar({
@@ -16,9 +23,23 @@ export function FeedDetailActionBar({
   pawCount,
   pawedByMe,
   onTogglePaw,
-  pawLoading = false
+  pawLoading = false,
+  commentValue = "",
+  onCommentValueChange,
+  onCommentSubmit,
+  commentSubmitting = false,
+  onCommentButtonClick,
+  focusCommentToken = 0,
+  commentPlaceholder = "댓글을 남겨보세요."
 }: FeedDetailActionBarProps) {
   const commentInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (!focusCommentToken) {
+      return;
+    }
+    requestAnimationFrame(() => commentInputRef.current?.focus());
+  }, [focusCommentToken]);
 
   return (
     <div className="feed-detail-action-bar">
@@ -31,13 +52,16 @@ export function FeedDetailActionBar({
             onClick={onTogglePaw}
             disabled={pawLoading}
           >
-            <PawPrint className="feed-detail-paw-icon" />
+            <PawPrint className={`feed-detail-paw-icon ${pawedByMe ? "feed-detail-paw-icon-active" : ""}`} />
           </button>
           <button
             type="button"
             className="feed-detail-action-button"
             aria-label="댓글 보기"
-            onClick={() => commentInputRef.current?.focus()}
+            onClick={() => {
+              onCommentButtonClick?.();
+              commentInputRef.current?.focus();
+            }}
           >
             <MessageCircle className="feed-detail-action-icon" />
           </button>
@@ -62,14 +86,24 @@ export function FeedDetailActionBar({
           <input
             ref={commentInputRef}
             type="text"
-            placeholder="댓글을 남겨보세요."
+            value={commentValue}
+            onChange={(event) => onCommentValueChange?.(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" && !event.nativeEvent.isComposing) {
+                event.preventDefault();
+                onCommentSubmit?.();
+              }
+            }}
+            placeholder={commentPlaceholder}
             className="feed-detail-comment-input"
           />
           <button
             type="button"
             className="feed-detail-comment-submit"
+            onClick={onCommentSubmit}
+            disabled={commentSubmitting || commentValue.trim().length === 0}
           >
-            등록
+            {commentSubmitting ? "등록 중" : "등록"}
           </button>
         </div>
       </div>
