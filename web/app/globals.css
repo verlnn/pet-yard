@@ -731,6 +731,10 @@ body {
     @apply flex min-h-screen flex-col px-4 pb-10 pt-20 lg:ml-[116px] lg:px-10 lg:pt-8 xl:flex-row xl:items-start xl:gap-8;
   }
 
+  .app-layout-content-shell-full {
+    @apply px-0 pb-0 pt-16 lg:px-0 lg:pt-0 xl:gap-0;
+  }
+
   .app-layout-main {
     @apply mx-auto w-full max-w-6xl;
   }
@@ -2216,6 +2220,19 @@ body {
     @apply space-y-6 lg:max-w-[760px] lg:pl-10;
   }
 
+  .app-layout-main-full .settings-page {
+    min-height: 100vh;
+    @apply px-0 py-0;
+  }
+
+  .app-layout-main-full .settings-page-layout {
+    @apply max-w-none gap-0;
+  }
+
+  .app-layout-main-full .settings-page-content {
+    @apply max-w-none px-6 py-8 lg:px-12 lg:py-10;
+  }
+
   .settings-page-content-header {
     @apply space-y-1;
   }
@@ -2399,6 +2416,15 @@ body {
     .settings-page-sidebar {
       border-right: 1px solid var(--color-border);
       @apply pr-8;
+    }
+
+    .app-layout-main-full .settings-page-layout {
+      grid-template-columns: 320px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .app-layout-main-full .settings-page-sidebar {
+      @apply px-8 py-8;
     }
   }
 

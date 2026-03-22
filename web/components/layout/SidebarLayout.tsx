@@ -33,7 +33,7 @@ export function SidebarLayout({
       >
         <Menu className="h-5 w-5" />
       </button>
-      <div className="app-layout-content-shell">
+      <div className={`app-layout-content-shell ${isFullCanvasRoute ? "app-layout-content-shell-full" : ""}`}>
         <main className={`app-layout-main ${isFullCanvasRoute ? "app-layout-main-full" : ""}`}>{children}</main>
         {rightPanel ? <aside className="app-layout-right-panel">{rightPanel}</aside> : null}
       </div>
