@@ -29,8 +29,11 @@
   --color-button-ghost-text: #111827;
   --color-button-ghost-hover-bg: #f8fafc;
   --color-overlay-backdrop: rgba(15, 23, 42, 0.45);
-  --color-menu-surface: #222324;
-  --color-menu-text: #f8fafc;
+  --color-menu-surface: rgba(255, 255, 255, 0.96);
+  --color-menu-text: #111827;
+  --color-menu-text-muted: #475569;
+  --color-menu-hover: #f8fafc;
+  --color-menu-divider: rgba(15, 23, 42, 0.08);
   --shadow-soft-token: 0 20px 50px -35px rgba(15, 23, 42, 0.2);
   --shadow-card-token: 0 24px 56px -42px rgba(15, 23, 42, 0.12);
 }
@@ -64,6 +67,9 @@
   --color-overlay-backdrop: rgba(2, 6, 23, 0.68);
   --color-menu-surface: #222324;
   --color-menu-text: #f8fafc;
+  --color-menu-text-muted: rgba(248, 250, 252, 0.72);
+  --color-menu-hover: rgba(255, 255, 255, 0.05);
+  --color-menu-divider: rgba(255, 255, 255, 0.1);
   --shadow-soft-token: 0 20px 50px -35px rgba(2, 6, 23, 0.55);
   --shadow-card-token: 0 24px 56px -42px rgba(2, 6, 23, 0.5);
 }
@@ -958,7 +964,7 @@ body {
   .app-sidebar-more-panel {
     background: var(--color-menu-surface);
     color: var(--color-menu-text);
-    @apply absolute bottom-[calc(100%+12px)] left-0 z-20 w-[260px] overflow-hidden rounded-[24px] py-3 shadow-[0_28px_80px_-34px_rgba(15,23,42,0.65)];
+    @apply absolute bottom-[calc(100%+12px)] left-0 z-20 w-[260px] overflow-hidden rounded-[24px] py-3 shadow-[0_28px_80px_-34px_rgba(15,23,42,0.3)];
   }
 
   .app-sidebar-more-list {
@@ -966,19 +972,26 @@ body {
   }
 
   .app-sidebar-more-item {
-    @apply flex w-full items-center gap-3 px-6 py-4 text-left text-sm font-medium text-white/95 transition hover:bg-white/5;
+    color: var(--color-menu-text);
+    @apply flex w-full items-center gap-3 px-6 py-4 text-left text-sm font-medium transition;
+  }
+
+  .app-sidebar-more-item:hover {
+    background: var(--color-menu-hover);
   }
 
   .app-sidebar-more-item-icon {
-    @apply h-[18px] w-[18px] shrink-0 text-white/90;
+    color: var(--color-menu-text-muted);
+    @apply h-[18px] w-[18px] shrink-0;
   }
 
   .app-sidebar-more-divider {
-    @apply my-2 h-px bg-white/10;
+    background: var(--color-menu-divider);
+    @apply my-2 h-px;
   }
 
   .app-sidebar-more-item-danger {
-    @apply text-white;
+    color: var(--color-menu-text);
   }
 
   .app-alert-dialog-overlay {
@@ -989,7 +1002,7 @@ body {
   .app-alert-dialog {
     background: var(--color-menu-surface);
     color: var(--color-menu-text);
-    box-shadow: 0 28px 80px -34px rgba(15, 23, 42, 0.65);
+    box-shadow: 0 28px 80px -34px rgba(15, 23, 42, 0.3);
     @apply w-full max-w-[292px] overflow-hidden rounded-[24px] py-3;
   }
 
@@ -998,11 +1011,13 @@ body {
   }
 
   .app-alert-dialog-title {
-    @apply text-base font-semibold text-white;
+    color: var(--color-menu-text);
+    @apply text-base font-semibold;
   }
 
   .app-alert-dialog-description {
-    @apply text-sm leading-6 text-white/75;
+    color: var(--color-menu-text-muted);
+    @apply text-sm leading-6;
   }
 
   .app-alert-dialog-actions {
@@ -1026,7 +1041,12 @@ body {
   }
 
   .app-alert-dialog-action {
-    @apply min-h-0 flex-1 px-5 py-3 text-center text-[13px] font-medium text-white/95 transition hover:bg-white/5;
+    color: var(--color-menu-text);
+    @apply min-h-0 flex-1 px-5 py-3 text-center text-[13px] font-medium transition;
+  }
+
+  .app-alert-dialog-action:hover {
+    background: var(--color-menu-hover);
   }
 
   .app-alert-dialog-actions-vertical .app-alert-dialog-action {
@@ -1034,7 +1054,7 @@ body {
   }
 
   .app-alert-dialog-action-danger {
-    @apply text-white;
+    color: var(--color-menu-text);
   }
 
   .app-sidebar-theme-panel {
@@ -1046,7 +1066,13 @@ body {
   }
 
   .app-sidebar-theme-back {
-    @apply flex h-8 w-8 items-center justify-center rounded-full text-white/80 transition hover:bg-white/5 hover:text-white;
+    color: var(--color-menu-text-muted);
+    @apply flex h-8 w-8 items-center justify-center rounded-full transition;
+  }
+
+  .app-sidebar-theme-back:hover {
+    background: var(--color-menu-hover);
+    color: var(--color-menu-text);
   }
 
   .app-sidebar-theme-back-icon {
@@ -1054,11 +1080,13 @@ body {
   }
 
   .app-sidebar-theme-title {
-    @apply flex-1 text-sm font-semibold text-white;
+    color: var(--color-menu-text);
+    @apply flex-1 text-sm font-semibold;
   }
 
   .app-sidebar-theme-mode-icon {
-    @apply h-[18px] w-[18px] text-white;
+    color: var(--color-menu-text-muted);
+    @apply h-[18px] w-[18px];
   }
 
   .app-sidebar-theme-row {
