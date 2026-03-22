@@ -9,7 +9,7 @@ import type { MyProfileResponse } from "@/src/features/auth/types/authTypes";
 
 const settingsSections = [
   {
-    title: "내 Instagram 사용 방식",
+    title: "내 멍냥마냥 사용 방식",
     items: [{ label: "프로필 편집", active: true }, { label: "알림" }]
   },
   {
