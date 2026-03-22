@@ -1,10 +1,11 @@
 package io.pet.petyard.auth.security;
 
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+import io.pet.petyard.auth.application.port.out.LoadUserPort;
 import io.pet.petyard.auth.jwt.AccessClaims;
 import io.pet.petyard.auth.jwt.JwtTokenProvider;
+import io.pet.petyard.auth.domain.model.User;
 import io.pet.petyard.common.ErrorCode;
 
 import jakarta.servlet.FilterChain;
@@ -27,10 +28,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
     private final JwtTokenProvider tokenProvider;
+    private final LoadUserPort loadUserPort;
     private final ErrorResponseWriter errorResponseWriter;
 
-    public JwtAuthenticationFilter(JwtTokenProvider tokenProvider, ErrorResponseWriter errorResponseWriter) {
+    public JwtAuthenticationFilter(JwtTokenProvider tokenProvider,
+                                   LoadUserPort loadUserPort,
+                                   ErrorResponseWriter errorResponseWriter) {
         this.tokenProvider = tokenProvider;
+        this.loadUserPort = loadUserPort;
         this.errorResponseWriter = errorResponseWriter;
     }
 
@@ -46,7 +51,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = header.substring(7);
         try {
             AccessClaims payload = tokenProvider.validateAndParseAccessToken(token);
-            AuthPrincipal principal = new AuthPrincipal(payload.userId(), payload.tier());
+            User user = loadUserPort.findById(payload.userId())
+                .orElseThrow(() -> new JwtException(ErrorCode.UNAUTHORIZED.message()));
+            AuthPrincipal principal = new AuthPrincipal(user.getId(), user.getTier());
             long remainingSeconds = Duration.between(Instant.now(), payload.expiresAt()).getSeconds();
             log.info("Access token remaining: {}s (uid={}, path={})",
                 Math.max(remainingSeconds, 0),

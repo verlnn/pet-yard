@@ -34,7 +34,7 @@ export default function SignupForm({ onSubmit, loading }: SignupFormProps) {
 
   return (
     <form className="space-y-5" onSubmit={handleSubmit}>
-      <label className="flex flex-col gap-2 text-xs font-semibold text-slate-500">
+      <label className="flex flex-col gap-2 text-xs font-semibold text-[var(--color-text-muted)]">
         이메일
         <input
           type="email"
@@ -46,7 +46,7 @@ export default function SignupForm({ onSubmit, loading }: SignupFormProps) {
           required
         />
       </label>
-      <label className="flex flex-col gap-2 text-xs font-semibold text-slate-500">
+      <label className="flex flex-col gap-2 text-xs font-semibold text-[var(--color-text-muted)]">
         비밀번호
         <input
           type="password"
@@ -58,7 +58,7 @@ export default function SignupForm({ onSubmit, loading }: SignupFormProps) {
           required
         />
       </label>
-      <label className="flex flex-col gap-2 text-xs font-semibold text-slate-500">
+      <label className="flex flex-col gap-2 text-xs font-semibold text-[var(--color-text-muted)]">
         비밀번호 확인
         <input
           type="password"

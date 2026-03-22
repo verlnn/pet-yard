@@ -4,6 +4,8 @@ import io.pet.petyard.user.application.port.out.LoadUserProfilePort;
 import io.pet.petyard.user.application.port.out.SaveUserProfilePort;
 import io.pet.petyard.user.domain.model.UserProfile;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Component;
@@ -25,6 +27,11 @@ public class UserProfilePersistenceAdapter implements LoadUserProfilePort, SaveU
     @Override
     public Optional<UserProfile> findByUserId(Long userId) {
         return repository.findByUserId(userId);
+    }
+
+    @Override
+    public List<UserProfile> findByUserIds(Collection<Long> userIds) {
+        return repository.findByUserIdIn(userIds);
     }
 
     @Override

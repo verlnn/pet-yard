@@ -1,7 +1,7 @@
 "use client";
 
 import type { RefObject } from "react";
-import { Grip, Trash2, ZoomIn } from "lucide-react";
+import { Grip, Trash2 } from "lucide-react";
 
 import type { ComposerImage } from "@/components/feed/image-composer/feedImageTypes";
 
@@ -11,7 +11,6 @@ interface FeedImageOverlayControlsProps {
   showReorder: boolean;
   ratioPanelRef: RefObject<HTMLDivElement | null>;
   onToggleRatio: () => void;
-  onToggleZoom: () => void;
   onRemove: () => void;
   onToggleReorder: () => void;
   onSelectRatio: (ratio: ComposerImage["aspectRatio"]) => void;
@@ -30,7 +29,6 @@ export function FeedImageOverlayControls({
   showReorder,
   ratioPanelRef,
   onToggleRatio,
-  onToggleZoom,
   onRemove,
   onToggleReorder,
   onSelectRatio
@@ -72,14 +70,6 @@ export function FeedImageOverlayControls({
             </div>
           )}
         </div>
-        <button
-          type="button"
-          onClick={onToggleZoom}
-          className="rounded-full bg-black/70 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-black/90"
-        >
-          <ZoomIn className="mr-1 inline h-3.5 w-3.5" />
-          줌
-        </button>
         <button
           type="button"
           onClick={onRemove}

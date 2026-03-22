@@ -41,9 +41,13 @@ out/
 /web/node_modules
 /web/.next
 /web/.env.web
+/web/*.tsbuildinfo
 # Local overrides
 /src/main/resources/application-local.yaml
 
-.env.release
+upload/images/feed/*.jpeg
+upload/images/feed/*.jpg
+upload/images/feed/*.png
 
+.env.release
 /web/.env.local

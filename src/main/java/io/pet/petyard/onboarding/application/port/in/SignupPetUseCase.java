@@ -1,21 +1,18 @@
 package io.pet.petyard.onboarding.application.port.in;
 
-import java.time.LocalDate;
-
 public interface SignupPetUseCase {
     SignupPetResult savePet(SignupPetCommand command);
 
     record SignupPetCommand(
         String signupToken,
-        String name,
-        String species,
-        String breed,
-        LocalDate birthDate,
-        String ageGroup,
-        String gender,
-        Boolean neutered,
-        String intro,
-        String photoUrl
+        String dogRegNo,
+        String rfidCd,
+        String ownerNm,
+        String ownerBirth,
+        String photoUrl,
+        Double weightKg,
+        Boolean vaccinationComplete,
+        Boolean walkSafetyChecked
     ) {
     }
 

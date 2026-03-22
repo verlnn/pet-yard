@@ -1,7 +1,6 @@
 import { BellRing, CheckCircle } from "lucide-react";
 
 import { SectionShell } from "@/components/site/section-shell";
-import { SiteNav } from "@/components/site/nav";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -28,35 +27,30 @@ const notifications = [
 
 export default function NotificationsPage() {
   return (
-    <div>
-      <SiteNav />
-      <main className="container py-10">
-        <SectionShell
-          eyebrow="Notifications"
-          title="알림"
-          description="활동 변화와 안전 알림을 놓치지 마세요."
-        >
-          <div className="grid gap-4">
-            {notifications.map((item) => (
-              <Card key={item.id} className="gradient-shell">
-                <CardContent className="flex flex-col gap-2">
-                  <div className="flex items-center gap-2">
-                    <BellRing className="h-4 w-4" />
-                    <p className="font-display text-base font-semibold">
-                      {item.title}
-                    </p>
-                    <Badge variant="soft">NEW</Badge>
-                  </div>
-                  <p className="text-sm text-ink/70">{item.body}</p>
-                  <div className="flex items-center gap-2 text-xs text-ink/50">
-                    <CheckCircle className="h-3 w-3" /> {item.time}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </SectionShell>
-      </main>
-    </div>
+    <SectionShell
+      eyebrow="Notifications"
+      title="알림"
+      description="활동 변화와 안전 알림을 놓치지 마세요."
+    >
+      <div className="grid gap-4">
+        {notifications.map((item) => (
+          <Card key={item.id} className="gradient-shell">
+            <CardContent className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <BellRing className="h-4 w-4" />
+                <p className="font-display text-base font-semibold">
+                  {item.title}
+                </p>
+                <Badge variant="soft">NEW</Badge>
+              </div>
+              <p className="text-sm text-[var(--color-text-muted)]">{item.body}</p>
+              <div className="flex items-center gap-2 text-xs text-[var(--color-text-subtle)]">
+                <CheckCircle className="h-3 w-3" /> {item.time}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </SectionShell>
   );
 }

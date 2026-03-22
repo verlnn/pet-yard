@@ -7,7 +7,8 @@ interface KakaoLoginButtonProps {
   disabled?: boolean;
 }
 
-const KAKAO_BUTTON_SRC = "/images/auth/kakao-sign.png";
+// const KAKAO_BUTTON_SRC = "/images/auth/kakao-sign.png";
+const KAKAO_BUTTON_SRC = "/images/auth/kakao-sign2.png";
 
 export default function KakaoLoginButton({ onClick, disabled }: KakaoLoginButtonProps) {
   return (

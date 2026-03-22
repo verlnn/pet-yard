@@ -25,8 +25,11 @@ public class FeedPost {
     @Column(columnDefinition = "text")
     private String content;
 
-    @Column(name = "image_url", columnDefinition = "text")
-    private String imageUrl;
+    @Column(name = "image_aspect_ratio_value")
+    private Double imageAspectRatioValue;
+
+    @Column(name = "image_aspect_ratio", length = 10)
+    private String imageAspectRatio;
 
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
@@ -37,10 +40,14 @@ public class FeedPost {
     protected FeedPost() {
     }
 
-    public FeedPost(Long userId, String content, String imageUrl) {
+    public FeedPost(Long userId,
+                    String content,
+                    Double imageAspectRatioValue,
+                    String imageAspectRatio) {
         this.userId = userId;
         this.content = content;
-        this.imageUrl = imageUrl;
+        this.imageAspectRatioValue = imageAspectRatioValue;
+        this.imageAspectRatio = imageAspectRatio;
     }
 
     @PrePersist
@@ -67,8 +74,12 @@ public class FeedPost {
         return content;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public Double getImageAspectRatioValue() {
+        return imageAspectRatioValue;
+    }
+
+    public String getImageAspectRatio() {
+        return imageAspectRatio;
     }
 
     public Instant getCreatedAt() {

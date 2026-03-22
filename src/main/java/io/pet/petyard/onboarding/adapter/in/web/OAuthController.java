@@ -10,6 +10,14 @@ import io.pet.petyard.auth.jwt.JwtTokenProvider;
 import io.pet.petyard.common.ApiException;
 import io.pet.petyard.onboarding.application.port.in.OAuthCallbackUseCase;
 import io.pet.petyard.onboarding.application.port.in.OAuthStartUseCase;
+import io.pet.petyard.auth.security.ErrorResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth/oauth")
+@Tag(name = "OAuth", description = "소셜 로그인 시작 및 콜백 처리 API")
 public class OAuthController {
 
     private static final Logger log = LoggerFactory.getLogger(OAuthController.class);
@@ -49,6 +58,13 @@ public class OAuthController {
     }
 
     @PostMapping("/{provider}/start")
+    @Operation(summary = "소셜 로그인 시작", description = "소셜 로그인 인가 URL과 state를 발급합니다.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "인가 URL 발급 성공",
+            content = @Content(schema = @Schema(implementation = OAuthStartResponse.class))),
+        @ApiResponse(responseCode = "400", description = "지원하지 않는 provider",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     public OAuthStartResponse start(@PathVariable String provider,
                                     @RequestParam(required = false) String prompt) {
         OAuthStartUseCase.OAuthStartResult result = oAuthStartUseCase
@@ -59,9 +75,19 @@ public class OAuthController {
     }
 
     @GetMapping("/{provider}/callback")
+    @Operation(summary = "소셜 로그인 콜백", description = "인가 코드를 처리하고 로그인 완료 또는 온보딩 세션 정보를 반환합니다.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "처리 성공",
+            content = @Content(schema = @Schema(implementation = OAuthCallbackResponse.class))),
+        @ApiResponse(responseCode = "400", description = "state 불일치 또는 OAuth 처리 실패",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     public ResponseEntity<?> callback(@PathVariable String provider,
+                                      @Parameter(description = "OAuth 인가 코드", example = "kakao-auth-code")
                                       @RequestParam String code,
+                                      @Parameter(description = "start 단계에서 발급된 state 값")
                                       @RequestParam String state,
+                                      @Parameter(description = "프론트 redirect URI", required = false)
                                       @RequestParam(required = false) String redirectUri,
                                       @RequestHeader(value = "Accept", required = false) String accept,
                                       HttpServletRequest httpRequest) {

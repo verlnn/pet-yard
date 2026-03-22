@@ -67,7 +67,7 @@ function KakaoCallbackPageContent() {
         subtitle="잠시만 기다려 주세요."
         error={error}
       >
-        {!error && <p className="text-sm text-slate-500">안전하게 로그인 정보를 확인하고 있습니다.</p>}
+        {!error && <p className="text-sm text-[var(--color-text-muted)]">안전하게 로그인 정보를 확인하고 있습니다.</p>}
       </OnboardingCard>
     </OnboardingLayout>
   );

@@ -5,6 +5,7 @@ import type {
   OAuthStartResponse,
   OAuthProvider,
   FeedPost,
+  HomeFeedPage,
   PetBreed,
   PetProfile,
   PetRegistrationVerificationResponse,
@@ -207,15 +208,14 @@ export const authApi = {
   signupPet(
     signupToken: string,
     payload: {
-      name: string;
-      species: string;
-      breed?: string | null;
-      birthDate?: string | null;
-      ageGroup?: string | null;
-      gender: string;
-      neutered?: boolean | null;
-      intro?: string | null;
+      dogRegNo: string;
+      rfidCd: string;
+      ownerNm: string;
+      ownerBirth: string;
       photoUrl?: string | null;
+      weightKg?: number | null;
+      vaccinationComplete?: boolean | null;
+      walkSafetyChecked?: boolean | null;
     }
   ) {
     return request<SignupStepResponse>("/api/auth/signup/pet", {
@@ -223,6 +223,14 @@ export const authApi = {
       headers: {
         "X-Signup-Token": signupToken
       },
+      body: JSON.stringify(payload)
+    });
+  },
+  signupVerifyPetRegistration(
+    payload: { dogRegNo: string; rfidCd: string; ownerNm: string; ownerBirth: string }
+  ) {
+    return request<PetRegistrationVerificationResponse>("/api/auth/signup/pet/verify", {
+      method: "POST",
       body: JSON.stringify(payload)
     });
   },
@@ -259,6 +267,49 @@ export const authApi = {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }
+    });
+  },
+  getHomeFeed(
+    accessToken: string,
+    options?: {
+      cursorCreatedAt?: string | null;
+      cursorId?: number | null;
+      limit?: number | null;
+    }
+  ) {
+    const params = new URLSearchParams();
+    if (options?.cursorCreatedAt) {
+      params.set("cursorCreatedAt", options.cursorCreatedAt);
+    }
+    if (options?.cursorId) {
+      params.set("cursorId", String(options.cursorId));
+    }
+    if (options?.limit) {
+      params.set("limit", String(options.limit));
+    }
+    const query = params.toString();
+    const path = query ? `/api/feeds?${query}` : "/api/feeds";
+    return request<HomeFeedPage>(path, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+  },
+  updateMyProfileSettings(
+    accessToken: string,
+    payload: {
+      bio?: string | null;
+      gender: string;
+      primaryPetId?: number | null;
+    }
+  ) {
+    return request<MyProfileResponse>("/api/users/me/profile", {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      },
+      body: JSON.stringify(payload)
     });
   },
   createPetProfile(
@@ -318,8 +369,8 @@ export const authApi = {
       }
     });
   },
-  getMyFeed(accessToken: string) {
-    return request<FeedPost[]>("/api/feeds/me", {
+  getOwnPosts(accessToken: string) {
+    return request<FeedPost[]>("/api/feeds/own-posts", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${accessToken}`
@@ -328,18 +379,34 @@ export const authApi = {
   },
   createFeedPost(
     accessToken: string,
-    payload: { content?: string | null; imageUrl?: string | null; hashtags?: string[] | null }
+    payload: FormData
   ) {
     return request<FeedPost>("/api/feeds", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`
       },
-      body: JSON.stringify(payload)
+      body: payload
     });
   },
   deleteFeedPost(accessToken: string, id: number) {
     return request<void>(`/api/feeds/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+  },
+  addFeedPostPaw(accessToken: string, id: number) {
+    return request<import("../types/authTypes").FeedPostPawResponse>(`/api/feeds/${id}/paws`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+  },
+  removeFeedPostPaw(accessToken: string, id: number) {
+    return request<import("../types/authTypes").FeedPostPawResponse>(`/api/feeds/${id}/paws`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${accessToken}`

@@ -3,6 +3,10 @@ spring:
     url: jdbc:postgresql://localhost:5432/petyard
     username: petyard
     password: petyard
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 50MB
   mail:
     host: localhost
     port: 1025
@@ -13,6 +17,9 @@ spring:
       mail.smtp.starttls.enable: false
 
 app:
+  storage:
+    upload-dir: upload/images
+    public-url-prefix: /upload/images
   mail:
     from: no-reply@pet-yard.local
 
@@ -24,3 +31,7 @@ kakao:
     client-id: ${KAKAO_CLIENT_ID:}
     client-secret: ${KAKAO_CLIENT_SECRET:}
     redirect-uri: ${KAKAO_REDIRECT_URI:http://localhost:3000/oauth/kakao/callback}
+
+server:
+  tomcat:
+    max-part-count: 15

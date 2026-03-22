@@ -1,5 +1,6 @@
 package io.pet.petyard.auth.security;
 
+import io.pet.petyard.auth.application.port.out.LoadUserPort;
 import io.pet.petyard.auth.jwt.JwtTokenProvider;
 import io.pet.petyard.common.ErrorCode;
 
@@ -30,6 +31,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtTokenProvider tokenProvider,
+                                                   LoadUserPort loadUserPort,
                                                    ErrorResponseWriter errorResponseWriter) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
@@ -40,6 +42,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/health").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/regions/**").permitAll()
+                .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/**").authenticated()
                 .anyRequest().permitAll()
@@ -48,7 +52,7 @@ public class SecurityConfig {
                 .authenticationEntryPoint(authenticationEntryPoint(errorResponseWriter))
                 .accessDeniedHandler(accessDeniedHandler(errorResponseWriter))
             )
-            .addFilterBefore(new JwtAuthenticationFilter(tokenProvider, errorResponseWriter),
+            .addFilterBefore(new JwtAuthenticationFilter(tokenProvider, loadUserPort, errorResponseWriter),
                 UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

@@ -27,6 +27,8 @@ import io.pet.petyard.onboarding.domain.SignupStatus;
 import io.pet.petyard.onboarding.domain.SignupStep;
 import io.pet.petyard.onboarding.domain.model.SignupSession;
 import io.pet.petyard.pet.application.port.out.SavePetProfilePort;
+import io.pet.petyard.pet.application.service.AnimalRegistrationResult;
+import io.pet.petyard.pet.application.service.AnimalRegistrationService;
 import io.pet.petyard.pet.domain.PetGender;
 import io.pet.petyard.pet.domain.PetSpecies;
 import io.pet.petyard.pet.domain.model.PetProfile;
@@ -68,6 +70,7 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
     private final LoadTermsPort loadTermsPort;
     private final SaveTermsAgreementPort saveTermsAgreementPort;
     private final SavePetProfilePort savePetProfilePort;
+    private final AnimalRegistrationService animalRegistrationService;
     private final LoadRegionPort loadRegionPort;
     private final JwtTokenProvider tokenProvider;
     private final Clock clock;
@@ -85,6 +88,7 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
                                         LoadTermsPort loadTermsPort,
                                         SaveTermsAgreementPort saveTermsAgreementPort,
                                         SavePetProfilePort savePetProfilePort,
+                                        AnimalRegistrationService animalRegistrationService,
                                         LoadRegionPort loadRegionPort,
                                         JwtTokenProvider tokenProvider,
                                         Clock clock,
@@ -101,6 +105,7 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
         this.loadTermsPort = loadTermsPort;
         this.saveTermsAgreementPort = saveTermsAgreementPort;
         this.savePetProfilePort = savePetProfilePort;
+        this.animalRegistrationService = animalRegistrationService;
         this.loadRegionPort = loadRegionPort;
         this.tokenProvider = tokenProvider;
         this.clock = clock;
@@ -213,7 +218,7 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
             command.profileImageUrl(), command.marketingOptIn(), command.hasPet());
         saveUserProfilePort.save(profile);
 
-        session.setStep(SignupStep.CONSENTS);
+        session.setStep(command.hasPet() ? SignupStep.PET : SignupStep.CONSENTS);
         session.setStatus(SignupStatus.ONBOARDING);
         saveSignupSessionPort.save(session);
 
@@ -256,11 +261,7 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
             saveTermsAgreementPort.save(new TermsAgreement(session.getUserId(), terms.getId(), now));
         }
 
-        boolean hasPet = loadUserProfilePort.findByUserId(session.getUserId())
-            .map(UserProfile::hasPet)
-            .orElse(false);
-
-        session.setStep(hasPet ? SignupStep.PET : SignupStep.COMPLETE);
+        session.setStep(SignupStep.COMPLETE);
         saveSignupSessionPort.save(session);
 
         return new SignupConsentsResult(session.getStep().name());
@@ -272,24 +273,32 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
         SignupSession session = findActiveSession(command.signupToken());
         ensureStep(session, SignupStep.PET);
 
+        AnimalRegistrationResult result = animalRegistrationService.verify(
+            command.dogRegNo(),
+            command.rfidCd(),
+            command.ownerNm(),
+            command.ownerBirth()
+        );
+
         PetProfile profile = new PetProfile(
             session.getUserId(),
-            command.name(),
-            PetSpecies.valueOf(command.species().toUpperCase()),
-            command.breed(),
-            command.birthDate(),
-            command.ageGroup(),
-            PetGender.valueOf(command.gender().toUpperCase()),
-            command.neutered(),
-            command.intro(),
+            result.name(),
+            PetSpecies.DOG,
+            result.breed(),
+            result.birthDate(),
+            null,
+            result.gender(),
+            result.neutered(),
+            null,
             command.photoUrl(),
-            null,
-            null,
-            null
+            command.weightKg() == null ? null : java.math.BigDecimal.valueOf(command.weightKg()),
+            command.vaccinationComplete(),
+            command.walkSafetyChecked()
         );
         savePetProfilePort.save(profile);
+        promoteTierIfNeeded(session.getUserId());
 
-        session.setStep(SignupStep.COMPLETE);
+        session.setStep(SignupStep.CONSENTS);
         saveSignupSessionPort.save(session);
 
         return new SignupPetResult(session.getStep().name());
@@ -346,6 +355,15 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
             throw new ApiException(ErrorCode.BAD_REQUEST);
         }
         return client;
+    }
+
+    private void promoteTierIfNeeded(Long userId) {
+        User user = loadUserPort.findById(userId)
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+        if (user.getTier() == UserTier.TIER_0) {
+            user.setTier(UserTier.TIER_1);
+            saveUserPort.save(user);
+        }
     }
 
     private String encodeMetadata(OAuthUserInfo userInfo) {

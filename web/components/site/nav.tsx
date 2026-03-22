@@ -9,20 +9,23 @@ import { Bell, Compass, HeartHandshake, MapPin, PawPrint, Shield } from "lucide-
 import type { LucideIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { AppAlertDialog } from "@/components/ui/AppAlertDialog";
 import { Badge } from "@/components/ui/badge";
 import { authApi } from "@/src/features/auth/api/authApi";
+import { ROUTES } from "@/src/lib/routes";
 
 const links: Array<{ href: Route; label: string; icon: LucideIcon }> = [
-  { href: "/feed", label: "피드", icon: PawPrint },
-  { href: "/my-feed", label: "내 피드", icon: PawPrint },
-  { href: "/walks", label: "산책", icon: Compass },
-  { href: "/boarding", label: "위탁", icon: HeartHandshake },
-  { href: "/knowledge", label: "지식", icon: Shield }
+  { href: ROUTES.feed, label: "피드", icon: PawPrint },
+  { href: ROUTES.myFeed, label: "내 피드", icon: PawPrint },
+  { href: ROUTES.walks, label: "산책", icon: Compass },
+  { href: ROUTES.boarding, label: "위탁", icon: HeartHandshake },
+  { href: ROUTES.knowledge, label: "지식", icon: Shield }
 ];
 
 export function SiteNav() {
   const router = useRouter();
   const [hasToken, setHasToken] = useState(false);
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -38,18 +41,30 @@ export function SiteNav() {
         await authApi.logout(refreshToken);
       }
     } finally {
+      setLogoutConfirmOpen(false);
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       document.cookie = "accessToken=; path=/; max-age=0";
       setHasToken(false);
-      router.push("/login");
+      router.push(ROUTES.login);
     }
   }, [router]);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-ink/10 bg-white/70 backdrop-blur">
-      <div className="container flex items-center justify-between py-4">
-        <Link href="/" className="flex items-center gap-3">
+    <>
+      <AppAlertDialog
+        open={logoutConfirmOpen}
+        title="로그아웃할까요?"
+        description="현재 기기에서 로그인 상태가 해제됩니다."
+        confirmLabel="로그아웃"
+        actionsClassName="app-alert-dialog-actions-horizontal"
+        onConfirm={handleLogout}
+        onClose={() => setLogoutConfirmOpen(false)}
+      />
+
+      <header className="sticky top-0 z-40 border-b border-ink/10 bg-white/70 backdrop-blur">
+        <div className="container flex items-center justify-between py-4">
+        <Link href={ROUTES.home} className="flex items-center gap-3">
           <Image
             src="/images/brand/petyard-symbol.png"
             alt="멍냥마당 로고"
@@ -86,26 +101,27 @@ export function SiteNav() {
             <Bell className="h-4 w-4" />
           </Button>
           {hasToken && (
-            <Button variant="secondary" size="sm" onClick={handleLogout}>
+            <Button variant="secondary" size="sm" onClick={() => setLogoutConfirmOpen(true)}>
               로그아웃
             </Button>
           )}
-          <Link href="/profile">
+          <Link href={ROUTES.myFeed}>
             <Button variant="secondary" size="sm">
               내 프로필
             </Button>
           </Link>
         </div>
-      </div>
-      <div className="border-t border-ink/10 bg-white/90 md:hidden">
-        <div className="container flex items-center justify-between py-2 text-xs text-ink/60">
-          {links.map((link) => (
-            <Link key={link.href} href={link.href} className="px-2 py-1">
-              {link.label}
-            </Link>
-          ))}
         </div>
-      </div>
-    </header>
+        <div className="border-t border-ink/10 bg-white/90 md:hidden">
+          <div className="container flex items-center justify-between py-2 text-xs text-ink/60">
+            {links.map((link) => (
+              <Link key={link.href} href={link.href} className="px-2 py-1">
+                {link.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </header>
+    </>
   );
 }

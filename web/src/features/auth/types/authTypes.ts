@@ -106,6 +106,9 @@ export interface MyProfileResponse {
   nickname: string;
   regionName?: string | null;
   profileImageUrl?: string | null;
+  bio?: string | null;
+  gender?: string | null;
+  primaryPetId?: number | null;
   tier: string;
   joinedAt: string;
   lastLoginAt?: string | null;
@@ -116,8 +119,46 @@ export interface MyProfileResponse {
 export interface FeedPost {
   id: number;
   content?: string | null;
-  imageUrl?: string | null;
+  thumbnailImageUrl?: string | null;
   imageUrls?: string[] | null;
+  images?: FeedImageAsset[] | null;
+  imageAspectRatioValue?: number | null;
+  imageAspectRatio?: "original" | "1:1" | "4:5" | "16:9" | null;
+  pawCount: number;
+  pawedByMe: boolean;
   createdAt: string;
   hashtags?: string[] | null;
+}
+
+export interface FeedImageAsset {
+  thumbnailUrl?: string | null;
+  mediumUrl?: string | null;
+  originalUrl?: string | null;
+  width?: number | null;
+  height?: number | null;
+  aspectRatio?: number | null;
+  aspectRatioCode?: "original" | "1:1" | "4:5" | "16:9" | null;
+}
+
+export interface HomeFeedPost extends FeedPost {
+  authorId: number;
+  authorNickname: string;
+  authorProfileImageUrl?: string | null;
+}
+
+export interface HomeFeedCursor {
+  createdAt: string;
+  id: number;
+}
+
+export interface HomeFeedPage {
+  items: HomeFeedPost[];
+  nextCursor?: HomeFeedCursor | null;
+  hasMore: boolean;
+}
+
+export interface FeedPostPawResponse {
+  postId: number;
+  pawCount: number;
+  pawedByMe: boolean;
 }

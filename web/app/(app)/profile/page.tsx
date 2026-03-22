@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
 import { SectionShell } from "@/components/site/section-shell";
-import { SiteNav } from "@/components/site/nav";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -49,87 +48,82 @@ export default function ProfilePage() {
   }, [profile?.lastLoginAt]);
 
   return (
-    <div>
-      <SiteNav />
-      <main className="container py-10">
-        <SectionShell
-          eyebrow="Profile"
-          title="내 프로필"
-          description="계정 상태와 반려동물 정보를 확인하세요."
-        >
-          {error && (
-            <div className="mb-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
-              {error}
+    <SectionShell
+      eyebrow="Profile"
+      title="내 프로필"
+      description="계정 상태와 반려동물 정보를 확인하세요."
+    >
+      {error && (
+        <div className="mb-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
+          {error}
+        </div>
+      )}
+      <div className="grid gap-6 md:grid-cols-[0.6fr_1fr]">
+        <Card className="gradient-shell">
+          <CardContent className="flex flex-col items-center gap-4 text-center">
+            <Avatar className="h-20 w-20">
+              {profile?.profileImageUrl ? (
+                <AvatarImage src={profile.profileImageUrl} alt={profile.nickname} />
+              ) : (
+                <AvatarFallback>{profile?.nickname?.[0] ?? "MY"}</AvatarFallback>
+              )}
+            </Avatar>
+            <div>
+              <p className="font-display text-xl font-semibold">
+                {profile?.nickname ?? (loading ? "불러오는 중..." : "프로필")}
+              </p>
+              <p className="text-sm text-[var(--color-text-muted)]">
+                {profile?.regionName ?? "지역 미설정"} · 가입일 {joinedAt}
+              </p>
             </div>
-          )}
-          <div className="grid gap-6 md:grid-cols-[0.6fr_1fr]">
-            <Card className="gradient-shell">
-              <CardContent className="flex flex-col items-center gap-4 text-center">
-                <Avatar className="h-20 w-20">
-                  {profile?.profileImageUrl ? (
-                    <AvatarImage src={profile.profileImageUrl} alt={profile.nickname} />
-                  ) : (
-                    <AvatarFallback>{profile?.nickname?.[0] ?? "MY"}</AvatarFallback>
-                  )}
-                </Avatar>
-                <div>
-                  <p className="font-display text-xl font-semibold">
-                    {profile?.nickname ?? (loading ? "불러오는 중..." : "프로필")}
-                  </p>
-                  <p className="text-sm text-ink/60">
-                    {profile?.regionName ?? "지역 미설정"} · 가입일 {joinedAt}
-                  </p>
-                </div>
-                <div className="flex flex-wrap justify-center gap-2">
-                  <Badge variant="soft">반려동물 {profile?.petCount ?? 0}마리</Badge>
-                  <Badge variant="outline">등급 {profile?.tier ?? "-"}</Badge>
-                </div>
-                <Button asChild className="w-full">
-                  <Link href="/onboarding/profile">프로필 수정</Link>
-                </Button>
-              </CardContent>
-            </Card>
-            <div className="grid gap-4">
-              <Card className="gradient-shell">
-                <CardContent className="space-y-3">
-                  <p className="text-sm text-ink/60">나의 피드</p>
-                  <p className="font-display text-lg font-semibold">기록을 이어가세요</p>
-                  <p className="text-sm text-ink/70">
-                    우리 아이의 소소한 순간을 피드로 남겨보세요.
-                  </p>
-                  <Button asChild>
-                    <Link href="/my-feed">내 피드로 이동</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-              <Card className="gradient-shell">
-                <CardContent className="space-y-3">
-                  <p className="text-sm text-ink/60">반려동물 정보</p>
-                  <p className="font-display text-lg font-semibold">
-                    {profile?.petCount ?? 0}마리 등록됨
-                  </p>
-                  <p className="text-sm text-ink/70">
-                    등록번호 인증을 통해 반려견 정보를 안전하게 관리할 수 있어요.
-                  </p>
-                  <Button asChild>
-                    <Link href="/pets">반려동물 관리로 이동</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-              <Card className="gradient-shell">
-                <CardContent className="space-y-3">
-                  <p className="text-sm text-ink/60">최근 로그인</p>
-                  <p className="font-display text-lg font-semibold">{lastLoginAt}</p>
-                  <p className="text-sm text-ink/70">
-                    활동 내역과 안전 기록은 투명하게 관리됩니다.
-                  </p>
-                  <Button variant="secondary">신뢰도 상세 보기</Button>
-                </CardContent>
-              </Card>
+            <div className="flex flex-wrap justify-center gap-2">
+              <Badge variant="soft">반려동물 {profile?.petCount ?? 0}마리</Badge>
+              <Badge variant="outline">등급 {profile?.tier ?? "-"}</Badge>
             </div>
-          </div>
-        </SectionShell>
-      </main>
-    </div>
+            <Button asChild className="w-full">
+              <Link href="/onboarding/profile">프로필 수정</Link>
+            </Button>
+          </CardContent>
+        </Card>
+        <div className="grid gap-4">
+          <Card className="gradient-shell">
+            <CardContent className="space-y-3">
+              <p className="text-sm text-[var(--color-text-muted)]">나의 피드</p>
+              <p className="font-display text-lg font-semibold">기록을 이어가세요</p>
+              <p className="text-sm text-[var(--color-text-muted)]">
+                우리 아이의 소소한 순간을 피드로 남겨보세요.
+              </p>
+              <Button asChild>
+                <Link href="/my-feed">내 피드로 이동</Link>
+              </Button>
+            </CardContent>
+          </Card>
+          <Card className="gradient-shell">
+            <CardContent className="space-y-3">
+              <p className="text-sm text-[var(--color-text-muted)]">반려동물 정보</p>
+              <p className="font-display text-lg font-semibold">
+                {profile?.petCount ?? 0}마리 등록됨
+              </p>
+              <p className="text-sm text-[var(--color-text-muted)]">
+                등록번호 인증을 통해 반려견 정보를 안전하게 관리할 수 있어요.
+              </p>
+              <Button asChild>
+                <Link href="/pets">반려동물 관리로 이동</Link>
+              </Button>
+            </CardContent>
+          </Card>
+          <Card className="gradient-shell">
+            <CardContent className="space-y-3">
+              <p className="text-sm text-[var(--color-text-muted)]">최근 로그인</p>
+              <p className="font-display text-lg font-semibold">{lastLoginAt}</p>
+              <p className="text-sm text-[var(--color-text-muted)]">
+                활동 내역과 안전 기록은 투명하게 관리됩니다.
+              </p>
+              <Button variant="secondary">신뢰도 상세 보기</Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </SectionShell>
   );
 }

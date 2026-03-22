@@ -6,8 +6,8 @@
 
 body {
   font-family: var(--font-space-grotesk), var(--font-playfair-display), var(--font-noto-sans-kr), serif;
-  color: $color-ink;
-  background: $bg-gradient;
+  color: var(--color-text);
+  background: var(--color-bg);
 }
 
 .authPageRoot {
