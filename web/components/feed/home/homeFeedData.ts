@@ -6,6 +6,13 @@ export interface HomeFeedAdTrackingMetadata {
   experimentKey?: string | null;
 }
 
+export interface HomeFeedAdEmbed {
+  type: "iframe";
+  src: string;
+  width: number;
+  height: number;
+}
+
 export interface HomeFeedAd {
   adId: string;
   campaignId: string;
@@ -17,6 +24,7 @@ export interface HomeFeedAd {
   targetUrl: string;
   ctaLabel: string;
   tracking: HomeFeedAdTrackingMetadata;
+  embed?: HomeFeedAdEmbed | null;
 }
 
 export type HomeFeedListItem =
@@ -36,6 +44,12 @@ export const HOME_FEED_ADS: HomeFeedAd[] = [
     imageUrl: "/images/auth/auth-hero-showcase.png",
     targetUrl: "/knowledge",
     ctaLabel: "자세히 보기",
+    embed: {
+      type: "iframe",
+      src: "https://ads-partners.coupang.com/widgets.html?id=974617&template=carousel&trackingCode=AF8275210&subId=&width=600&height=900&tsource=",
+      width: 600,
+      height: 900
+    },
     tracking: {
       source: "client-fallback",
       placement: "feed-inline"
@@ -51,6 +65,12 @@ export const HOME_FEED_ADS: HomeFeedAd[] = [
     imageUrl: "/images/brand/petyard-symbol.png",
     targetUrl: "/notifications",
     ctaLabel: "알림 설정",
+    embed: {
+      type: "iframe",
+      src: "https://ads-partners.coupang.com/widgets.html?id=974617&template=carousel&trackingCode=AF8275210&subId=&width=600&height=900&tsource=",
+      width: 600,
+      height: 900
+    },
     tracking: {
       source: "client-fallback",
       placement: "feed-inline"

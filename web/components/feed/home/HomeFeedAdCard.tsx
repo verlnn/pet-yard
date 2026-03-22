@@ -45,6 +45,9 @@ export const HomeFeedAdCard = memo(function HomeFeedAdCard({ ad, position }: Hom
     homeFeedAdTracker.trackClick(ad, { position });
   };
 
+  const embeddedAd = ad.embed?.type === "iframe" ? ad.embed : null;
+  const isEmbeddedIframeAd = Boolean(embeddedAd);
+
   return (
     <article ref={cardRef} className="home-feed-ad-card">
       <div className="home-feed-ad-header">
@@ -52,28 +55,61 @@ export const HomeFeedAdCard = memo(function HomeFeedAdCard({ ad, position }: Hom
           <p className="home-feed-ad-badge">광고</p>
           <p className="home-feed-ad-sponsor">{ad.sponsor}</p>
         </div>
-        <a
-          href={ad.targetUrl}
-          className="home-feed-ad-cta"
-          onClick={handleAdClick}
-        >
-          {ad.ctaLabel} <ArrowUpRight className="home-feed-ad-cta-icon" />
-        </a>
+        {!isEmbeddedIframeAd ? (
+          <a
+            href={ad.targetUrl}
+            className="home-feed-ad-cta"
+            onClick={handleAdClick}
+          >
+            {ad.ctaLabel} <ArrowUpRight className="home-feed-ad-cta-icon" />
+          </a>
+        ) : null}
       </div>
-      <a href={ad.targetUrl} className="home-feed-ad-media" onClick={handleAdClick}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={ad.imageUrl}
-          alt={ad.title}
-          className="home-feed-ad-image"
-          loading="lazy"
-          decoding="async"
-        />
-      </a>
-      <div className="home-feed-ad-body">
-        <p className="home-feed-ad-title">{ad.title}</p>
-        <p className="home-feed-ad-description">{ad.description}</p>
-      </div>
+      {isEmbeddedIframeAd ? (
+        (() => {
+          const iframeAd = embeddedAd;
+          if (!iframeAd) {
+            return null;
+          }
+
+          return (
+            <div className="home-feed-ad-iframe-shell">
+              <iframe
+                src={iframeAd.src}
+                title={`${ad.sponsor} 피드 광고`}
+                width={String(iframeAd.width)}
+                height={String(iframeAd.height)}
+                frameBorder="0"
+                scrolling="no"
+                referrerPolicy="unsafe-url"
+                className="home-feed-ad-iframe"
+                ref={(node) => {
+                  if (node) {
+                    node.setAttribute("browsingtopics", "");
+                  }
+                }}
+              />
+            </div>
+          );
+        })()
+      ) : (
+        <>
+          <a href={ad.targetUrl} className="home-feed-ad-media" onClick={handleAdClick}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={ad.imageUrl}
+              alt={ad.title}
+              className="home-feed-ad-image"
+              loading="lazy"
+              decoding="async"
+            />
+          </a>
+          <div className="home-feed-ad-body">
+            <p className="home-feed-ad-title">{ad.title}</p>
+            <p className="home-feed-ad-description">{ad.description}</p>
+          </div>
+        </>
+      )}
     </article>
   );
 });

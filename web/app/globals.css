@@ -1791,6 +1791,14 @@ body {
     @apply text-sm leading-6;
   }
 
+  .home-feed-ad-iframe-shell {
+    @apply mt-4 overflow-hidden rounded-[24px] border border-[var(--color-border)] bg-white;
+  }
+
+  .home-feed-ad-iframe {
+    @apply block aspect-[2/3] h-auto w-full;
+  }
+
   .home-feed-sidebar {
     @apply sticky top-6 hidden h-fit flex-col gap-6 xl:flex;
   }
