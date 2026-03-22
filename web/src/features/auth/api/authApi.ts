@@ -272,37 +272,11 @@ export const authApi = {
     accessToken: string,
     payload: {
       bio?: string | null;
-    }
-  ) {
-    return request<MyProfileResponse>("/api/users/me/profile", {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      },
-      body: JSON.stringify(payload)
-    });
-  },
-  updateMyProfileGender(
-    accessToken: string,
-    payload: {
       gender: string;
-    }
-  ) {
-    return request<MyProfileResponse>("/api/users/me/profile/gender", {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      },
-      body: JSON.stringify(payload)
-    });
-  },
-  updateMyProfilePrimaryPet(
-    accessToken: string,
-    payload: {
       primaryPetId?: number | null;
     }
   ) {
-    return request<MyProfileResponse>("/api/users/me/profile/primary-pet", {
+    return request<MyProfileResponse>("/api/users/me/profile", {
       method: "PATCH",
       headers: {
         Authorization: `Bearer ${accessToken}`

@@ -88,20 +88,7 @@ public class UserProfileController {
             ))
             .toList();
 
-        return new UserProfileResponse(
-            user.getId(),
-            profile.getNickname(),
-            regionName,
-            profile.getProfileImageUrl(),
-            settings == null ? null : settings.getBio(),
-            settings == null || settings.getGender() == null ? null : settings.getGender().name(),
-            settings == null ? null : settings.getPrimaryPetId(),
-            user.getTier().name(),
-            user.getCreatedAt(),
-            user.getLastLoginAt(),
-            petResponses.size(),
-            petResponses
-        );
+        return buildResponse(user, profile, settings, regionName, petResponses);
     }
 
     @PatchMapping("/profile")
@@ -113,127 +100,18 @@ public class UserProfileController {
         UserProfile profile = loadUserProfilePort.findByUserId(principal.userId())
             .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST));
 
-        UserProfileSettings settings = loadUserProfileSettingsPort.findByUserId(principal.userId())
-            .orElseGet(() -> new UserProfileSettings(principal.userId(), null));
-        settings.updateBio(normalizeBio(request.bio()));
-        UserProfileSettings savedSettings = saveUserProfileSettingsPort.save(settings);
-
-        String regionName = null;
-        if (profile.getRegionCode() != null && !profile.getRegionCode().isBlank()) {
-            regionName = loadRegionPort.findByCode(profile.getRegionCode())
-                .map(region -> region.getName())
-                .orElse(null);
-        }
-
         List<PetProfile> pets = loadPetProfilePort.findByUserId(principal.userId());
-        List<PetProfileResponse> petResponses = pets.stream()
-            .map(pet -> new PetProfileResponse(
-                pet.getId(),
-                pet.getName(),
-                pet.getSpecies().name(),
-                pet.getBreed(),
-                pet.getBirthDate(),
-                pet.getAgeGroup(),
-                pet.getGender().name(),
-                pet.getNeutered(),
-                pet.getIntro(),
-                pet.getPhotoUrl(),
-                pet.getWeightKg() == null ? null : pet.getWeightKg().doubleValue(),
-                pet.getVaccinationComplete(),
-                pet.getWalkSafetyChecked()
-            ))
-            .toList();
-
-        return new UserProfileResponse(
-            user.getId(),
-            profile.getNickname(),
-            regionName,
-            profile.getProfileImageUrl(),
-            savedSettings.getBio(),
-            savedSettings.getGender() == null ? null : savedSettings.getGender().name(),
-            savedSettings.getPrimaryPetId(),
-            user.getTier().name(),
-            user.getCreatedAt(),
-            user.getLastLoginAt(),
-            petResponses.size(),
-            petResponses
-        );
-    }
-
-    @PatchMapping("/profile/gender")
-    public UserProfileResponse updateProfileGender(@AuthenticationPrincipal AuthPrincipal principal,
-                                                   @Valid @RequestBody UserProfileGenderRequest request) {
-        User user = loadUserPort.findById(principal.userId())
-            .orElseThrow(() -> new ApiException(ErrorCode.UNAUTHORIZED));
-
-        UserProfile profile = loadUserProfilePort.findByUserId(principal.userId())
-            .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST));
-
-        UserProfileSettings settings = loadUserProfileSettingsPort.findByUserId(principal.userId())
-            .orElseGet(() -> new UserProfileSettings(principal.userId(), null));
-        settings.updateGender(parseGender(request.gender()));
-        UserProfileSettings savedSettings = saveUserProfileSettingsPort.save(settings);
-
-        String regionName = null;
-        if (profile.getRegionCode() != null && !profile.getRegionCode().isBlank()) {
-            regionName = loadRegionPort.findByCode(profile.getRegionCode())
-                .map(region -> region.getName())
-                .orElse(null);
-        }
-
-        List<PetProfile> pets = loadPetProfilePort.findByUserId(principal.userId());
-        List<PetProfileResponse> petResponses = pets.stream()
-            .map(pet -> new PetProfileResponse(
-                pet.getId(),
-                pet.getName(),
-                pet.getSpecies().name(),
-                pet.getBreed(),
-                pet.getBirthDate(),
-                pet.getAgeGroup(),
-                pet.getGender().name(),
-                pet.getNeutered(),
-                pet.getIntro(),
-                pet.getPhotoUrl(),
-                pet.getWeightKg() == null ? null : pet.getWeightKg().doubleValue(),
-                pet.getVaccinationComplete(),
-                pet.getWalkSafetyChecked()
-            ))
-            .toList();
-
-        return new UserProfileResponse(
-            user.getId(),
-            profile.getNickname(),
-            regionName,
-            profile.getProfileImageUrl(),
-            savedSettings.getBio(),
-            savedSettings.getGender() == null ? null : savedSettings.getGender().name(),
-            savedSettings.getPrimaryPetId(),
-            user.getTier().name(),
-            user.getCreatedAt(),
-            user.getLastLoginAt(),
-            petResponses.size(),
-            petResponses
-        );
-    }
-
-    @PatchMapping("/profile/primary-pet")
-    public UserProfileResponse updatePrimaryPet(@AuthenticationPrincipal AuthPrincipal principal,
-                                                @Valid @RequestBody UserProfilePrimaryPetRequest request) {
-        User user = loadUserPort.findById(principal.userId())
-            .orElseThrow(() -> new ApiException(ErrorCode.UNAUTHORIZED));
-
-        UserProfile profile = loadUserProfilePort.findByUserId(principal.userId())
-            .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST));
-
-        Long primaryPetId = request.primaryPetId();
-        if (primaryPetId != null) {
-            loadPetProfilePort.findByIdAndUserId(primaryPetId, principal.userId())
+        Long requestedPrimaryPetId = request.primaryPetId();
+        if (requestedPrimaryPetId != null) {
+            loadPetProfilePort.findByIdAndUserId(requestedPrimaryPetId, principal.userId())
                 .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST));
         }
 
         UserProfileSettings settings = loadUserProfileSettingsPort.findByUserId(principal.userId())
             .orElseGet(() -> new UserProfileSettings(principal.userId(), null));
-        settings.updatePrimaryPetId(primaryPetId);
+        settings.updateBio(normalizeBio(request.bio()));
+        settings.updateGender(request.gender() == null ? settings.getGender() : parseGender(request.gender()));
+        settings.updatePrimaryPetId(resolvePrimaryPetId(requestedPrimaryPetId, pets));
         UserProfileSettings savedSettings = saveUserProfileSettingsPort.save(settings);
 
         String regionName = null;
@@ -243,7 +121,6 @@ public class UserProfileController {
                 .orElse(null);
         }
 
-        List<PetProfile> pets = loadPetProfilePort.findByUserId(principal.userId());
         List<PetProfileResponse> petResponses = pets.stream()
             .map(pet -> new PetProfileResponse(
                 pet.getId(),
@@ -262,20 +139,7 @@ public class UserProfileController {
             ))
             .toList();
 
-        return new UserProfileResponse(
-            user.getId(),
-            profile.getNickname(),
-            regionName,
-            profile.getProfileImageUrl(),
-            savedSettings.getBio(),
-            savedSettings.getGender() == null ? null : savedSettings.getGender().name(),
-            savedSettings.getPrimaryPetId(),
-            user.getTier().name(),
-            user.getCreatedAt(),
-            user.getLastLoginAt(),
-            petResponses.size(),
-            petResponses
-        );
+        return buildResponse(user, profile, savedSettings, regionName, petResponses);
     }
 
     private String normalizeBio(String bio) {
@@ -292,5 +156,41 @@ public class UserProfileController {
         } catch (Exception ex) {
             throw new ApiException(ErrorCode.BAD_REQUEST);
         }
+    }
+
+    private Long resolvePrimaryPetId(Long requestedPrimaryPetId, List<PetProfile> pets) {
+        if (requestedPrimaryPetId != null) {
+            return requestedPrimaryPetId;
+        }
+        if (pets.size() == 1) {
+            return pets.getFirst().getId();
+        }
+        return null;
+    }
+
+    private UserProfileResponse buildResponse(User user,
+                                              UserProfile profile,
+                                              UserProfileSettings settings,
+                                              String regionName,
+                                              List<PetProfileResponse> petResponses) {
+        Long primaryPetId = settings == null
+            ? (petResponses.size() == 1 ? petResponses.getFirst().id() : null)
+            : settings.getPrimaryPetId() != null
+            ? settings.getPrimaryPetId()
+            : (petResponses.size() == 1 ? petResponses.getFirst().id() : null);
+        return new UserProfileResponse(
+            user.getId(),
+            profile.getNickname(),
+            regionName,
+            profile.getProfileImageUrl(),
+            settings == null ? null : settings.getBio(),
+            settings == null || settings.getGender() == null ? null : settings.getGender().name(),
+            primaryPetId,
+            user.getTier().name(),
+            user.getCreatedAt(),
+            user.getLastLoginAt(),
+            petResponses.size(),
+            petResponses
+        );
     }
 }

@@ -2498,19 +2498,21 @@ body {
     @apply text-sm leading-6;
   }
 
-  .settings-page-field-action-row {
-    @apply flex items-center gap-3;
-  }
-
-  .settings-page-inline-action {
-    background: var(--color-button-bg);
-    color: var(--color-button-text);
-    @apply inline-flex items-center rounded-full px-4 py-2 text-xs font-semibold transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50;
-  }
-
   .settings-page-inline-feedback {
     color: var(--color-text-muted);
     @apply text-xs;
+  }
+
+  .settings-page-submit-row {
+    border-top-color: var(--color-border);
+    @apply flex flex-col gap-3 border-t pt-6;
+  }
+
+  .settings-page-submit-button {
+    background: var(--color-button-bg);
+    color: var(--color-button-text);
+    box-shadow: var(--shadow-soft-token);
+    @apply inline-flex w-full items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .settings-page-textarea-shell {
