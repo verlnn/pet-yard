@@ -14,7 +14,8 @@ export const ROUTES = {
   knowledge: "/knowledge",
   notifications: "/notifications",
   pets: "/pets",
-  profile: "/profile"
+  profile: "/profile",
+  setting: "/accounts/edit",
 } as const;
 
 export type RouteKey = keyof typeof ROUTES;
