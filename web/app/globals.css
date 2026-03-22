@@ -2309,6 +2309,15 @@ body {
     @apply w-full bg-transparent text-sm outline-none placeholder:text-[var(--color-input-placeholder)];
   }
 
+  .settings-page-search-clear {
+    color: var(--color-text-muted);
+    @apply inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition hover:bg-[var(--color-hover-surface)];
+  }
+
+  .settings-page-search-clear-icon {
+    @apply h-3.5 w-3.5;
+  }
+
   .settings-page-account-center {
     border-color: var(--color-border);
     background: var(--color-surface);
@@ -2387,6 +2396,24 @@ body {
 
   .settings-page-nav-item-icon-mark {
     @apply h-4 w-4;
+  }
+
+  .settings-page-search-results {
+    @apply space-y-2;
+  }
+
+  .settings-page-search-result-copy {
+    @apply flex min-w-0 flex-col items-start gap-1 text-left;
+  }
+
+  .settings-page-search-result-meta {
+    color: var(--color-text-muted);
+    @apply text-xs;
+  }
+
+  .settings-page-search-empty {
+    color: var(--color-text-muted);
+    @apply px-4 py-2 text-sm;
   }
 
   .settings-page-content {

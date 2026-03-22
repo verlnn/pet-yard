@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
-import { Bell, ChevronDown, Lock, PawPrint, Search, ShieldAlert, UserRound } from "lucide-react";
+import { Bell, ChevronDown, Lock, PawPrint, Search, ShieldAlert, UserRound, X } from "lucide-react";
 
 import { PetSettingsPanel } from "@/src/features/pets/components/PetSettingsPanel";
 import { authApi } from "@/src/features/auth/api/authApi";
@@ -27,6 +27,10 @@ interface SettingsNavItem {
 interface SettingsNavSection {
   title: string;
   items: SettingsNavItem[];
+}
+
+interface SettingsSearchResult extends SettingsNavItem {
+  sectionTitle: string;
 }
 
 const sectionRoutes: Record<SettingsSectionKey, Route> = {
@@ -82,6 +86,7 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
   const [savingChanges, setSavingChanges] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [primaryPetId, setPrimaryPetId] = useState<string>("none");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     setAccessToken(localStorage.getItem("accessToken"));
@@ -115,10 +120,49 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
     settingsSections.flatMap((section) => section.items).find((item) => item.key === activeSection)?.label ?? "프로필 편집";
   const isPetSection = activeSection === "pet-add" || activeSection === "pet-manage";
   const isProfileSection = activeSection === "profile";
+  const normalizedSearchQuery = searchQuery.trim().toLowerCase();
+  const isSearching = normalizedSearchQuery.length > 0;
   const bioChanged = (profile?.bio ?? "") !== bio;
   const genderChanged = (profile?.gender ?? "PRIVATE") !== gender;
   const primaryPetChanged = String(profile?.primaryPetId ?? "none") !== primaryPetId;
   const hasProfileChanges = bioChanged || genderChanged || primaryPetChanged;
+  const searchResults = useMemo<SettingsSearchResult[]>(() => {
+    if (!isSearching) {
+      return [];
+    }
+
+    return settingsSections.flatMap((section) =>
+      section.items
+        .filter((item) => {
+          const labelMatch = item.label.toLowerCase().includes(normalizedSearchQuery);
+          const sectionMatch = section.title.toLowerCase().includes(normalizedSearchQuery);
+          return labelMatch || sectionMatch;
+        })
+        .map((item) => ({
+          ...item,
+          sectionTitle: section.title
+        }))
+    );
+  }, [isSearching, normalizedSearchQuery]);
+
+  const renderNavIcon = (item: SettingsNavItem) => {
+    if (item.label === "프로필 편집") {
+      return <UserRound className="settings-page-nav-item-icon-mark" />;
+    }
+    if (item.label === "알림") {
+      return <Bell className="settings-page-nav-item-icon-mark" />;
+    }
+    if (item.label === "계정 공개 범위") {
+      return <Lock className="settings-page-nav-item-icon-mark" />;
+    }
+    if (item.label === "친한 친구" || item.label === "차단된 계정") {
+      return <ShieldAlert className="settings-page-nav-item-icon-mark" />;
+    }
+    if (item.key === "pet-add" || item.key === "pet-manage") {
+      return <PawPrint className="settings-page-nav-item-icon-mark" />;
+    }
+    return <UserRound className="settings-page-nav-item-icon-mark" />;
+  };
 
   const handleSaveProfileChanges = async () => {
     if (!accessToken || savingChanges || !hasProfileChanges) {
@@ -158,37 +202,69 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
               className="settings-page-search-input"
               type="search"
               placeholder="검색"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
             />
+            {isSearching ? (
+              <button
+                type="button"
+                className="settings-page-search-clear"
+                onClick={() => setSearchQuery("")}
+                aria-label="검색어 지우기"
+              >
+                <X className="settings-page-search-clear-icon" />
+              </button>
+            ) : null}
           </label>
 
           <div className="settings-page-nav">
-            {settingsSections.map((section) => (
-              <div key={section.title} className="settings-page-nav-section">
-                <p className="settings-page-nav-section-title">{section.title}</p>
-                <div className="settings-page-nav-list">
-                  {section.items.map((item) => (
-                    <button
-                      key={item.key}
-                      type="button"
-                      className={`settings-page-nav-item ${activeSection === item.key ? "settings-page-nav-item-active" : ""}`}
-                      onClick={() => router.push(sectionRoutes[item.key])}
-                    >
-                      <span className="settings-page-nav-item-icon">
-                        {item.label === "프로필 편집" && <UserRound className="settings-page-nav-item-icon-mark" />}
-                        {item.label === "알림" && <Bell className="settings-page-nav-item-icon-mark" />}
-                        {item.label === "계정 공개 범위" && <Lock className="settings-page-nav-item-icon-mark" />}
-                        {item.label === "친한 친구" && <ShieldAlert className="settings-page-nav-item-icon-mark" />}
-                        {item.label === "차단된 계정" && <ShieldAlert className="settings-page-nav-item-icon-mark" />}
-                        {(item.key === "pet-add" || item.key === "pet-manage") && (
-                          <PawPrint className="settings-page-nav-item-icon-mark" />
-                        )}
-                      </span>
-                      <span>{item.label}</span>
-                    </button>
-                  ))}
-                </div>
+            {isSearching ? (
+              <div className="settings-page-search-results">
+                {searchResults.length > 0 ? (
+                  <div className="settings-page-nav-list">
+                    {searchResults.map((item) => (
+                      <button
+                        key={`${item.sectionTitle}-${item.key}`}
+                        type="button"
+                        className={`settings-page-nav-item ${activeSection === item.key ? "settings-page-nav-item-active" : ""}`}
+                        onClick={() => router.push(sectionRoutes[item.key])}
+                      >
+                        <span className="settings-page-nav-item-icon">
+                          {renderNavIcon(item)}
+                        </span>
+                        <span className="settings-page-search-result-copy">
+                          <span>{item.label}</span>
+                          <span className="settings-page-search-result-meta">{item.sectionTitle}</span>
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="settings-page-search-empty">검색 결과가 없습니다.</p>
+                )}
               </div>
-            ))}
+            ) : (
+              settingsSections.map((section) => (
+                <div key={section.title} className="settings-page-nav-section">
+                  <p className="settings-page-nav-section-title">{section.title}</p>
+                  <div className="settings-page-nav-list">
+                    {section.items.map((item) => (
+                      <button
+                        key={item.key}
+                        type="button"
+                        className={`settings-page-nav-item ${activeSection === item.key ? "settings-page-nav-item-active" : ""}`}
+                        onClick={() => router.push(sectionRoutes[item.key])}
+                      >
+                        <span className="settings-page-nav-item-icon">
+                          {renderNavIcon(item)}
+                        </span>
+                        <span>{item.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </aside>
 
