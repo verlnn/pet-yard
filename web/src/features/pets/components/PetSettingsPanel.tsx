@@ -77,7 +77,6 @@ export function PetSettingsPanel({ mode = "manage" }: PetSettingsPanelProps) {
   const [petImageError, setPetImageError] = useState<string | null>(null);
   const [savingPet, setSavingPet] = useState(false);
   const [breeds, setBreeds] = useState<PetBreed[]>([]);
-  const [petFormOpen, setPetFormOpen] = useState(mode === "add");
   const [editingPetId, setEditingPetId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState(emptyForm);
   const [editBreeds, setEditBreeds] = useState<PetBreed[]>([]);
@@ -92,10 +91,6 @@ export function PetSettingsPanel({ mode = "manage" }: PetSettingsPanelProps) {
     const token = localStorage.getItem("accessToken");
     setAccessToken(token);
   }, []);
-
-  useEffect(() => {
-    setPetFormOpen(mode === "add");
-  }, [mode]);
 
   useEffect(() => {
     if (!accessToken) return;
@@ -599,19 +594,12 @@ export function PetSettingsPanel({ mode = "manage" }: PetSettingsPanelProps) {
                 </CardContent>
               </Card>
             ))}
-        <Card className="gradient-shell">
-          <CardContent className="pets-card-content pets-card-content-spacious">
-            <div className="pets-card-header">
-              <p className="pets-summary-card-title">반려동물 추가</p>
-              <button
-                type="button"
-                onClick={() => setPetFormOpen((prev) => !prev)}
-                className="pets-inline-action"
-              >
-                {petFormOpen ? "접기" : "열기"}
-              </button>
-            </div>
-            {petFormOpen && (
+        {mode === "add" && (
+          <Card className="gradient-shell">
+            <CardContent className="pets-card-content pets-card-content-spacious">
+              <div className="pets-card-header">
+                <p className="pets-summary-card-title">반려동물 추가</p>
+              </div>
               <>
                 <div className="pets-registration-card">
                   <p className="pets-registration-title">반려견 등록번호 인증</p>
@@ -843,9 +831,9 @@ export function PetSettingsPanel({ mode = "manage" }: PetSettingsPanelProps) {
                   </>
                 )}
               </>
-            )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
       </div>
       {!loading && pets.length === 0 && (
         <p className="pets-empty-message">등록된 반려동물이 없습니다.</p>

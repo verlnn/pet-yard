@@ -55,8 +55,8 @@ const settingsSections: SettingsNavSection[] = [
   {
     title: "반려동물",
     items: [
-      { label: "반려동물 추가", key: "pet-add" },
-      { label: "반려동물 관리", key: "pet-manage" }
+      { label: "반려동물 관리", key: "pet-manage" },
+      { label: "반려동물 추가", key: "pet-add" }
     ]
   }
 ];
