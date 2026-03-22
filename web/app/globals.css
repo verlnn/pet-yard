@@ -1604,7 +1604,7 @@ body {
   }
 
   .home-feed-layout {
-    @apply mx-auto grid max-w-[1040px] gap-8 xl:grid-cols-[minmax(0,520px)_300px];
+    @apply mx-auto grid max-w-[1240px] gap-8 xl:grid-cols-[minmax(0,520px)_300px] xl:justify-between;
   }
 
   .home-feed-main {
