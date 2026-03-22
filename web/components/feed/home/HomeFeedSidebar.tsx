@@ -1,5 +1,3 @@
-"use client";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { HomeFeedPost } from "@/src/features/auth/types/authTypes";
 
@@ -17,10 +15,9 @@ const FALLBACK_USERS = [
 ];
 
 const SIDEBAR_NATIVE_AD = {
-  sponsor: "PetYard Plus",
-  title: "반려생활 루틴을 한눈에 정리해보세요",
-  description: "산책, 건강 체크, 기록 메모를 보호자 대시보드에서 이어서 관리할 수 있어요.",
-  ctaLabel: "둘러보기"
+  sponsor: "Coupang Partners",
+  iframeSrc:
+    "https://ads-partners.coupang.com/widgets.html?id=974614&template=banner&trackingCode=AF8275210&subId=&width=300&height=250"
 };
 
 export function HomeFeedSidebar({ posts }: HomeFeedSidebarProps) {
@@ -95,13 +92,23 @@ export function HomeFeedSidebar({ posts }: HomeFeedSidebarProps) {
 
       <section className="home-feed-sidebar-native-ad" aria-label="홈 피드 네이티브 광고">
         <p className="home-feed-sidebar-native-ad-badge">광고 · {SIDEBAR_NATIVE_AD.sponsor}</p>
-        <div className="home-feed-sidebar-native-ad-copy">
-          <p className="home-feed-sidebar-native-ad-title">{SIDEBAR_NATIVE_AD.title}</p>
-          <p className="home-feed-sidebar-native-ad-description">{SIDEBAR_NATIVE_AD.description}</p>
+        <div className="home-feed-sidebar-native-ad-frame-shell">
+          <iframe
+            src={SIDEBAR_NATIVE_AD.iframeSrc}
+            title="쿠팡 파트너스 홈 피드 사이드바 광고"
+            width="300"
+            height="250"
+            frameBorder="0"
+            scrolling="no"
+            referrerPolicy="unsafe-url"
+            className="home-feed-sidebar-native-ad-frame"
+            ref={(node) => {
+              if (node) {
+                node.setAttribute("browsingtopics", "");
+              }
+            }}
+          />
         </div>
-        <a href="/knowledge" className="home-feed-sidebar-native-ad-link">
-          {SIDEBAR_NATIVE_AD.ctaLabel}
-        </a>
       </section>
 
       <footer className="home-feed-sidebar-footer">

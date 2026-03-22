@@ -1843,23 +1843,12 @@ body {
     @apply text-[11px] font-semibold uppercase tracking-[0.16em];
   }
 
-  .home-feed-sidebar-native-ad-copy {
-    @apply mt-3 space-y-2;
+  .home-feed-sidebar-native-ad-frame-shell {
+    @apply mt-3 overflow-hidden rounded-[22px] border border-[var(--color-border)] bg-white;
   }
 
-  .home-feed-sidebar-native-ad-title {
-    color: var(--color-text);
-    @apply text-base font-semibold leading-6;
-  }
-
-  .home-feed-sidebar-native-ad-description {
-    color: var(--color-text-muted);
-    @apply text-sm leading-6;
-  }
-
-  .home-feed-sidebar-native-ad-link {
-    color: var(--color-primary);
-    @apply mt-4 inline-flex text-sm font-semibold;
+  .home-feed-sidebar-native-ad-frame {
+    @apply block aspect-[6/5] h-auto w-full;
   }
 
   .home-feed-sidebar-section-header {
