@@ -1098,23 +1098,28 @@ body {
   }
 
   .app-sidebar-theme-row-title {
-    @apply text-sm font-medium text-white;
+    color: var(--color-menu-text);
+    @apply text-sm font-medium;
   }
 
   .app-sidebar-theme-switch {
-    @apply relative inline-flex h-6 w-11 shrink-0 items-center rounded-full bg-white/35 transition;
+    background: color-mix(in srgb, var(--color-menu-text) 18%, transparent);
+    @apply relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border transition;
+    border-color: var(--color-menu-divider);
   }
 
   .app-sidebar-theme-switch-active {
-    background: rgba(255, 255, 255, 0.92);
+    background: var(--color-menu-text);
+    border-color: var(--color-menu-text);
   }
 
   .app-sidebar-theme-switch-thumb {
-    @apply pointer-events-none inline-block h-[18px] w-[18px] translate-x-1 rounded-full bg-slate-900 transition;
+    background: var(--color-menu-surface);
+    @apply pointer-events-none inline-block h-[18px] w-[18px] translate-x-1 rounded-full transition;
   }
 
   .app-sidebar-theme-switch-active .app-sidebar-theme-switch-thumb {
-    @apply translate-x-6 bg-slate-900;
+    @apply translate-x-6;
   }
 
   .pets-page-main {
