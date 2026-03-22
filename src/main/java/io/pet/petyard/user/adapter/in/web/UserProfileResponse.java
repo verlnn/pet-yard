@@ -12,6 +12,7 @@ public record UserProfileResponse(
     String profileImageUrl,
     String bio,
     String gender,
+    Long primaryPetId,
     String tier,
     Instant joinedAt,
     Instant lastLoginAt,

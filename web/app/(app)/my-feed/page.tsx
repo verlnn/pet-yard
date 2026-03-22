@@ -371,7 +371,7 @@ export default function MyFeedPage() {
     }
   };
 
-  const primaryPet = profile?.pets?.[0];
+  const primaryPet = profile?.pets?.find((pet) => pet.id === profile?.primaryPetId) ?? profile?.pets?.[0];
 
   const handleRequestNewPost = () => {
     if (loading) {

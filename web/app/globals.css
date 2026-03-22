@@ -663,6 +663,24 @@ body {
     @apply h-28 w-28 border border-[var(--color-border)] ring-0;
   }
 
+  .feed-profile-header-avatar-shell {
+    @apply relative inline-flex;
+  }
+
+  .feed-profile-header-primary-pet {
+    border-color: var(--color-surface);
+    @apply absolute -bottom-1 -right-1 flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-[3px] bg-[var(--color-surface-muted)] shadow-[0_10px_24px_-18px_rgba(15,23,42,0.45)];
+  }
+
+  .feed-profile-header-primary-pet-image {
+    @apply h-full w-full object-cover;
+  }
+
+  .feed-profile-header-primary-pet-fallback {
+    color: var(--color-text-muted);
+    @apply text-xs font-semibold;
+  }
+
   .feed-profile-header-avatar-button {
     @apply relative inline-flex rounded-full transition duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border)];
   }

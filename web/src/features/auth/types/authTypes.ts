@@ -108,6 +108,7 @@ export interface MyProfileResponse {
   profileImageUrl?: string | null;
   bio?: string | null;
   gender?: string | null;
+  primaryPetId?: number | null;
   tier: string;
   joinedAt: string;
   lastLoginAt?: string | null;

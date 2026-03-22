@@ -83,6 +83,9 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [savingGender, setSavingGender] = useState(false);
   const [genderSaveMessage, setGenderSaveMessage] = useState<string | null>(null);
+  const [primaryPetId, setPrimaryPetId] = useState<string>("none");
+  const [savingPrimaryPet, setSavingPrimaryPet] = useState(false);
+  const [primaryPetSaveMessage, setPrimaryPetSaveMessage] = useState<string | null>(null);
 
   useEffect(() => {
     setAccessToken(localStorage.getItem("accessToken"));
@@ -100,6 +103,7 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
         setProfile(response);
         setBio(response.bio ?? "");
         setGender((response.gender as (typeof genderOptions)[number]["value"] | null) ?? "PRIVATE");
+        setPrimaryPetId(response.primaryPetId ? String(response.primaryPetId) : "none");
       } finally {
         setLoading(false);
       }
@@ -117,6 +121,7 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
   const isProfileSection = activeSection === "profile";
   const bioChanged = (profile?.bio ?? "") !== bio;
   const genderChanged = (profile?.gender ?? "PRIVATE") !== gender;
+  const primaryPetChanged = String(profile?.primaryPetId ?? "none") !== primaryPetId;
 
   const handleSaveBio = async () => {
     if (!accessToken || savingBio || !bioChanged) {
@@ -155,6 +160,26 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
       setGenderSaveMessage(error instanceof Error ? error.message : "성별 저장에 실패했습니다.");
     } finally {
       setSavingGender(false);
+    }
+  };
+
+  const handleSavePrimaryPet = async () => {
+    if (!accessToken || savingPrimaryPet || !primaryPetChanged) {
+      return;
+    }
+    setSavingPrimaryPet(true);
+    setPrimaryPetSaveMessage(null);
+    try {
+      const response = await authApi.updateMyProfilePrimaryPet(accessToken, {
+        primaryPetId: primaryPetId === "none" ? null : Number(primaryPetId)
+      });
+      setProfile(response);
+      setPrimaryPetId(response.primaryPetId ? String(response.primaryPetId) : "none");
+      setPrimaryPetSaveMessage("대표 반려동물이 저장되었습니다.");
+    } catch (error) {
+      setPrimaryPetSaveMessage(error instanceof Error ? error.message : "대표 반려동물 저장에 실패했습니다.");
+    } finally {
+      setSavingPrimaryPet(false);
     }
   };
 
@@ -303,6 +328,45 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
                     </button>
                     {genderSaveMessage ? (
                       <p className="settings-page-inline-feedback">{genderSaveMessage}</p>
+                    ) : null}
+                  </div>
+                </div>
+
+                <div className="settings-page-field">
+                  <label className="settings-page-field-label" htmlFor="settings-primary-pet">대표 반려동물</label>
+                  <div className="settings-page-select-shell">
+                    <select
+                      id="settings-primary-pet"
+                      className="settings-page-select"
+                      value={primaryPetId}
+                      onChange={(event) => setPrimaryPetId(event.target.value)}
+                      disabled={(profile?.pets?.length ?? 0) === 0}
+                    >
+                      <option value="none">선택 안 함</option>
+                      {(profile?.pets ?? []).map((pet) => (
+                        <option key={pet.id} value={String(pet.id)}>
+                          {pet.name}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="settings-page-select-icon" />
+                  </div>
+                  <p className="settings-page-field-helper">
+                    {(profile?.pets?.length ?? 0) > 0
+                      ? "사이드바와 내 피드에서 우선적으로 보여줄 반려동물을 선택합니다."
+                      : "먼저 반려동물을 등록하면 대표 반려동물을 고를 수 있어요."}
+                  </p>
+                  <div className="settings-page-field-action-row">
+                    <button
+                      type="button"
+                      className="settings-page-inline-action"
+                      onClick={handleSavePrimaryPet}
+                      disabled={!primaryPetChanged || savingPrimaryPet || (profile?.pets?.length ?? 0) === 0}
+                    >
+                      {savingPrimaryPet ? "저장 중..." : "대표 반려동물 저장"}
+                    </button>
+                    {primaryPetSaveMessage ? (
+                      <p className="settings-page-inline-feedback">{primaryPetSaveMessage}</p>
                     ) : null}
                   </div>
                 </div>

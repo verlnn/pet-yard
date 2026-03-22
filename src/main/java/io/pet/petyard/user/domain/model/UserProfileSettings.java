@@ -33,6 +33,8 @@ public class UserProfileSettings {
     @Column(length = 20)
     private UserProfileGender gender;
 
+    private Long primaryPetId;
+
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
@@ -81,5 +83,13 @@ public class UserProfileSettings {
 
     public void updateGender(UserProfileGender gender) {
         this.gender = gender;
+    }
+
+    public Long getPrimaryPetId() {
+        return primaryPetId;
+    }
+
+    public void updatePrimaryPetId(Long primaryPetId) {
+        this.primaryPetId = primaryPetId;
     }
 }

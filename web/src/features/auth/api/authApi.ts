@@ -296,6 +296,20 @@ export const authApi = {
       body: JSON.stringify(payload)
     });
   },
+  updateMyProfilePrimaryPet(
+    accessToken: string,
+    payload: {
+      primaryPetId?: number | null;
+    }
+  ) {
+    return request<MyProfileResponse>("/api/users/me/profile/primary-pet", {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      },
+      body: JSON.stringify(payload)
+    });
+  },
   createPetProfile(
     accessToken: string,
     payload: {

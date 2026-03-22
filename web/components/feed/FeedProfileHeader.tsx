@@ -15,7 +15,7 @@ interface FeedProfileHeaderProps {
 }
 
 export function FeedProfileHeader({ profile, postCount, onNewPost, onProfileImageClick }: FeedProfileHeaderProps) {
-  const primaryPet = profile?.pets?.[0];
+  const primaryPet = profile?.pets?.find((pet) => pet.id === profile?.primaryPetId) ?? profile?.pets?.[0];
 
   return (
     <section className="feed-profile-header">
@@ -41,13 +41,25 @@ interface FeedProfileIdentityProps {
 
 function FeedProfileIdentity({ profile, primaryPet, postCount, onProfileImageClick }: FeedProfileIdentityProps) {
   const avatar = (
-    <Avatar className="feed-profile-header-avatar">
-      {profile?.profileImageUrl ? (
-        <AvatarImage src={profile.profileImageUrl} alt={profile.nickname} />
-      ) : (
-        <AvatarFallback>{profile?.nickname?.[0] ?? "MY"}</AvatarFallback>
-      )}
-    </Avatar>
+    <div className="feed-profile-header-avatar-shell">
+      <Avatar className="feed-profile-header-avatar">
+        {profile?.profileImageUrl ? (
+          <AvatarImage src={profile.profileImageUrl} alt={profile.nickname} />
+        ) : (
+          <AvatarFallback>{profile?.nickname?.[0] ?? "MY"}</AvatarFallback>
+        )}
+      </Avatar>
+      {primaryPet ? (
+        <span className="feed-profile-header-primary-pet" aria-hidden="true">
+          {primaryPet.photoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={primaryPet.photoUrl} alt={primaryPet.name} className="feed-profile-header-primary-pet-image" />
+          ) : (
+            <span className="feed-profile-header-primary-pet-fallback">{primaryPet.name[0] ?? "펫"}</span>
+          )}
+        </span>
+      ) : null}
+    </div>
   );
 
   return (

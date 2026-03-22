@@ -12,7 +12,7 @@ interface SidebarProfileProps {
 }
 
 export function SidebarProfile({ profile, onNavigate }: SidebarProfileProps) {
-  const primaryPet = profile?.pets?.[0] ?? null;
+  const primaryPet = profile?.pets?.find((pet) => pet.id === profile.primaryPetId) ?? profile?.pets?.[0] ?? null;
   const nickname = profile?.nickname ?? "멍냥마당";
   const subtitle = profile?.bio?.trim()
     ? profile.bio

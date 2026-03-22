@@ -95,6 +95,7 @@ public class UserProfileController {
             profile.getProfileImageUrl(),
             settings == null ? null : settings.getBio(),
             settings == null || settings.getGender() == null ? null : settings.getGender().name(),
+            settings == null ? null : settings.getPrimaryPetId(),
             user.getTier().name(),
             user.getCreatedAt(),
             user.getLastLoginAt(),
@@ -150,6 +151,7 @@ public class UserProfileController {
             profile.getProfileImageUrl(),
             savedSettings.getBio(),
             savedSettings.getGender() == null ? null : savedSettings.getGender().name(),
+            savedSettings.getPrimaryPetId(),
             user.getTier().name(),
             user.getCreatedAt(),
             user.getLastLoginAt(),
@@ -205,6 +207,69 @@ public class UserProfileController {
             profile.getProfileImageUrl(),
             savedSettings.getBio(),
             savedSettings.getGender() == null ? null : savedSettings.getGender().name(),
+            savedSettings.getPrimaryPetId(),
+            user.getTier().name(),
+            user.getCreatedAt(),
+            user.getLastLoginAt(),
+            petResponses.size(),
+            petResponses
+        );
+    }
+
+    @PatchMapping("/profile/primary-pet")
+    public UserProfileResponse updatePrimaryPet(@AuthenticationPrincipal AuthPrincipal principal,
+                                                @Valid @RequestBody UserProfilePrimaryPetRequest request) {
+        User user = loadUserPort.findById(principal.userId())
+            .orElseThrow(() -> new ApiException(ErrorCode.UNAUTHORIZED));
+
+        UserProfile profile = loadUserProfilePort.findByUserId(principal.userId())
+            .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST));
+
+        Long primaryPetId = request.primaryPetId();
+        if (primaryPetId != null) {
+            loadPetProfilePort.findByIdAndUserId(primaryPetId, principal.userId())
+                .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST));
+        }
+
+        UserProfileSettings settings = loadUserProfileSettingsPort.findByUserId(principal.userId())
+            .orElseGet(() -> new UserProfileSettings(principal.userId(), null));
+        settings.updatePrimaryPetId(primaryPetId);
+        UserProfileSettings savedSettings = saveUserProfileSettingsPort.save(settings);
+
+        String regionName = null;
+        if (profile.getRegionCode() != null && !profile.getRegionCode().isBlank()) {
+            regionName = loadRegionPort.findByCode(profile.getRegionCode())
+                .map(region -> region.getName())
+                .orElse(null);
+        }
+
+        List<PetProfile> pets = loadPetProfilePort.findByUserId(principal.userId());
+        List<PetProfileResponse> petResponses = pets.stream()
+            .map(pet -> new PetProfileResponse(
+                pet.getId(),
+                pet.getName(),
+                pet.getSpecies().name(),
+                pet.getBreed(),
+                pet.getBirthDate(),
+                pet.getAgeGroup(),
+                pet.getGender().name(),
+                pet.getNeutered(),
+                pet.getIntro(),
+                pet.getPhotoUrl(),
+                pet.getWeightKg() == null ? null : pet.getWeightKg().doubleValue(),
+                pet.getVaccinationComplete(),
+                pet.getWalkSafetyChecked()
+            ))
+            .toList();
+
+        return new UserProfileResponse(
+            user.getId(),
+            profile.getNickname(),
+            regionName,
+            profile.getProfileImageUrl(),
+            savedSettings.getBio(),
+            savedSettings.getGender() == null ? null : savedSettings.getGender().name(),
+            savedSettings.getPrimaryPetId(),
             user.getTier().name(),
             user.getCreatedAt(),
             user.getLastLoginAt(),
