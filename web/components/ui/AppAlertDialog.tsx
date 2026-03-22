@@ -3,25 +3,27 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
-interface AppConfirmDialogProps {
+interface AppAlertDialogProps {
   open: boolean;
   title: string;
   description: string;
   confirmLabel: string;
   cancelLabel?: string;
+  actionsClassName?: string;
   onConfirm: () => void | Promise<void>;
   onClose: () => void;
 }
 
-export function AppConfirmDialog({
+export function AppAlertDialog({
   open,
   title,
   description,
   confirmLabel,
   cancelLabel = "취소",
+  actionsClassName = "app-alert-dialog-actions-vertical",
   onConfirm,
   onClose
-}: AppConfirmDialogProps) {
+}: AppAlertDialogProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -43,35 +45,37 @@ export function AppConfirmDialog({
 
   if (!open || !mounted) return null;
 
+  const actionsClassNames = `app-alert-dialog-actions ${actionsClassName}`.trim();
+
   return createPortal(
-    <div className="app-confirm-dialog-overlay" role="presentation" onClick={onClose}>
+    <div className="app-alert-dialog-overlay" role="presentation" onClick={onClose}>
       <div
-        className="app-confirm-dialog"
+        className="app-alert-dialog"
         role="alertdialog"
         aria-modal="true"
-        aria-labelledby="app-confirm-dialog-title"
-        aria-describedby="app-confirm-dialog-description"
+        aria-labelledby="app-alert-dialog-title"
+        aria-describedby="app-alert-dialog-description"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="app-confirm-dialog-copy">
-          <h2 id="app-confirm-dialog-title" className="app-confirm-dialog-title">
+        <div className="app-alert-dialog-copy">
+          <h2 id="app-alert-dialog-title" className="app-alert-dialog-title">
             {title}
           </h2>
-          <p id="app-confirm-dialog-description" className="app-confirm-dialog-description">
+          <p id="app-alert-dialog-description" className="app-alert-dialog-description">
             {description}
           </p>
         </div>
 
         <div className="app-sidebar-more-divider" />
 
-        <div className="app-confirm-dialog-actions">
-          <button type="button" className="app-confirm-dialog-action" onClick={onClose}>
+        <div className={actionsClassNames}>
+          <button type="button" className="app-alert-dialog-action" onClick={onClose}>
             {cancelLabel}
           </button>
-          <div className="app-sidebar-more-divider" />
+          <div className="app-alert-dialog-actions-divider" />
           <button
             type="button"
-            className="app-confirm-dialog-action app-confirm-dialog-action-danger"
+            className="app-alert-dialog-action app-alert-dialog-action-danger"
             onClick={onConfirm}
           >
             {confirmLabel}

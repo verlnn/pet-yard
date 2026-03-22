@@ -981,39 +981,59 @@ body {
     @apply text-white;
   }
 
-  .app-confirm-dialog-overlay {
+  .app-alert-dialog-overlay {
     background: color-mix(in srgb, var(--color-overlay-backdrop) 84%, transparent);
     @apply fixed inset-0 z-[70] flex items-center justify-center px-4;
   }
 
-  .app-confirm-dialog {
+  .app-alert-dialog {
     background: var(--color-menu-surface);
     color: var(--color-menu-text);
     box-shadow: 0 28px 80px -34px rgba(15, 23, 42, 0.65);
-    @apply w-full max-w-[260px] overflow-hidden rounded-[24px] py-3;
+    @apply w-full max-w-[292px] overflow-hidden rounded-[24px] py-3;
   }
 
-  .app-confirm-dialog-copy {
-    @apply space-y-2 px-6 py-3;
+  .app-alert-dialog-copy {
+    @apply space-y-2 px-6 py-3.5;
   }
 
-  .app-confirm-dialog-title {
-    @apply text-sm font-semibold text-white;
+  .app-alert-dialog-title {
+    @apply text-base font-semibold text-white;
   }
 
-  .app-confirm-dialog-description {
-    @apply text-sm leading-6 text-white/70;
+  .app-alert-dialog-description {
+    @apply text-sm leading-6 text-white/75;
   }
 
-  .app-confirm-dialog-actions {
-    @apply flex flex-col;
+  .app-alert-dialog-actions {
+    @apply flex;
   }
 
-  .app-confirm-dialog-action {
-    @apply w-full px-6 py-4 text-left text-sm font-medium text-white/95 transition hover:bg-white/5;
+  .app-alert-dialog-actions-vertical {
+    @apply flex-col;
   }
 
-  .app-confirm-dialog-action-danger {
+  .app-alert-dialog-actions-horizontal {
+    @apply flex-row items-stretch;
+  }
+
+  .app-alert-dialog-actions-divider {
+    @apply h-px w-full bg-white/10;
+  }
+
+  .app-alert-dialog-actions-horizontal .app-alert-dialog-actions-divider {
+    @apply my-0 h-auto w-px self-stretch;
+  }
+
+  .app-alert-dialog-action {
+    @apply min-h-0 flex-1 px-5 py-3 text-center text-[13px] font-medium text-white/95 transition hover:bg-white/5;
+  }
+
+  .app-alert-dialog-actions-vertical .app-alert-dialog-action {
+    @apply w-full text-left;
+  }
+
+  .app-alert-dialog-action-danger {
     @apply text-white;
   }
 

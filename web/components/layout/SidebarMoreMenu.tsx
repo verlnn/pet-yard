@@ -11,10 +11,11 @@ import {
   Moon,
   RefreshCcw,
   Settings,
-  SquareActivity
+  SquareActivity,
+  SunMedium
 } from "lucide-react";
 
-import { AppConfirmDialog } from "@/components/ui/AppConfirmDialog";
+import { AppAlertDialog } from "@/components/ui/AppAlertDialog";
 import { authApi } from "@/src/features/auth/api/authApi";
 import { useTheme } from "@/src/hooks/useTheme";
 import { ROUTES } from "@/src/lib/routes";
@@ -76,6 +77,8 @@ export function SidebarMoreMenu({ onNavigate }: SidebarMoreMenuProps) {
     setTheme(resolvedTheme === "dark" ? "light" : "dark");
   };
 
+  const ThemeModeIcon = resolvedTheme === "dark" ? Moon : SunMedium;
+
   const handleLogout = async () => {
     try {
       const refreshToken = localStorage.getItem("refreshToken");
@@ -103,11 +106,12 @@ export function SidebarMoreMenu({ onNavigate }: SidebarMoreMenuProps) {
 
   return (
     <div className="app-sidebar-more" ref={containerRef}>
-      <AppConfirmDialog
+      <AppAlertDialog
         open={logoutConfirmOpen}
         title="로그아웃할까요?"
         description="현재 기기에서 로그인 상태가 해제됩니다."
         confirmLabel="로그아웃"
+        actionsClassName="app-alert-dialog-actions-horizontal"
         onConfirm={handleLogout}
         onClose={() => setLogoutConfirmOpen(false)}
       />
@@ -130,7 +134,7 @@ export function SidebarMoreMenu({ onNavigate }: SidebarMoreMenuProps) {
                   <span>저장됨</span>
                 </button>
                 <button type="button" className="app-sidebar-more-item" onClick={() => setView("theme")}>
-                  <Moon className="app-sidebar-more-item-icon" />
+                  <ThemeModeIcon className="app-sidebar-more-item-icon" />
                   <span>모드 전환</span>
                 </button>
                 <button type="button" className="app-sidebar-more-item" onClick={handleClose}>
@@ -164,7 +168,7 @@ export function SidebarMoreMenu({ onNavigate }: SidebarMoreMenuProps) {
                   <ChevronLeft className="app-sidebar-theme-back-icon" />
                 </button>
                 <p className="app-sidebar-theme-title">모드 전환</p>
-                <Moon className="app-sidebar-theme-mode-icon" />
+                <ThemeModeIcon className="app-sidebar-theme-mode-icon" />
               </div>
 
               <div className="app-sidebar-more-divider" />

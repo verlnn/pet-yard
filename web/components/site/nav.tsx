@@ -9,7 +9,7 @@ import { Bell, Compass, HeartHandshake, MapPin, PawPrint, Shield } from "lucide-
 import type { LucideIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { AppConfirmDialog } from "@/components/ui/AppConfirmDialog";
+import { AppAlertDialog } from "@/components/ui/AppAlertDialog";
 import { Badge } from "@/components/ui/badge";
 import { authApi } from "@/src/features/auth/api/authApi";
 import { ROUTES } from "@/src/lib/routes";
@@ -52,11 +52,12 @@ export function SiteNav() {
 
   return (
     <>
-      <AppConfirmDialog
+      <AppAlertDialog
         open={logoutConfirmOpen}
         title="로그아웃할까요?"
         description="현재 기기에서 로그인 상태가 해제됩니다."
         confirmLabel="로그아웃"
+        actionsClassName="app-alert-dialog-actions-horizontal"
         onConfirm={handleLogout}
         onClose={() => setLogoutConfirmOpen(false)}
       />
