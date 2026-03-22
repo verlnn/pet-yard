@@ -14,8 +14,12 @@ import io.pet.petyard.pet.application.service.AnimalRegistrationService;
 import io.pet.petyard.pet.domain.PetGender;
 import io.pet.petyard.pet.domain.PetSpecies;
 import io.pet.petyard.pet.domain.model.PetProfile;
+import io.pet.petyard.user.application.port.out.LoadUserProfileSettingsPort;
+import io.pet.petyard.user.application.port.out.SaveUserProfileSettingsPort;
+import io.pet.petyard.user.domain.model.UserProfileSettings;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import jakarta.validation.Valid;
 
@@ -36,17 +40,23 @@ public class PetProfileController {
     private final AnimalRegistrationService registrationService;
     private final LoadUserPort loadUserPort;
     private final SaveUserPort saveUserPort;
+    private final LoadUserProfileSettingsPort loadUserProfileSettingsPort;
+    private final SaveUserProfileSettingsPort saveUserProfileSettingsPort;
 
     public PetProfileController(LoadPetProfilePort loadPetProfilePort,
                                 SavePetProfilePort savePetProfilePort,
                                 AnimalRegistrationService registrationService,
                                 LoadUserPort loadUserPort,
-                                SaveUserPort saveUserPort) {
+                                SaveUserPort saveUserPort,
+                                LoadUserProfileSettingsPort loadUserProfileSettingsPort,
+                                SaveUserProfileSettingsPort saveUserProfileSettingsPort) {
         this.loadPetProfilePort = loadPetProfilePort;
         this.savePetProfilePort = savePetProfilePort;
         this.registrationService = registrationService;
         this.loadUserPort = loadUserPort;
         this.saveUserPort = saveUserPort;
+        this.loadUserProfileSettingsPort = loadUserProfileSettingsPort;
+        this.saveUserProfileSettingsPort = saveUserProfileSettingsPort;
     }
 
     @PostMapping("/verify")
@@ -100,6 +110,7 @@ public class PetProfileController {
         );
 
         PetProfile saved = savePetProfilePort.save(profile);
+        assignPrimaryPetIfSingle(principal.userId(), saved.getId());
         promoteTierIfNeeded(principal.userId());
         return new PetProfileResponse(
             saved.getId(),
@@ -183,5 +194,20 @@ public class PetProfileController {
             user.setTier(UserTier.TIER_1);
             saveUserPort.save(user);
         }
+    }
+
+    private void assignPrimaryPetIfSingle(Long userId, Long createdPetId) {
+        List<PetProfile> pets = loadPetProfilePort.findByUserId(userId);
+        if (pets.size() != 1) {
+            return;
+        }
+
+        UserProfileSettings settings = loadUserProfileSettingsPort.findByUserId(userId)
+            .orElseGet(() -> new UserProfileSettings(userId, null));
+        if (settings.getPrimaryPetId() != null) {
+            return;
+        }
+        settings.updatePrimaryPetId(createdPetId);
+        saveUserProfileSettingsPort.save(settings);
     }
 }
