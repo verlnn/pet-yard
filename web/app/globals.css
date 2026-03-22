@@ -1823,6 +1823,11 @@ body {
     @apply flex items-center gap-3;
   }
 
+  .home-feed-sidebar-account-copy,
+  .home-feed-sidebar-suggestion-copy {
+    @apply min-w-0;
+  }
+
   .home-feed-sidebar-avatar,
   .home-feed-sidebar-suggestion-avatar {
     @apply h-11 w-11;
@@ -1843,7 +1848,7 @@ body {
 
   .home-feed-sidebar-link {
     color: var(--color-primary);
-    @apply text-xs font-semibold;
+    @apply shrink-0 whitespace-nowrap text-xs font-semibold;
   }
 
   .home-feed-sidebar-native-ad-badge {
