@@ -282,6 +282,20 @@ export const authApi = {
       body: JSON.stringify(payload)
     });
   },
+  updateMyProfileGender(
+    accessToken: string,
+    payload: {
+      gender: string;
+    }
+  ) {
+    return request<MyProfileResponse>("/api/users/me/profile/gender", {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      },
+      body: JSON.stringify(payload)
+    });
+  },
   createPetProfile(
     accessToken: string,
     payload: {

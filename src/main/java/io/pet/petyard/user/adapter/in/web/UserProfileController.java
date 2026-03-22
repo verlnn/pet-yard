@@ -9,6 +9,7 @@ import io.pet.petyard.pet.adapter.in.web.PetProfileResponse;
 import io.pet.petyard.pet.application.port.out.LoadPetProfilePort;
 import io.pet.petyard.pet.domain.model.PetProfile;
 import io.pet.petyard.region.application.port.out.LoadRegionPort;
+import io.pet.petyard.user.domain.UserProfileGender;
 import io.pet.petyard.user.application.port.out.LoadUserProfilePort;
 import io.pet.petyard.user.application.port.out.LoadUserProfileSettingsPort;
 import io.pet.petyard.user.application.port.out.SaveUserProfileSettingsPort;
@@ -93,6 +94,7 @@ public class UserProfileController {
             regionName,
             profile.getProfileImageUrl(),
             settings == null ? null : settings.getBio(),
+            settings == null || settings.getGender() == null ? null : settings.getGender().name(),
             user.getTier().name(),
             user.getCreatedAt(),
             user.getLastLoginAt(),
@@ -147,6 +149,62 @@ public class UserProfileController {
             regionName,
             profile.getProfileImageUrl(),
             savedSettings.getBio(),
+            savedSettings.getGender() == null ? null : savedSettings.getGender().name(),
+            user.getTier().name(),
+            user.getCreatedAt(),
+            user.getLastLoginAt(),
+            petResponses.size(),
+            petResponses
+        );
+    }
+
+    @PatchMapping("/profile/gender")
+    public UserProfileResponse updateProfileGender(@AuthenticationPrincipal AuthPrincipal principal,
+                                                   @Valid @RequestBody UserProfileGenderRequest request) {
+        User user = loadUserPort.findById(principal.userId())
+            .orElseThrow(() -> new ApiException(ErrorCode.UNAUTHORIZED));
+
+        UserProfile profile = loadUserProfilePort.findByUserId(principal.userId())
+            .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST));
+
+        UserProfileSettings settings = loadUserProfileSettingsPort.findByUserId(principal.userId())
+            .orElseGet(() -> new UserProfileSettings(principal.userId(), null));
+        settings.updateGender(parseGender(request.gender()));
+        UserProfileSettings savedSettings = saveUserProfileSettingsPort.save(settings);
+
+        String regionName = null;
+        if (profile.getRegionCode() != null && !profile.getRegionCode().isBlank()) {
+            regionName = loadRegionPort.findByCode(profile.getRegionCode())
+                .map(region -> region.getName())
+                .orElse(null);
+        }
+
+        List<PetProfile> pets = loadPetProfilePort.findByUserId(principal.userId());
+        List<PetProfileResponse> petResponses = pets.stream()
+            .map(pet -> new PetProfileResponse(
+                pet.getId(),
+                pet.getName(),
+                pet.getSpecies().name(),
+                pet.getBreed(),
+                pet.getBirthDate(),
+                pet.getAgeGroup(),
+                pet.getGender().name(),
+                pet.getNeutered(),
+                pet.getIntro(),
+                pet.getPhotoUrl(),
+                pet.getWeightKg() == null ? null : pet.getWeightKg().doubleValue(),
+                pet.getVaccinationComplete(),
+                pet.getWalkSafetyChecked()
+            ))
+            .toList();
+
+        return new UserProfileResponse(
+            user.getId(),
+            profile.getNickname(),
+            regionName,
+            profile.getProfileImageUrl(),
+            savedSettings.getBio(),
+            savedSettings.getGender() == null ? null : savedSettings.getGender().name(),
             user.getTier().name(),
             user.getCreatedAt(),
             user.getLastLoginAt(),
@@ -161,5 +219,13 @@ public class UserProfileController {
         }
         String trimmed = bio.trim();
         return trimmed.isBlank() ? null : trimmed;
+    }
+
+    private UserProfileGender parseGender(String raw) {
+        try {
+            return UserProfileGender.valueOf(raw.trim().toUpperCase());
+        } catch (Exception ex) {
+            throw new ApiException(ErrorCode.BAD_REQUEST);
+        }
     }
 }

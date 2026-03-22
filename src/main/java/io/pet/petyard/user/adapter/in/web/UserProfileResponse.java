@@ -11,6 +11,7 @@ public record UserProfileResponse(
     String regionName,
     String profileImageUrl,
     String bio,
+    String gender,
     String tier,
     Instant joinedAt,
     Instant lastLoginAt,

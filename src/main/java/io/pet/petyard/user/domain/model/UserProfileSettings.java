@@ -2,8 +2,12 @@ package io.pet.petyard.user.domain.model;
 
 import java.time.Instant;
 
+import io.pet.petyard.user.domain.UserProfileGender;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,6 +28,10 @@ public class UserProfileSettings {
 
     @Column(length = 150)
     private String bio;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private UserProfileGender gender;
 
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
@@ -65,5 +73,13 @@ public class UserProfileSettings {
 
     public void updateBio(String bio) {
         this.bio = bio;
+    }
+
+    public UserProfileGender getGender() {
+        return gender;
+    }
+
+    public void updateGender(UserProfileGender gender) {
+        this.gender = gender;
     }
 }

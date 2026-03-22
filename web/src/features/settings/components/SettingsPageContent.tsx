@@ -61,6 +61,13 @@ const settingsSections: SettingsNavSection[] = [
   }
 ];
 
+const genderOptions = [
+  { value: "PRIVATE", label: "밝히고 싶지 않음" },
+  { value: "FEMALE", label: "여성" },
+  { value: "MALE", label: "남성" },
+  { value: "UNSPECIFIED", label: "선택 안 함" }
+] as const;
+
 interface SettingsPageContentProps {
   activeSection: SettingsSectionKey;
 }
@@ -71,9 +78,11 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
   const [profile, setProfile] = useState<MyProfileResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [bio, setBio] = useState("");
-  const [gender, setGender] = useState("밝히고 싶지 않음");
+  const [gender, setGender] = useState<(typeof genderOptions)[number]["value"]>("PRIVATE");
   const [savingBio, setSavingBio] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const [savingGender, setSavingGender] = useState(false);
+  const [genderSaveMessage, setGenderSaveMessage] = useState<string | null>(null);
 
   useEffect(() => {
     setAccessToken(localStorage.getItem("accessToken"));
@@ -90,6 +99,7 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
         const response = await authApi.getMyProfile(accessToken);
         setProfile(response);
         setBio(response.bio ?? "");
+        setGender((response.gender as (typeof genderOptions)[number]["value"] | null) ?? "PRIVATE");
       } finally {
         setLoading(false);
       }
@@ -106,6 +116,7 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
   const isPetSection = activeSection === "pet-add" || activeSection === "pet-manage";
   const isProfileSection = activeSection === "profile";
   const bioChanged = (profile?.bio ?? "") !== bio;
+  const genderChanged = (profile?.gender ?? "PRIVATE") !== gender;
 
   const handleSaveBio = async () => {
     if (!accessToken || savingBio || !bioChanged) {
@@ -124,6 +135,26 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
       setSaveMessage(error instanceof Error ? error.message : "소개 저장에 실패했습니다.");
     } finally {
       setSavingBio(false);
+    }
+  };
+
+  const handleSaveGender = async () => {
+    if (!accessToken || savingGender || !genderChanged) {
+      return;
+    }
+    setSavingGender(true);
+    setGenderSaveMessage(null);
+    try {
+      const response = await authApi.updateMyProfileGender(accessToken, {
+        gender
+      });
+      setProfile(response);
+      setGender((response.gender as (typeof genderOptions)[number]["value"] | null) ?? "PRIVATE");
+      setGenderSaveMessage("성별 정보가 저장되었습니다.");
+    } catch (error) {
+      setGenderSaveMessage(error instanceof Error ? error.message : "성별 저장에 실패했습니다.");
+    } finally {
+      setSavingGender(false);
     }
   };
 
@@ -248,16 +279,32 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
                       id="settings-gender"
                       className="settings-page-select"
                       value={gender}
-                      onChange={(event) => setGender(event.target.value)}
+                      onChange={(event) =>
+                        setGender(event.target.value as (typeof genderOptions)[number]["value"])
+                      }
                     >
-                      <option>밝히고 싶지 않음</option>
-                      <option>여성</option>
-                      <option>남성</option>
-                      <option>직접 입력하지 않음</option>
+                      {genderOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
                     </select>
                     <ChevronDown className="settings-page-select-icon" />
                   </div>
                   <p className="settings-page-field-helper">이 정보는 공개 프로필에 포함되지 않습니다.</p>
+                  <div className="settings-page-field-action-row">
+                    <button
+                      type="button"
+                      className="settings-page-inline-action"
+                      onClick={handleSaveGender}
+                      disabled={!genderChanged || savingGender}
+                    >
+                      {savingGender ? "저장 중..." : "성별 저장"}
+                    </button>
+                    {genderSaveMessage ? (
+                      <p className="settings-page-inline-feedback">{genderSaveMessage}</p>
+                    ) : null}
+                  </div>
                 </div>
               </div>
             </>
