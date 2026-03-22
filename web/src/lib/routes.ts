@@ -14,7 +14,7 @@ export const ROUTES = {
   knowledge: "/knowledge",
   notifications: "/notifications",
   pets: "/pets",
-  profile: "/profile",
+  profile: "/accounts/edit",
   setting: "/accounts/edit",
   accountNotifications: "/accounts/notifications",
   accountPrivacy: "/accounts/privacy",

@@ -86,7 +86,7 @@ function FeedProfileIdentity({ profile, primaryPet, postCount, onProfileImageCli
           <div className="feed-profile-header-title-group">
             <p className="feed-profile-header-title">{profile?.nickname ?? "멍냥마당"}</p>
           </div>
-          <Link href="/profile" className="feed-profile-header-settings-link" aria-label="프로필 설정">
+          <Link href="/accounts/edit" className="feed-profile-header-settings-link" aria-label="프로필 설정">
             <Settings className="h-4 w-4" />
           </Link>
         </div>
@@ -116,7 +116,7 @@ function FeedProfileActions({ onNewPost }: Pick<FeedProfileHeaderProps, "onNewPo
   return (
     <div className="feed-profile-header-actions">
       <Button variant="secondary" className="feed-profile-header-secondary-action" asChild>
-        <Link href="/profile">
+        <Link href="/accounts/edit">
           프로필 편집
         </Link>
       </Button>
