@@ -1628,8 +1628,20 @@ body {
     @apply inline-flex rounded-full p-[3px];
   }
 
+  .home-feed-story-ring-muted {
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--color-border) 72%, transparent) 0%,
+      color-mix(in srgb, var(--color-surface-muted) 92%, transparent) 100%
+    );
+  }
+
   .home-feed-story-avatar {
     @apply h-16 w-16 border-[3px] border-[var(--color-surface)] bg-[var(--color-surface-muted)];
+  }
+
+  .home-feed-story-avatar-placeholder {
+    @apply block h-16 w-16 rounded-full border-[3px] border-[var(--color-surface)] bg-[var(--color-surface-muted)];
   }
 
   .home-feed-story-label {
@@ -1841,6 +1853,29 @@ body {
   .home-feed-loading-indicator {
     color: var(--color-text-muted);
     @apply rounded-[24px] border border-[var(--color-border)] bg-[var(--color-surface)] px-5 py-4 text-sm shadow-[var(--shadow-card-token)];
+  }
+
+  .home-feed-empty-card {
+    @apply rounded-[30px] border border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-8 shadow-[var(--shadow-card-token)];
+  }
+
+  .home-feed-empty-copy {
+    @apply space-y-3;
+  }
+
+  .home-feed-empty-eyebrow {
+    color: var(--color-primary);
+    @apply text-xs font-semibold uppercase tracking-[0.18em];
+  }
+
+  .home-feed-empty-title {
+    color: var(--color-text);
+    @apply text-2xl font-semibold leading-tight;
+  }
+
+  .home-feed-empty-description {
+    color: var(--color-text-muted);
+    @apply max-w-[520px] text-sm leading-6;
   }
 
   .home-feed-skeleton-card {

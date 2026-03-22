@@ -52,6 +52,7 @@ export function FeedClient() {
   );
   const deferredPosts = useDeferredValue(posts);
   const feedItems = useMemo(() => injectAds(deferredPosts), [deferredPosts]);
+  const isEmptyFeed = !isLoading && deferredPosts.length === 0;
 
   useEffect(() => {
     const target = loadMoreRef.current;
@@ -119,6 +120,19 @@ export function FeedClient() {
                 <div className="home-feed-skeleton-card" />
                 <div className="home-feed-skeleton-card" />
               </>
+            ) : null}
+
+            {isEmptyFeed ? (
+              <article className="home-feed-empty-card">
+                <div className="home-feed-empty-copy">
+                  <p className="home-feed-empty-eyebrow">HOME</p>
+                  <h2 className="home-feed-empty-title">아직 홈 피드에 표시할 게시물이 없어요.</h2>
+                  <p className="home-feed-empty-description">
+                    첫 게시물이 등록되면 이 영역에 최신순으로 쌓입니다. 지금은 스토리와 추천 영역만 먼저
+                    준비된 상태예요.
+                  </p>
+                </div>
+              </article>
             ) : null}
 
             <div ref={loadMoreRef} className="home-feed-load-more-sentinel" aria-hidden="true" />
