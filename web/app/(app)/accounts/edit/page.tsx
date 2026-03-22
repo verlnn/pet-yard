@@ -7,12 +7,6 @@ import { ChevronDown, Lock, Search, ShieldAlert, UserRound, Bell } from "lucide-
 import { authApi } from "@/src/features/auth/api/authApi";
 import type { MyProfileResponse } from "@/src/features/auth/types/authTypes";
 
-const accountCenterItems = [
-  "개인정보",
-  "비밀번호 및 보안",
-  "광고 기본 설정"
-];
-
 const settingsSections = [
   {
     title: "내 Instagram 사용 방식",
@@ -78,25 +72,6 @@ export default function SettingsPage() {
               placeholder="검색"
             />
           </label>
-
-          <div className="settings-page-account-center">
-            <div className="settings-page-account-center-brand">Meta</div>
-            <p className="settings-page-account-center-title">계정 센터</p>
-            <p className="settings-page-account-center-description">
-              Meta 테크놀로지 전반에서 연결된 환경 및 계정 설정을 관리해보세요.
-            </p>
-            <div className="settings-page-account-center-list">
-              {accountCenterItems.map((item) => (
-                <div key={item} className="settings-page-account-center-item">
-                  <span className="settings-page-account-center-dot" aria-hidden="true" />
-                  <span>{item}</span>
-                </div>
-              ))}
-            </div>
-            <button type="button" className="settings-page-account-center-link">
-              계정 센터에서 더 보기
-            </button>
-          </div>
 
           <div className="settings-page-nav">
             {settingsSections.map((section) => (
