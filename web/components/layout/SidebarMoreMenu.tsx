@@ -99,7 +99,7 @@ export function SidebarMoreMenu({ onNavigate }: SidebarMoreMenuProps) {
           {view === "menu" ? (
             <>
               <div className="app-sidebar-more-list">
-                <Link href={ROUTES.profile} className="app-sidebar-more-item" onClick={handleClose}>
+                <Link href={ROUTES.setting} className="app-sidebar-more-item" onClick={handleClose}>
                   <Settings className="app-sidebar-more-item-icon" />
                   <span>설정</span>
                 </Link>
