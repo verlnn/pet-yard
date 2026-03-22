@@ -664,7 +664,7 @@ body {
   }
 
   .feed-profile-header-avatar-button {
-    @apply relative inline-flex rounded-full transition duration-200 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border)];
+    @apply relative inline-flex rounded-full transition duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border)];
   }
 
   .feed-profile-header-avatar-button:hover .feed-profile-header-avatar,
