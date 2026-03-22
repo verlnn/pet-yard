@@ -187,3 +187,12 @@ cursor pagination이 적합한 이유:
 - 광고 실험/랭킹 실험
 
 핵심은 “시간순 slice 조회”와 “페이지 단위 배치 조립” 경계를 유지하는 것입니다. 이 경계를 보존하면 이후 추천 신호가 커져도 전체 구조를 무너뜨리지 않고 확장할 수 있습니다.
+
+## 관련 문서
+
+- `docs/feed-query-strategy.ko.md`
+- `docs/feed-image-strategy.ko.md`
+- `docs/feed-observability.ko.md`
+- `docs/feed-max-pages-ux.ko.md`
+- `docs/feed-ad-contract.ko.md`
+- `docs/feed-recommendation-roadmap.ko.md`

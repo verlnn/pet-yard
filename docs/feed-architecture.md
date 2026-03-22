@@ -184,3 +184,12 @@ Likely extensions that fit the current structure:
 - ad-serving experiments
 
 The current read-model separation and batched loading path are designed to allow those concerns to grow without rewriting the transport contract first.
+
+## Related documents
+
+- `docs/feed-query-strategy.md`
+- `docs/feed-image-strategy.md`
+- `docs/feed-observability.md`
+- `docs/feed-max-pages-ux.md`
+- `docs/feed-ad-contract.md`
+- `docs/feed-recommendation-roadmap.md`
