@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { ArrowUpRight } from "lucide-react";
 
 import type { HomeFeedAd } from "@/components/feed/home/homeFeedData";
@@ -8,7 +9,7 @@ interface HomeFeedAdCardProps {
   ad: HomeFeedAd;
 }
 
-export function HomeFeedAdCard({ ad }: HomeFeedAdCardProps) {
+export const HomeFeedAdCard = memo(function HomeFeedAdCard({ ad }: HomeFeedAdCardProps) {
   return (
     <article className="home-feed-ad-card">
       <div className="home-feed-ad-header">
@@ -36,4 +37,4 @@ export function HomeFeedAdCard({ ad }: HomeFeedAdCardProps) {
       </div>
     </article>
   );
-}
+});

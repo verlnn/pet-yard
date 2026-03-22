@@ -8,15 +8,25 @@ import { HomeFeedAdCard } from "@/components/feed/home/HomeFeedAdCard";
 import { HomeFeedPostCard } from "@/components/feed/home/HomeFeedPostCard";
 import { HomeFeedSidebar } from "@/components/feed/home/HomeFeedSidebar";
 import { HomeFeedStories } from "@/components/feed/home/HomeFeedStories";
-import { injectAds } from "@/components/feed/home/homeFeedData";
+import { buildHomeFeedItems } from "@/components/feed/home/homeFeedData";
 import { authApi } from "@/src/features/auth/api/authApi";
-
-const FETCH_AHEAD_ROOT_MARGIN = "1200px 0px";
-const MAX_PAGES_IN_MEMORY = 6;
+import {
+  buildHomeFeedQueryKey,
+  getHomeFeedNextPageParam,
+  HOME_FEED_FETCH_AHEAD_ROOT_MARGIN,
+  HOME_FEED_QUERY_GC_TIME,
+  HOME_FEED_QUERY_STALE_TIME,
+  MAX_HOME_FEED_PAGES_IN_MEMORY,
+  shouldRequestNextHomeFeedPage,
+  type HomeFeedPageParam
+} from "./homeFeedQuery";
 
 export function FeedClient() {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const fetchLockRef = useRef(false);
+  const hasNextPageRef = useRef(false);
+  const isFetchingNextPageRef = useRef(false);
 
   useEffect(() => {
     setAccessToken(localStorage.getItem("accessToken"));
@@ -31,52 +41,72 @@ export function FeedClient() {
     hasNextPage,
     isFetchingNextPage
   } = useInfiniteQuery({
-    queryKey: ["home-feed"],
+    queryKey: buildHomeFeedQueryKey(accessToken),
     enabled: Boolean(accessToken),
-    initialPageParam: null as { createdAt: string; id: number } | null,
+    initialPageParam: null as HomeFeedPageParam,
     queryFn: ({ pageParam }) =>
       authApi.getHomeFeed(accessToken as string, {
         cursorCreatedAt: pageParam?.createdAt ?? null,
         cursorId: pageParam?.id ?? null
       }),
-    getNextPageParam: (lastPage) => lastPage.hasMore ? lastPage.nextCursor ?? undefined : undefined,
-    staleTime: 30_000,
-    gcTime: 5 * 60_000,
+    getNextPageParam: getHomeFeedNextPageParam,
+    staleTime: HOME_FEED_QUERY_STALE_TIME,
+    gcTime: HOME_FEED_QUERY_GC_TIME,
     retry: 1,
-    maxPages: MAX_PAGES_IN_MEMORY
+    maxPages: MAX_HOME_FEED_PAGES_IN_MEMORY
   });
 
   const posts = useMemo(
     () => data?.pages.flatMap((page) => page.items) ?? [],
     [data]
   );
+  // Defer the mixed feed list so a just-fetched page does not block interactions
+  // such as scrolling or opening overlays while large image cards reconcile.
   const deferredPosts = useDeferredValue(posts);
-  const feedItems = useMemo(() => injectAds(deferredPosts), [deferredPosts]);
+  const feedItems = useMemo(() => buildHomeFeedItems(deferredPosts), [deferredPosts]);
   const isEmptyFeed = !isLoading && deferredPosts.length === 0;
 
   useEffect(() => {
+    hasNextPageRef.current = Boolean(hasNextPage);
+    isFetchingNextPageRef.current = isFetchingNextPage;
+    if (!isFetchingNextPage) {
+      fetchLockRef.current = false;
+    }
+  }, [hasNextPage, isFetchingNextPage]);
+
+  useEffect(() => {
     const target = loadMoreRef.current;
-    if (!target || !hasNextPage || isFetchingNextPage) {
+    if (!target) {
       return;
     }
 
     const observer = new IntersectionObserver(
       (entries) => {
         const [entry] = entries;
-        if (entry?.isIntersecting) {
-          void fetchNextPage();
+        if (!shouldRequestNextHomeFeedPage({
+          isIntersecting: Boolean(entry?.isIntersecting),
+          hasNextPage: hasNextPageRef.current,
+          isFetchingNextPage: isFetchingNextPageRef.current,
+          isFetchLocked: fetchLockRef.current
+        })) {
+          return;
         }
+
+        fetchLockRef.current = true;
+        void fetchNextPage().finally(() => {
+          fetchLockRef.current = false;
+        });
       },
       {
         root: null,
-        rootMargin: FETCH_AHEAD_ROOT_MARGIN,
+        rootMargin: HOME_FEED_FETCH_AHEAD_ROOT_MARGIN,
         threshold: 0
       }
     );
 
     observer.observe(target);
     return () => observer.disconnect();
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+  }, [fetchNextPage]);
 
   if (!accessToken) {
     return (

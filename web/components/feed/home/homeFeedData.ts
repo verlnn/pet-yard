@@ -13,6 +13,8 @@ export type HomeFeedListItem =
   | { type: "post"; id: string; post: HomeFeedPost }
   | { type: "ad"; id: string; ad: HomeFeedAd };
 
+export const DEFAULT_HOME_FEED_AD_INTERVAL = 4;
+
 export const HOME_FEED_ADS: HomeFeedAd[] = [
   {
     id: "ad-training",
@@ -32,7 +34,21 @@ export const HOME_FEED_ADS: HomeFeedAd[] = [
   }
 ];
 
-export function injectAds(posts: HomeFeedPost[], interval = 4): HomeFeedListItem[] {
+// The feed API currently returns posts only. Client-side ad injection keeps the
+// rendering model explicit until the backend starts returning sponsored items.
+export function buildHomeFeedItems(
+  posts: HomeFeedPost[],
+  ads: HomeFeedAd[] = HOME_FEED_ADS,
+  interval = DEFAULT_HOME_FEED_AD_INTERVAL
+): HomeFeedListItem[] {
+  if (interval <= 0) {
+    return posts.map((post) => ({
+      type: "post",
+      id: `post-${post.id}`,
+      post
+    }));
+  }
+
   if (posts.length === 0) {
     return [];
   }
@@ -50,10 +66,10 @@ export function injectAds(posts: HomeFeedPost[], interval = 4): HomeFeedListItem
     const shouldInsertAd =
       (index + 1) % interval === 0 &&
       index < posts.length - 1 &&
-      HOME_FEED_ADS.length > 0;
+      ads.length > 0;
 
     if (shouldInsertAd) {
-      const ad = HOME_FEED_ADS[adIndex % HOME_FEED_ADS.length];
+      const ad = ads[adIndex % ads.length];
       result.push({
         type: "ad",
         id: `ad-${ad.id}-${index}`,
@@ -65,3 +81,5 @@ export function injectAds(posts: HomeFeedPost[], interval = 4): HomeFeedListItem
 
   return result;
 }
+
+export const injectAds = buildHomeFeedItems;

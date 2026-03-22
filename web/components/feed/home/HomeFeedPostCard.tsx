@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { Heart, MessageCircle, MoreHorizontal, Send, Bookmark } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -9,6 +10,8 @@ interface HomeFeedPostCardProps {
   post: HomeFeedPost;
   eagerImage?: boolean;
 }
+
+const DEFAULT_HOME_FEED_ASPECT_RATIO = 4 / 5;
 
 const formatRelativeTime = (value?: string) => {
   if (!value) {
@@ -41,9 +44,29 @@ const formatRelativeTime = (value?: string) => {
   return target.toLocaleDateString("ko-KR");
 };
 
-export function HomeFeedPostCard({ post, eagerImage = false }: HomeFeedPostCardProps) {
+function resolveAspectRatio(post: HomeFeedPost) {
+  if (typeof post.imageAspectRatioValue === "number" && post.imageAspectRatioValue > 0) {
+    return post.imageAspectRatioValue;
+  }
+  switch (post.imageAspectRatio) {
+    case "16:9":
+      return 16 / 9;
+    case "1:1":
+      return 1;
+    case "4:5":
+      return 4 / 5;
+    default:
+      return DEFAULT_HOME_FEED_ASPECT_RATIO;
+  }
+}
+
+export const HomeFeedPostCard = memo(function HomeFeedPostCard({
+  post,
+  eagerImage = false
+}: HomeFeedPostCardProps) {
   const hashtags = post.hashtags ?? [];
   const imageUrl = post.thumbnailImageUrl ?? post.imageUrls?.[0] ?? null;
+  const mediaStyle = imageUrl ? { aspectRatio: resolveAspectRatio(post) } : undefined;
 
   return (
     <article className="home-feed-post-card">
@@ -67,7 +90,7 @@ export function HomeFeedPostCard({ post, eagerImage = false }: HomeFeedPostCardP
       </header>
 
       {imageUrl ? (
-        <div className="home-feed-post-media">
+        <div className="home-feed-post-media" style={mediaStyle}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={imageUrl}
@@ -113,4 +136,4 @@ export function HomeFeedPostCard({ post, eagerImage = false }: HomeFeedPostCardP
       </div>
     </article>
   );
-}
+});
