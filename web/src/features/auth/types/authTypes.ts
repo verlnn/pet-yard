@@ -129,6 +129,23 @@ export interface FeedPost {
   hashtags?: string[] | null;
 }
 
+export interface HomeFeedPost extends FeedPost {
+  authorId: number;
+  authorNickname: string;
+  authorProfileImageUrl?: string | null;
+}
+
+export interface HomeFeedCursor {
+  createdAt: string;
+  id: number;
+}
+
+export interface HomeFeedPage {
+  items: HomeFeedPost[];
+  nextCursor?: HomeFeedCursor | null;
+  hasMore: boolean;
+}
+
 export interface FeedPostPawResponse {
   postId: number;
   pawCount: number;

@@ -5,6 +5,7 @@ import type {
   OAuthStartResponse,
   OAuthProvider,
   FeedPost,
+  HomeFeedPage,
   PetBreed,
   PetProfile,
   PetRegistrationVerificationResponse,
@@ -262,6 +263,33 @@ export const authApi = {
   },
   getMyProfile(accessToken: string) {
     return request<MyProfileResponse>("/api/users/me/profile", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+  },
+  getHomeFeed(
+    accessToken: string,
+    options?: {
+      cursorCreatedAt?: string | null;
+      cursorId?: number | null;
+      limit?: number | null;
+    }
+  ) {
+    const params = new URLSearchParams();
+    if (options?.cursorCreatedAt) {
+      params.set("cursorCreatedAt", options.cursorCreatedAt);
+    }
+    if (options?.cursorId) {
+      params.set("cursorId", String(options.cursorId));
+    }
+    if (options?.limit) {
+      params.set("limit", String(options.limit));
+    }
+    const query = params.toString();
+    const path = query ? `/api/feeds?${query}` : "/api/feeds";
+    return request<HomeFeedPage>(path, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${accessToken}`

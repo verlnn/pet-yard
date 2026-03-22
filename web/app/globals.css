@@ -1599,6 +1599,268 @@ body {
     @apply mt-2 text-sm font-semibold text-white/80;
   }
 
+  .home-feed-shell {
+    @apply relative min-h-screen px-4 py-6 lg:px-6;
+  }
+
+  .home-feed-layout {
+    @apply mx-auto grid max-w-[1240px] gap-10 xl:grid-cols-[minmax(0,680px)_320px];
+  }
+
+  .home-feed-main {
+    @apply mx-auto flex w-full max-w-[680px] flex-col gap-6;
+  }
+
+  .home-feed-stories {
+    @apply rounded-[28px] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-4 shadow-[var(--shadow-card-token)];
+  }
+
+  .home-feed-stories-track {
+    @apply flex gap-4 overflow-x-auto pb-1;
+  }
+
+  .home-feed-story-item {
+    @apply flex min-w-[68px] flex-col items-center gap-2;
+  }
+
+  .home-feed-story-ring {
+    background: linear-gradient(135deg, #22c55e 0%, #f59e0b 45%, #ec4899 100%);
+    @apply inline-flex rounded-full p-[3px];
+  }
+
+  .home-feed-story-avatar {
+    @apply h-16 w-16 border-[3px] border-[var(--color-surface)] bg-[var(--color-surface-muted)];
+  }
+
+  .home-feed-story-label {
+    color: var(--color-text);
+    @apply max-w-[68px] truncate text-center text-xs font-medium;
+  }
+
+  .home-feed-stream {
+    @apply flex flex-col gap-6;
+  }
+
+  .home-feed-post-card,
+  .home-feed-ad-card {
+    content-visibility: auto;
+    contain-intrinsic-size: 720px;
+    @apply overflow-hidden rounded-[30px] border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-card-token)];
+  }
+
+  .home-feed-post-header {
+    @apply flex items-center justify-between px-5 py-4;
+  }
+
+  .home-feed-post-author {
+    @apply flex items-center gap-3;
+  }
+
+  .home-feed-post-avatar {
+    @apply h-11 w-11 border border-[var(--color-border)];
+  }
+
+  .home-feed-post-author-copy {
+    @apply min-w-0;
+  }
+
+  .home-feed-post-author-name {
+    color: var(--color-text);
+    @apply truncate text-sm font-semibold;
+  }
+
+  .home-feed-post-author-meta {
+    color: var(--color-text-muted);
+    @apply text-xs;
+  }
+
+  .home-feed-post-menu,
+  .home-feed-post-action-button {
+    color: var(--color-text);
+    @apply inline-flex h-10 w-10 items-center justify-center rounded-full transition hover:bg-[var(--color-hover-surface)];
+  }
+
+  .home-feed-post-menu-icon,
+  .home-feed-post-action-icon {
+    @apply h-5 w-5;
+  }
+
+  .home-feed-post-media {
+    background: #0f1115;
+    @apply overflow-hidden;
+  }
+
+  .home-feed-post-image {
+    @apply block h-auto w-full object-cover;
+  }
+
+  .home-feed-post-actions {
+    @apply flex items-center justify-between px-3 pt-3;
+  }
+
+  .home-feed-post-actions-left {
+    @apply flex items-center;
+  }
+
+  .home-feed-post-body {
+    @apply space-y-3 px-5 pb-5 pt-2;
+  }
+
+  .home-feed-post-paws {
+    color: var(--color-text);
+    @apply text-sm font-semibold;
+  }
+
+  .home-feed-post-content {
+    color: var(--color-text);
+    @apply text-sm leading-6;
+  }
+
+  .home-feed-post-content-author {
+    @apply mr-1 font-semibold;
+  }
+
+  .home-feed-post-hashtags {
+    @apply flex flex-wrap gap-2;
+  }
+
+  .home-feed-post-hashtag {
+    color: var(--color-primary);
+    @apply text-sm font-medium;
+  }
+
+  .home-feed-ad-card {
+    @apply p-5;
+  }
+
+  .home-feed-ad-header {
+    @apply flex items-start justify-between gap-4;
+  }
+
+  .home-feed-ad-badge {
+    color: var(--color-primary);
+    @apply text-xs font-semibold uppercase tracking-[0.18em];
+  }
+
+  .home-feed-ad-sponsor {
+    color: var(--color-text);
+    @apply mt-2 text-lg font-semibold;
+  }
+
+  .home-feed-ad-cta {
+    color: var(--color-button-text);
+    background: var(--color-button-bg);
+    @apply inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold;
+  }
+
+  .home-feed-ad-cta-icon {
+    @apply h-3.5 w-3.5;
+  }
+
+  .home-feed-ad-media {
+    @apply mt-4 overflow-hidden rounded-[24px] bg-[var(--color-surface-muted)];
+  }
+
+  .home-feed-ad-image {
+    @apply h-[260px] w-full object-cover;
+  }
+
+  .home-feed-ad-body {
+    @apply mt-4 space-y-2;
+  }
+
+  .home-feed-ad-title {
+    color: var(--color-text);
+    @apply text-lg font-semibold;
+  }
+
+  .home-feed-ad-description {
+    color: var(--color-text-muted);
+    @apply text-sm leading-6;
+  }
+
+  .home-feed-sidebar {
+    @apply sticky top-6 hidden h-fit flex-col gap-6 xl:flex;
+  }
+
+  .home-feed-sidebar-account,
+  .home-feed-sidebar-section {
+    @apply rounded-[28px] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[var(--shadow-card-token)];
+  }
+
+  .home-feed-sidebar-account {
+    @apply flex items-center justify-between gap-4;
+  }
+
+  .home-feed-sidebar-account-main,
+  .home-feed-sidebar-suggestion-main {
+    @apply flex items-center gap-3;
+  }
+
+  .home-feed-sidebar-avatar,
+  .home-feed-sidebar-suggestion-avatar {
+    @apply h-11 w-11 border border-[var(--color-border)];
+  }
+
+  .home-feed-sidebar-account-name,
+  .home-feed-sidebar-suggestion-name {
+    color: var(--color-text);
+    @apply text-sm font-semibold;
+  }
+
+  .home-feed-sidebar-account-subtitle,
+  .home-feed-sidebar-suggestion-meta,
+  .home-feed-sidebar-footer {
+    color: var(--color-text-muted);
+    @apply text-xs leading-5;
+  }
+
+  .home-feed-sidebar-link {
+    color: var(--color-primary);
+    @apply text-xs font-semibold;
+  }
+
+  .home-feed-sidebar-section-header {
+    @apply flex items-center justify-between gap-4;
+  }
+
+  .home-feed-sidebar-section-title {
+    color: var(--color-text-muted);
+    @apply text-sm font-semibold;
+  }
+
+  .home-feed-sidebar-suggestions {
+    @apply mt-4 space-y-4;
+  }
+
+  .home-feed-sidebar-suggestion {
+    @apply flex items-center justify-between gap-4;
+  }
+
+  .home-feed-status-card,
+  .home-feed-loading-indicator {
+    color: var(--color-text-muted);
+    @apply rounded-[24px] border border-[var(--color-border)] bg-[var(--color-surface)] px-5 py-4 text-sm shadow-[var(--shadow-card-token)];
+  }
+
+  .home-feed-skeleton-card {
+    @apply h-[540px] animate-pulse rounded-[30px] bg-[var(--color-surface-muted)];
+  }
+
+  .home-feed-load-more-sentinel {
+    @apply h-1 w-full;
+  }
+
+  .home-feed-messages-bubble {
+    background: color-mix(in srgb, var(--color-surface) 92%, transparent);
+    border-color: var(--color-border);
+    @apply fixed bottom-6 right-6 z-10 inline-flex items-center gap-2 rounded-full border px-5 py-3 text-sm font-semibold text-[var(--color-text)] shadow-[var(--shadow-card-token)] backdrop-blur;
+  }
+
+  .home-feed-messages-bubble-icon {
+    @apply h-4 w-4;
+  }
+
   .feed-empty-state {
     border-color: rgb(226 232 240);
     background: rgba(255, 255, 255, 0.7);
