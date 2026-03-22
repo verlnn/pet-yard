@@ -1800,6 +1800,12 @@ body {
     @apply rounded-[28px] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[var(--shadow-card-token)];
   }
 
+  .home-feed-sidebar-native-ad {
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--color-surface) 92%, var(--color-primary) 8%), var(--color-surface));
+    @apply rounded-[28px] border border-[var(--color-border)] p-5 shadow-[var(--shadow-card-token)];
+  }
+
   .home-feed-sidebar-account {
     @apply flex items-center justify-between gap-4;
   }
@@ -1830,6 +1836,30 @@ body {
   .home-feed-sidebar-link {
     color: var(--color-primary);
     @apply text-xs font-semibold;
+  }
+
+  .home-feed-sidebar-native-ad-badge {
+    color: var(--color-primary);
+    @apply text-[11px] font-semibold uppercase tracking-[0.16em];
+  }
+
+  .home-feed-sidebar-native-ad-copy {
+    @apply mt-3 space-y-2;
+  }
+
+  .home-feed-sidebar-native-ad-title {
+    color: var(--color-text);
+    @apply text-base font-semibold leading-6;
+  }
+
+  .home-feed-sidebar-native-ad-description {
+    color: var(--color-text-muted);
+    @apply text-sm leading-6;
+  }
+
+  .home-feed-sidebar-native-ad-link {
+    color: var(--color-primary);
+    @apply mt-4 inline-flex text-sm font-semibold;
   }
 
   .home-feed-sidebar-section-header {

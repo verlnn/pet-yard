@@ -16,6 +16,13 @@ const FALLBACK_USERS = [
   { authorId: 6, authorNickname: "입양 이야기", authorProfileImageUrl: null }
 ];
 
+const SIDEBAR_NATIVE_AD = {
+  sponsor: "PetYard Plus",
+  title: "반려생활 루틴을 한눈에 정리해보세요",
+  description: "산책, 건강 체크, 기록 메모를 보호자 대시보드에서 이어서 관리할 수 있어요.",
+  ctaLabel: "둘러보기"
+};
+
 export function HomeFeedSidebar({ posts }: HomeFeedSidebarProps) {
   const users = Array.from(
     new Map(
@@ -85,6 +92,17 @@ export function HomeFeedSidebar({ posts }: HomeFeedSidebarProps) {
           ))}
         </div>
       </div>
+
+      <section className="home-feed-sidebar-native-ad" aria-label="홈 피드 네이티브 광고">
+        <p className="home-feed-sidebar-native-ad-badge">광고 · {SIDEBAR_NATIVE_AD.sponsor}</p>
+        <div className="home-feed-sidebar-native-ad-copy">
+          <p className="home-feed-sidebar-native-ad-title">{SIDEBAR_NATIVE_AD.title}</p>
+          <p className="home-feed-sidebar-native-ad-description">{SIDEBAR_NATIVE_AD.description}</p>
+        </div>
+        <a href="/knowledge" className="home-feed-sidebar-native-ad-link">
+          {SIDEBAR_NATIVE_AD.ctaLabel}
+        </a>
+      </section>
 
       <footer className="home-feed-sidebar-footer">
         소개 · 도움말 · 홍보 센터 · API · 채용 정보 · 개인정보처리방침 · 약관
