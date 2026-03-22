@@ -1,6 +1,4 @@
 import type { ReactNode } from "react";
-import Image from "next/image";
-
 interface AuthCardProps {
   title: string;
   subtitle: string;
@@ -14,16 +12,7 @@ export default function AuthCard({ title, subtitle, tabs, children, message, err
   return (
     <div className="auth-card">
       <header className="auth-card-header">
-        <div className="auth-card-brand-badge">
-          <Image
-            src="/images/brand/petyard-symbol.png"
-            alt="멍냥마당 로고"
-            width={18}
-            height={18}
-            className="h-[18px] w-[18px]"
-          />
-          PetYard
-        </div>
+        <p className="auth-card-kicker">PetYard Account</p>
         <h2 className="auth-card-title">{title}</h2>
         <p className="auth-card-subtitle">{subtitle}</p>
       </header>
