@@ -69,7 +69,6 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
   const router = useRouter();
   const [profile, setProfile] = useState<MyProfileResponse | null>(null);
   const [loading, setLoading] = useState(true);
-  const [website, setWebsite] = useState("");
   const [bio, setBio] = useState("반려생활 기록을 차곡차곡 쌓는 중");
   const [gender, setGender] = useState("밝히고 싶지 않음");
   const [recommendAccount, setRecommendAccount] = useState(true);
@@ -188,20 +187,6 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
                   <button type="button" className="settings-page-profile-action">
                     사진 변경
                   </button>
-                </div>
-
-                <div className="settings-page-field">
-                  <label className="settings-page-field-label" htmlFor="settings-website">웹사이트</label>
-                  <input
-                    id="settings-website"
-                    className="settings-page-input"
-                    value={website}
-                    onChange={(event) => setWebsite(event.target.value)}
-                    placeholder="웹사이트"
-                  />
-                  <p className="settings-page-field-helper">
-                    링크 수정은 모바일에서도 바로 반영되도록 준비 중입니다. 현재는 미리보기 형태로 제공됩니다.
-                  </p>
                 </div>
 
                 <div className="settings-page-field">
