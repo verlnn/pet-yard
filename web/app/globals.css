@@ -1347,7 +1347,8 @@ body {
   }
 
   .pets-registration-card {
-    @apply rounded-2xl border border-emerald-100 bg-emerald-50/60 p-4;
+    background: var(--color-surface);
+    @apply rounded-2xl border border-[var(--color-border)] p-4 shadow-[var(--shadow-card-token)];
   }
 
   .pets-registration-card-standalone {
@@ -1355,19 +1356,24 @@ body {
   }
 
   .pets-registration-title {
-    @apply font-display text-sm font-semibold text-emerald-700;
+    color: var(--color-text);
+    @apply font-display text-sm font-semibold;
   }
 
   .pets-registration-description {
-    @apply mt-1 text-xs text-emerald-600;
+    color: var(--color-text-muted);
+    @apply mt-1 text-xs;
   }
 
   .pets-registration-result {
-    @apply mt-3 rounded-2xl bg-white/70 px-3 py-2 text-xs text-emerald-700;
+    background: var(--color-surface-muted);
+    color: var(--color-text);
+    @apply mt-3 rounded-2xl px-3 py-2 text-xs;
   }
 
   .pets-registration-form-section {
-    @apply mt-4 space-y-3 border-t border-emerald-200/70 pt-4;
+    border-color: var(--color-border);
+    @apply mt-4 space-y-3 border-t pt-4;
   }
 
   .pets-empty-message {
@@ -3139,7 +3145,7 @@ body {
   }
 
   [data-theme="dark"] .pets-registration-card {
-    border-color: rgba(16, 185, 129, 0.28);
-    background: rgba(16, 185, 129, 0.12);
+    background: var(--color-surface);
+    border-color: var(--color-border);
   }
 }
