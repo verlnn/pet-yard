@@ -2,6 +2,7 @@
 
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { AnimatePresence, motion } from "framer-motion";
 import { MessageCircleMore, X } from "lucide-react";
 
 import { FeedDetailPhotoPanel } from "@/components/feed/detail/FeedDetailPhotoPanel";
@@ -26,6 +27,11 @@ import {
 } from "./homeFeedQuery";
 import { consoleFeedDebugLogger, createFeedRenderTimer } from "./feedObservability";
 import { loadHomeFeedScrollState, saveHomeFeedScrollState } from "./homeFeedScrollState";
+
+const FEED_DETAIL_SHELL_TRANSITION = {
+  duration: 0.4,
+  ease: [0.22, 1.5, 0.36, 1] as const
+};
 
 export function FeedClient() {
   const [accessToken, setAccessToken] = useState<string | null>(null);
@@ -425,41 +431,69 @@ export function FeedClient() {
         메시지
       </button>
 
-      {selectedPost ? (
-        <div className="feed-detail-overlay" onClick={() => setSelectedPost(null)}>
-          <div className="feed-detail-shell" onClick={(event) => event.stopPropagation()}>
-            <button
-              type="button"
-              onClick={() => setSelectedPost(null)}
-              className="feed-detail-close-button"
-              aria-label="피드 상세 닫기"
+      <AnimatePresence>
+        {selectedPost ? (
+          <motion.div
+            className="feed-detail-overlay"
+            onClick={() => setSelectedPost(null)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+          >
+            <motion.div
+              className="feed-detail-shell"
+              onClick={(event) => event.stopPropagation()}
+              initial={{
+                opacity: 0,
+                scale: 0.7,
+                y: -20
+              }}
+              animate={{
+                opacity: 1,
+                scale: [0.7, 1.1, 0.95, 1],
+                y: [-20, 0]
+              }}
+              exit={{
+                opacity: 0,
+                scale: 0.94,
+                y: 10
+              }}
+              transition={FEED_DETAIL_SHELL_TRANSITION}
             >
-              <X className="h-5 w-5" />
-            </button>
-            <div className="feed-detail-content">
-              <FeedDetailPhotoPanel
-                post={selectedPost}
-                width={selectedPostPhotoSize.width || 480}
-                height={selectedPostPhotoSize.height || 480}
-              />
-              <FeedDetailSidebar
-                post={selectedPost}
-                maxHeight={selectedPostPhotoSize.height || 480}
-                onTogglePaw={handleToggleSelectedPostPaw}
-                pawLoading={selectedPostPawLoading}
-                comments={selectedPostComments}
-                commentsLoading={selectedPostCommentsLoading}
-                commentsErrorMessage={selectedPostCommentsError}
-                commentValue={selectedPostCommentValue}
-                onCommentValueChange={setSelectedPostCommentValue}
-                onCommentSubmit={handleSubmitSelectedPostComment}
-                commentSubmitting={selectedPostCommentSubmitting}
-                focusCommentToken={commentFocusToken}
-              />
-            </div>
-          </div>
-        </div>
-      ) : null}
+              <button
+                type="button"
+                onClick={() => setSelectedPost(null)}
+                className="feed-detail-close-button"
+                aria-label="피드 상세 닫기"
+              >
+                <X className="h-5 w-5" />
+              </button>
+              <div className="feed-detail-content">
+                <FeedDetailPhotoPanel
+                  post={selectedPost}
+                  width={selectedPostPhotoSize.width || 480}
+                  height={selectedPostPhotoSize.height || 480}
+                />
+                <FeedDetailSidebar
+                  post={selectedPost}
+                  maxHeight={selectedPostPhotoSize.height || 480}
+                  onTogglePaw={handleToggleSelectedPostPaw}
+                  pawLoading={selectedPostPawLoading}
+                  comments={selectedPostComments}
+                  commentsLoading={selectedPostCommentsLoading}
+                  commentsErrorMessage={selectedPostCommentsError}
+                  commentValue={selectedPostCommentValue}
+                  onCommentValueChange={setSelectedPostCommentValue}
+                  onCommentSubmit={handleSubmitSelectedPostComment}
+                  commentSubmitting={selectedPostCommentSubmitting}
+                  focusCommentToken={commentFocusToken}
+                />
+              </div>
+            </motion.div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </section>
   );
 }
