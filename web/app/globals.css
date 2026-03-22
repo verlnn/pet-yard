@@ -1455,6 +1455,15 @@ body {
     @apply aspect-square rounded-2xl bg-slate-100;
   }
 
+  [data-theme="dark"] .feed-empty-state {
+    border-color: #ffffff;
+    background: #000000;
+  }
+
+  [data-theme="dark"] .feed-empty-state-preview-tile {
+    background: #111111;
+  }
+
   .feed-detail-action-bar {
     border-top-color: var(--color-border);
     background: #222324;
