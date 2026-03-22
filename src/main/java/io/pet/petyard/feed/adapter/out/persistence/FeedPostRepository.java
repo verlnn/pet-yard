@@ -17,12 +17,18 @@ public interface FeedPostRepository extends JpaRepository<FeedPost, Long> {
     @Query("""
         select p
         from FeedPost p
-        where (:cursorCreatedAt is null)
-           or (p.createdAt < :cursorCreatedAt)
+        order by p.createdAt desc, p.id desc
+        """)
+    List<FeedPost> findHomeFeedFirstPage(Pageable pageable);
+
+    @Query("""
+        select p
+        from FeedPost p
+        where (p.createdAt < :cursorCreatedAt)
            or (p.createdAt = :cursorCreatedAt and p.id < :cursorId)
         order by p.createdAt desc, p.id desc
         """)
-    List<FeedPost> findHomeFeedPage(
+    List<FeedPost> findHomeFeedPageAfterCursor(
         @Param("cursorCreatedAt") Instant cursorCreatedAt,
         @Param("cursorId") Long cursorId,
         Pageable pageable

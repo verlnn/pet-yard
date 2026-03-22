@@ -28,7 +28,11 @@ public class FeedPostPersistenceAdapter implements LoadFeedPostPort, SaveFeedPos
 
     @Override
     public List<FeedPost> findHomeFeedPage(Instant cursorCreatedAt, Long cursorId, int limit) {
-        return repository.findHomeFeedPage(cursorCreatedAt, cursorId, PageRequest.of(0, limit));
+        PageRequest pageable = PageRequest.of(0, limit);
+        if (cursorCreatedAt == null || cursorId == null) {
+            return repository.findHomeFeedFirstPage(pageable);
+        }
+        return repository.findHomeFeedPageAfterCursor(cursorCreatedAt, cursorId, pageable);
     }
 
     @Override
