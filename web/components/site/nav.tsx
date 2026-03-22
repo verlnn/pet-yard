@@ -9,6 +9,7 @@ import { Bell, Compass, HeartHandshake, MapPin, PawPrint, Shield } from "lucide-
 import type { LucideIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { AppConfirmDialog } from "@/components/ui/AppConfirmDialog";
 import { Badge } from "@/components/ui/badge";
 import { authApi } from "@/src/features/auth/api/authApi";
 import { ROUTES } from "@/src/lib/routes";
@@ -24,6 +25,7 @@ const links: Array<{ href: Route; label: string; icon: LucideIcon }> = [
 export function SiteNav() {
   const router = useRouter();
   const [hasToken, setHasToken] = useState(false);
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -39,6 +41,7 @@ export function SiteNav() {
         await authApi.logout(refreshToken);
       }
     } finally {
+      setLogoutConfirmOpen(false);
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       document.cookie = "accessToken=; path=/; max-age=0";
@@ -48,8 +51,18 @@ export function SiteNav() {
   }, [router]);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-ink/10 bg-white/70 backdrop-blur">
-      <div className="container flex items-center justify-between py-4">
+    <>
+      <AppConfirmDialog
+        open={logoutConfirmOpen}
+        title="로그아웃할까요?"
+        description="현재 기기에서 로그인 상태가 해제됩니다."
+        confirmLabel="로그아웃"
+        onConfirm={handleLogout}
+        onClose={() => setLogoutConfirmOpen(false)}
+      />
+
+      <header className="sticky top-0 z-40 border-b border-ink/10 bg-white/70 backdrop-blur">
+        <div className="container flex items-center justify-between py-4">
         <Link href={ROUTES.home} className="flex items-center gap-3">
           <Image
             src="/images/brand/petyard-symbol.png"
@@ -87,7 +100,7 @@ export function SiteNav() {
             <Bell className="h-4 w-4" />
           </Button>
           {hasToken && (
-            <Button variant="secondary" size="sm" onClick={handleLogout}>
+            <Button variant="secondary" size="sm" onClick={() => setLogoutConfirmOpen(true)}>
               로그아웃
             </Button>
           )}
@@ -97,16 +110,17 @@ export function SiteNav() {
             </Button>
           </Link>
         </div>
-      </div>
-      <div className="border-t border-ink/10 bg-white/90 md:hidden">
-        <div className="container flex items-center justify-between py-2 text-xs text-ink/60">
-          {links.map((link) => (
-            <Link key={link.href} href={link.href} className="px-2 py-1">
-              {link.label}
-            </Link>
-          ))}
         </div>
-      </div>
-    </header>
+        <div className="border-t border-ink/10 bg-white/90 md:hidden">
+          <div className="container flex items-center justify-between py-2 text-xs text-ink/60">
+            {links.map((link) => (
+              <Link key={link.href} href={link.href} className="px-2 py-1">
+                {link.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </header>
+    </>
   );
 }

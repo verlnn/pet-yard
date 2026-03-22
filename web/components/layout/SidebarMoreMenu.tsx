@@ -14,6 +14,7 @@ import {
   SquareActivity
 } from "lucide-react";
 
+import { AppConfirmDialog } from "@/components/ui/AppConfirmDialog";
 import { authApi } from "@/src/features/auth/api/authApi";
 import { useTheme } from "@/src/hooks/useTheme";
 import { ROUTES } from "@/src/lib/routes";
@@ -25,6 +26,7 @@ interface SidebarMoreMenuProps {
 export function SidebarMoreMenu({ onNavigate }: SidebarMoreMenuProps) {
   const [open, setOpen] = useState(false);
   const [view, setView] = useState<"menu" | "theme">("menu");
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const { resolvedTheme, setTheme } = useTheme();
 
@@ -83,6 +85,7 @@ export function SidebarMoreMenu({ onNavigate }: SidebarMoreMenuProps) {
     } catch {
       // Ignore logout API failure and clear local session regardless.
     } finally {
+      setLogoutConfirmOpen(false);
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       document.cookie = "accessToken=; path=/; max-age=0";
@@ -92,8 +95,23 @@ export function SidebarMoreMenu({ onNavigate }: SidebarMoreMenuProps) {
     }
   };
 
+  const handleLogoutClick = () => {
+    setOpen(false);
+    setView("menu");
+    setLogoutConfirmOpen(true);
+  };
+
   return (
     <div className="app-sidebar-more" ref={containerRef}>
+      <AppConfirmDialog
+        open={logoutConfirmOpen}
+        title="로그아웃할까요?"
+        description="현재 기기에서 로그인 상태가 해제됩니다."
+        confirmLabel="로그아웃"
+        onConfirm={handleLogout}
+        onClose={() => setLogoutConfirmOpen(false)}
+      />
+
       {open && (
         <div className="app-sidebar-more-panel" role="menu" aria-label="더보기 메뉴">
           {view === "menu" ? (
@@ -133,7 +151,7 @@ export function SidebarMoreMenu({ onNavigate }: SidebarMoreMenuProps) {
               <button
                 type="button"
                 className="app-sidebar-more-item app-sidebar-more-item-danger"
-                onClick={handleLogout}
+                onClick={handleLogoutClick}
               >
                 <LogOut className="app-sidebar-more-item-icon" />
                 <span>로그아웃</span>

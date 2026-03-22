@@ -981,6 +981,42 @@ body {
     @apply text-white;
   }
 
+  .app-confirm-dialog-overlay {
+    background: color-mix(in srgb, var(--color-overlay-backdrop) 84%, transparent);
+    @apply fixed inset-0 z-[70] flex items-center justify-center px-4;
+  }
+
+  .app-confirm-dialog {
+    background: var(--color-menu-surface);
+    color: var(--color-menu-text);
+    box-shadow: 0 28px 80px -34px rgba(15, 23, 42, 0.65);
+    @apply w-full max-w-[360px] rounded-[24px] border border-white/10 p-6;
+  }
+
+  .app-confirm-dialog-copy {
+    @apply space-y-2;
+  }
+
+  .app-confirm-dialog-title {
+    @apply text-lg font-semibold text-white;
+  }
+
+  .app-confirm-dialog-description {
+    @apply text-sm leading-6 text-white/70;
+  }
+
+  .app-confirm-dialog-actions {
+    @apply mt-5 flex gap-3;
+  }
+
+  .app-confirm-dialog-button {
+    @apply flex-1 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/10;
+  }
+
+  .app-confirm-dialog-button-danger {
+    @apply bg-white text-slate-950 hover:bg-white/90;
+  }
+
   .app-sidebar-theme-panel {
     @apply flex flex-col;
   }
