@@ -65,6 +65,13 @@ export function buildHomeFeedItems(
   ads: HomeFeedAd[] = HOME_FEED_ADS,
   interval = DEFAULT_HOME_FEED_AD_INTERVAL
 ): HomeFeedListItem[] {
+  const buildAdItems = (prefix: string) =>
+    ads.map((ad, index) => ({
+      type: "ad" as const,
+      id: `${prefix}-${ad.adId}-${index}`,
+      ad
+    }));
+
   if (interval <= 0) {
     return posts.map((post) => ({
       type: "post",
@@ -74,7 +81,7 @@ export function buildHomeFeedItems(
   }
 
   if (posts.length === 0) {
-    return [];
+    return buildAdItems("ad-empty");
   }
 
   const result: HomeFeedListItem[] = [];

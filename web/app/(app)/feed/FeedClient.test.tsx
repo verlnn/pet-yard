@@ -92,4 +92,20 @@ describe("FeedClient", () => {
     });
     expect(await screen.findByTestId("post-1")).toBeInTheDocument();
   });
+
+  it("keeps rendering fallback ads when the feed response has no posts", async () => {
+    localStorage.setItem("accessToken", "token-1");
+    mockedGetHomeFeed.mockResolvedValueOnce({
+      items: [],
+      nextCursor: null,
+      hasMore: false
+    });
+
+    renderFeedClient();
+
+    expect(
+      await screen.findByText("아직 홈 피드에 표시할 게시물이 없어요.")
+    ).toBeInTheDocument();
+    expect(screen.getByTestId("ad-ad-training")).toBeInTheDocument();
+  });
 });

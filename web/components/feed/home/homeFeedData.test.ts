@@ -56,6 +56,17 @@ describe("buildHomeFeedItems", () => {
     expect(items.map((item) => item.type)).toEqual(["post", "post", "post"]);
   });
 
+  it("returns fallback ad cards even when the feed has no posts", () => {
+    const items = buildHomeFeedItems([]);
+
+    expect(items).toHaveLength(HOME_FEED_ADS.length);
+    expect(items.every((item) => item.type === "ad")).toBe(true);
+    expect(items[0]).toMatchObject({
+      type: "ad",
+      ad: HOME_FEED_ADS[0]
+    });
+  });
+
   it("uses the documented default interval", () => {
     expect(DEFAULT_HOME_FEED_AD_INTERVAL).toBe(4);
   });

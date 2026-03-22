@@ -214,6 +214,19 @@ export function FeedClient() {
           <HomeFeedStories posts={posts} />
 
           <div className="home-feed-stream">
+            {isEmptyFeed ? (
+              <article className="home-feed-empty-card">
+                <div className="home-feed-empty-copy">
+                  <p className="home-feed-empty-eyebrow">HOME</p>
+                  <h2 className="home-feed-empty-title">아직 홈 피드에 표시할 게시물이 없어요.</h2>
+                  <p className="home-feed-empty-description">
+                    첫 게시물이 등록되면 이 영역에 최신순으로 쌓입니다. 지금은 살펴볼 수 있는 광고 피드와
+                    추천 영역을 먼저 보여드리고 있어요.
+                  </p>
+                </div>
+              </article>
+            ) : null}
+
             {feedItems.map((item, index) =>
               item.type === "post" ? (
                 <HomeFeedPostCard
@@ -231,19 +244,6 @@ export function FeedClient() {
                 <div className="home-feed-skeleton-card" />
                 <div className="home-feed-skeleton-card" />
               </>
-            ) : null}
-
-            {isEmptyFeed ? (
-              <article className="home-feed-empty-card">
-                <div className="home-feed-empty-copy">
-                  <p className="home-feed-empty-eyebrow">HOME</p>
-                  <h2 className="home-feed-empty-title">아직 홈 피드에 표시할 게시물이 없어요.</h2>
-                  <p className="home-feed-empty-description">
-                    첫 게시물이 등록되면 이 영역에 최신순으로 쌓입니다. 지금은 스토리와 추천 영역만 먼저
-                    준비된 상태예요.
-                  </p>
-                </div>
-              </article>
             ) : null}
 
             <div ref={loadMoreRef} className="home-feed-load-more-sentinel" aria-hidden="true" />
