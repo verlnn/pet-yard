@@ -17,7 +17,7 @@ interface PostComposerSidebarProps {
 
 const formatText = (text: string) => {
   return text.replace(
-    /#[\w가-힣]+/g,
+    /#[\w가-힣ㄱ-ㅎㅏ-ㅣ]+/g,
     (tag) => `<span class="text-blue-500">${tag}</span>`
   );
 };
