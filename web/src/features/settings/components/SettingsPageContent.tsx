@@ -71,7 +71,6 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
   const [loading, setLoading] = useState(true);
   const [bio, setBio] = useState("반려생활 기록을 차곡차곡 쌓는 중");
   const [gender, setGender] = useState("밝히고 싶지 않음");
-  const [recommendAccount, setRecommendAccount] = useState(true);
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
@@ -220,24 +219,6 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
                     <ChevronDown className="settings-page-select-icon" />
                   </div>
                   <p className="settings-page-field-helper">이 정보는 공개 프로필에 포함되지 않습니다.</p>
-                </div>
-
-                <div className="settings-page-preference-card">
-                  <div className="settings-page-preference-copy">
-                    <p className="settings-page-preference-title">프로필에 계정 추천 표시</p>
-                    <p className="settings-page-preference-description">
-                      사람들이 회원님의 프로필에서 비슷한 계정 추천을 볼 수 있는지를 조절합니다.
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    role="switch"
-                    aria-checked={recommendAccount}
-                    className={`settings-page-switch ${recommendAccount ? "settings-page-switch-active" : ""}`}
-                    onClick={() => setRecommendAccount((prev) => !prev)}
-                  >
-                    <span className="settings-page-switch-thumb" />
-                  </button>
                 </div>
               </div>
             </>
