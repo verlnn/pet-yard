@@ -217,7 +217,6 @@ export function FeedClient() {
             {isEmptyFeed ? (
               <article className="home-feed-empty-card">
                 <div className="home-feed-empty-copy">
-                  <p className="home-feed-empty-eyebrow">HOME</p>
                   <h2 className="home-feed-empty-title">아직 홈 피드에 표시할 게시물이 없어요.</h2>
                   <p className="home-feed-empty-description">
                     첫 게시물이 등록되면 이 영역에 최신순으로 쌓입니다. 지금은 살펴볼 수 있는 광고 피드와

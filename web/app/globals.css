@@ -1890,11 +1890,6 @@ body {
     @apply space-y-3;
   }
 
-  .home-feed-empty-eyebrow {
-    color: var(--color-primary);
-    @apply text-xs font-semibold uppercase tracking-[0.18em];
-  }
-
   .home-feed-empty-title {
     color: var(--color-text);
     @apply text-2xl font-semibold leading-tight;
