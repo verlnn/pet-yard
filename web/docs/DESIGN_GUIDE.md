@@ -125,3 +125,149 @@ When creating or editing UI:
 - New color families that overpower the current palette
 - Small, cramped radii in a large-radius system
 - Overloaded JSX with unreadable utility-only styling when a semantic component class makes more sense
+
+## 13. Dark Floating Panel System
+PetYard now has a defined dark floating panel pattern used by the sidebar “More” menu, the theme switch panel, and alert-style action cards such as logout confirmation.
+
+This pattern should be treated as a reusable UI family, not as one-off styling.
+
+Use this pattern for:
+- “More” style contextual menus
+- lightweight settings subpanels
+- confirmation cards for actions such as logout
+- alert-like overlays that should feel like part of the same product language
+
+Do not use this pattern for:
+- full-page dialogs
+- heavy form flows
+- large content modals
+- onboarding steps or primary task surfaces
+
+### 13.1 Visual Identity
+These panels should feel:
+- dark
+- compact
+- elevated
+- rounded
+- quiet rather than flashy
+
+The visual reference is the current sidebar “More” panel:
+- dark charcoal surface
+- large rounded corners
+- soft but deep shadow
+- thin separators
+- white text with slightly muted secondary copy
+
+This family is intentionally different from the light-first default app cards. It exists as a special-purpose overlay system.
+
+### 13.2 Surface Rules
+Preferred panel traits:
+- background from the shared menu surface token, not arbitrary black
+- rounded corners around `24px`
+- clipped overflow
+- strong but soft shadow
+- restrained internal spacing
+
+Guidelines:
+- Use one continuous card surface instead of stacking many mini cards inside.
+- The panel should read as a single floating object.
+- Dividers should be subtle and thin.
+- Do not add bright borders, glowing outlines, or decorative gradients.
+
+### 13.3 Content Hierarchy
+Within this panel family, hierarchy should be obvious:
+- title or primary label is the most visible text
+- secondary description is muted but still readable
+- actions are compact and visually subordinate to the message
+
+For alert cards specifically:
+- the message must carry more visual weight than the buttons
+- action buttons should not compete with the title
+- compact action rows are preferred over oversized CTA buttons
+
+### 13.4 Action Rows
+The current product direction is that actions inside these dark floating cards should resemble menu rows, not generic large dialog buttons.
+
+Rules:
+- keep actions compact
+- prefer `text-sm` or slightly smaller button text
+- avoid oversized padded buttons
+- use separators when stacking actions
+- use horizontal actions only when there are exactly two short actions and they can fit cleanly
+
+When using horizontal actions:
+- center the labels
+- keep both actions visually balanced
+- use a vertical divider between them
+
+When using vertical actions:
+- keep labels left-aligned
+- preserve the “menu list” feeling
+- use horizontal dividers between actions
+
+### 13.5 Theme Switch Panel Pattern
+The theme switch subpanel should follow the same card family as the “More” menu:
+- same dark surface
+- same radius
+- same shadow language
+- same divider treatment
+
+Structure:
+1. header row
+2. subtle divider
+3. compact settings row
+
+Header row rules:
+- left back control
+- centered or visually dominant title
+- right status icon reflecting current mode
+
+Icon behavior:
+- show a moon icon when dark mode is active
+- show a sun icon when light mode is active
+- the icon should communicate current state, not just the destination action
+
+### 13.6 Alert Card Pattern
+Alert cards should now be implemented through a shared component, not ad hoc markup.
+
+Current shared direction:
+- use the common alert component
+- render it in a viewport-level overlay
+- keep the card itself in the same design family as the “More” menu
+
+Alert card structure:
+1. strong title
+2. short explanatory description
+3. divider
+4. action group
+
+Behavior rules:
+- clicking the backdrop closes the alert when appropriate
+- `Escape` should close it
+- the card should appear centered in the viewport
+- the card should not inherit transformed ancestor layout behavior
+
+### 13.7 Recommended Shared API
+For reusable alert UI, the shared component should allow:
+- title
+- description
+- confirm label
+- cancel label
+- action layout class or variant
+- close handler
+- confirm handler
+
+The action layout must be configurable because some alerts read better with:
+- horizontal compact actions
+- vertical stacked actions
+
+Use semantic class families rather than inline utility strings when this pattern evolves.
+
+### 13.8 Implementation Guidance
+When implementing this pattern:
+1. start from the existing “More” menu styling
+2. reuse the same surface token and divider language
+3. keep spacing compact
+4. make copy more prominent than actions
+5. use a shared component for alert-style overlays
+6. only introduce a new variant if the current family cannot express the needed structure cleanly
