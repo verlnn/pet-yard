@@ -98,7 +98,7 @@ export function PetAddSection({
           </div>
         ) : null}
         {verificationError ? <p className="pets-form-error pets-form-error-spaced">{verificationError}</p> : null}
-        <div className="pets-action-row pets-action-row-spaced pets-registration-action-row">
+        <div className="pets-registration-action-row">
           <Button onClick={onVerifyRegistration} disabled={verifying || verified}>
             {verifying ? "인증 중..." : verified ? "인증 완료" : "등록번호 인증"}
           </Button>

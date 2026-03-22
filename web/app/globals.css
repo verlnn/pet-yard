@@ -1347,7 +1347,7 @@ body {
   }
 
   .pets-registration-action-row {
-    @apply mt-8;
+    @apply mt-8 flex justify-end gap-2;
   }
 
   .pets-registration-card {
