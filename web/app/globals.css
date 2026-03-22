@@ -735,7 +735,7 @@ body {
     @apply mx-auto w-full max-w-6xl;
   }
 
-  .app-layout-main-wide {
+  .app-layout-main-full {
     @apply max-w-none;
   }
 

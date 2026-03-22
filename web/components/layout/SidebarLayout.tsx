@@ -20,7 +20,7 @@ export function SidebarLayout({
   onOpenMobileSidebar
 }: SidebarLayoutProps) {
   const pathname = usePathname();
-  const isWideCanvasRoute = pathname === ROUTES.setting;
+  const isFullCanvasRoute = pathname === ROUTES.setting;
 
   return (
     <div className="app-layout">
@@ -34,7 +34,7 @@ export function SidebarLayout({
         <Menu className="h-5 w-5" />
       </button>
       <div className="app-layout-content-shell">
-        <main className={`app-layout-main ${isWideCanvasRoute ? "app-layout-main-wide" : ""}`}>{children}</main>
+        <main className={`app-layout-main ${isFullCanvasRoute ? "app-layout-main-full" : ""}`}>{children}</main>
         {rightPanel ? <aside className="app-layout-right-panel">{rightPanel}</aside> : null}
       </div>
     </div>
