@@ -1612,7 +1612,7 @@ body {
   }
 
   .home-feed-stories {
-    @apply rounded-[28px] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-4 shadow-[var(--shadow-card-token)];
+    @apply rounded-[28px] bg-[var(--color-surface)] px-4 py-4 shadow-[var(--shadow-card-token)];
   }
 
   .home-feed-stories-track {
@@ -1657,7 +1657,7 @@ body {
   .home-feed-ad-card {
     content-visibility: auto;
     contain-intrinsic-size: 720px;
-    @apply overflow-hidden rounded-[30px] border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-card-token)];
+    @apply overflow-hidden rounded-[30px] bg-[var(--color-surface)] shadow-[var(--shadow-card-token)];
   }
 
   .home-feed-post-header {
@@ -1669,7 +1669,7 @@ body {
   }
 
   .home-feed-post-avatar {
-    @apply h-11 w-11 border border-[var(--color-border)];
+    @apply h-11 w-11;
   }
 
   .home-feed-post-author-copy {
@@ -1792,7 +1792,7 @@ body {
   }
 
   .home-feed-ad-iframe-shell {
-    @apply mt-4 overflow-hidden rounded-[24px] border border-[var(--color-border)] bg-white;
+    @apply mt-4 overflow-hidden rounded-[24px] bg-white;
   }
 
   .home-feed-ad-iframe {
@@ -1805,13 +1805,13 @@ body {
 
   .home-feed-sidebar-account,
   .home-feed-sidebar-section {
-    @apply rounded-[28px] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[var(--shadow-card-token)];
+    @apply rounded-[28px] bg-[var(--color-surface)] p-5 shadow-[var(--shadow-card-token)];
   }
 
   .home-feed-sidebar-native-ad {
     background:
       linear-gradient(180deg, color-mix(in srgb, var(--color-surface) 92%, var(--color-primary) 8%), var(--color-surface));
-    @apply rounded-[28px] border border-[var(--color-border)] p-5 shadow-[var(--shadow-card-token)];
+    @apply rounded-[28px] p-5 shadow-[var(--shadow-card-token)];
   }
 
   .home-feed-sidebar-account {
@@ -1825,7 +1825,7 @@ body {
 
   .home-feed-sidebar-avatar,
   .home-feed-sidebar-suggestion-avatar {
-    @apply h-11 w-11 border border-[var(--color-border)];
+    @apply h-11 w-11;
   }
 
   .home-feed-sidebar-account-name,
@@ -1852,7 +1852,7 @@ body {
   }
 
   .home-feed-sidebar-native-ad-frame-shell {
-    @apply mt-3 overflow-hidden rounded-[22px] border border-[var(--color-border)] bg-white;
+    @apply mt-3 overflow-hidden rounded-[22px] bg-white;
   }
 
   .home-feed-sidebar-native-ad-frame {
@@ -1879,11 +1879,11 @@ body {
   .home-feed-status-card,
   .home-feed-loading-indicator {
     color: var(--color-text-muted);
-    @apply rounded-[24px] border border-[var(--color-border)] bg-[var(--color-surface)] px-5 py-4 text-sm shadow-[var(--shadow-card-token)];
+    @apply rounded-[24px] bg-[var(--color-surface)] px-5 py-4 text-sm shadow-[var(--shadow-card-token)];
   }
 
   .home-feed-empty-card {
-    @apply rounded-[30px] border border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-8 shadow-[var(--shadow-card-token)];
+    @apply rounded-[30px] bg-[var(--color-surface)] px-6 py-8 shadow-[var(--shadow-card-token)];
   }
 
   .home-feed-empty-copy {
