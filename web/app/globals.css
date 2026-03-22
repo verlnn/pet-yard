@@ -732,7 +732,7 @@ body {
   }
 
   .app-layout-content-shell-full {
-    @apply px-0 pb-0 pt-16 lg:px-0 lg:pt-0 xl:gap-0;
+    @apply px-0 pb-0 pt-0 lg:px-0 lg:pt-0 xl:gap-0;
   }
 
   .app-layout-main {
@@ -740,7 +740,7 @@ body {
   }
 
   .app-layout-main-full {
-    @apply max-w-none;
+    @apply min-h-screen max-w-none;
   }
 
   .app-layout-right-panel {
