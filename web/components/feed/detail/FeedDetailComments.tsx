@@ -129,23 +129,27 @@ export function FeedDetailComments({
       key={comment.id}
       className={`feed-detail-comment-item ${nested ? "feed-detail-comment-item-nested" : ""} ${comment.authoredByMe || currentUserId === comment.authorId ? "feed-detail-comment-item-own" : ""}`}
     >
-      <div className="feed-detail-comment-avatar-shell">
-        <Avatar className="feed-detail-comment-avatar">
-          {comment.authorProfileImageUrl ? (
-            <AvatarImage src={comment.authorProfileImageUrl} alt={comment.authorUsername ?? comment.authorNickname} />
+      <Link href={buildProfileRoute(comment.authorUsername)} className="feed-detail-comment-avatar-link">
+        <div className="feed-detail-comment-avatar-shell">
+          <Avatar className="feed-detail-comment-avatar">
+            {comment.authorProfileImageUrl ? (
+              <AvatarImage src={comment.authorProfileImageUrl} alt={comment.authorUsername ?? comment.authorNickname} />
+            ) : null}
+            <AvatarFallback>{(comment.authorUsername ?? comment.authorNickname ?? "멍")[0] ?? "멍"}</AvatarFallback>
+          </Avatar>
+          {comment.authorPrimaryPetImageUrl ? (
+            <span className="feed-detail-comment-pet-badge" aria-hidden="true">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={comment.authorPrimaryPetImageUrl} alt="" className="feed-detail-comment-pet-badge-image" />
+            </span>
           ) : null}
-          <AvatarFallback>{(comment.authorUsername ?? comment.authorNickname ?? "멍")[0] ?? "멍"}</AvatarFallback>
-        </Avatar>
-        {comment.authorPrimaryPetImageUrl ? (
-          <span className="feed-detail-comment-pet-badge" aria-hidden="true">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={comment.authorPrimaryPetImageUrl} alt="" className="feed-detail-comment-pet-badge-image" />
-          </span>
-        ) : null}
-      </div>
+        </div>
+      </Link>
       <div className="feed-detail-comment-body">
         <p className="feed-detail-comment-line">
-          <span className="feed-detail-comment-username">{comment.authorUsername ?? comment.authorNickname}</span>
+          <Link href={buildProfileRoute(comment.authorUsername)} className="feed-detail-comment-username-link">
+            <span className="feed-detail-comment-username">{comment.authorUsername ?? comment.authorNickname}</span>
+          </Link>
           {comment.replyToUsername ? (
             <Link href={buildProfileRoute(comment.replyToUsername)} className="feed-detail-comment-mention">
               @{comment.replyToUsername}

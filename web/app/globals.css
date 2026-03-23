@@ -1870,6 +1870,16 @@ body {
     @apply relative mt-0.5 shrink-0;
   }
 
+  .feed-detail-comment-avatar-link,
+  .feed-detail-comment-username-link {
+    @apply transition;
+  }
+
+  .feed-detail-comment-avatar-link:hover,
+  .feed-detail-comment-username-link:hover {
+    opacity: 0.92;
+  }
+
   .feed-detail-comment-author {
     @apply mr-1 font-semibold;
   }
