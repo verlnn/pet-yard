@@ -43,6 +43,8 @@ export function FeedClient() {
   const [selectedPostCommentsError, setSelectedPostCommentsError] = useState<string | null>(null);
   const [selectedPostCommentValue, setSelectedPostCommentValue] = useState("");
   const [selectedPostCommentSubmitting, setSelectedPostCommentSubmitting] = useState(false);
+  const [selectedReplyTargetComment, setSelectedReplyTargetComment] = useState<FeedPostComment | null>(null);
+  const [selectedCommentPawLoadingId, setSelectedCommentPawLoadingId] = useState<number | null>(null);
   const [selectedPostPawLoading, setSelectedPostPawLoading] = useState(false);
   const [commentFocusToken, setCommentFocusToken] = useState(0);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
@@ -306,6 +308,7 @@ export function FeedClient() {
     setSelectedPostComments([]);
     setSelectedPostCommentsError(null);
     setSelectedPostCommentValue("");
+    setSelectedReplyTargetComment(null);
     setCommentFocusToken((previous) => previous + 1);
     void loadSelectedPostComments(post.id);
   };
@@ -340,18 +343,47 @@ export function FeedClient() {
     setSelectedPostCommentSubmitting(true);
     setSelectedPostCommentsError(null);
     try {
-      const created = await authApi.addFeedPostComment(accessToken, selectedPost.id, trimmed);
+      const created = await authApi.addFeedPostComment(
+        accessToken,
+        selectedPost.id,
+        trimmed,
+        selectedReplyTargetComment?.id ?? null
+      );
       setSelectedPostComments((previous) => [...previous, created]);
       setSelectedPost((previous) => previous ? {
         ...previous,
         commentCount: previous.commentCount + 1
       } : previous);
       setSelectedPostCommentValue("");
+      setSelectedReplyTargetComment(null);
       setCommentFocusToken((previous) => previous + 1);
     } catch (error) {
       setSelectedPostCommentsError(error instanceof Error ? error.message : "댓글을 등록하지 못했습니다.");
     } finally {
       setSelectedPostCommentSubmitting(false);
+    }
+  };
+
+  const handleReplyToSelectedComment = (comment: FeedPostComment) => {
+    setSelectedReplyTargetComment(comment);
+    setCommentFocusToken((previous) => previous + 1);
+  };
+
+  const handleToggleSelectedCommentPaw = async (comment: FeedPostComment) => {
+    if (!accessToken || selectedCommentPawLoadingId === comment.id) {
+      return;
+    }
+    setSelectedCommentPawLoadingId(comment.id);
+    setSelectedPostCommentsError(null);
+    try {
+      const response = comment.pawedByMe
+        ? await authApi.removeFeedCommentPaw(accessToken, comment.id)
+        : await authApi.addFeedCommentPaw(accessToken, comment.id);
+      setSelectedPostComments((previous) => previous.map((item) => (item.id === response.id ? response : item)));
+    } catch (error) {
+      setSelectedPostCommentsError(error instanceof Error ? error.message : "댓글 발자국 처리에 실패했습니다.");
+    } finally {
+      setSelectedCommentPawLoadingId(null);
     }
   };
 
@@ -487,6 +519,11 @@ export function FeedClient() {
                   onCommentSubmit={handleSubmitSelectedPostComment}
                   commentSubmitting={selectedPostCommentSubmitting}
                   focusCommentToken={commentFocusToken}
+                  replyTargetUsername={selectedReplyTargetComment?.authorUsername ?? selectedReplyTargetComment?.authorNickname ?? null}
+                  onCancelReply={() => setSelectedReplyTargetComment(null)}
+                  pawingCommentId={selectedCommentPawLoadingId}
+                  onReplyComment={handleReplyToSelectedComment}
+                  onToggleCommentPaw={handleToggleSelectedCommentPaw}
                 />
               </div>
             </motion.div>

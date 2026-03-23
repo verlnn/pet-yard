@@ -16,6 +16,8 @@ interface FeedDetailActionBarProps {
   onCommentButtonClick?: () => void;
   focusCommentToken?: number;
   commentPlaceholder?: string;
+  replyTargetUsername?: string | null;
+  onCancelReply?: () => void;
 }
 
 export function FeedDetailActionBar({
@@ -30,7 +32,9 @@ export function FeedDetailActionBar({
   commentSubmitting = false,
   onCommentButtonClick,
   focusCommentToken = 0,
-  commentPlaceholder = "댓글을 남겨보세요."
+  commentPlaceholder = "댓글을 남겨보세요.",
+  replyTargetUsername,
+  onCancelReply
 }: FeedDetailActionBarProps) {
   const commentInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -81,6 +85,14 @@ export function FeedDetailActionBar({
         </div>
       </div>
       <div className="feed-detail-comment-composer">
+        {replyTargetUsername ? (
+          <div className="feed-detail-comment-reply-target">
+            <span className="feed-detail-comment-reply-label">{replyTargetUsername}님께 답글 남기는 중</span>
+            <button type="button" className="feed-detail-comment-reply-cancel" onClick={onCancelReply}>
+              취소
+            </button>
+          </div>
+        ) : null}
         <div className="feed-detail-comment-composer-inner">
           <MessageCircle className="feed-detail-comment-icon" />
           <input

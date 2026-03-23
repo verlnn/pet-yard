@@ -26,6 +26,11 @@ public class FeedPostCommentPersistenceAdapter implements LoadFeedPostCommentPor
     }
 
     @Override
+    public java.util.Optional<FeedPostComment> findById(Long commentId) {
+        return repository.findById(commentId);
+    }
+
+    @Override
     public Map<Long, Long> countByPostIds(Collection<Long> postIds) {
         Map<Long, Long> counts = new LinkedHashMap<>();
         repository.countGroupedByPostIds(postIds).forEach(row -> counts.put((Long) row[0], (Long) row[1]));

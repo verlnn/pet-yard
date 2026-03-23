@@ -19,6 +19,8 @@ public interface FeedPostCommentRepository extends JpaRepository<FeedPostComment
         """)
     List<FeedPostComment> findByPostIdOrderByCreatedAtAscIdAsc(@Param("postId") Long postId);
 
+    java.util.Optional<FeedPostComment> findById(Long id);
+
     @Query("""
         select c.postId, count(c)
         from FeedPostComment c

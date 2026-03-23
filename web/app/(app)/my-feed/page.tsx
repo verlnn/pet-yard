@@ -221,6 +221,8 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
   const [selectedPostCommentsError, setSelectedPostCommentsError] = useState<string | null>(null);
   const [selectedPostCommentValue, setSelectedPostCommentValue] = useState("");
   const [selectedPostCommentSubmitting, setSelectedPostCommentSubmitting] = useState(false);
+  const [selectedReplyTargetComment, setSelectedReplyTargetComment] = useState<FeedPostComment | null>(null);
+  const [selectedCommentPawLoadingId, setSelectedCommentPawLoadingId] = useState<number | null>(null);
   const [commentFocusToken, setCommentFocusToken] = useState(0);
   const [guardianLoading, setGuardianLoading] = useState(false);
   const [guardianUnregisterAlertOpen, setGuardianUnregisterAlertOpen] = useState(false);
@@ -590,6 +592,7 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
     setSelectedPostComments([]);
     setSelectedPostCommentsError(null);
     setSelectedPostCommentValue("");
+    setSelectedReplyTargetComment(null);
     void loadSelectedPostComments(post.id);
   };
 
@@ -604,7 +607,12 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
     setSelectedPostCommentSubmitting(true);
     setSelectedPostCommentsError(null);
     try {
-      const created = await authApi.addFeedPostComment(accessToken, selectedPost.id, trimmed);
+      const created = await authApi.addFeedPostComment(
+        accessToken,
+        selectedPost.id,
+        trimmed,
+        selectedReplyTargetComment?.id ?? null
+      );
       setSelectedPostComments((previous) => [...previous, created]);
       setPosts((previous) =>
         previous.map((post) =>
@@ -618,11 +626,35 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
         commentCount: previous.commentCount + 1
       } : previous);
       setSelectedPostCommentValue("");
+      setSelectedReplyTargetComment(null);
       setCommentFocusToken((previous) => previous + 1);
     } catch (error) {
       setSelectedPostCommentsError(error instanceof Error ? error.message : "댓글을 등록하지 못했습니다.");
     } finally {
       setSelectedPostCommentSubmitting(false);
+    }
+  };
+
+  const handleReplyToComment = (comment: FeedPostComment) => {
+    setSelectedReplyTargetComment(comment);
+    setCommentFocusToken((previous) => previous + 1);
+  };
+
+  const handleToggleCommentPaw = async (comment: FeedPostComment) => {
+    if (!accessToken || selectedCommentPawLoadingId === comment.id) {
+      return;
+    }
+    setSelectedCommentPawLoadingId(comment.id);
+    setSelectedPostCommentsError(null);
+    try {
+      const response = comment.pawedByMe
+        ? await authApi.removeFeedCommentPaw(accessToken, comment.id)
+        : await authApi.addFeedCommentPaw(accessToken, comment.id);
+      setSelectedPostComments((previous) => previous.map((item) => (item.id === response.id ? response : item)));
+    } catch (error) {
+      setSelectedPostCommentsError(error instanceof Error ? error.message : "댓글 발자국 처리에 실패했습니다.");
+    } finally {
+      setSelectedCommentPawLoadingId(null);
     }
   };
 
@@ -1033,6 +1065,11 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
                 onCommentSubmit={handleSubmitSelectedPostComment}
                 commentSubmitting={selectedPostCommentSubmitting}
                 focusCommentToken={commentFocusToken}
+                replyTargetUsername={selectedReplyTargetComment?.authorUsername ?? selectedReplyTargetComment?.authorNickname ?? null}
+                onCancelReply={() => setSelectedReplyTargetComment(null)}
+                pawingCommentId={selectedCommentPawLoadingId}
+                onReplyComment={handleReplyToComment}
+                onToggleCommentPaw={handleToggleCommentPaw}
               />
             </div>
             {isOwnProfile && deleteConfirmOpen && (

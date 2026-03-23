@@ -9,6 +9,8 @@ public record FeedPostCommentRequest(
     @Schema(description = "댓글 본문", example = "우리 강아지도 이 장난감 좋아해요.")
     @NotBlank
     @Size(max = 300)
-    String content
+    String content,
+    @Schema(description = "부모 댓글 식별자. 답글인 경우에만 전달", nullable = true, example = "12")
+    Long parentCommentId
 ) {
 }

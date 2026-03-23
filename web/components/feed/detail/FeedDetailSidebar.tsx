@@ -18,6 +18,11 @@ interface FeedDetailSidebarProps {
   onCommentSubmit?: () => void;
   commentSubmitting?: boolean;
   focusCommentToken?: number;
+  replyTargetUsername?: string | null;
+  onCancelReply?: () => void;
+  pawingCommentId?: number | null;
+  onReplyComment?: (comment: FeedPostComment) => void;
+  onToggleCommentPaw?: (comment: FeedPostComment) => void;
 }
 
 export function FeedDetailSidebar({
@@ -32,7 +37,12 @@ export function FeedDetailSidebar({
   onCommentValueChange,
   onCommentSubmit,
   commentSubmitting = false,
-  focusCommentToken = 0
+  focusCommentToken = 0,
+  replyTargetUsername,
+  onCancelReply,
+  pawingCommentId = null,
+  onReplyComment,
+  onToggleCommentPaw
 }: FeedDetailSidebarProps) {
   return (
     <div
@@ -48,6 +58,9 @@ export function FeedDetailSidebar({
           comments={comments}
           loading={commentsLoading}
           errorMessage={commentsErrorMessage}
+          pawingCommentId={pawingCommentId}
+          onReply={onReplyComment}
+          onTogglePaw={onToggleCommentPaw}
         />
       </div>
       <FeedDetailActionBar
@@ -61,6 +74,8 @@ export function FeedDetailSidebar({
         onCommentSubmit={onCommentSubmit}
         commentSubmitting={commentSubmitting}
         focusCommentToken={focusCommentToken}
+        replyTargetUsername={replyTargetUsername}
+        onCancelReply={onCancelReply}
       />
     </div>
   );

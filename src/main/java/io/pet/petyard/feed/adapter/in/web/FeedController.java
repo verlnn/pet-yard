@@ -221,8 +221,8 @@ public class FeedController {
         @ApiResponse(responseCode = "400", description = "대상 게시물이 없음",
             content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    public List<FeedPostCommentResponse> comments(@PathVariable Long id) {
-        return feedCommentApplicationService.listComments(id).stream()
+    public List<FeedPostCommentResponse> comments(@AuthenticationPrincipal AuthPrincipal principal, @PathVariable Long id) {
+        return feedCommentApplicationService.listComments(principal.userId(), id).stream()
             .map(FeedPostCommentResponse::from)
             .toList();
     }
@@ -240,8 +240,24 @@ public class FeedController {
                                               @PathVariable Long id,
                                               @Valid @RequestBody FeedPostCommentRequest request) {
         return FeedPostCommentResponse.from(
-            feedCommentApplicationService.addComment(principal.userId(), id, request.content())
+            feedCommentApplicationService.addComment(principal.userId(), id, request.parentCommentId(), request.content())
         );
+    }
+
+    @RequirePermission(Permission.FEED_READ)
+    @PostMapping("/comments/{commentId}/paws")
+    @Operation(summary = "댓글 발자국 추가", description = "특정 댓글에 발자국 반응을 추가합니다.")
+    public FeedPostCommentResponse addCommentPaw(@AuthenticationPrincipal AuthPrincipal principal,
+                                                 @PathVariable Long commentId) {
+        return FeedPostCommentResponse.from(feedCommentApplicationService.addPaw(principal.userId(), commentId));
+    }
+
+    @RequirePermission(Permission.FEED_READ)
+    @DeleteMapping("/comments/{commentId}/paws")
+    @Operation(summary = "댓글 발자국 취소", description = "특정 댓글의 발자국 반응을 제거합니다.")
+    public FeedPostCommentResponse removeCommentPaw(@AuthenticationPrincipal AuthPrincipal principal,
+                                                    @PathVariable Long commentId) {
+        return FeedPostCommentResponse.from(feedCommentApplicationService.removePaw(principal.userId(), commentId));
     }
 
     @RequirePermission(Permission.FEED_CREATE)

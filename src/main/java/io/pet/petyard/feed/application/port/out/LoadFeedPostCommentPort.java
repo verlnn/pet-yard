@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface LoadFeedPostCommentPort {
     List<FeedPostComment> findByPostId(Long postId);
+    java.util.Optional<FeedPostComment> findById(Long commentId);
     java.util.Map<Long, Long> countByPostIds(Collection<Long> postIds);
 }

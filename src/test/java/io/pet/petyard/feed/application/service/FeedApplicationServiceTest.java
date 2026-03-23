@@ -24,6 +24,7 @@ import io.pet.petyard.feed.application.port.out.SaveFeedPostHashtagPort;
 import io.pet.petyard.feed.application.port.out.SaveFeedPostImagePort;
 import io.pet.petyard.feed.application.port.out.SaveFeedPostPawPort;
 import io.pet.petyard.feed.application.port.out.SaveFeedPostPort;
+import io.pet.petyard.notification.application.port.out.SaveUserNotificationPort;
 import io.pet.petyard.feed.domain.model.FeedPost;
 import io.pet.petyard.feed.domain.model.FeedPostImage;
 import io.pet.petyard.user.application.port.out.LoadGuardianRegistrationPort;
@@ -67,6 +68,7 @@ class FeedApplicationServiceTest {
     @Mock private LoadGuardianRegistrationPort loadGuardianRegistrationPort;
     @Mock private GuardianRegistrationService guardianRegistrationService;
     @Mock private LoadUserPort loadUserPort;
+    @Mock private SaveUserNotificationPort saveUserNotificationPort;
 
     private FeedApplicationService service;
 
@@ -88,7 +90,8 @@ class FeedApplicationServiceTest {
             loadGuardianRegistrationPort,
             guardianRegistrationService,
             loadUserPort,
-            new FeedProperties(10, 20)
+            new FeedProperties(10, 20),
+            saveUserNotificationPort
         );
     }
 

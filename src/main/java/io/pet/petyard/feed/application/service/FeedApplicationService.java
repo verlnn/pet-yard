@@ -24,6 +24,9 @@ import io.pet.petyard.feed.application.port.out.SaveFeedPostImagePort;
 import io.pet.petyard.feed.application.port.out.SaveFeedPostPawPort;
 import io.pet.petyard.feed.application.port.out.SaveFeedPostHashtagPort;
 import io.pet.petyard.feed.application.port.out.SaveFeedPostPort;
+import io.pet.petyard.notification.application.port.out.SaveUserNotificationPort;
+import io.pet.petyard.notification.domain.NotificationType;
+import io.pet.petyard.notification.domain.model.UserNotification;
 import io.pet.petyard.user.application.port.out.LoadGuardianRegistrationPort;
 import io.pet.petyard.feed.domain.model.FeedPost;
 import io.pet.petyard.feed.domain.model.FeedPostImage;
@@ -70,6 +73,7 @@ public class FeedApplicationService {
     private final GuardianRegistrationService guardianRegistrationService;
     private final LoadUserPort loadUserPort;
     private final FeedProperties feedProperties;
+    private final SaveUserNotificationPort saveUserNotificationPort;
 
     public FeedApplicationService(LoadFeedPostPort loadFeedPostPort,
                                   SaveFeedPostPort saveFeedPostPort,
@@ -86,7 +90,8 @@ public class FeedApplicationService {
                                   LoadGuardianRegistrationPort loadGuardianRegistrationPort,
                                   GuardianRegistrationService guardianRegistrationService,
                                   LoadUserPort loadUserPort,
-                                  FeedProperties feedProperties) {
+                                  FeedProperties feedProperties,
+                                  SaveUserNotificationPort saveUserNotificationPort) {
         this.loadFeedPostPort = loadFeedPostPort;
         this.saveFeedPostPort = saveFeedPostPort;
         this.deleteFeedPostPort = deleteFeedPostPort;
@@ -103,6 +108,7 @@ public class FeedApplicationService {
         this.guardianRegistrationService = guardianRegistrationService;
         this.loadUserPort = loadUserPort;
         this.feedProperties = feedProperties;
+        this.saveUserNotificationPort = saveUserNotificationPort;
     }
 
     @Transactional(readOnly = true)
@@ -318,6 +324,9 @@ public class FeedApplicationService {
             .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST));
         if (!loadFeedPostPawPort.existsByPostIdAndUserId(post.getId(), userId)) {
             saveFeedPostPawPort.save(post.getId(), userId);
+            if (!userId.equals(post.getUserId())) {
+                saveUserNotificationPort.save(new UserNotification(post.getUserId(), userId, NotificationType.PAW_ON_POST));
+            }
         }
         long pawCount = loadFeedPostPawPort.countByPostIds(List.of(post.getId())).getOrDefault(post.getId(), 0L);
         return new FeedPostPawResult(post.getId(), pawCount, true);

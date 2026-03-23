@@ -102,7 +102,7 @@ export const SidebarNotificationsPanel = memo(function SidebarNotificationsPanel
 
   const visibleNotifications = useMemo(() => {
     const filtered = filter === "comments"
-      ? notifications.filter((notification) => notification.type.startsWith("COMMENT"))
+      ? notifications.filter((notification) => notification.type.startsWith("COMMENT") || notification.type === "PAW_ON_COMMENT")
       : notifications.filter((notification) => notification.type !== "GUARDIAN_REQUEST" || !notification.actionable);
 
     return filtered.reduce<Array<{ title: string; items: UserNotification[] }>>((sections, notification) => {

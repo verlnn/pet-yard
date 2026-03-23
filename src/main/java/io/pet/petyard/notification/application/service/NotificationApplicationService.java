@@ -91,6 +91,18 @@ public class NotificationApplicationService {
         if (type == NotificationType.GUARDIAN_REQUEST_ACCEPTED) {
             return actorNickname + "님이 집사 요청을 수락했어요";
         }
+        if (type == NotificationType.COMMENT_ON_POST) {
+            return actorNickname + "님이 게시물에 댓글을 남겼어요";
+        }
+        if (type == NotificationType.COMMENT_REPLY) {
+            return actorNickname + "님이 회원님의 댓글에 답글을 남겼어요";
+        }
+        if (type == NotificationType.PAW_ON_POST) {
+            return actorNickname + "님이 게시물에 발자국을 남겼어요";
+        }
+        if (type == NotificationType.PAW_ON_COMMENT) {
+            return actorNickname + "님이 회원님의 댓글에 발자국을 남겼어요";
+        }
         if (status == NotificationStatus.ACCEPTED) {
             return actorNickname + "님과 집사 관계가 연결되었어요";
         }

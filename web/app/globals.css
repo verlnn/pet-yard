@@ -1862,6 +1862,10 @@ body {
     @apply flex items-start gap-3 py-1 text-sm leading-6;
   }
 
+  .feed-detail-comment-item-nested {
+    @apply gap-2.5;
+  }
+
   .feed-detail-comment-avatar-shell {
     @apply relative mt-0.5 shrink-0;
   }
@@ -1879,9 +1883,63 @@ body {
     @apply break-words leading-6;
   }
 
+  .feed-detail-comment-thread {
+    @apply flex flex-col gap-2;
+  }
+
   .feed-detail-comment-content {
     color: rgba(255, 255, 255, 0.92);
     @apply ml-1.5;
+  }
+
+  .feed-detail-comment-mention {
+    color: #7ea1ff;
+    @apply ml-1.5 font-medium;
+  }
+
+  .feed-detail-comment-meta {
+    color: rgba(255, 255, 255, 0.48);
+    @apply mt-1 flex flex-wrap items-center gap-3 text-xs font-medium;
+  }
+
+  .feed-detail-comment-reply-trigger {
+    @apply transition hover:text-white/80;
+  }
+
+  .feed-detail-comment-paw-button {
+    color: rgba(255, 255, 255, 0.56);
+    @apply mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition hover:bg-white/5 hover:text-white/80 disabled:opacity-50;
+  }
+
+  .feed-detail-comment-paw-button-active {
+    color: var(--color-primary);
+  }
+
+  .feed-detail-comment-paw-icon {
+    fill: transparent;
+    @apply h-[18px] w-[18px];
+  }
+
+  .feed-detail-comment-paw-icon-active {
+    fill: currentColor;
+  }
+
+  .feed-detail-comment-replies {
+    @apply ml-11 flex flex-col gap-2;
+  }
+
+  .feed-detail-comment-replies-toggle {
+    color: rgba(255, 255, 255, 0.52);
+    @apply inline-flex items-center gap-2 text-xs font-medium transition hover:text-white/80;
+  }
+
+  .feed-detail-comment-replies-toggle::before {
+    content: "";
+    @apply inline-block h-px w-6 bg-white/25;
+  }
+
+  .feed-detail-comment-replies-list {
+    @apply flex flex-col gap-3;
   }
 
   .feed-detail-comments-status {
@@ -2461,6 +2519,20 @@ body {
     border-top-color: var(--color-border);
     background: #222324;
     @apply border-t px-4 py-3;
+  }
+
+  .feed-detail-comment-reply-target {
+    @apply mb-2 flex items-center justify-between px-2;
+  }
+
+  .feed-detail-comment-reply-label {
+    color: rgba(255, 255, 255, 0.58);
+    @apply text-xs font-medium;
+  }
+
+  .feed-detail-comment-reply-cancel {
+    color: rgba(255, 255, 255, 0.72);
+    @apply text-xs font-semibold transition hover:text-white;
   }
 
   .feed-detail-comment-composer-inner {

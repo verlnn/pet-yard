@@ -25,6 +25,8 @@ public class FeedPostComment {
     @Column(nullable = false)
     private Long userId;
 
+    private Long parentCommentId;
+
     @Column(nullable = false, length = 300)
     private String content;
 
@@ -37,9 +39,10 @@ public class FeedPostComment {
     protected FeedPostComment() {
     }
 
-    public FeedPostComment(Long postId, Long userId, String content) {
+    public FeedPostComment(Long postId, Long userId, Long parentCommentId, String content) {
         this.postId = postId;
         this.userId = userId;
+        this.parentCommentId = parentCommentId;
         this.content = content;
     }
 
@@ -65,6 +68,10 @@ public class FeedPostComment {
 
     public Long getUserId() {
         return userId;
+    }
+
+    public Long getParentCommentId() {
+        return parentCommentId;
     }
 
     public String getContent() {

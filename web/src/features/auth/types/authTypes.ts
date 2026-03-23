@@ -189,6 +189,7 @@ export interface FeedPostPawResponse {
 export interface FeedPostComment {
   id: number;
   postId: number;
+  parentCommentId?: number | null;
   content: string;
   createdAt: string;
   authorId: number;
@@ -196,6 +197,9 @@ export interface FeedPostComment {
   authorNickname: string;
   authorProfileImageUrl?: string | null;
   authorPrimaryPetImageUrl?: string | null;
+  replyToUsername?: string | null;
+  pawCount: number;
+  pawedByMe: boolean;
 }
 
 export type GuardianRelationStatus =
@@ -212,7 +216,11 @@ export interface GuardianRegistrationResponse {
 
 export type UserNotificationType =
   | "GUARDIAN_REQUEST"
-  | "GUARDIAN_REQUEST_ACCEPTED";
+  | "GUARDIAN_REQUEST_ACCEPTED"
+  | "COMMENT_ON_POST"
+  | "COMMENT_REPLY"
+  | "PAW_ON_POST"
+  | "PAW_ON_COMMENT";
 
 export type UserNotificationStatus =
   | "UNREAD"

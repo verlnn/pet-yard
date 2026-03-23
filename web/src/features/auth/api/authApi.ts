@@ -445,13 +445,29 @@ export const authApi = {
       }
     });
   },
-  addFeedPostComment(accessToken: string, id: number, content: string) {
+  addFeedPostComment(accessToken: string, id: number, content: string, parentCommentId?: number | null) {
     return request<FeedPostComment>(`/api/feeds/${id}/comments`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`
       },
-      body: JSON.stringify({ content })
+      body: JSON.stringify({ content, parentCommentId: parentCommentId ?? null })
+    });
+  },
+  addFeedCommentPaw(accessToken: string, commentId: number) {
+    return request<FeedPostComment>(`/api/feeds/comments/${commentId}/paws`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+  },
+  removeFeedCommentPaw(accessToken: string, commentId: number) {
+    return request<FeedPostComment>(`/api/feeds/comments/${commentId}/paws`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
     });
   },
   registerGuardian(accessToken: string, targetUserId: number) {
