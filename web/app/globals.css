@@ -779,12 +779,14 @@ body {
   .feed-profile-header-secondary-action,
   .feed-profile-header-primary-action,
   .feed-profile-header-message-action {
-    @apply h-12 flex-1 gap-2 rounded-xl;
+    border-radius: 10px !important;
+    min-width: 156px;
+    @apply h-12 flex-1 gap-2 px-6;
   }
 
   .feed-profile-header-primary-action {
-    background: #2563eb;
-    color: #f8fbff;
+    background: #2563eb !important;
+    color: #f8fbff !important;
     @apply hover:opacity-95;
   }
 
