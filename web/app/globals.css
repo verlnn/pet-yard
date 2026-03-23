@@ -3066,6 +3066,85 @@ body {
     @apply flex-1 rounded-2xl border px-4 py-3 text-sm font-semibold transition hover:opacity-90;
   }
 
+  [data-theme="dark"] .onboarding-card {
+    background: #111111;
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  [data-theme="dark"] .onboarding-card-badge {
+    background: #1a1a1a;
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #cbd5e1;
+  }
+
+  [data-theme="dark"] .onboarding-card-title {
+    color: #f8fafc;
+  }
+
+  [data-theme="dark"] .onboarding-card-subtitle {
+    color: #94a3b8;
+  }
+
+  [data-theme="dark"] .onboarding-profile-progress-header,
+  [data-theme="dark"] .onboarding-profile-field,
+  [data-theme="dark"] .onboarding-profile-field-block,
+  [data-theme="dark"] .onboarding-profile-combobox-label,
+  [data-theme="dark"] .onboarding-profile-region-tags {
+    color: #94a3b8;
+  }
+
+  [data-theme="dark"] .onboarding-profile-progress-track {
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  [data-theme="dark"] .onboarding-profile-input,
+  [data-theme="dark"] .onboarding-profile-combobox-menu,
+  [data-theme="dark"] .onboarding-profile-photo-row,
+  [data-theme="dark"] .onboarding-profile-region-tag,
+  [data-theme="dark"] .onboarding-profile-toggle-row {
+    background: #1a1a1a;
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #f8fafc;
+    box-shadow: none;
+  }
+
+  [data-theme="dark"] .onboarding-profile-input {
+    color: #f8fafc;
+  }
+
+  [data-theme="dark"] .onboarding-profile-input::placeholder {
+    color: #64748b;
+  }
+
+  [data-theme="dark"] .onboarding-profile-combobox-option {
+    color: #e2e8f0;
+  }
+
+  [data-theme="dark"] .onboarding-profile-combobox-option:hover {
+    background: #222324;
+  }
+
+  [data-theme="dark"] .onboarding-profile-combobox-empty,
+  [data-theme="dark"] .onboarding-profile-photo-empty,
+  [data-theme="dark"] .onboarding-profile-photo-remove {
+    color: #94a3b8;
+  }
+
+  [data-theme="dark"] .onboarding-profile-photo-upload {
+    background: #222324;
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #e2e8f0;
+  }
+
+  [data-theme="dark"] .onboarding-profile-photo-preview {
+    background: #222324;
+  }
+
+  [data-theme="dark"] .onboarding-profile-toggle-row,
+  [data-theme="dark"] .onboarding-profile-choice-button-unselected {
+    color: #e2e8f0;
+  }
+
   .settings-page {
     background: var(--color-bg);
     min-height: calc(100vh - 2rem);
