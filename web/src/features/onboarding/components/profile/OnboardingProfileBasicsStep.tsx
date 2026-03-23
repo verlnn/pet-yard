@@ -72,7 +72,7 @@ export default function OnboardingProfileBasicsStep({
               type="button"
               className="onboarding-profile-username-check-button"
               onClick={onUsernameCheck}
-              disabled={usernameChecking || username.trim().length === 0}
+              disabled={usernameVerified || usernameChecking || username.trim().length === 0}
             >
               {usernameChecking ? "확인 중..." : usernameVerified ? "확인 완료" : "확인하기"}
             </button>
