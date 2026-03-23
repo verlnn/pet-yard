@@ -1,5 +1,7 @@
 "use client";
 
+import { MessageCircle, PawPrint } from "lucide-react";
+
 import { FeedThumbnail } from "@/components/feed/FeedThumbnail";
 import type { FeedPost } from "@/src/features/auth/types/authTypes";
 
@@ -28,19 +30,17 @@ export function FeedGridItem({ post, onSelect }: FeedGridItemProps) {
           {totalImages}장
         </span>
       )}
-      <div className="absolute inset-0 flex flex-col justify-end bg-black/0 p-4 text-white opacity-0 transition-all duration-300 group-hover:bg-black/45 group-hover:opacity-100">
-        <p className="text-xs font-semibold">
-          {post.content ? post.content.slice(0, 60) : "게시물 보기"}
-        </p>
-        {post.hashtags && post.hashtags.length > 0 && (
-          <p className="mt-1 text-[10px] text-sky-200">
-            {post.hashtags.slice(0, 2).map((tag) => `#${tag}`).join(" ")}
-            {post.hashtags.length > 2 && " ..."}
-          </p>
-        )}
-        <span className="mt-1 text-[10px] text-white/70">
-          {new Date(post.createdAt).toLocaleDateString("ko-KR")}
-        </span>
+      <div className="absolute inset-0 flex items-center justify-center bg-black/0 p-4 text-white opacity-0 transition-all duration-300 group-hover:bg-black/45 group-hover:opacity-100">
+        <div className="flex items-center gap-7">
+          <span className="inline-flex items-center gap-2 text-base font-semibold">
+            <PawPrint className="h-5 w-5 fill-current" />
+            <span>{post.pawCount.toLocaleString("ko-KR")}</span>
+          </span>
+          <span className="inline-flex items-center gap-2 text-base font-semibold">
+            <MessageCircle className="h-5 w-5 fill-current" />
+            <span>{(post as FeedPost & { commentCount?: number }).commentCount?.toLocaleString("ko-KR") ?? "0"}</span>
+          </span>
+        </div>
       </div>
     </button>
   );
