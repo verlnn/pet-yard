@@ -1859,16 +1859,29 @@ body {
   }
 
   .feed-detail-comment-item {
-    color: #ffffff;
-    @apply text-sm leading-6;
+    @apply flex items-start gap-3 text-sm leading-6;
+  }
+
+  .feed-detail-comment-avatar-shell {
+    @apply relative mt-0.5 shrink-0;
   }
 
   .feed-detail-comment-author {
     @apply mr-1 font-semibold;
   }
 
+  .feed-detail-comment-body {
+    @apply min-w-0 flex-1;
+  }
+
+  .feed-detail-comment-line {
+    color: rgba(255, 255, 255, 0.92);
+    @apply break-words leading-6;
+  }
+
   .feed-detail-comment-content {
     color: rgba(255, 255, 255, 0.92);
+    @apply ml-1.5;
   }
 
   .feed-detail-comments-status {
@@ -2456,10 +2469,6 @@ body {
     @apply flex items-center gap-3 rounded-full border px-4 py-2.5;
   }
 
-  .feed-detail-comment-author-shell {
-    @apply relative shrink-0;
-  }
-
   .feed-detail-comment-avatar {
     @apply h-8 w-8;
   }
@@ -2475,6 +2484,11 @@ body {
   .feed-detail-comment-username {
     color: #ffffff;
     @apply shrink-0 text-sm font-semibold;
+  }
+
+  .feed-detail-comment-icon {
+    color: rgba(255, 255, 255, 0.7);
+    @apply h-[18px] w-[18px] shrink-0;
   }
 
   .feed-detail-comment-input {

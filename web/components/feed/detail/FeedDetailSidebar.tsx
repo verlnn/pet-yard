@@ -18,9 +18,6 @@ interface FeedDetailSidebarProps {
   onCommentSubmit?: () => void;
   commentSubmitting?: boolean;
   focusCommentToken?: number;
-  commenterUsername?: string | null;
-  commenterProfileImageUrl?: string | null;
-  commenterPrimaryPetImageUrl?: string | null;
 }
 
 export function FeedDetailSidebar({
@@ -35,10 +32,7 @@ export function FeedDetailSidebar({
   onCommentValueChange,
   onCommentSubmit,
   commentSubmitting = false,
-  focusCommentToken = 0,
-  commenterUsername,
-  commenterProfileImageUrl,
-  commenterPrimaryPetImageUrl
+  focusCommentToken = 0
 }: FeedDetailSidebarProps) {
   return (
     <div
@@ -67,9 +61,6 @@ export function FeedDetailSidebar({
         onCommentSubmit={onCommentSubmit}
         commentSubmitting={commentSubmitting}
         focusCommentToken={focusCommentToken}
-        commenterUsername={commenterUsername}
-        commenterProfileImageUrl={commenterProfileImageUrl}
-        commenterPrimaryPetImageUrl={commenterPrimaryPetImageUrl}
       />
     </div>
   );

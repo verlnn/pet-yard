@@ -14,7 +14,7 @@ import { HomeFeedSidebar } from "@/components/feed/home/HomeFeedSidebar";
 import { HomeFeedStories } from "@/components/feed/home/HomeFeedStories";
 import { buildHomeFeedItems } from "@/components/feed/home/homeFeedData";
 import { authApi } from "@/src/features/auth/api/authApi";
-import type { FeedPostComment, HomeFeedPost, MyProfileResponse } from "@/src/features/auth/types/authTypes";
+import type { FeedPostComment, HomeFeedPost } from "@/src/features/auth/types/authTypes";
 import {
   buildHomeFeedQueryKey,
   getHomeFeedNextPageParam,
@@ -36,7 +36,6 @@ const FEED_DETAIL_SHELL_TRANSITION = {
 export function FeedClient() {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [viewerUserId, setViewerUserId] = useState<number | null>(null);
-  const [viewerProfile, setViewerProfile] = useState<MyProfileResponse | null>(null);
   const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
   const [selectedPost, setSelectedPost] = useState<HomeFeedPost | null>(null);
   const [selectedPostComments, setSelectedPostComments] = useState<FeedPostComment[]>([]);
@@ -74,25 +73,19 @@ export function FeedClient() {
   useEffect(() => {
     if (!accessToken) {
       setViewerUserId(null);
-      setViewerProfile(null);
       return;
     }
 
     let cancelled = false;
-    void Promise.all([
-      authApi.me(accessToken),
-      authApi.getMyProfile(accessToken)
-    ])
-      .then(([meResponse, profileResponse]) => {
+    void authApi.me(accessToken)
+      .then((meResponse) => {
         if (!cancelled) {
           setViewerUserId(meResponse.userId);
-          setViewerProfile(profileResponse);
         }
       })
       .catch(() => {
         if (!cancelled) {
           setViewerUserId(null);
-          setViewerProfile(null);
         }
       });
 
@@ -173,15 +166,6 @@ export function FeedClient() {
       targetRatio
     });
   }, [selectedPost, viewportSize]);
-  const viewerPrimaryPetPhotoUrl = useMemo(() => {
-    if (!viewerProfile) {
-      return null;
-    }
-    return viewerProfile.pets.find((pet) => pet.id === viewerProfile.primaryPetId)?.photoUrl
-      ?? viewerProfile.pets[0]?.photoUrl
-      ?? null;
-  }, [viewerProfile]);
-
   useEffect(() => {
     hasNextPageRef.current = Boolean(hasNextPage);
     isFetchingNextPageRef.current = isFetchingNextPage;
@@ -503,9 +487,6 @@ export function FeedClient() {
                   onCommentSubmit={handleSubmitSelectedPostComment}
                   commentSubmitting={selectedPostCommentSubmitting}
                   focusCommentToken={commentFocusToken}
-                  commenterUsername={viewerProfile?.username}
-                  commenterProfileImageUrl={viewerProfile?.profileImageUrl}
-                  commenterPrimaryPetImageUrl={viewerPrimaryPetPhotoUrl}
                 />
               </div>
             </motion.div>

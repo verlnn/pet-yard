@@ -192,8 +192,10 @@ export interface FeedPostComment {
   content: string;
   createdAt: string;
   authorId: number;
+  authorUsername?: string | null;
   authorNickname: string;
   authorProfileImageUrl?: string | null;
+  authorPrimaryPetImageUrl?: string | null;
 }
 
 export type GuardianRelationStatus =

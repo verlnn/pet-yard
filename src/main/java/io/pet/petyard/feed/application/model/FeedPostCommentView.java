@@ -8,7 +8,9 @@ public record FeedPostCommentView(
     String content,
     Instant createdAt,
     Long authorId,
+    String authorUsername,
     String authorNickname,
-    String authorProfileImageUrl
+    String authorProfileImageUrl,
+    String authorPrimaryPetImageUrl
 ) {
 }

@@ -17,10 +17,14 @@ public record FeedPostCommentResponse(
     Instant createdAt,
     @Schema(description = "작성자 식별자", example = "5")
     Long authorId,
+    @Schema(description = "작성자 공개 ID", example = "meongnyang")
+    String authorUsername,
     @Schema(description = "작성자 닉네임", example = "멍냥집사")
     String authorNickname,
     @Schema(description = "작성자 프로필 이미지 URL", nullable = true)
-    String authorProfileImageUrl
+    String authorProfileImageUrl,
+    @Schema(description = "작성자의 대표 반려동물 사진 URL", nullable = true)
+    String authorPrimaryPetImageUrl
 ) {
     public static FeedPostCommentResponse from(FeedPostCommentView view) {
         return new FeedPostCommentResponse(
@@ -29,8 +33,10 @@ public record FeedPostCommentResponse(
             view.content(),
             view.createdAt(),
             view.authorId(),
+            view.authorUsername(),
             view.authorNickname(),
-            view.authorProfileImageUrl()
+            view.authorProfileImageUrl(),
+            view.authorPrimaryPetImageUrl()
         );
     }
 }
