@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 type OnboardingProfileBasicsStepProps = {
   nickname: string;
   username: string;
@@ -25,6 +27,8 @@ export default function OnboardingProfileBasicsStep({
   onNext,
   nextDisabled
 }: OnboardingProfileBasicsStepProps) {
+  const [isUsernameRulesOpen, setIsUsernameRulesOpen] = useState(false);
+
   return (
     <>
       <div className="onboarding-profile-step-content">
@@ -53,6 +57,28 @@ export default function OnboardingProfileBasicsStep({
             required
           />
         </label>
+
+        <div className="onboarding-profile-help-block">
+          <button
+            type="button"
+            className="onboarding-profile-help-toggle"
+            onClick={() => setIsUsernameRulesOpen((current) => !current)}
+            aria-expanded={isUsernameRulesOpen}
+          >
+            <span>규칙보기</span>
+            <span aria-hidden="true">{isUsernameRulesOpen ? "^" : "V"}</span>
+          </button>
+          {isUsernameRulesOpen ? (
+            <div className="onboarding-profile-help-panel">
+              <ul className="onboarding-profile-help-list">
+                <li>영문 소문자, 숫자, 점(.)만 사용할 수 있어요.</li>
+                <li>3자 이상 30자 이하로 입력해 주세요.</li>
+                <li>앞뒤를 점으로 시작하거나 끝낼 수 없어요.</li>
+                <li>다른 사용자와 중복되지 않아야 해요.</li>
+              </ul>
+            </div>
+          ) : null}
+        </div>
 
         <div className="onboarding-profile-field-block">
           프로필 이미지 (선택)

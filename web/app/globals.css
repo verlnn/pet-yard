@@ -3041,6 +3041,22 @@ body {
     @apply border;
   }
 
+  .onboarding-profile-help-block {
+    @apply -mt-1 space-y-2;
+  }
+
+  .onboarding-profile-help-toggle {
+    @apply inline-flex items-center gap-2 text-xs font-medium text-slate-500 transition hover:text-slate-700;
+  }
+
+  .onboarding-profile-help-panel {
+    @apply rounded-2xl border border-slate-200/80 bg-slate-50 px-4 py-3;
+  }
+
+  .onboarding-profile-help-list {
+    @apply list-disc space-y-1 pl-4 text-xs leading-5 text-slate-600;
+  }
+
   .onboarding-profile-step-actions-single {
     @apply mt-auto pt-4;
   }
@@ -3088,6 +3104,7 @@ body {
   [data-theme="dark"] .onboarding-profile-progress-header,
   [data-theme="dark"] .onboarding-profile-field,
   [data-theme="dark"] .onboarding-profile-field-block,
+  [data-theme="dark"] .onboarding-profile-help-toggle,
   [data-theme="dark"] .onboarding-profile-combobox-label,
   [data-theme="dark"] .onboarding-profile-region-tags {
     color: #94a3b8;
@@ -3098,6 +3115,7 @@ body {
   }
 
   [data-theme="dark"] .onboarding-profile-input,
+  [data-theme="dark"] .onboarding-profile-help-panel,
   [data-theme="dark"] .onboarding-profile-combobox-menu,
   [data-theme="dark"] .onboarding-profile-photo-row,
   [data-theme="dark"] .onboarding-profile-region-tag,
@@ -3114,6 +3132,10 @@ body {
 
   [data-theme="dark"] .onboarding-profile-input::placeholder {
     color: #64748b;
+  }
+
+  [data-theme="dark"] .onboarding-profile-help-list {
+    color: #cbd5e1;
   }
 
   [data-theme="dark"] .onboarding-profile-combobox-option {
