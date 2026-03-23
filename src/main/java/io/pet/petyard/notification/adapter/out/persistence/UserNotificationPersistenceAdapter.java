@@ -39,6 +39,11 @@ public class UserNotificationPersistenceAdapter implements LoadUserNotificationP
     }
 
     @Override
+    public long countUnreadByRecipientUserId(Long recipientUserId) {
+        return repository.countByRecipientUserIdAndStatus(recipientUserId, NotificationStatus.UNREAD);
+    }
+
+    @Override
     public UserNotification save(UserNotification notification) {
         return repository.save(notification);
     }

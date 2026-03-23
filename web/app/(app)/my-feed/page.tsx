@@ -85,7 +85,7 @@ type ProfilePageProfile = MyProfileResponse | PublicProfileResponse;
 
 function getGuardianActionLabel(status: GuardianRelationStatus) {
   if (status === "CONNECTED") return "집사 해제";
-  if (status === "OUTGOING_REQUESTED") return "요청됨";
+  if (status === "OUTGOING_REQUESTED") return "요청 취소";
   if (status === "INCOMING_REQUESTED") return "집사 요청 수락";
   return "집사 요청";
 }
@@ -106,7 +106,7 @@ function PublicProfileHeader({
   const profileDisplayName = profile?.nickname?.trim() || "멍냥마당";
   const guardianRelationStatus = profile?.guardianRelationStatus ?? "NONE";
   const guardianActionLabel = getGuardianActionLabel(guardianRelationStatus);
-  const guardianActionDisabled = guardianLoading || guardianRelationStatus === "OUTGOING_REQUESTED";
+  const guardianActionDisabled = guardianLoading;
 
   return (
     <section className="feed-profile-header">
@@ -576,6 +576,7 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
       return;
     }
     if (profile.guardianRelationStatus === "OUTGOING_REQUESTED") {
+      await handleConfirmGuardianRemove();
       return;
     }
 

@@ -62,6 +62,16 @@ class NotificationApplicationServiceTest {
         assertThat(responses.getFirst().actionable()).isTrue();
     }
 
+    @Test
+    @DisplayName("읽지 않은 알림 수 조회는 unread 상태만 집계한다")
+    void countUnreadNotificationsReturnsUnreadCount() {
+        given(loadUserNotificationPort.countUnreadByRecipientUserId(11L)).willReturn(7L);
+
+        long unreadCount = service.countUnreadNotifications(11L);
+
+        assertThat(unreadCount).isEqualTo(7L);
+    }
+
     private User user(Long id, String username) {
         User user = new User(username + "@example.com", "hash", username, UserTier.TIER_1, AccountStatus.ACTIVE);
         ReflectionTestUtils.setField(user, "id", id);

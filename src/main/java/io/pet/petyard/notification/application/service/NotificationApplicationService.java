@@ -54,6 +54,11 @@ public class NotificationApplicationService {
             .toList();
     }
 
+    @Transactional(readOnly = true)
+    public long countUnreadNotifications(Long userId) {
+        return loadUserNotificationPort.countUnreadByRecipientUserId(userId);
+    }
+
     @Transactional
     public void markAsRead(Long userId, Long notificationId) {
         UserNotification notification = loadUserNotificationPort.findByIdAndRecipientUserId(notificationId, userId)

@@ -924,11 +924,18 @@ body {
 
   .app-sidebar-item-icon-shell {
     background: var(--color-hover-surface);
-    @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl transition;
+    @apply relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl transition;
   }
 
   .app-sidebar-item-icon {
     @apply h-[18px] w-[18px];
+  }
+
+  .app-sidebar-item-badge {
+    background: #ef4444;
+    color: #ffffff;
+    box-shadow: 0 6px 18px -10px rgba(239, 68, 68, 0.9);
+    @apply absolute -right-1 -top-1 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold leading-none;
   }
 
   .app-sidebar-item-label {
@@ -1036,17 +1043,13 @@ body {
     @apply absolute bottom-[calc(100%+12px)] left-0 z-20 w-[260px] overflow-hidden rounded-[24px] py-3 shadow-[0_28px_80px_-34px_rgba(15,23,42,0.3)];
   }
 
-  .app-sidebar-notifications-backdrop {
-    background: rgba(3, 7, 18, 0.44);
-    @apply fixed inset-0 z-30;
-  }
-
   .app-sidebar-notifications-panel {
     background: #0f141b;
     border-right: 1px solid rgba(148, 163, 184, 0.16);
     color: #f8fafc;
+    box-shadow: 18px 0 48px -30px rgba(15, 23, 42, 0.66);
     transform: translateX(-104%);
-    @apply fixed bottom-0 left-[84px] top-0 z-40 flex w-[392px] flex-col px-7 pb-6 pt-7 transition duration-300 ease-out;
+    @apply fixed bottom-0 left-0 top-0 z-[70] flex w-[392px] flex-col px-7 pb-6 pt-7 transition duration-300 ease-out;
   }
 
   .app-sidebar-notifications-panel-open {

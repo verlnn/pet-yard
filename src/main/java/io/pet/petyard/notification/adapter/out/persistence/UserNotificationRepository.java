@@ -39,4 +39,6 @@ public interface UserNotificationRepository extends JpaRepository<UserNotificati
         @Param("statuses") Collection<NotificationStatus> statuses,
         Pageable pageable
     );
+
+    long countByRecipientUserIdAndStatus(Long recipientUserId, NotificationStatus status);
 }

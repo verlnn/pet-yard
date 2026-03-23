@@ -11,6 +11,7 @@ import type {
   GuardianRegistrationResponse,
   UserNotification,
   UserNotificationActionResponse,
+  UserNotificationUnreadCountResponse,
   PetBreed,
   PetProfile,
   PetRegistrationVerificationResponse,
@@ -471,6 +472,14 @@ export const authApi = {
   },
   getNotifications(accessToken: string) {
     return request<UserNotification[]>("/api/notifications", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+  },
+  getNotificationUnreadCount(accessToken: string) {
+    return request<UserNotificationUnreadCountResponse>("/api/notifications/unread-count", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${accessToken}`

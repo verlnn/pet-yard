@@ -51,6 +51,15 @@ public class UserNotificationController {
         return notificationApplicationService.listNotifications(principal.userId());
     }
 
+    @RequirePermission(Permission.FEED_READ)
+    @GetMapping("/unread-count")
+    @Operation(summary = "읽지 않은 알림 수 조회", description = "현재 로그인 사용자의 읽지 않은 알림 수를 조회합니다.")
+    public UserNotificationUnreadCountResponse unreadCount(@AuthenticationPrincipal AuthPrincipal principal) {
+        return new UserNotificationUnreadCountResponse(
+            notificationApplicationService.countUnreadNotifications(principal.userId())
+        );
+    }
+
     @RequirePermission(Permission.FEED_CREATE)
     @PostMapping("/{notificationId}/guardians/accept")
     @Operation(summary = "집사 요청 수락", description = "알림 패널에서 집사 요청을 수락합니다.")

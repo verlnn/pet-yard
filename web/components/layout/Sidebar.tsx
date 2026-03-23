@@ -47,6 +47,7 @@ export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
   const [notifications, setNotifications] = useState<UserNotification[]>([]);
   const [notificationsLoading, setNotificationsLoading] = useState(false);
   const [actingNotificationId, setActingNotificationId] = useState<number | null>(null);
+  const [notificationUnreadCount, setNotificationUnreadCount] = useState(0);
   const panelContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -68,6 +69,24 @@ export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
 
     loadProfile();
   }, []);
+
+  useEffect(() => {
+    if (!accessToken) {
+      setNotificationUnreadCount(0);
+      return;
+    }
+
+    const loadUnreadCount = async () => {
+      try {
+        const response = await authApi.getNotificationUnreadCount(accessToken);
+        setNotificationUnreadCount(response.unreadCount);
+      } catch {
+        setNotificationUnreadCount(0);
+      }
+    };
+
+    loadUnreadCount();
+  }, [accessToken]);
 
   useEffect(() => {
     if (!notificationPanelOpen) {
@@ -117,11 +136,23 @@ export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
     }
   };
 
+  const loadNotificationUnreadCount = async () => {
+    if (!accessToken) {
+      return;
+    }
+    try {
+      const response = await authApi.getNotificationUnreadCount(accessToken);
+      setNotificationUnreadCount(response.unreadCount);
+    } catch {
+      setNotificationUnreadCount(0);
+    }
+  };
+
   const handleNotificationPanelToggle = async () => {
     const nextOpen = !notificationPanelOpen;
     setNotificationPanelOpen(nextOpen);
     if (nextOpen) {
-      await loadNotifications();
+      await Promise.all([loadNotifications(), loadNotificationUnreadCount()]);
     }
   };
 
@@ -132,7 +163,7 @@ export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
     setActingNotificationId(notificationId);
     try {
       await authApi.acceptGuardianRequestNotification(accessToken, notificationId);
-      await loadNotifications();
+      await Promise.all([loadNotifications(), loadNotificationUnreadCount()]);
     } finally {
       setActingNotificationId(null);
     }
@@ -145,11 +176,13 @@ export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
     setActingNotificationId(notificationId);
     try {
       await authApi.rejectGuardianRequestNotification(accessToken, notificationId);
-      await loadNotifications();
+      await Promise.all([loadNotifications(), loadNotificationUnreadCount()]);
     } finally {
       setActingNotificationId(null);
     }
   };
+
+  const notificationUnreadLabel = notificationUnreadCount > 99 ? "99+" : String(notificationUnreadCount);
 
   return (
     <>
@@ -158,9 +191,6 @@ export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
         onClick={onCloseMobile}
         aria-hidden="true"
       />
-      {notificationPanelOpen ? (
-        <div className="app-sidebar-notifications-backdrop" aria-hidden="true" />
-      ) : null}
       <div ref={panelContainerRef}>
         <SidebarNotificationsPanel
           open={notificationPanelOpen}
@@ -202,6 +232,11 @@ export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
             >
               <span className="app-sidebar-item-icon-shell">
                 <Bell className="app-sidebar-item-icon" />
+                {notificationUnreadCount > 0 ? (
+                  <span className="app-sidebar-item-badge" aria-label={`읽지 않은 알림 ${notificationUnreadLabel}건`}>
+                    {notificationUnreadLabel}
+                  </span>
+                ) : null}
               </span>
               <span className="app-sidebar-item-label">알림</span>
             </button>

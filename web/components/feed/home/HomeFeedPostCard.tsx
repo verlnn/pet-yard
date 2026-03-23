@@ -123,6 +123,7 @@ export const HomeFeedPostCard = memo(function HomeFeedPostCard({
       return;
     }
     if (guardianRelationStatus === "OUTGOING_REQUESTED") {
+      await updateGuardianRegistration("remove");
       return;
     }
     await updateGuardianRegistration("request");
@@ -138,11 +139,11 @@ export const HomeFeedPostCard = memo(function HomeFeedPostCard({
   const guardianButtonLabel = guardianRelationStatus === "CONNECTED"
     ? "집사 해제"
     : guardianRelationStatus === "OUTGOING_REQUESTED"
-    ? "요청됨"
+    ? "요청 취소"
     : guardianRelationStatus === "INCOMING_REQUESTED"
     ? "집사 요청 수락"
     : "집사 요청";
-  const guardianButtonDisabled = guardianLoading || guardianRelationStatus === "OUTGOING_REQUESTED";
+  const guardianButtonDisabled = guardianLoading;
 
   return (
     <article className="home-feed-post-card">

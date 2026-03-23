@@ -69,6 +69,16 @@ class UserNotificationControllerTest {
     }
 
     @Test
+    @DisplayName("읽지 않은 알림 수를 조회할 수 있다")
+    void unreadCountReturnsCount() throws Exception {
+        given(notificationApplicationService.countUnreadNotifications(11L)).willReturn(108L);
+
+        mockMvc.perform(get("/api/notifications/unread-count").with(authPrincipalRequest(11L)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.unreadCount").value(108));
+    }
+
+    @Test
     @DisplayName("알림에서 집사 요청 수락이 가능하다")
     void acceptGuardianRequest() throws Exception {
         given(guardianRegistrationService.acceptFromNotification(11L, 101L))

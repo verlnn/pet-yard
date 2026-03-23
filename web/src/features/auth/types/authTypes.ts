@@ -238,3 +238,7 @@ export interface UserNotificationActionResponse {
   notificationId: number;
   guardianRelationStatus: GuardianRelationStatus;
 }
+
+export interface UserNotificationUnreadCountResponse {
+  unreadCount: number;
+}

@@ -8,4 +8,5 @@ public interface LoadUserNotificationPort {
     List<UserNotification> findRecentByRecipientUserId(Long recipientUserId, int limit);
     Optional<UserNotification> findByIdAndRecipientUserId(Long notificationId, Long recipientUserId);
     Optional<UserNotification> findLatestPendingGuardianRequest(Long recipientUserId, Long actorUserId);
+    long countUnreadByRecipientUserId(Long recipientUserId);
 }
