@@ -718,11 +718,16 @@ body {
   }
 
   .feed-profile-header-title-group {
-    @apply min-w-0;
+    @apply min-w-0 space-y-1;
   }
 
   .feed-profile-header-title {
     @apply truncate font-display text-3xl font-semibold tracking-[-0.04em];
+  }
+
+  .feed-profile-header-display-name {
+    color: var(--color-text-muted);
+    @apply truncate text-sm font-medium;
   }
 
   .feed-profile-header-settings-link {

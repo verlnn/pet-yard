@@ -40,6 +40,8 @@ interface FeedProfileIdentityProps {
 }
 
 function FeedProfileIdentity({ profile, primaryPet, postCount, onProfileImageClick }: FeedProfileIdentityProps) {
+  const profileUsername = profile?.username?.trim() ? `@${profile.username.trim()}` : "@username";
+  const profileDisplayName = profile?.nickname?.trim() || "멍냥마당";
   const avatar = (
     <div className="feed-profile-header-avatar-shell">
       <Avatar className="feed-profile-header-avatar">
@@ -84,7 +86,8 @@ function FeedProfileIdentity({ profile, primaryPet, postCount, onProfileImageCli
       <div className="feed-profile-header-copy">
         <div className="feed-profile-header-heading-row">
           <div className="feed-profile-header-title-group">
-            <p className="feed-profile-header-title">{profile?.nickname ?? "멍냥마당"}</p>
+            <p className="feed-profile-header-title">{profileUsername}</p>
+            <p className="feed-profile-header-display-name">{profileDisplayName}</p>
           </div>
           <Link href="/accounts/edit" className="feed-profile-header-settings-link" aria-label="프로필 설정">
             <Settings className="h-4 w-4" />
