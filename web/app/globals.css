@@ -3243,6 +3243,10 @@ body {
     color: var(--color-text-muted);
   }
 
+  [data-theme="dark"] .onboarding-pet-photo-card-empty {
+    color: var(--color-text-muted);
+  }
+
   [data-theme="dark"] .onboarding-profile-field-success {
     color: #86efac;
   }
