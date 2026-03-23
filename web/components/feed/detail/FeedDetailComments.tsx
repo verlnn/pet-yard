@@ -84,7 +84,10 @@ export function FeedDetailComments({
   }, [deletingCommentId]);
 
   const renderComment = (comment: FeedPostComment, nested = false) => (
-    <div key={comment.id} className={`feed-detail-comment-item ${nested ? "feed-detail-comment-item-nested" : ""}`}>
+    <div
+      key={comment.id}
+      className={`feed-detail-comment-item ${nested ? "feed-detail-comment-item-nested" : ""} ${currentUserId === comment.authorId ? "feed-detail-comment-item-own" : ""}`}
+    >
       <div className="feed-detail-comment-avatar-shell">
         <Avatar className="feed-detail-comment-avatar">
           {comment.authorProfileImageUrl ? (
