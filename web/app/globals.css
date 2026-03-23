@@ -3042,11 +3042,15 @@ body {
   }
 
   .onboarding-profile-help-block {
-    @apply -mt-1 space-y-2;
+    @apply -mt-2 space-y-1.5;
   }
 
   .onboarding-profile-help-toggle {
     @apply inline-flex items-center gap-2 text-xs font-medium text-slate-500 transition hover:text-slate-700;
+  }
+
+  .onboarding-profile-help-toggle-icon {
+    @apply h-3.5 w-3.5;
   }
 
   .onboarding-profile-help-panel {

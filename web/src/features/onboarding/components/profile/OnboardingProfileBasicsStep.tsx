@@ -1,5 +1,6 @@
 "use client";
 
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 
 type OnboardingProfileBasicsStepProps = {
@@ -66,7 +67,11 @@ export default function OnboardingProfileBasicsStep({
             aria-expanded={isUsernameRulesOpen}
           >
             <span>규칙보기</span>
-            <span aria-hidden="true">{isUsernameRulesOpen ? "^" : "V"}</span>
+            {isUsernameRulesOpen ? (
+              <ChevronUp aria-hidden="true" className="onboarding-profile-help-toggle-icon" />
+            ) : (
+              <ChevronDown aria-hidden="true" className="onboarding-profile-help-toggle-icon" />
+            )}
           </button>
           {isUsernameRulesOpen ? (
             <div className="onboarding-profile-help-panel">
