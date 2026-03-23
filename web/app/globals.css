@@ -2752,7 +2752,10 @@ body {
   }
 
   .onboarding-pet-verification-result {
-    @apply mt-3 rounded-2xl bg-white/70 px-3 py-2 text-xs text-emerald-700;
+    @apply mt-3 rounded-2xl border px-3 py-2 text-xs;
+    background: var(--color-surface-muted);
+    border-color: var(--color-border);
+    color: var(--color-text-muted);
   }
 
   .onboarding-pet-verification-actions {
@@ -3198,6 +3201,12 @@ body {
     background: var(--color-surface);
     border-color: var(--color-border);
     color: var(--color-text);
+  }
+
+  [data-theme="dark"] .onboarding-pet-verification-result {
+    background: var(--color-surface);
+    border-color: var(--color-border);
+    color: var(--color-text-muted);
   }
 
   [data-theme="dark"] .onboarding-profile-field-success {
