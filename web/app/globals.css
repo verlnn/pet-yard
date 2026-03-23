@@ -1897,6 +1897,11 @@ body {
     @apply ml-1.5 font-medium;
   }
 
+  .feed-detail-comment-mention-link {
+    color: #7ea1ff;
+    @apply font-medium transition hover:text-[#97b3ff];
+  }
+
   .feed-detail-comment-meta {
     color: rgba(255, 255, 255, 0.48);
     @apply mt-1 flex flex-wrap items-center gap-3 text-xs font-medium;

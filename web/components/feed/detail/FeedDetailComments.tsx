@@ -1,9 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import type { ReactNode } from "react";
 import { MoreHorizontal, PawPrint } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { FeedPostComment } from "@/src/features/auth/types/authTypes";
+import { buildProfileRoute } from "@/src/lib/routes";
 
 interface FeedDetailCommentsProps {
   className?: string;
@@ -19,6 +22,7 @@ interface FeedDetailCommentsProps {
 }
 
 const relativeTimeFormat = new Intl.RelativeTimeFormat("ko", { numeric: "auto" });
+const COMMENT_MENTION_PATTERN = /@([a-z0-9._]{1,30})/g;
 
 function formatCommentRelativeTime(value: string) {
   const target = new Date(value);
@@ -37,6 +41,43 @@ function formatCommentRelativeTime(value: string) {
     return relativeTimeFormat.format(diffHours, "hour");
   }
   return relativeTimeFormat.format(Math.round(diffHours / 24), "day");
+}
+
+function renderCommentContent(content: string) {
+  const matches = Array.from(content.matchAll(COMMENT_MENTION_PATTERN));
+  if (matches.length === 0) {
+    return content;
+  }
+
+  const nodes: ReactNode[] = [];
+  let cursor = 0;
+
+  matches.forEach((match, index) => {
+    const start = match.index ?? 0;
+    const fullMatch = match[0];
+    const username = match[1];
+
+    if (cursor < start) {
+      nodes.push(<span key={`text-${index}-${cursor}`}>{content.slice(cursor, start)}</span>);
+    }
+
+    nodes.push(
+      <Link
+        key={`mention-${index}-${username}-${start}`}
+        href={buildProfileRoute(username)}
+        className="feed-detail-comment-mention-link"
+      >
+        {fullMatch}
+      </Link>
+    );
+    cursor = start + fullMatch.length;
+  });
+
+  if (cursor < content.length) {
+    nodes.push(<span key={`tail-${cursor}`}>{content.slice(cursor)}</span>);
+  }
+
+  return nodes;
 }
 
 export function FeedDetailComments({
@@ -105,8 +146,12 @@ export function FeedDetailComments({
       <div className="feed-detail-comment-body">
         <p className="feed-detail-comment-line">
           <span className="feed-detail-comment-username">{comment.authorUsername ?? comment.authorNickname}</span>
-          {comment.replyToUsername ? <span className="feed-detail-comment-mention">@{comment.replyToUsername}</span> : null}
-          <span className="feed-detail-comment-content">{comment.content}</span>
+          {comment.replyToUsername ? (
+            <Link href={buildProfileRoute(comment.replyToUsername)} className="feed-detail-comment-mention">
+              @{comment.replyToUsername}
+            </Link>
+          ) : null}
+          <span className="feed-detail-comment-content">{renderCommentContent(comment.content)}</span>
         </p>
         <div className="feed-detail-comment-meta">
           <span>{formatCommentRelativeTime(comment.createdAt)}</span>
