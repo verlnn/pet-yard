@@ -207,3 +207,34 @@ export interface GuardianRegistrationResponse {
   guardianRelationStatus: GuardianRelationStatus;
   guardianRegisteredByMe: boolean;
 }
+
+export type UserNotificationType =
+  | "GUARDIAN_REQUEST"
+  | "GUARDIAN_REQUEST_ACCEPTED";
+
+export type UserNotificationStatus =
+  | "UNREAD"
+  | "READ"
+  | "ACCEPTED"
+  | "REJECTED"
+  | "CANCELED";
+
+export interface UserNotification {
+  id: number;
+  type: UserNotificationType;
+  status: UserNotificationStatus;
+  actorUserId: number;
+  actorUsername?: string | null;
+  actorNickname: string;
+  actorProfileImageUrl?: string | null;
+  message: string;
+  createdAt: string;
+  actionable: boolean;
+  primaryActionLabel?: string | null;
+  secondaryActionLabel?: string | null;
+}
+
+export interface UserNotificationActionResponse {
+  notificationId: number;
+  guardianRelationStatus: GuardianRelationStatus;
+}

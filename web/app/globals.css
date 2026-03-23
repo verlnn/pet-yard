@@ -1036,6 +1036,136 @@ body {
     @apply absolute bottom-[calc(100%+12px)] left-0 z-20 w-[260px] overflow-hidden rounded-[24px] py-3 shadow-[0_28px_80px_-34px_rgba(15,23,42,0.3)];
   }
 
+  .app-sidebar-notifications-backdrop {
+    background: rgba(3, 7, 18, 0.44);
+    @apply fixed inset-0 z-30;
+  }
+
+  .app-sidebar-notifications-panel {
+    background: #0f141b;
+    border-right: 1px solid rgba(148, 163, 184, 0.16);
+    color: #f8fafc;
+    transform: translateX(-104%);
+    @apply fixed bottom-0 left-[84px] top-0 z-40 flex w-[392px] flex-col px-7 pb-6 pt-7 transition duration-300 ease-out;
+  }
+
+  .app-sidebar-notifications-panel-open {
+    transform: translateX(0);
+  }
+
+  .app-sidebar-notifications-header {
+    @apply flex items-start justify-between;
+  }
+
+  .app-sidebar-notifications-title {
+    @apply text-[2rem] font-semibold tracking-[-0.03em];
+  }
+
+  .app-sidebar-notifications-close {
+    color: rgba(226, 232, 240, 0.82);
+    @apply flex h-10 w-10 items-center justify-center rounded-full transition;
+  }
+
+  .app-sidebar-notifications-close:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .app-sidebar-notifications-close-icon {
+    @apply h-5 w-5;
+  }
+
+  .app-sidebar-notifications-filters {
+    @apply mt-6 flex items-center gap-2;
+  }
+
+  .app-sidebar-notifications-filter {
+    color: rgba(226, 232, 240, 0.8);
+    background: rgba(255, 255, 255, 0.04);
+    @apply rounded-full px-4 py-2 text-sm font-semibold transition;
+  }
+
+  .app-sidebar-notifications-filter:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .app-sidebar-notifications-filter-active {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+  }
+
+  .app-sidebar-notifications-section {
+    @apply mt-7;
+  }
+
+  .app-sidebar-notifications-section-title {
+    color: rgba(226, 232, 240, 0.78);
+    @apply text-base font-semibold;
+  }
+
+  .app-sidebar-notifications-list {
+    @apply mt-5 flex flex-1 flex-col gap-4 overflow-y-auto pr-1;
+  }
+
+  .app-sidebar-notifications-empty {
+    color: rgba(148, 163, 184, 0.82);
+    @apply py-8 text-sm;
+  }
+
+  .app-sidebar-notification-item {
+    @apply flex items-start justify-between gap-3;
+  }
+
+  .app-sidebar-notification-main {
+    @apply flex min-w-0 flex-1 items-start gap-3;
+  }
+
+  .app-sidebar-notification-avatar {
+    @apply h-12 w-12 shrink-0;
+  }
+
+  .app-sidebar-notification-copy {
+    @apply min-w-0 pt-0.5;
+  }
+
+  .app-sidebar-notification-message {
+    color: #f8fafc;
+    @apply text-sm font-medium leading-6;
+  }
+
+  .app-sidebar-notification-meta {
+    color: rgba(148, 163, 184, 0.84);
+    @apply mt-1 text-xs;
+  }
+
+  .app-sidebar-notification-actions {
+    @apply flex shrink-0 items-center gap-2;
+  }
+
+  .app-sidebar-notification-accept,
+  .app-sidebar-notification-reject {
+    border-radius: 10px;
+    @apply min-w-[62px] px-3 py-2 text-xs font-semibold transition disabled:opacity-60;
+  }
+
+  .app-sidebar-notification-accept {
+    background: #2563eb;
+    color: #f8fbff;
+  }
+
+  .app-sidebar-notification-reject {
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(226, 232, 240, 0.92);
+  }
+
+  .app-sidebar-notification-badge {
+    color: #bfdbfe;
+    @apply inline-flex shrink-0 items-center gap-1 rounded-full bg-blue-500/10 px-3 py-1 text-xs font-semibold;
+  }
+
+  .app-sidebar-notification-badge-icon {
+    @apply h-3.5 w-3.5;
+  }
+
   .app-sidebar-more-list {
     @apply flex flex-col;
   }

@@ -13,6 +13,9 @@ import io.pet.petyard.auth.domain.UserTier;
 import io.pet.petyard.auth.domain.model.User;
 import io.pet.petyard.common.ApiException;
 import io.pet.petyard.common.ErrorCode;
+import io.pet.petyard.notification.application.port.out.LoadUserNotificationPort;
+import io.pet.petyard.notification.application.port.out.SaveUserNotificationPort;
+import io.pet.petyard.notification.domain.model.UserNotification;
 import io.pet.petyard.user.application.port.out.DeleteGuardianRegistrationPort;
 import io.pet.petyard.user.application.port.out.LoadGuardianRegistrationPort;
 import io.pet.petyard.user.application.port.out.SaveGuardianRegistrationPort;
@@ -38,6 +41,8 @@ class GuardianRegistrationServiceTest {
     @Mock private LoadGuardianRegistrationPort loadGuardianRegistrationPort;
     @Mock private SaveGuardianRegistrationPort saveGuardianRegistrationPort;
     @Mock private DeleteGuardianRegistrationPort deleteGuardianRegistrationPort;
+    @Mock private LoadUserNotificationPort loadUserNotificationPort;
+    @Mock private SaveUserNotificationPort saveUserNotificationPort;
 
     private GuardianRegistrationService service;
 
@@ -50,7 +55,9 @@ class GuardianRegistrationServiceTest {
             loadGuardianRegistrationPort,
             saveGuardianRegistrationPort,
             deleteGuardianRegistrationPort,
-            rateLimiter
+            rateLimiter,
+            loadUserNotificationPort,
+            saveUserNotificationPort
         );
     }
 
@@ -69,6 +76,7 @@ class GuardianRegistrationServiceTest {
         assertThat(captor.getValue().getGuardianUserId()).isEqualTo(10L);
         assertThat(captor.getValue().getTargetUserId()).isEqualTo(20L);
         assertThat(captor.getValue().isAccepted()).isFalse();
+        verify(saveUserNotificationPort).save(any(UserNotification.class));
     }
 
     @Test
@@ -77,6 +85,8 @@ class GuardianRegistrationServiceTest {
         GuardianRegistration incoming = relationship(20L, 10L);
         given(loadUserPort.findById(20L)).willReturn(Optional.of(activeUser(20L)));
         given(loadGuardianRegistrationPort.findRelationship(10L, 20L)).willReturn(Optional.of(incoming));
+        given(loadUserNotificationPort.findLatestPendingGuardianRequest(10L, 20L))
+            .willReturn(Optional.of(new UserNotification(10L, 20L, io.pet.petyard.notification.domain.NotificationType.GUARDIAN_REQUEST)));
         given(saveGuardianRegistrationPort.save(incoming)).willReturn(incoming);
 
         GuardianRelationStatus status = service.requestOrAccept(10L, 20L);
@@ -84,6 +94,7 @@ class GuardianRegistrationServiceTest {
         assertThat(status).isEqualTo(GuardianRelationStatus.CONNECTED);
         assertThat(incoming.isAccepted()).isTrue();
         verify(saveGuardianRegistrationPort).save(incoming);
+        verify(saveUserNotificationPort, org.mockito.Mockito.atLeastOnce()).save(any(UserNotification.class));
     }
 
     @Test
@@ -104,11 +115,16 @@ class GuardianRegistrationServiceTest {
     @DisplayName("관계 제거는 요청 취소와 연결 해제를 모두 NONE으로 돌린다")
     void removeDeletesRelationship() {
         given(loadUserPort.findById(20L)).willReturn(Optional.of(activeUser(20L)));
+        GuardianRegistration pending = relationship(10L, 20L);
+        given(loadGuardianRegistrationPort.findRelationship(10L, 20L)).willReturn(Optional.of(pending));
+        given(loadUserNotificationPort.findLatestPendingGuardianRequest(20L, 10L))
+            .willReturn(Optional.of(new UserNotification(20L, 10L, io.pet.petyard.notification.domain.NotificationType.GUARDIAN_REQUEST)));
 
         GuardianRelationStatus status = service.remove(10L, 20L);
 
         assertThat(status).isEqualTo(GuardianRelationStatus.NONE);
         verify(deleteGuardianRegistrationPort).delete(10L, 20L);
+        verify(saveUserNotificationPort).save(any(UserNotification.class));
     }
 
     @Test

@@ -9,6 +9,8 @@ import type {
   FeedPostComment,
   HomeFeedPage,
   GuardianRegistrationResponse,
+  UserNotification,
+  UserNotificationActionResponse,
   PetBreed,
   PetProfile,
   PetRegistrationVerificationResponse,
@@ -462,6 +464,30 @@ export const authApi = {
   unregisterGuardian(accessToken: string, targetUserId: number) {
     return request<GuardianRegistrationResponse>(`/api/users/${targetUserId}/guardians`, {
       method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+  },
+  getNotifications(accessToken: string) {
+    return request<UserNotification[]>("/api/notifications", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+  },
+  acceptGuardianRequestNotification(accessToken: string, notificationId: number) {
+    return request<UserNotificationActionResponse>(`/api/notifications/${notificationId}/guardians/accept`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+  },
+  rejectGuardianRequestNotification(accessToken: string, notificationId: number) {
+    return request<UserNotificationActionResponse>(`/api/notifications/${notificationId}/guardians/reject`, {
+      method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`
       }
