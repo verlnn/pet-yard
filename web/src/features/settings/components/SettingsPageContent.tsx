@@ -81,6 +81,7 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [profile, setProfile] = useState<MyProfileResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
   const [gender, setGender] = useState<(typeof genderOptions)[number]["value"]>("PRIVATE");
   const [savingChanges, setSavingChanges] = useState(false);
@@ -102,6 +103,7 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
       try {
         const response = await authApi.getMyProfile(accessToken);
         setProfile(response);
+        setUsername(response.username ?? "");
         setBio(response.bio ?? "");
         setGender((response.gender as (typeof genderOptions)[number]["value"] | null) ?? "PRIVATE");
         setPrimaryPetId(response.primaryPetId ? String(response.primaryPetId) : "none");
@@ -114,7 +116,7 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
   }, [accessToken]);
 
   const profileName = profile?.nickname ?? (loading ? "불러오는 중..." : "멍냥마당");
-  const profileHandle = useMemo(() => profileName.replace(/\s+/g, "_").toLowerCase(), [profileName]);
+  const profileHandle = useMemo(() => username.trim() || profile?.username || "", [profile?.username, username]);
   const helperRegion = profile?.regionName ?? "반려생활 기반 커뮤니티";
   const activeItemLabel =
     settingsSections.flatMap((section) => section.items).find((item) => item.key === activeSection)?.label ?? "프로필 편집";
@@ -122,10 +124,11 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
   const isProfileSection = activeSection === "profile";
   const normalizedSearchQuery = searchQuery.trim().toLowerCase();
   const isSearching = normalizedSearchQuery.length > 0;
+  const usernameChanged = (profile?.username ?? "") !== username.trim().toLowerCase();
   const bioChanged = (profile?.bio ?? "") !== bio;
   const genderChanged = (profile?.gender ?? "PRIVATE") !== gender;
   const primaryPetChanged = String(profile?.primaryPetId ?? "none") !== primaryPetId;
-  const hasProfileChanges = bioChanged || genderChanged || primaryPetChanged;
+  const hasProfileChanges = usernameChanged || bioChanged || genderChanged || primaryPetChanged;
   const searchResults = useMemo<SettingsSearchResult[]>(() => {
     if (!isSearching) {
       return [];
@@ -172,11 +175,13 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
     setSaveMessage(null);
     try {
       const response = await authApi.updateMyProfileSettings(accessToken, {
+        username: username.trim() || null,
         bio: bio.trim() || null,
         gender,
         primaryPetId: primaryPetId === "none" ? null : Number(primaryPetId)
       });
       setProfile(response);
+      setUsername(response.username ?? "");
       setBio(response.bio ?? "");
       setGender((response.gender as (typeof genderOptions)[number]["value"] | null) ?? "PRIVATE");
       setPrimaryPetId(response.primaryPetId ? String(response.primaryPetId) : "none");
@@ -300,13 +305,31 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
                     </div>
                     <div className="settings-page-profile-copy">
                       <p className="settings-page-profile-name">{profileName}</p>
-                      <p className="settings-page-profile-handle">@{profileHandle}</p>
+                      <p className="settings-page-profile-handle">@{profileHandle || "username"}</p>
                       <p className="settings-page-profile-region">{helperRegion}</p>
                     </div>
                   </div>
                   <button type="button" className="settings-page-profile-action">
                     사진 변경
                   </button>
+                </div>
+
+                <div className="settings-page-field">
+                  <label className="settings-page-field-label" htmlFor="settings-username">공개 ID</label>
+                  <input
+                    id="settings-username"
+                    className="settings-page-input"
+                    value={username}
+                    maxLength={30}
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    spellCheck={false}
+                    onChange={(event) => setUsername(event.target.value)}
+                    placeholder="meongnyang.owner"
+                  />
+                  <p className="settings-page-field-helper">
+                    영문 소문자, 숫자, 밑줄(_), 마침표(.)만 사용할 수 있습니다.
+                  </p>
                 </div>
 
                 <div className="settings-page-field">

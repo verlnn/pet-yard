@@ -6,6 +6,7 @@ public interface SignupProfileUseCase {
     record SignupProfileCommand(
         String signupToken,
         String nickname,
+        String username,
         String regionCode,
         String profileImageUrl,
         boolean marketingOptIn,

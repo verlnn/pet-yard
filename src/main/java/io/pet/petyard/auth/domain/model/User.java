@@ -1,6 +1,7 @@
 package io.pet.petyard.auth.domain.model;
 
 import io.pet.petyard.auth.domain.AccountStatus;
+import io.pet.petyard.auth.domain.Username;
 import io.pet.petyard.auth.domain.UserTier;
 
 import java.time.Instant;
@@ -16,10 +17,13 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "users", uniqueConstraints = {
-    @UniqueConstraint(name = "uk_users_email", columnNames = "email")
+    @UniqueConstraint(name = "uk_users_email", columnNames = "email"),
+    @UniqueConstraint(name = "uk_users_username", columnNames = "username")
 })
 public class User {
 
@@ -32,6 +36,11 @@ public class User {
 
     @Column
     private String passwordHash;
+
+    @Column(nullable = false, length = Username.MAX_LENGTH)
+    @Size(min = 1, max = Username.MAX_LENGTH)
+    @Pattern(regexp = Username.REGEX)
+    private String username;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -52,9 +61,10 @@ public class User {
     protected User() {
     }
 
-    public User(String email, String passwordHash, UserTier tier, AccountStatus status) {
+    public User(String email, String passwordHash, String username, UserTier tier, AccountStatus status) {
         this.email = email;
         this.passwordHash = passwordHash;
+        this.username = username;
         this.tier = tier;
         this.status = status;
     }
@@ -81,6 +91,14 @@ public class User {
 
     public String getPasswordHash() {
         return passwordHash;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public UserTier getTier() {

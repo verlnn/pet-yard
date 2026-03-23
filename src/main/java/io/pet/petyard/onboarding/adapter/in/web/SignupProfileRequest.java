@@ -7,6 +7,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record SignupProfileRequest(
     @Schema(description = "닉네임", example = "멍냥집사")
     @NotBlank String nickname,
+    @Schema(description = "공개 사용자 ID. 영문 소문자, 숫자, 밑줄(_), 마침표(.)만 사용 가능하며 저장 시 소문자로 정규화됩니다.", example = "meongnyang.owner")
+    @NotBlank String username,
     @Schema(description = "지역 코드", nullable = true, example = "11010")
     String regionCode,
     @Schema(description = "프로필 이미지 URL", nullable = true, example = "https://cdn.petyard.test/profile.jpg")

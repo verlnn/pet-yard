@@ -12,6 +12,8 @@ public record SignupProgressResponse(
     boolean hasPet,
     @Schema(description = "입력된 닉네임", nullable = true, example = "멍냥집사")
     String nickname,
+    @Schema(description = "초기 공개 사용자 ID 제안값", nullable = true, example = "meongnyang.owner")
+    String username,
     @Schema(description = "입력된 프로필 이미지 URL", nullable = true)
     String profileImageUrl
 ) {

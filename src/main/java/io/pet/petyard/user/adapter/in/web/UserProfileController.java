@@ -1,6 +1,8 @@
 package io.pet.petyard.user.adapter.in.web;
 
 import io.pet.petyard.auth.application.port.out.LoadUserPort;
+import io.pet.petyard.auth.application.port.out.SaveUserPort;
+import io.pet.petyard.auth.domain.Username;
 import io.pet.petyard.auth.domain.model.User;
 import io.pet.petyard.auth.security.AuthPrincipal;
 import io.pet.petyard.common.ApiException;
@@ -45,6 +47,7 @@ public class UserProfileController {
     private final LoadUserProfilePort loadUserProfilePort;
     private final LoadUserProfileSettingsPort loadUserProfileSettingsPort;
     private final SaveUserProfileSettingsPort saveUserProfileSettingsPort;
+    private final SaveUserPort saveUserPort;
     private final LoadRegionPort loadRegionPort;
     private final LoadPetProfilePort loadPetProfilePort;
 
@@ -52,12 +55,14 @@ public class UserProfileController {
                                  LoadUserProfilePort loadUserProfilePort,
                                  LoadUserProfileSettingsPort loadUserProfileSettingsPort,
                                  SaveUserProfileSettingsPort saveUserProfileSettingsPort,
+                                 SaveUserPort saveUserPort,
                                  LoadRegionPort loadRegionPort,
                                  LoadPetProfilePort loadPetProfilePort) {
         this.loadUserPort = loadUserPort;
         this.loadUserProfilePort = loadUserProfilePort;
         this.loadUserProfileSettingsPort = loadUserProfileSettingsPort;
         this.saveUserProfileSettingsPort = saveUserProfileSettingsPort;
+        this.saveUserPort = saveUserPort;
         this.loadRegionPort = loadRegionPort;
         this.loadPetProfilePort = loadPetProfilePort;
     }
@@ -125,6 +130,16 @@ public class UserProfileController {
 
         UserProfile profile = loadUserProfilePort.findByUserId(principal.userId())
             .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST));
+        String normalizedUsername = normalizeUsername(request.username());
+        if (normalizedUsername != null
+            && !normalizedUsername.equals(user.getUsername())
+            && loadUserPort.existsByUsername(normalizedUsername)) {
+            throw new ApiException(ErrorCode.USERNAME_ALREADY_TAKEN);
+        }
+        if (normalizedUsername != null) {
+            user.setUsername(normalizedUsername);
+            saveUserPort.save(user);
+        }
 
         List<PetProfile> pets = loadPetProfilePort.findByUserId(principal.userId());
         Long requestedPrimaryPetId = request.primaryPetId();
@@ -176,6 +191,17 @@ public class UserProfileController {
         return trimmed.isBlank() ? null : trimmed;
     }
 
+    private String normalizeUsername(String raw) {
+        if (raw == null) {
+            return null;
+        }
+        try {
+            return Username.fromRaw(raw).value();
+        } catch (IllegalArgumentException exception) {
+            throw new ApiException(ErrorCode.INVALID_USERNAME);
+        }
+    }
+
     private UserProfileGender parseGender(String raw) {
         try {
             return UserProfileGender.valueOf(raw.trim().toUpperCase());
@@ -206,6 +232,7 @@ public class UserProfileController {
             : (petResponses.size() == 1 ? petResponses.getFirst().id() : null);
         return new UserProfileResponse(
             user.getId(),
+            user.getUsername(),
             profile.getNickname(),
             regionName,
             profile.getProfileImageUrl(),

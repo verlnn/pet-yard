@@ -119,10 +119,10 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const authApi = {
-  signup(email: string, password: string) {
+  signup(username: string, email: string, password: string) {
     return request<SignupResponse>("/api/auth/signup", {
       method: "POST",
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ username, email, password })
     });
   },
   verifyEmail(email: string, code: string) {
@@ -183,6 +183,7 @@ export const authApi = {
     signupToken: string,
     payload: {
       nickname: string;
+      username: string;
       regionCode?: string | null;
       profileImageUrl?: string | null;
       marketingOptIn: boolean;
@@ -301,6 +302,7 @@ export const authApi = {
   updateMyProfileSettings(
     accessToken: string,
     payload: {
+      username?: string | null;
       bio?: string | null;
       gender: string;
       primaryPetId?: number | null;

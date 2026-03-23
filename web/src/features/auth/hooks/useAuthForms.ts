@@ -70,11 +70,11 @@ export function useAuthForms({ mode, onModeChange, nextPath }: UseAuthFormsOptio
   };
 
   const handleSignup = useCallback(
-    async (email: string, password: string) => {
+    async (username: string, email: string, password: string) => {
       resetNotice();
       setLoading(true);
       try {
-        const result = await authApi.signup(email, password);
+        const result = await authApi.signup(username, email, password);
         setEmailCache(email);
         localStorage.setItem("pendingEmail", email);
         setExpiresAt(result.expiresAt);

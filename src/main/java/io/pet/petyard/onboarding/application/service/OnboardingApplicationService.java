@@ -6,6 +6,7 @@ import io.pet.petyard.auth.application.port.out.SaveAuthIdentityPort;
 import io.pet.petyard.auth.application.port.out.SaveUserPort;
 import io.pet.petyard.auth.domain.AccountStatus;
 import io.pet.petyard.auth.domain.AuthProvider;
+import io.pet.petyard.auth.domain.Username;
 import io.pet.petyard.auth.domain.UserTier;
 import io.pet.petyard.auth.domain.model.AuthIdentity;
 import io.pet.petyard.auth.domain.model.User;
@@ -178,7 +179,7 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
             }
         }
 
-        User user = new User(userInfo.email(), null, UserTier.TIER_0, AccountStatus.PENDING_ONBOARDING);
+        User user = new User(userInfo.email(), null, temporaryUsername(), UserTier.TIER_0, AccountStatus.PENDING_ONBOARDING);
         saveUserPort.save(user);
 
         saveAuthIdentityPort.save(new AuthIdentity(user.getId(), provider, userInfo.providerUserId(), userInfo.email()));
@@ -196,6 +197,7 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
             session.getExpiresAt().toString(),
             loadUserProfilePort.findByUserId(session.getUserId()).map(UserProfile::hasPet).orElse(false),
             metadata.get("nickname"),
+            metadata.get("username"),
             metadata.get("profileImageUrl")
         );
     }
@@ -209,10 +211,19 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
         if (loadUserProfilePort.existsByNickname(command.nickname())) {
             throw new ApiException(ErrorCode.NICKNAME_ALREADY_TAKEN);
         }
+        String normalizedUsername = parseUsername(command.username());
+        User user = loadUserPort.findById(session.getUserId())
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+        if (!normalizedUsername.equals(user.getUsername()) && loadUserPort.existsByUsername(normalizedUsername)) {
+            throw new ApiException(ErrorCode.USERNAME_ALREADY_TAKEN);
+        }
         if (command.regionCode() != null && !command.regionCode().isBlank()
             && loadRegionPort.findByCode(command.regionCode()).isEmpty()) {
             throw new ApiException(ErrorCode.BAD_REQUEST);
         }
+
+        user.setUsername(normalizedUsername);
+        saveUserPort.save(user);
 
         UserProfile profile = new UserProfile(session.getUserId(), command.nickname(), command.regionCode(),
             command.profileImageUrl(), command.marketingOptIn(), command.hasPet());
@@ -371,6 +382,7 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
             Map<String, Object> payload = new java.util.HashMap<>();
             payload.put("email", userInfo.email());
             payload.put("nickname", userInfo.nickname());
+            payload.put("username", suggestInitialUsername(userInfo, null));
             payload.put("profileImageUrl", userInfo.profileImageUrl());
             return objectMapper.writeValueAsString(payload);
         } catch (Exception ex) {
@@ -389,6 +401,9 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
             if (payload.get("nickname") != null) {
                 result.put("nickname", payload.get("nickname").toString());
             }
+            if (payload.get("username") != null) {
+                result.put("username", payload.get("username").toString());
+            }
             if (payload.get("profileImageUrl") != null) {
                 result.put("profileImageUrl", payload.get("profileImageUrl").toString());
             }
@@ -396,5 +411,35 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
         } catch (Exception ex) {
             return java.util.Collections.emptyMap();
         }
+    }
+
+    private String parseUsername(String raw) {
+        try {
+            return Username.fromRaw(raw).value();
+        } catch (IllegalArgumentException exception) {
+            throw new ApiException(ErrorCode.INVALID_USERNAME);
+        }
+    }
+
+    private String suggestInitialUsername(OAuthUserInfo userInfo, Long userId) {
+        if (userInfo.email() != null) {
+            int atIndex = userInfo.email().indexOf('@');
+            String emailLocalPart = atIndex > 0 ? userInfo.email().substring(0, atIndex) : userInfo.email();
+            String normalizedEmailLocalPart = Username.normalize(emailLocalPart);
+            if (Username.isValidNormalized(normalizedEmailLocalPart)) {
+                return normalizedEmailLocalPart;
+            }
+        }
+
+        String normalizedNickname = Username.normalize(userInfo.nickname());
+        if (Username.isValidNormalized(normalizedNickname)) {
+            return normalizedNickname;
+        }
+
+        return userId == null ? null : Username.legacyFallback(userId);
+    }
+
+    private String temporaryUsername() {
+        return "u." + UUID.randomUUID().toString().replace("-", "").substring(0, 12);
     }
 }

@@ -71,6 +71,7 @@ public class SignupController {
             result.expiresAt(),
             result.hasPet(),
             result.nickname(),
+            result.username(),
             result.profileImageUrl()
         );
     }
@@ -83,6 +84,7 @@ public class SignupController {
             new SignupProfileUseCase.SignupProfileCommand(
                 signupToken,
                 request.nickname(),
+                request.username(),
                 request.regionCode(),
                 request.profileImageUrl(),
                 request.marketingOptIn(),

@@ -11,6 +11,7 @@ public interface SignupProgressUseCase {
         String expiresAt,
         boolean hasPet,
         String nickname,
+        String username,
         String profileImageUrl
     ) {
     }

@@ -22,6 +22,7 @@ import io.pet.petyard.auth.application.port.out.SaveUserPort;
 import io.pet.petyard.auth.domain.AuthProvider;
 import io.pet.petyard.auth.domain.model.AuthIdentity;
 import io.pet.petyard.auth.domain.AccountStatus;
+import io.pet.petyard.auth.domain.Username;
 import io.pet.petyard.auth.domain.UserTier;
 import io.pet.petyard.auth.domain.model.EmailVerification;
 import io.pet.petyard.auth.domain.model.RefreshToken;
@@ -108,8 +109,13 @@ public class AuthApplicationService implements SignUpUseCase, VerifyEmailUseCase
             throw new ApiException(ErrorCode.SOCIAL_EMAIL_CONFLICT);
         }
 
+        String normalizedUsername = parseUsername(command.username());
+        if (loadUserPort.existsByUsername(normalizedUsername)) {
+            throw new ApiException(ErrorCode.USERNAME_ALREADY_TAKEN);
+        }
+
         String passwordHash = passwordEncoder.encode(command.password());
-        User user = new User(command.email(), passwordHash, UserTier.TIER_0, AccountStatus.PENDING_VERIFICATION);
+        User user = new User(command.email(), passwordHash, normalizedUsername, UserTier.TIER_0, AccountStatus.PENDING_VERIFICATION);
         saveUserPort.save(user);
         saveAuthIdentityPort.save(new AuthIdentity(user.getId(), AuthProvider.EMAIL, command.email(), command.email()));
 
@@ -127,7 +133,15 @@ public class AuthApplicationService implements SignUpUseCase, VerifyEmailUseCase
 
         log.info("[OTP] {} -> {}", command.email(), code);
 
-        return new SignupResult(user.getId(), command.email(), expiresAt);
+        return new SignupResult(user.getId(), command.email(), normalizedUsername, expiresAt);
+    }
+
+    private String parseUsername(String raw) {
+        try {
+            return Username.fromRaw(raw).value();
+        } catch (IllegalArgumentException exception) {
+            throw new ApiException(ErrorCode.INVALID_USERNAME);
+        }
     }
 
     @Transactional(noRollbackFor = {ApiException.class, AccessDeniedException.class})

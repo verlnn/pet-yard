@@ -19,6 +19,7 @@ export default function OnboardingProfilePage() {
   const [signupToken, setSignupToken] = useState<string | null>(null);
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [nickname, setNickname] = useState("");
+  const [username, setUsername] = useState("");
   const [cityCode, setCityCode] = useState("");
   const [districtCode, setDistrictCode] = useState("");
   const [dongCode, setDongCode] = useState("");
@@ -51,6 +52,9 @@ export default function OnboardingProfilePage() {
         if (!nickname && progress.nickname) {
           setNickname(progress.nickname);
         }
+        if (!username && progress.username) {
+          setUsername(progress.username);
+        }
         if (!profileImageUrl && progress.profileImageUrl) {
           setProfileImageUrl(progress.profileImageUrl);
         }
@@ -62,7 +66,7 @@ export default function OnboardingProfilePage() {
     };
 
     loadDefaults();
-  }, [signupToken, defaultsLoaded, nickname, profileImageUrl]);
+  }, [signupToken, defaultsLoaded, nickname, profileImageUrl, username]);
 
   useEffect(() => {
     const loadCities = async () => {
@@ -136,7 +140,7 @@ export default function OnboardingProfilePage() {
   const selectedDistrict = districts.find((district) => district.code === districtCode);
   const selectedDong = dongs.find((dong) => dong.code === dongCode);
 
-  const isProfileStepComplete = nickname.trim().length > 0;
+  const isProfileStepComplete = nickname.trim().length > 0 && username.trim().length > 0;
   const isRegionStepComplete = Boolean(cityCode && districtCode && dongCode);
 
   const handleProfileImageSelect = (file: File | null) => {
@@ -160,7 +164,7 @@ export default function OnboardingProfilePage() {
 
   const handleProfileStepNext = () => {
     if (!isProfileStepComplete) {
-      setError("닉네임을 입력해 주세요.");
+      setError("닉네임과 공개 ID를 입력해 주세요.");
       return;
     }
     setError(null);
@@ -195,6 +199,7 @@ export default function OnboardingProfilePage() {
       const selectedRegion = dongCode || districtCode || cityCode || null;
       const result = await authApi.signupProfile(signupToken, {
         nickname: nickname.trim(),
+        username: username.trim(),
         regionCode: selectedRegion,
         profileImageUrl: profileImageUrl.trim() || null,
         marketingOptIn,
@@ -237,9 +242,11 @@ export default function OnboardingProfilePage() {
             <div className={stepPanelClassName(1, "left")}>
               <OnboardingProfileBasicsStep
                 nickname={nickname}
+                username={username}
                 profileImageUrl={profileImageUrl}
                 profileImageError={profileImageError}
                 onNicknameChange={setNickname}
+                onUsernameChange={setUsername}
                 onImageSelect={handleProfileImageSelect}
                 onImageRemove={() => setProfileImageUrl("")}
                 onNext={handleProfileStepNext}

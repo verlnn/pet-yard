@@ -2,9 +2,11 @@
 
 type OnboardingProfileBasicsStepProps = {
   nickname: string;
+  username: string;
   profileImageUrl: string;
   profileImageError: string | null;
   onNicknameChange: (value: string) => void;
+  onUsernameChange: (value: string) => void;
   onImageSelect: (file: File | null) => void;
   onImageRemove: () => void;
   onNext: () => void;
@@ -13,9 +15,11 @@ type OnboardingProfileBasicsStepProps = {
 
 export default function OnboardingProfileBasicsStep({
   nickname,
+  username,
   profileImageUrl,
   profileImageError,
   onNicknameChange,
+  onUsernameChange,
   onImageSelect,
   onImageRemove,
   onNext,
@@ -31,6 +35,21 @@ export default function OnboardingProfileBasicsStep({
             value={nickname}
             onChange={(event) => onNicknameChange(event.target.value)}
             placeholder="멍냥마당에서 사용할 이름"
+            required
+          />
+        </label>
+
+        <label className="onboarding-profile-field">
+          공개 ID
+          <input
+            className="onboarding-profile-input"
+            value={username}
+            onChange={(event) => onUsernameChange(event.target.value)}
+            placeholder="meongnyang.owner"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
+            maxLength={30}
             required
           />
         </label>

@@ -8,6 +8,7 @@ export interface TokenResponse {
 
 export interface SignupResponse {
   email: string;
+  username: string;
   expiresAt: string;
 }
 
@@ -34,6 +35,7 @@ export interface SignupProgressResponse {
   expiresAt: string;
   hasPet: boolean;
   nickname?: string | null;
+  username?: string | null;
   profileImageUrl?: string | null;
 }
 
@@ -103,6 +105,7 @@ export interface PetRegistrationVerificationResponse {
 
 export interface MyProfileResponse {
   userId: number;
+  username: string;
   nickname: string;
   regionName?: string | null;
   profileImageUrl?: string | null;

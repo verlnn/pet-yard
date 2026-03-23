@@ -86,8 +86,8 @@ public class AuthController {
     })
     public SignupResponse signup(@Valid @RequestBody SignupRequest request) {
         SignUpUseCase.SignupResult result = signUpUseCase
-            .signup(new SignUpUseCase.SignUpCommand(request.email(), request.password()));
-        return new SignupResponse(result.email(), result.expiresAt());
+            .signup(new SignUpUseCase.SignUpCommand(request.email(), request.password(), request.username()));
+        return new SignupResponse(result.email(), result.username(), result.expiresAt());
     }
 
     @PostMapping("/verify-email")

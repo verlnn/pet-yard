@@ -37,6 +37,11 @@ public class AuthPersistenceAdapter implements LoadUserPort, SaveUserPort, SaveE
     }
 
     @Override
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+    @Override
     public Optional<User> findById(Long id) {
         return userRepository.findById(id);
     }
@@ -44,6 +49,11 @@ public class AuthPersistenceAdapter implements LoadUserPort, SaveUserPort, SaveE
     @Override
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
     }
 
     @Override
