@@ -198,6 +198,7 @@ export interface FeedPostComment {
   authorProfileImageUrl?: string | null;
   authorPrimaryPetImageUrl?: string | null;
   replyToUsername?: string | null;
+  authoredByMe: boolean;
   pawCount: number;
   pawedByMe: boolean;
 }

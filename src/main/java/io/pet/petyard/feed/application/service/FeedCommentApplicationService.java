@@ -204,6 +204,7 @@ public class FeedCommentApplicationService {
                     authorProfile == null ? null : authorProfile.getProfileImageUrl(),
                     primaryPetImageUrlByUserId.get(comment.getUserId()),
                     replyToUser == null ? null : replyToUser.getUsername(),
+                    viewerUserId != null && viewerUserId.equals(comment.getUserId()),
                     pawCountsByCommentId.getOrDefault(comment.getId(), 0L),
                     pawedCommentIds.contains(comment.getId())
                 );

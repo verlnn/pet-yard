@@ -86,7 +86,7 @@ export function FeedDetailComments({
   const renderComment = (comment: FeedPostComment, nested = false) => (
     <div
       key={comment.id}
-      className={`feed-detail-comment-item ${nested ? "feed-detail-comment-item-nested" : ""} ${currentUserId === comment.authorId ? "feed-detail-comment-item-own" : ""}`}
+      className={`feed-detail-comment-item ${nested ? "feed-detail-comment-item-nested" : ""} ${comment.authoredByMe || currentUserId === comment.authorId ? "feed-detail-comment-item-own" : ""}`}
     >
       <div className="feed-detail-comment-avatar-shell">
         <Avatar className="feed-detail-comment-avatar">
@@ -114,7 +114,7 @@ export function FeedDetailComments({
           <button type="button" className="feed-detail-comment-reply-trigger" onClick={() => onReply?.(comment)}>
             답글 달기
           </button>
-          {currentUserId === comment.authorId ? (
+          {comment.authoredByMe || currentUserId === comment.authorId ? (
             <div className="feed-detail-comment-more-shell">
               <button
                 type="button"

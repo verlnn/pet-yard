@@ -29,6 +29,8 @@ public record FeedPostCommentResponse(
     String authorPrimaryPetImageUrl,
     @Schema(description = "답글 대상 공개 ID", nullable = true, example = "meong.owner")
     String replyToUsername,
+    @Schema(description = "현재 로그인 사용자가 작성한 댓글인지 여부", example = "true")
+    boolean authoredByMe,
     @Schema(description = "댓글 발자국 수", example = "2")
     long pawCount,
     @Schema(description = "현재 사용자의 댓글 발자국 여부", example = "false")
@@ -47,6 +49,7 @@ public record FeedPostCommentResponse(
             view.authorProfileImageUrl(),
             view.authorPrimaryPetImageUrl(),
             view.replyToUsername(),
+            view.authoredByMe(),
             view.pawCount(),
             view.pawedByMe()
         );

@@ -14,6 +14,7 @@ public record FeedPostCommentView(
     String authorProfileImageUrl,
     String authorPrimaryPetImageUrl,
     String replyToUsername,
+    boolean authoredByMe,
     long pawCount,
     boolean pawedByMe
 ) {
