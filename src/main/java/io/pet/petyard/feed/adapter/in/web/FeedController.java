@@ -163,7 +163,7 @@ public class FeedController {
                 String aspectRatio = imageAspectRatio != null && i < imageAspectRatio.size()
                     ? imageAspectRatio.get(i)
                     : null;
-                String imageUrl = localFileStorage.saveFeedImage(image, aspectRatioValue, aspectRatio);
+                String imageUrl = localFileStorage.saveFeedImage(principal.userId(), image, aspectRatioValue, aspectRatio);
                 if (imageUrl == null || imageUrl.isBlank()) {
                     continue;
                 }

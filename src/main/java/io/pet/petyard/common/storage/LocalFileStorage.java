@@ -32,15 +32,18 @@ public class LocalFileStorage {
         this.properties = properties;
     }
 
-    public String saveFeedImage(MultipartFile file, Double aspectRatioValue, String aspectRatio) {
+    public String saveFeedImage(Long userId, MultipartFile file, Double aspectRatioValue, String aspectRatio) {
         if (file == null || file.isEmpty()) {
             return null;
+        }
+        if (userId == null) {
+            throw new ApiException(ErrorCode.BAD_REQUEST);
         }
 
         String extension = resolveExtension(file);
         String outputExtension = shouldCrop(aspectRatio, aspectRatioValue) ? toOutputExtension(extension) : extension;
         Path rootDir = Path.of(properties.uploadDir()).toAbsolutePath().normalize();
-        Path feedDir = rootDir.resolve("feed");
+        Path feedDir = rootDir.resolve("feed").resolve(String.valueOf(userId));
         String filename = UUID.randomUUID() + "." + outputExtension;
         Path target = feedDir.resolve(filename).normalize();
 
@@ -58,8 +61,9 @@ public class LocalFileStorage {
         }
 
         String basePath = properties.publicUrlPrefix();
-        String publicPath = basePath + "/feed/" + filename;
-        log.info("피드 이미지 저장 완료: 원본파일명={}, 저장경로={}, 공개경로={}, 비율={}, 비율값={}",
+        String publicPath = basePath + "/feed/" + userId + "/" + filename;
+        log.info("피드 이미지 저장 완료: userId={}, 원본파일명={}, 저장경로={}, 공개경로={}, 비율={}, 비율값={}",
+            userId,
             file.getOriginalFilename(),
             target,
             publicPath,
