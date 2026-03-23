@@ -40,7 +40,7 @@ interface FeedProfileIdentityProps {
 }
 
 function FeedProfileIdentity({ profile, primaryPet, postCount, onProfileImageClick }: FeedProfileIdentityProps) {
-  const profileUsername = profile?.username?.trim() ? `@${profile.username.trim()}` : "@username";
+  const profileUsername = profile?.username?.trim() || "username";
   const profileDisplayName = profile?.nickname?.trim() || "멍냥마당";
   const avatar = (
     <div className="feed-profile-header-avatar-shell">
