@@ -29,6 +29,15 @@ Authorization: Bearer <access-token>
 
 Swagger is configured with a `bearerAuth` security scheme so protected endpoints can be tested directly in the UI.
 
+### Public username
+
+`username` is a public identifier and is intentionally separated from the internal bigint primary key `id`.
+
+- login remains email-based
+- profile URLs and public lookup can use username
+- username is normalized to lowercase before persistence
+- username rule: `^(?!\\.)(?!.*\\.\\.)(?!.*\\.$)[a-z0-9._]{1,30}$`
+
 ### Signup token
 
 Signup/onboarding progression APIs also use a dedicated header:
@@ -70,6 +79,7 @@ Swagger groups controllers using `@Tag`.
 - refresh
 - logout
 - current user lookup
+- username-aware signup contract
 
 ### OAuth
 
@@ -96,6 +106,7 @@ Swagger groups controllers using `@Tag`.
 
 - current profile read
 - profile settings update
+- public profile lookup by `GET /api/users/{username}/profile`
 
 ### Pets
 
@@ -139,6 +150,56 @@ This work added:
 - controller-level tags and operation descriptions
 - DTO field descriptions and examples
 - error response documentation for major failure cases
+- public username field to signup / profile / public profile contracts
+- username-based public profile lookup path
+- explicit separation between internal `id` and public `username`
+
+## Username-related API Changes
+
+### Email signup
+
+`POST /api/auth/signup`
+
+Request:
+
+- `username`
+- `email`
+- `password`
+
+Response:
+
+- `userId`
+- `email`
+- `username`
+- `expiresAt`
+
+### Current profile
+
+`GET /api/users/me/profile`
+
+Response now includes:
+
+- `username`
+
+### Profile settings update
+
+`PATCH /api/users/me/profile`
+
+Request can now include:
+
+- `username`
+- `bio`
+- `gender`
+- `primaryPetId`
+
+### Public profile lookup
+
+`GET /api/users/{username}/profile`
+
+Purpose:
+
+- expose public profile routes without leaking internal numeric ids
+- prepare for mentions, search, profile share URLs
 
 ## Remaining Limits
 
@@ -152,3 +213,4 @@ This work added:
 - add richer examples for multipart feed upload requests
 - document domain-specific 404 cases if those endpoints are introduced later
 - generate static OpenAPI artifacts in CI if external consumers need versioned specs
+- decide whether username change history or cooldown policy is needed before public rollout
