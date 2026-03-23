@@ -37,6 +37,13 @@ const emptyVerification: PetVerificationState = {
   ownerBirth: ""
 };
 
+const dispatchProfileRefresh = () => {
+  if (typeof window === "undefined") {
+    return;
+  }
+  window.dispatchEvent(new Event("petyard:profile-refresh"));
+};
+
 interface PetSettingsPanelProps {
   mode?: "add" | "manage";
 }
@@ -179,11 +186,17 @@ export function PetSettingsPanel({ mode = "manage" }: PetSettingsPanelProps) {
       };
       const saved = await authApi.createPetProfile(accessToken, payload);
       setPets((prev) => [saved, ...prev]);
+      setProfile((prev) => prev ? {
+        ...prev,
+        pets: [saved, ...prev.pets],
+        petCount: (prev.petCount ?? prev.pets.length) + 1
+      } : prev);
       setForm(emptyForm);
       setVerification(emptyVerification);
       setVerificationResult(null);
       setVerificationError(null);
       setPetImageError(null);
+      dispatchProfileRefresh();
     } catch (err) {
       setPetImageError(err instanceof Error ? err.message : "반려동물 저장에 실패했습니다.");
     } finally {
@@ -299,6 +312,11 @@ export function PetSettingsPanel({ mode = "manage" }: PetSettingsPanelProps) {
       };
       const saved = await authApi.updatePetProfile(accessToken, editingPetId, payload);
       setPets((prev) => prev.map((pet) => (pet.id === saved.id ? saved : pet)));
+      setProfile((prev) => prev ? {
+        ...prev,
+        pets: prev.pets.map((pet) => (pet.id === saved.id ? saved : pet))
+      } : prev);
+      dispatchProfileRefresh();
       handleCancelEdit();
     } catch (err) {
       setEditError(err instanceof Error ? err.message : "반려동물 수정에 실패했습니다.");

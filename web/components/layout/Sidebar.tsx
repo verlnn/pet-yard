@@ -68,6 +68,15 @@ export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
     };
 
     loadProfile();
+
+    const handleProfileRefresh = () => {
+      void loadProfile();
+    };
+
+    window.addEventListener("petyard:profile-refresh", handleProfileRefresh);
+    return () => {
+      window.removeEventListener("petyard:profile-refresh", handleProfileRefresh);
+    };
   }, []);
 
   useEffect(() => {
