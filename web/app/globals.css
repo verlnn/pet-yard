@@ -3185,6 +3185,21 @@ body {
     color: #e2e8f0;
   }
 
+  [data-theme="dark"] .onboarding-pet-field,
+  [data-theme="dark"] .onboarding-pet-section-title {
+    color: var(--color-text);
+  }
+
+  [data-theme="dark"] .onboarding-pet-section-description {
+    color: var(--color-text-muted);
+  }
+
+  [data-theme="dark"] .onboarding-pet-input {
+    background: var(--color-surface);
+    border-color: var(--color-border);
+    color: var(--color-text);
+  }
+
   [data-theme="dark"] .onboarding-profile-field-success {
     color: #86efac;
   }
