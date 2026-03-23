@@ -1,9 +1,7 @@
-import { ProfileFeedPageClient } from "../(app)/my-feed/page";
+import { ProfileFeedPageClient } from "../my-feed/page";
 
 interface UserProfilePageProps {
-  params: Promise<{
-    username: string;
-  }>;
+  params: Promise<{ username: string }>;
 }
 
 export default async function UserProfilePage({ params }: UserProfilePageProps) {
