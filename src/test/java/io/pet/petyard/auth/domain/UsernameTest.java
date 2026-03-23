@@ -56,6 +56,13 @@ class UsernameTest {
     }
 
     @Test
+    @DisplayName("3자 미만 username은 거부한다")
+    void shorterThanThreeCharactersIsRejected() {
+        assertThatThrownBy(() -> Username.fromRaw("dd"))
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
     @DisplayName("30자를 초과하는 username은 거부한다")
     void longerThanThirtyCharactersIsRejected() {
         assertThatThrownBy(() -> Username.fromRaw("a".repeat(31)))

@@ -20,6 +20,7 @@ import io.pet.petyard.auth.oauth.OAuthClient;
 import io.pet.petyard.auth.oauth.OAuthUserInfo;
 import io.pet.petyard.common.ApiException;
 import io.pet.petyard.common.ErrorCode;
+import io.pet.petyard.common.storage.LocalFileStorage;
 import io.pet.petyard.onboarding.application.port.in.OAuthCallbackUseCase.OAuthCallbackCommand;
 import io.pet.petyard.onboarding.application.port.in.OAuthStartUseCase.OAuthStartCommand;
 import io.pet.petyard.onboarding.application.port.in.SignupConsentsUseCase.ConsentItem;
@@ -73,6 +74,7 @@ class OnboardingApplicationServiceTest {
     @Mock private LoadRegionPort loadRegionPort;
     @Mock private JwtTokenProvider tokenProvider;
     @Mock private OAuthClient kakaoClient;
+    @Mock private LocalFileStorage localFileStorage;
 
     private Clock clock;
     private OnboardingApplicationService service;
@@ -98,7 +100,8 @@ class OnboardingApplicationServiceTest {
             tokenProvider,
             clock,
             new ObjectMapper(),
-            List.of(kakaoClient)
+            List.of(kakaoClient),
+            localFileStorage
         );
     }
 

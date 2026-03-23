@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 public final class Username {
 
     public static final int MAX_LENGTH = 30;
-    public static final String REGEX = "^(?!\\.)(?!.*\\.\\.)(?!.*\\.$)[a-z0-9._]{1,30}$";
+    public static final String REGEX = "^(?!\\.)(?!.*\\.\\.)(?!.*\\.$)[a-z0-9._]{3,30}$";
     private static final Pattern PATTERN = Pattern.compile(REGEX);
 
     private final String value;
