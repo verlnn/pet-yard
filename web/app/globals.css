@@ -1855,11 +1855,11 @@ body {
   }
 
   .feed-detail-comments-list {
-    @apply mt-4 flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pr-1;
+    @apply mt-4 flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pr-1;
   }
 
   .feed-detail-comment-item {
-    @apply flex items-start gap-3 text-sm leading-6;
+    @apply flex items-start gap-3 py-1 text-sm leading-6;
   }
 
   .feed-detail-comment-avatar-shell {
