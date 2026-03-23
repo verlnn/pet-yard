@@ -5,16 +5,28 @@ import { Camera, Plus, Settings } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import type { MyProfileResponse } from "@/src/features/auth/types/authTypes";
+import type { MyProfileResponse, PublicProfileResponse } from "@/src/features/auth/types/authTypes";
+
+type FeedProfileHeaderProfile = Pick<
+  MyProfileResponse | PublicProfileResponse,
+  "username" | "nickname" | "profileImageUrl" | "bio" | "primaryPetId" | "petCount" | "pets" | "regionName"
+>;
 
 interface FeedProfileHeaderProps {
-  profile?: MyProfileResponse | null;
+  profile?: FeedProfileHeaderProfile | null;
   postCount: number;
-  onNewPost: () => void;
+  onNewPost?: () => void;
   onProfileImageClick?: () => void;
+  editable?: boolean;
 }
 
-export function FeedProfileHeader({ profile, postCount, onNewPost, onProfileImageClick }: FeedProfileHeaderProps) {
+export function FeedProfileHeader({
+  profile,
+  postCount,
+  onNewPost,
+  onProfileImageClick,
+  editable = true
+}: FeedProfileHeaderProps) {
   const primaryPet = profile?.pets?.find((pet) => pet.id === profile?.primaryPetId) ?? profile?.pets?.[0];
 
   return (
@@ -26,15 +38,15 @@ export function FeedProfileHeader({ profile, postCount, onNewPost, onProfileImag
           postCount={postCount}
           onProfileImageClick={onProfileImageClick}
         />
-        <FeedProfileActions onNewPost={onNewPost} />
+        {editable && onNewPost ? <FeedProfileActions onNewPost={onNewPost} /> : null}
       </div>
     </section>
   );
 }
 
 interface FeedProfileIdentityProps {
-  profile?: MyProfileResponse | null;
-  primaryPet?: MyProfileResponse["pets"][number];
+  profile?: FeedProfileHeaderProfile | null;
+  primaryPet?: FeedProfileHeaderProfile["pets"][number];
   postCount: number;
   onProfileImageClick?: () => void;
 }

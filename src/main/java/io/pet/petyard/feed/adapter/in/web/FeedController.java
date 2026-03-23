@@ -1,8 +1,12 @@
 package io.pet.petyard.feed.adapter.in.web;
 
+import io.pet.petyard.auth.application.port.out.LoadUserPort;
 import io.pet.petyard.auth.domain.Permission;
+import io.pet.petyard.auth.domain.Username;
 import io.pet.petyard.auth.guard.RequirePermission;
 import io.pet.petyard.auth.security.AuthPrincipal;
+import io.pet.petyard.common.ApiException;
+import io.pet.petyard.common.ErrorCode;
 import io.pet.petyard.common.storage.LocalFileStorage;
 import io.pet.petyard.feed.application.model.HomeFeedSlice;
 import io.pet.petyard.feed.application.model.FeedPostImageCommand;
@@ -46,13 +50,16 @@ public class FeedController {
     private final FeedApplicationService feedApplicationService;
     private final FeedCommentApplicationService feedCommentApplicationService;
     private final LocalFileStorage localFileStorage;
+    private final LoadUserPort loadUserPort;
 
     public FeedController(FeedApplicationService feedApplicationService,
                           FeedCommentApplicationService feedCommentApplicationService,
-                          LocalFileStorage localFileStorage) {
+                          LocalFileStorage localFileStorage,
+                          LoadUserPort loadUserPort) {
         this.feedApplicationService = feedApplicationService;
         this.feedCommentApplicationService = feedCommentApplicationService;
         this.localFileStorage = localFileStorage;
+        this.loadUserPort = loadUserPort;
     }
 
     @RequirePermission(Permission.FEED_READ)
@@ -93,6 +100,31 @@ public class FeedController {
     public List<FeedPostResponse> ownPosts(@AuthenticationPrincipal AuthPrincipal principal) {
         List<FeedPostView> posts = feedApplicationService.listMyFeed(principal.userId());
         return posts.stream()
+            .map(FeedPostResponse::from)
+            .toList();
+    }
+
+    @RequirePermission(Permission.FEED_READ)
+    @GetMapping("/users/{username}")
+    @Operation(summary = "특정 사용자 게시물 목록 조회", description = "공개 사용자 ID(username)로 특정 사용자의 게시물을 최신순으로 조회합니다.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "조회 성공",
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = FeedPostResponse.class)))),
+        @ApiResponse(responseCode = "400", description = "존재하지 않는 사용자",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public List<FeedPostResponse> userPosts(@AuthenticationPrincipal AuthPrincipal principal,
+                                            @PathVariable String username) {
+        String normalizedUsername;
+        try {
+            normalizedUsername = Username.fromRaw(username).value();
+        } catch (IllegalArgumentException exception) {
+            throw new ApiException(ErrorCode.USER_NOT_FOUND);
+        }
+        Long targetUserId = loadUserPort.findByUsername(normalizedUsername)
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND))
+            .getId();
+        return feedApplicationService.listUserFeed(targetUserId, principal.userId()).stream()
             .map(FeedPostResponse::from)
             .toList();
     }

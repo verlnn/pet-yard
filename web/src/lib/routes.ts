@@ -1,3 +1,5 @@
+import type { Route } from "next";
+
 export const ROUTES = {
   home: "/",
   login: "/login",
@@ -25,3 +27,8 @@ export const ROUTES = {
 } as const;
 
 export type RouteKey = keyof typeof ROUTES;
+
+export function buildProfileRoute(username?: string | null): Route {
+  const normalized = username?.trim();
+  return (normalized ? `/${encodeURIComponent(normalized)}` : ROUTES.myFeed) as Route;
+}

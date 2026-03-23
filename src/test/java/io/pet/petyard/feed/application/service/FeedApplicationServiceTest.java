@@ -8,6 +8,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import io.pet.petyard.auth.application.port.out.LoadUserPort;
+import io.pet.petyard.auth.domain.AccountStatus;
+import io.pet.petyard.auth.domain.UserTier;
+import io.pet.petyard.auth.domain.model.User;
 import io.pet.petyard.feed.application.model.HomeFeedSlice;
 import io.pet.petyard.feed.application.port.out.DeleteFeedPostPawPort;
 import io.pet.petyard.feed.application.port.out.DeleteFeedPostPort;
@@ -29,6 +33,7 @@ import io.pet.petyard.user.domain.model.UserProfile;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -56,6 +61,7 @@ class FeedApplicationServiceTest {
     @Mock private LoadFeedPostCommentPort loadFeedPostCommentPort;
     @Mock private LoadUserProfilePort loadUserProfilePort;
     @Mock private LoadGuardianRegistrationPort loadGuardianRegistrationPort;
+    @Mock private LoadUserPort loadUserPort;
 
     private FeedApplicationService service;
 
@@ -75,6 +81,7 @@ class FeedApplicationServiceTest {
             loadFeedPostCommentPort,
             loadUserProfilePort,
             loadGuardianRegistrationPort,
+            loadUserPort,
             new FeedProperties(10, 20)
         );
     }
@@ -115,11 +122,16 @@ class FeedApplicationServiceTest {
             new UserProfile(21L, "보호자1", null, null, false, true),
             new UserProfile(22L, "보호자2", null, null, false, true)
         ));
+        when(loadUserPort.findByIds(anyCollection())).thenReturn(Set.of(
+            user(21L, "guardian.one"),
+            user(22L, "guardian.two")
+        ));
         when(loadGuardianRegistrationPort.findRegisteredTargetUserIds(eq(55L), anyCollection())).thenReturn(List.of());
 
         HomeFeedSlice result = service.listHomeFeed(55L, null, null, 2);
 
         assertThat(result.items()).hasSize(2);
+        assertThat(result.items().getFirst().author().username()).isEqualTo("guardian.one");
         assertThat(result.hasMore()).isTrue();
         assertThat(result.nextCursorCreatedAt()).isEqualTo(middle.getCreatedAt());
         assertThat(result.nextCursorId()).isEqualTo(middle.getId());
@@ -142,11 +154,16 @@ class FeedApplicationServiceTest {
             new UserProfile(21L, "멍이", null, "/pet-1.jpg", false, true),
             new UserProfile(22L, "냥이", null, "/pet-2.jpg", false, true)
         ));
+        when(loadUserPort.findByIds(anyCollection())).thenReturn(Set.of(
+            user(21L, "meong.owner"),
+            user(22L, "nyang.owner")
+        ));
         when(loadGuardianRegistrationPort.findRegisteredTargetUserIds(eq(77L), anyCollection())).thenReturn(List.of(21L));
 
         HomeFeedSlice result = service.listHomeFeed(77L, null, null, 2);
 
         assertThat(result.items()).hasSize(2);
+        assertThat(result.items().getFirst().author().username()).isEqualTo("meong.owner");
         assertThat(result.items().getFirst().author().nickname()).isEqualTo("멍이");
         assertThat(result.items().getFirst().media().images()).hasSize(1);
         assertThat(result.items().getFirst().media().images().getFirst().thumbnailUrl()).isEqualTo("/a.jpg");
@@ -176,5 +193,11 @@ class FeedApplicationServiceTest {
         ReflectionTestUtils.setField(post, "createdAt", createdAt);
         ReflectionTestUtils.setField(post, "updatedAt", createdAt);
         return post;
+    }
+
+    private static User user(Long id, String username) {
+        User user = new User(username + "@example.com", "encoded", username, UserTier.TIER_1, AccountStatus.ACTIVE);
+        ReflectionTestUtils.setField(user, "id", id);
+        return user;
     }
 }

@@ -119,6 +119,18 @@ export interface MyProfileResponse {
   pets: PetProfile[];
 }
 
+export interface PublicProfileResponse {
+  userId: number;
+  username: string;
+  nickname: string;
+  regionName?: string | null;
+  profileImageUrl?: string | null;
+  bio?: string | null;
+  primaryPetId?: number | null;
+  petCount: number;
+  pets: PetProfile[];
+}
+
 export interface FeedPost {
   id: number;
   content?: string | null;
@@ -145,6 +157,7 @@ export interface FeedImageAsset {
 
 export interface HomeFeedPost extends FeedPost {
   authorId: number;
+  authorUsername?: string | null;
   authorNickname: string;
   authorProfileImageUrl?: string | null;
   guardianRegisteredByMe: boolean;

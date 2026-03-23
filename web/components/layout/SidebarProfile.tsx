@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { MyProfileResponse } from "@/src/features/auth/types/authTypes";
-import { ROUTES } from "@/src/lib/routes";
+import { buildProfileRoute } from "@/src/lib/routes";
 
 interface SidebarProfileProps {
   profile: MyProfileResponse | null;
@@ -21,7 +21,7 @@ export function SidebarProfile({ profile, onNavigate }: SidebarProfileProps) {
     : profile?.regionName ?? "프로필을 확인해 보세요";
 
   return (
-    <Link href={ROUTES.myFeed} className="app-sidebar-profile" onClick={onNavigate}>
+    <Link href={buildProfileRoute(profile?.username)} className="app-sidebar-profile" onClick={onNavigate}>
       <div className="app-sidebar-profile-visual">
         <Avatar className="app-sidebar-profile-avatar">
           {profile?.profileImageUrl ? (

@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import io.pet.petyard.auth.adapter.in.web.AuthApiExceptionHandler;
+import io.pet.petyard.auth.application.port.out.LoadUserPort;
 import io.pet.petyard.auth.domain.UserTier;
 import io.pet.petyard.auth.security.AuthPrincipal;
 import io.pet.petyard.auth.security.SecurityExceptionHandler;
@@ -58,6 +59,7 @@ class FeedControllerTest {
     @MockitoBean private FeedApplicationService feedApplicationService;
     @MockitoBean private FeedCommentApplicationService feedCommentApplicationService;
     @MockitoBean private LocalFileStorage localFileStorage;
+    @MockitoBean private LoadUserPort loadUserPort;
     @MockitoBean private ErrorLogService errorLogService;
 
     @Test
@@ -70,7 +72,7 @@ class FeedControllerTest {
                     "산책 기록",
                     Instant.parse("2026-03-23T03:20:00Z"),
                     List.of("산책"),
-                    new HomeFeedAuthorView(11L, "멍냥집사", "/profile.jpg", false),
+                    new HomeFeedAuthorView(11L, "meongnyang.owner", "멍냥집사", "/profile.jpg", false),
                     new HomeFeedMediaView("/thumb.jpg", List.of("/thumb.jpg"), List.of(), 1.0, "1:1"),
                     new HomeFeedReactionView(3L, true, 2L)
                 )),
@@ -84,6 +86,7 @@ class FeedControllerTest {
                 .with(authPrincipalRequest(11L, UserTier.TIER_1)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.items[0].id").value(101))
+            .andExpect(jsonPath("$.items[0].authorUsername").value("meongnyang.owner"))
             .andExpect(jsonPath("$.items[0].authorNickname").value("멍냥집사"))
             .andExpect(jsonPath("$.items[0].commentCount").value(2))
             .andExpect(jsonPath("$.nextCursor.id").value(101))

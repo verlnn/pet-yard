@@ -1,5 +1,7 @@
 package io.pet.petyard.feed.application.service;
 
+import io.pet.petyard.auth.application.port.out.LoadUserPort;
+import io.pet.petyard.auth.domain.model.User;
 import io.pet.petyard.common.ApiException;
 import io.pet.petyard.common.ErrorCode;
 import io.pet.petyard.feed.application.model.FeedPostView;
@@ -63,6 +65,7 @@ public class FeedApplicationService {
     private final LoadFeedPostCommentPort loadFeedPostCommentPort;
     private final LoadUserProfilePort loadUserProfilePort;
     private final LoadGuardianRegistrationPort loadGuardianRegistrationPort;
+    private final LoadUserPort loadUserPort;
     private final FeedProperties feedProperties;
 
     public FeedApplicationService(LoadFeedPostPort loadFeedPostPort,
@@ -78,6 +81,7 @@ public class FeedApplicationService {
                                   LoadFeedPostCommentPort loadFeedPostCommentPort,
                                   LoadUserProfilePort loadUserProfilePort,
                                   LoadGuardianRegistrationPort loadGuardianRegistrationPort,
+                                  LoadUserPort loadUserPort,
                                   FeedProperties feedProperties) {
         this.loadFeedPostPort = loadFeedPostPort;
         this.saveFeedPostPort = saveFeedPostPort;
@@ -92,19 +96,25 @@ public class FeedApplicationService {
         this.loadFeedPostCommentPort = loadFeedPostCommentPort;
         this.loadUserProfilePort = loadUserProfilePort;
         this.loadGuardianRegistrationPort = loadGuardianRegistrationPort;
+        this.loadUserPort = loadUserPort;
         this.feedProperties = feedProperties;
     }
 
     @Transactional(readOnly = true)
     public List<FeedPostView> listMyFeed(Long userId) {
-        List<FeedPost> posts = loadFeedPostPort.findByUserId(userId);
+        return listUserFeed(userId, userId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<FeedPostView> listUserFeed(Long targetUserId, Long viewerUserId) {
+        List<FeedPost> posts = loadFeedPostPort.findByUserId(targetUserId);
         if (posts.isEmpty()) {
             return Collections.emptyList();
         }
         List<Long> postIds = posts.stream().map(FeedPost::getId).toList();
         Map<Long, List<FeedPostImage>> imagesByPost = loadFeedPostImagePort.findByPostIds(postIds);
         Map<Long, Long> pawCountsByPost = loadFeedPostPawPort.countByPostIds(postIds);
-        Set<Long> pawedPostIds = new HashSet<>(loadFeedPostPawPort.findPawedPostIds(userId, postIds));
+        Set<Long> pawedPostIds = new HashSet<>(loadFeedPostPawPort.findPawedPostIds(viewerUserId, postIds));
         Map<Long, List<String>> tagsByPost = loadFeedPostHashtagPort.findTagNamesByPostIds(postIds);
         List<FeedPostView> result = new ArrayList<>();
         for (FeedPost post : posts) {
@@ -158,13 +168,17 @@ public class FeedApplicationService {
         Set<Long> pawedPostIds = new HashSet<>(loadFeedPostPawPort.findPawedPostIds(userId, postIds));
         Map<Long, Long> commentCountsByPost = loadFeedPostCommentPort.countByPostIds(postIds);
         Map<Long, List<String>> tagsByPost = loadFeedPostHashtagPort.findTagNamesByPostIds(postIds);
-        Map<Long, UserProfile> profilesByUserId = loadUserProfilePort.findByUserIds(
-            pagePosts.stream().map(FeedPost::getUserId).collect(java.util.stream.Collectors.toSet())
-        ).stream().collect(java.util.stream.Collectors.toMap(UserProfile::getUserId, profile -> profile));
+        Set<Long> authorIds = pagePosts.stream().map(FeedPost::getUserId).collect(java.util.stream.Collectors.toSet());
+        Map<Long, UserProfile> profilesByUserId = loadUserProfilePort.findByUserIds(authorIds)
+            .stream()
+            .collect(java.util.stream.Collectors.toMap(UserProfile::getUserId, profile -> profile));
+        Map<Long, User> usersById = loadUserPort.findByIds(authorIds)
+            .stream()
+            .collect(java.util.stream.Collectors.toMap(User::getId, user -> user));
         Set<Long> guardianRegisteredAuthorIds = new HashSet<>(
             loadGuardianRegistrationPort.findRegisteredTargetUserIds(
                 userId,
-                pagePosts.stream().map(FeedPost::getUserId).distinct().toList()
+                authorIds.stream().toList()
             )
         );
         trace = trace.markRelatedDataLoaded();
@@ -174,6 +188,7 @@ public class FeedApplicationService {
             List<FeedPostImage> postImages = imagesByPost.getOrDefault(post.getId(), List.of());
             List<String> imageUrls = postImages.stream().map(FeedPostImage::getImageUrl).toList();
             UserProfile authorProfile = profilesByUserId.get(post.getUserId());
+            User author = usersById.get(post.getUserId());
             result.add(new HomeFeedPostView(
                 post.getId(),
                 post.getContent(),
@@ -181,6 +196,7 @@ public class FeedApplicationService {
                 tagsByPost.getOrDefault(post.getId(), List.of()),
                 new HomeFeedAuthorView(
                     post.getUserId(),
+                    author == null ? null : author.getUsername(),
                     authorProfile == null ? "멍냥마당" : authorProfile.getNickname(),
                     authorProfile == null ? null : authorProfile.getProfileImageUrl(),
                     guardianRegisteredAuthorIds.contains(post.getUserId())

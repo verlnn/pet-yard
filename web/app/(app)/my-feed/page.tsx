@@ -16,7 +16,8 @@ import { FeedPostPermissionDialog } from "@/components/feed/FeedPostPermissionDi
 import { AppAlertDialog } from "@/components/ui/AppAlertDialog";
 import { getBoxSize, getTargetRatio } from "@/components/feed/imageSizing";
 import { authApi } from "@/src/features/auth/api/authApi";
-import type { FeedPost, MyProfileResponse } from "@/src/features/auth/types/authTypes";
+import type { FeedPost, MyProfileResponse, PublicProfileResponse } from "@/src/features/auth/types/authTypes";
+import { buildProfileRoute } from "@/src/lib/routes";
 import { useRouter } from "next/navigation";
 
 const MAX_IMAGE_SIZE = 3 * 1024 * 1024;
@@ -74,13 +75,16 @@ const readFileAsDataUrl = (file: File) =>
     reader.readAsDataURL(file);
   });
 
-export default function MyFeedPage() {
+type ProfilePageProfile = MyProfileResponse | PublicProfileResponse;
+
+export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: string }) {
   const router = useRouter();
   const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [profile, setProfile] = useState<MyProfileResponse | null>(null);
+  const [profile, setProfile] = useState<ProfilePageProfile | null>(null);
   const [posts, setPosts] = useState<FeedPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isOwnProfile, setIsOwnProfile] = useState(false);
   const [creating, setCreating] = useState(false);
   const [content, setContent] = useState("");
   const [images, setImages] = useState<ComposerImage[]>([]);
@@ -106,13 +110,26 @@ export default function MyFeedPage() {
   useEffect(() => {
     if (!accessToken) return;
     const load = async () => {
+      setLoading(true);
       try {
-        const [feedResponse, profileResponse] = await Promise.all([
-          authApi.getOwnPosts(accessToken),
-          authApi.getMyProfile(accessToken)
-        ]);
-        setPosts(feedResponse);
-        setProfile(profileResponse);
+        const myProfile = await authApi.getMyProfile(accessToken);
+        const normalizedUsername = usernameParam?.trim();
+        const shouldShowOwnProfile = !normalizedUsername || normalizedUsername === myProfile.username;
+        setIsOwnProfile(shouldShowOwnProfile);
+
+        if (shouldShowOwnProfile) {
+          const feedResponse = await authApi.getOwnPosts(accessToken);
+          setPosts(feedResponse);
+          setProfile(myProfile);
+        } else {
+          const [feedResponse, profileResponse] = await Promise.all([
+            authApi.getUserPosts(accessToken, normalizedUsername),
+            authApi.getPublicProfile(accessToken, normalizedUsername)
+          ]);
+          setPosts(feedResponse);
+          setProfile(profileResponse);
+        }
+        setError(null);
       } catch (err) {
         setError(err instanceof Error ? err.message : "피드를 불러오지 못했습니다.");
       } finally {
@@ -120,12 +137,23 @@ export default function MyFeedPage() {
       }
     };
     load();
-  }, [accessToken]);
+  }, [accessToken, usernameParam]);
 
-  const refreshOwnPosts = async (token: string) => {
-    const ownPosts = await authApi.getOwnPosts(token);
-    setPosts(ownPosts);
-    return ownPosts;
+  useEffect(() => {
+    if (!usernameParam && isOwnProfile && profile?.username) {
+      router.replace(buildProfileRoute(profile.username));
+    }
+  }, [isOwnProfile, profile?.username, router, usernameParam]);
+
+  const refreshProfilePosts = async (token: string) => {
+    if (!profile?.username) {
+      return [];
+    }
+    const nextPosts = isOwnProfile
+      ? await authApi.getOwnPosts(token)
+      : await authApi.getUserPosts(token, profile.username);
+    setPosts(nextPosts);
+    return nextPosts;
   };
 
   useEffect(() => {
@@ -323,7 +351,7 @@ export default function MyFeedPage() {
       });
 
       await authApi.createFeedPost(accessToken, formData);
-      await refreshOwnPosts(accessToken);
+      await refreshProfilePosts(accessToken);
       resetForm();
       setModalOpen(false);
     } catch (err) {
@@ -457,34 +485,45 @@ export default function MyFeedPage() {
           <FeedProfileHeader
             profile={profile}
             postCount={posts.length}
-            onNewPost={handleRequestNewPost}
-            onProfileImageClick={() => setProfileImageAlertOpen(true)}
+            onNewPost={isOwnProfile ? handleRequestNewPost : undefined}
+            onProfileImageClick={isOwnProfile ? () => setProfileImageAlertOpen(true) : undefined}
+            editable={isOwnProfile}
           />
 
-          <div className="my-feed-tab-list">
-            {tabs.map((tab) => (
-              <Button
-                key={tab.id}
-                variant={activeTab === tab.id ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setActiveTab(tab.id)}
-              >
-                {tab.label}
-              </Button>
-            ))}
-          </div>
+          {isOwnProfile ? (
+            <div className="my-feed-tab-list">
+              {tabs.map((tab) => (
+                <Button
+                  key={tab.id}
+                  variant={activeTab === tab.id ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setActiveTab(tab.id)}
+                >
+                  {tab.label}
+                </Button>
+              ))}
+            </div>
+          ) : null}
 
-          {activeTab === "posts" && (
+          {(isOwnProfile ? activeTab === "posts" : true) && (
             <>
               {grid.length === 0 && !loading ? (
-                <EmptyFeedState onNewPost={handleRequestNewPost} />
+                <EmptyFeedState
+                  onNewPost={isOwnProfile ? handleRequestNewPost : undefined}
+                  title={isOwnProfile ? "첫 기록을 남겨보세요" : "아직 공개된 게시물이 없어요"}
+                  description={
+                    isOwnProfile
+                      ? "사진과 짧은 기록만 남겨도 멍냥마당의 아카이브가 시작됩니다."
+                      : "이 사용자가 공개한 게시물이 아직 없습니다."
+                  }
+                />
               ) : (
                 <FeedGrid posts={grid} onSelect={setSelectedPost} />
               )}
             </>
           )}
 
-          {activeTab !== "posts" && (
+          {isOwnProfile && activeTab !== "posts" && (
             <Card className="gradient-shell">
               <CardContent className="py-12 text-center text-sm text-[var(--color-text-muted)]">
                 준비 중인 영역입니다.
@@ -494,36 +533,40 @@ export default function MyFeedPage() {
         </div>
       </section>
 
-      <NewPostModal
-        open={modalOpen}
-        images={images}
-        nickname={profile?.nickname ?? "멍냥마당"}
-        profileImageUrl={profile?.profileImageUrl ?? null}
-        petName={primaryPet?.name ?? null}
-        petBreed={primaryPet?.breed ?? null}
-        content={content}
-        imageError={imageError}
-        onClose={() => {
-          setModalOpen(false);
-          resetForm();
-        }}
-        onAddImages={handleAddImages}
-        onRemoveImage={handleRemoveImage}
-        onReorderImages={handleReorderImages}
-        onUpdateImage={handleUpdateImage}
-        onContentChange={setContent}
-        onSubmit={handleCreate}
-        submitting={creating}
-      />
+      {isOwnProfile ? (
+        <>
+          <NewPostModal
+            open={modalOpen}
+            images={images}
+            nickname={profile?.nickname ?? "멍냥마당"}
+            profileImageUrl={profile?.profileImageUrl ?? null}
+            petName={primaryPet?.name ?? null}
+            petBreed={primaryPet?.breed ?? null}
+            content={content}
+            imageError={imageError}
+            onClose={() => {
+              setModalOpen(false);
+              resetForm();
+            }}
+            onAddImages={handleAddImages}
+            onRemoveImage={handleRemoveImage}
+            onReorderImages={handleReorderImages}
+            onUpdateImage={handleUpdateImage}
+            onContentChange={setContent}
+            onSubmit={handleCreate}
+            submitting={creating}
+          />
 
-      <FeedPostPermissionDialog
-        open={postPermissionDialogOpen}
-        onClose={() => setPostPermissionDialogOpen(false)}
-        onGoVerify={() => {
-          setPostPermissionDialogOpen(false);
-          router.push("/pets");
-        }}
-      />
+          <FeedPostPermissionDialog
+            open={postPermissionDialogOpen}
+            onClose={() => setPostPermissionDialogOpen(false)}
+            onGoVerify={() => {
+              setPostPermissionDialogOpen(false);
+              router.push("/pets");
+            }}
+          />
+        </>
+      ) : null}
 
       <AnimatePresence>
         {selectedPost ? (
@@ -583,22 +626,23 @@ export default function MyFeedPage() {
               >
                 <X className="h-5 w-5" />
               </button>
-              <div ref={postActionMenuRef} className="feed-detail-menu-anchor">
-                <button
-                  type="button"
-                  onClick={() => setPostActionMenuOpen((prev) => !prev)}
-                  className="feed-detail-menu-trigger"
-                  aria-label="게시물 메뉴 열기"
-                >
-                  <MoreHorizontal className="h-5 w-5" />
-                </button>
-                <div
-                  className={`feed-detail-menu ${
-                    postActionMenuOpen
-                      ? "feed-detail-menu-open"
-                      : "feed-detail-menu-closed"
-                  }`}
-                >
+              {isOwnProfile ? (
+                <div ref={postActionMenuRef} className="feed-detail-menu-anchor">
+                  <button
+                    type="button"
+                    onClick={() => setPostActionMenuOpen((prev) => !prev)}
+                    className="feed-detail-menu-trigger"
+                    aria-label="게시물 메뉴 열기"
+                  >
+                    <MoreHorizontal className="h-5 w-5" />
+                  </button>
+                  <div
+                    className={`feed-detail-menu ${
+                      postActionMenuOpen
+                        ? "feed-detail-menu-open"
+                        : "feed-detail-menu-closed"
+                    }`}
+                  >
                     <button
                       type="button"
                       onClick={() => {
@@ -646,7 +690,8 @@ export default function MyFeedPage() {
                       취소
                     </button>
                   </div>
-              </div>
+                </div>
+              ) : null}
             <div className="feed-detail-content">
               <FeedDetailPhotoPanel
                 post={selectedPost}
@@ -660,7 +705,7 @@ export default function MyFeedPage() {
                 pawLoading={pawLoading}
               />
             </div>
-            {deleteConfirmOpen && (
+            {isOwnProfile && deleteConfirmOpen && (
               <div className="feed-detail-confirm-overlay">
                 <div className="feed-detail-confirm-dialog">
                   <div className="feed-detail-confirm-body">
@@ -696,4 +741,8 @@ export default function MyFeedPage() {
       </AnimatePresence>
     </>
   );
+}
+
+export default function MyFeedPage() {
+  return <ProfileFeedPageClient />;
 }

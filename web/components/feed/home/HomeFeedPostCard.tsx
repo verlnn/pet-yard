@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { memo, useEffect, useState } from "react";
 import { MessageCircle, MoreHorizontal, PawPrint, Send } from "lucide-react";
 
@@ -12,6 +13,7 @@ import {
   getPreferredHomeFeedImageUrl,
   resolveHomeFeedAspectRatio
 } from "@/components/feed/home/homeFeedImage";
+import { buildProfileRoute } from "@/src/lib/routes";
 
 interface HomeFeedPostCardProps {
   post: HomeFeedPost;
@@ -122,6 +124,7 @@ export const HomeFeedPostCard = memo(function HomeFeedPostCard({
   };
 
   const shouldShowGuardianButton = viewerUserId !== null && viewerUserId !== post.authorId;
+  const authorProfileHref = buildProfileRoute(post.authorUsername);
 
   return (
     <article className="home-feed-post-card">
@@ -147,7 +150,7 @@ export const HomeFeedPostCard = memo(function HomeFeedPostCard({
         onClose={() => setGuardianUnregisterAlertOpen(false)}
       />
       <header className="home-feed-post-header">
-        <div className="home-feed-post-author">
+        <Link href={authorProfileHref} className="home-feed-post-author">
           <Avatar className="home-feed-post-avatar">
             {post.authorProfileImageUrl ? (
               <AvatarImage src={post.authorProfileImageUrl} alt={post.authorNickname} />
@@ -159,7 +162,7 @@ export const HomeFeedPostCard = memo(function HomeFeedPostCard({
             <p className="home-feed-post-author-name">{post.authorNickname}</p>
             <p className="home-feed-post-author-meta">{formatRelativeTime(post.createdAt)}</p>
           </div>
-        </div>
+        </Link>
         <div className="home-feed-post-header-actions">
           {shouldShowGuardianButton ? (
             <button

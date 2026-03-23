@@ -1,6 +1,7 @@
 import type {
   MeResponse,
   MyProfileResponse,
+  PublicProfileResponse,
   OAuthCallbackResponse,
   OAuthStartResponse,
   OAuthProvider,
@@ -272,6 +273,14 @@ export const authApi = {
       }
     });
   },
+  getPublicProfile(accessToken: string, username: string) {
+    return request<PublicProfileResponse>(`/api/users/${encodeURIComponent(username)}/profile`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+  },
   getHomeFeed(
     accessToken: string,
     options?: {
@@ -375,6 +384,14 @@ export const authApi = {
   },
   getOwnPosts(accessToken: string) {
     return request<FeedPost[]>("/api/feeds/own-posts", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+  },
+  getUserPosts(accessToken: string, username: string) {
+    return request<FeedPost[]>(`/api/feeds/users/${encodeURIComponent(username)}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${accessToken}`

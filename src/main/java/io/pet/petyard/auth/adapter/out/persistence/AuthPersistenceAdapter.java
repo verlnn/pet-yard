@@ -11,7 +11,9 @@ import io.pet.petyard.auth.domain.model.EmailVerification;
 import io.pet.petyard.auth.domain.model.RefreshToken;
 import io.pet.petyard.auth.domain.model.User;
 
+import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
@@ -44,6 +46,11 @@ public class AuthPersistenceAdapter implements LoadUserPort, SaveUserPort, SaveE
     @Override
     public Optional<User> findById(Long id) {
         return userRepository.findById(id);
+    }
+
+    @Override
+    public Set<User> findByIds(Collection<Long> userIds) {
+        return userRepository.findByIdIn(userIds);
     }
 
     @Override

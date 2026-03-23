@@ -33,6 +33,8 @@ public record HomeFeedPostResponse(
     List<String> hashtags,
     @Schema(description = "작성자 식별자", example = "11")
     Long authorId,
+    @Schema(description = "작성자 공개 ID", nullable = true, example = "meongnyang.owner")
+    String authorUsername,
     @Schema(description = "작성자 닉네임", example = "멍냥집사")
     String authorNickname,
     @Schema(description = "작성자 프로필 이미지 URL", nullable = true)
@@ -56,6 +58,7 @@ public record HomeFeedPostResponse(
             post.createdAt(),
             post.hashtags(),
             post.author().id(),
+            post.author().username(),
             post.author().nickname(),
             post.author().profileImageUrl(),
             post.author().guardianRegisteredByMe(),

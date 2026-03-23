@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { HomeFeedPost } from "@/src/features/auth/types/authTypes";
+import { buildProfileRoute } from "@/src/lib/routes";
 
 interface HomeFeedStoriesProps {
   posts: HomeFeedPost[];
@@ -23,6 +25,7 @@ export function HomeFeedStories({ posts }: HomeFeedStoriesProps) {
         post.authorId,
         {
           authorId: post.authorId,
+          authorUsername: post.authorUsername,
           authorNickname: post.authorNickname,
           authorProfileImageUrl: post.authorProfileImageUrl
         }
@@ -35,7 +38,7 @@ export function HomeFeedStories({ posts }: HomeFeedStoriesProps) {
       <div className="home-feed-stories-track">
         {stories.length > 0
           ? stories.map((story) => (
-              <button key={story.authorId} type="button" className="home-feed-story-item">
+              <Link key={story.authorId} href={buildProfileRoute(story.authorUsername)} className="home-feed-story-item">
                 <span className="home-feed-story-ring">
                   <Avatar className="home-feed-story-avatar">
                     {story.authorProfileImageUrl ? (
@@ -46,7 +49,7 @@ export function HomeFeedStories({ posts }: HomeFeedStoriesProps) {
                   </Avatar>
                 </span>
                 <span className="home-feed-story-label">{story.authorNickname}</span>
-              </button>
+              </Link>
             ))
           : FALLBACK_STORIES.map((label) => (
               <div key={label} className="home-feed-story-item" aria-hidden="true">

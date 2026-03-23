@@ -12,11 +12,10 @@ import { Button } from "@/components/ui/button";
 import { AppAlertDialog } from "@/components/ui/AppAlertDialog";
 import { Badge } from "@/components/ui/badge";
 import { authApi } from "@/src/features/auth/api/authApi";
-import { ROUTES } from "@/src/lib/routes";
+import { buildProfileRoute, ROUTES } from "@/src/lib/routes";
 
 const links: Array<{ href: Route; label: string; icon: LucideIcon }> = [
   { href: ROUTES.feed, label: "피드", icon: PawPrint },
-  { href: ROUTES.myFeed, label: "내 피드", icon: PawPrint },
   { href: ROUTES.walks, label: "산책", icon: Compass },
   { href: ROUTES.boarding, label: "위탁", icon: HeartHandshake },
   { href: ROUTES.knowledge, label: "지식", icon: Shield }
@@ -25,6 +24,8 @@ const links: Array<{ href: Route; label: string; icon: LucideIcon }> = [
 export function SiteNav() {
   const router = useRouter();
   const [hasToken, setHasToken] = useState(false);
+  const [myUsername, setMyUsername] = useState<string | null>(null);
+  const profileHref = buildProfileRoute(myUsername);
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
 
   useEffect(() => {
@@ -32,6 +33,12 @@ export function SiteNav() {
     const accessToken = localStorage.getItem("accessToken");
     const refreshToken = localStorage.getItem("refreshToken");
     setHasToken(Boolean(accessToken || refreshToken));
+    if (!accessToken) {
+      return;
+    }
+    authApi.getMyProfile(accessToken)
+      .then((profile) => setMyUsername(profile.username))
+      .catch(() => setMyUsername(null));
   }, []);
 
   const handleLogout = useCallback(async () => {
@@ -92,6 +99,15 @@ export function SiteNav() {
               {link.label}
             </Link>
           ))}
+          {hasToken ? (
+            <Link
+              href={profileHref}
+              className="flex items-center gap-2 rounded-full px-3 py-2 text-sm text-ink/70 hover:bg-sand"
+            >
+              <PawPrint className="h-4 w-4" />
+              내 피드
+            </Link>
+          ) : null}
         </nav>
         <div className="flex items-center gap-3">
           <Badge variant="soft" className="hidden md:inline-flex">
@@ -105,7 +121,7 @@ export function SiteNav() {
               로그아웃
             </Button>
           )}
-          <Link href={ROUTES.myFeed}>
+          <Link href={profileHref}>
             <Button variant="secondary" size="sm">
               내 프로필
             </Button>
@@ -119,6 +135,11 @@ export function SiteNav() {
                 {link.label}
               </Link>
             ))}
+            {hasToken ? (
+              <Link href={profileHref} className="px-2 py-1">
+                내 피드
+              </Link>
+            ) : null}
           </div>
         </div>
       </header>
