@@ -177,6 +177,13 @@ function PublicProfileHeader({
           >
             {guardianActionLabel}
           </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            className="feed-profile-header-message-action"
+          >
+            메시지 보내기
+          </Button>
         </div>
       </div>
     </section>

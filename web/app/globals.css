@@ -777,8 +777,15 @@ body {
   }
 
   .feed-profile-header-secondary-action,
+  .feed-profile-header-primary-action,
+  .feed-profile-header-message-action {
+    @apply h-12 flex-1 gap-2 rounded-xl;
+  }
+
   .feed-profile-header-primary-action {
-    @apply h-12 flex-1 gap-2 rounded-2xl;
+    background: #2563eb;
+    color: #f8fbff;
+    @apply hover:opacity-95;
   }
 
   .app-layout {
@@ -1749,12 +1756,15 @@ body {
   }
 
   .home-feed-post-guardian-button {
-    color: var(--color-primary);
-    @apply inline-flex h-9 items-center rounded-full px-3 text-xs font-semibold transition hover:bg-[var(--color-hover-surface)];
+    color: #dbeafe;
+    background: #2563eb;
+    @apply inline-flex h-9 items-center rounded-lg px-3 text-xs font-semibold transition hover:opacity-95;
   }
 
   .home-feed-post-guardian-button-active {
     color: var(--color-text-muted);
+    background: transparent;
+    @apply hover:bg-[var(--color-hover-surface)];
   }
 
   .home-feed-post-media {
