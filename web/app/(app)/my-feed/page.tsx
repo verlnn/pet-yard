@@ -19,6 +19,7 @@ import { getBoxSize, getTargetRatio } from "@/components/feed/imageSizing";
 import { authApi } from "@/src/features/auth/api/authApi";
 import type {
   FeedPost,
+  FeedPostComment,
   GuardianRelationStatus,
   MyProfileResponse,
   PublicProfileResponse
@@ -215,6 +216,12 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
   const [postActionMenuOpen, setPostActionMenuOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [pawLoading, setPawLoading] = useState(false);
+  const [selectedPostComments, setSelectedPostComments] = useState<FeedPostComment[]>([]);
+  const [selectedPostCommentsLoading, setSelectedPostCommentsLoading] = useState(false);
+  const [selectedPostCommentsError, setSelectedPostCommentsError] = useState<string | null>(null);
+  const [selectedPostCommentValue, setSelectedPostCommentValue] = useState("");
+  const [selectedPostCommentSubmitting, setSelectedPostCommentSubmitting] = useState(false);
+  const [commentFocusToken, setCommentFocusToken] = useState(0);
   const [guardianLoading, setGuardianLoading] = useState(false);
   const [guardianUnregisterAlertOpen, setGuardianUnregisterAlertOpen] = useState(false);
   const [guardianErrorMessage, setGuardianErrorMessage] = useState<string | null>(null);
@@ -347,16 +354,33 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
 
   const handleSelectPrevPost = () => {
     if (!hasPrevPost) return;
-    setSelectedPost(posts[selectedPostIndex - 1] ?? null);
+    const previousPost = posts[selectedPostIndex - 1] ?? null;
+    setSelectedPost(previousPost);
+    setSelectedPostComments([]);
+    setSelectedPostCommentsError(null);
+    setSelectedPostCommentValue("");
+    if (previousPost && accessToken) {
+      void loadSelectedPostComments(previousPost.id);
+    }
   };
 
   const handleSelectNextPost = () => {
     if (!hasNextPost) return;
-    setSelectedPost(posts[selectedPostIndex + 1] ?? null);
+    const nextPost = posts[selectedPostIndex + 1] ?? null;
+    setSelectedPost(nextPost);
+    setSelectedPostComments([]);
+    setSelectedPostCommentsError(null);
+    setSelectedPostCommentValue("");
+    if (nextPost && accessToken) {
+      void loadSelectedPostComments(nextPost.id);
+    }
   };
 
   const handleCloseSelectedPost = () => {
     setSelectedPost(null);
+    setSelectedPostComments([]);
+    setSelectedPostCommentsError(null);
+    setSelectedPostCommentValue("");
     setPostActionMenuOpen(false);
     setDeleteConfirmOpen(false);
   };
@@ -542,6 +566,63 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
       setImageError(err instanceof Error ? err.message : "발자국 처리에 실패했습니다.");
     } finally {
       setPawLoading(false);
+    }
+  };
+
+  const loadSelectedPostComments = async (postId: number) => {
+    if (!accessToken) {
+      return;
+    }
+    setSelectedPostCommentsLoading(true);
+    setSelectedPostCommentsError(null);
+    try {
+      const response = await authApi.getFeedPostComments(accessToken, postId);
+      setSelectedPostComments(response);
+    } catch (error) {
+      setSelectedPostCommentsError(error instanceof Error ? error.message : "댓글을 불러오지 못했습니다.");
+    } finally {
+      setSelectedPostCommentsLoading(false);
+    }
+  };
+
+  const handleSelectPost = (post: FeedPost) => {
+    setSelectedPost(post);
+    setSelectedPostComments([]);
+    setSelectedPostCommentsError(null);
+    setSelectedPostCommentValue("");
+    void loadSelectedPostComments(post.id);
+  };
+
+  const handleSubmitSelectedPostComment = async () => {
+    if (!selectedPost || !accessToken || selectedPostCommentSubmitting) {
+      return;
+    }
+    const trimmed = selectedPostCommentValue.trim();
+    if (!trimmed) {
+      return;
+    }
+    setSelectedPostCommentSubmitting(true);
+    setSelectedPostCommentsError(null);
+    try {
+      const created = await authApi.addFeedPostComment(accessToken, selectedPost.id, trimmed);
+      setSelectedPostComments((previous) => [...previous, created]);
+      setPosts((previous) =>
+        previous.map((post) =>
+          post.id === selectedPost.id
+            ? { ...post, commentCount: ((post as FeedPost & { commentCount?: number }).commentCount ?? 0) + 1 }
+            : post
+        )
+      );
+      setSelectedPost((previous) => previous ? {
+        ...previous,
+        commentCount: previous.commentCount + 1
+      } : previous);
+      setSelectedPostCommentValue("");
+      setCommentFocusToken((previous) => previous + 1);
+    } catch (error) {
+      setSelectedPostCommentsError(error instanceof Error ? error.message : "댓글을 등록하지 못했습니다.");
+    } finally {
+      setSelectedPostCommentSubmitting(false);
     }
   };
 
@@ -760,7 +841,7 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
                   </Card>
                 )
               ) : (
-                <FeedGrid posts={grid} onSelect={setSelectedPost} />
+                <FeedGrid posts={grid} onSelect={handleSelectPost} />
               )}
             </>
           )}
@@ -945,6 +1026,14 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
                 maxHeight={selectedPostPhotoSize.height || 480}
                 onTogglePaw={handleTogglePaw}
                 pawLoading={pawLoading}
+                comments={selectedPostComments}
+                commentsLoading={selectedPostCommentsLoading}
+                commentsErrorMessage={selectedPostCommentsError}
+                commentValue={selectedPostCommentValue}
+                onCommentValueChange={setSelectedPostCommentValue}
+                onCommentSubmit={handleSubmitSelectedPostComment}
+                commentSubmitting={selectedPostCommentSubmitting}
+                focusCommentToken={commentFocusToken}
               />
             </div>
             {isOwnProfile && deleteConfirmOpen && (

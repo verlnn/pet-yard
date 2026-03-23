@@ -145,6 +145,7 @@ export interface FeedPost {
   imageAspectRatio?: "original" | "1:1" | "4:5" | "16:9" | null;
   pawCount: number;
   pawedByMe: boolean;
+  commentCount: number;
   createdAt: string;
   hashtags?: string[] | null;
 }
@@ -166,7 +167,6 @@ export interface HomeFeedPost extends FeedPost {
   authorProfileImageUrl?: string | null;
   guardianRelationStatus: GuardianRelationStatus;
   guardianRegisteredByMe: boolean;
-  commentCount: number;
 }
 
 export interface HomeFeedCursor {
