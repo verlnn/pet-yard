@@ -1073,11 +1073,28 @@ body {
   }
 
   .app-sidebar-notifications-header {
-    @apply flex items-start justify-between;
+    @apply flex items-center justify-between gap-3;
   }
 
   .app-sidebar-notifications-title {
     @apply text-[2rem] font-semibold tracking-[-0.03em];
+  }
+
+  .app-sidebar-notifications-detail-title {
+    @apply flex-1 text-center text-base font-semibold;
+  }
+
+  .app-sidebar-notifications-back {
+    color: rgba(226, 232, 240, 0.82);
+    @apply flex h-10 w-10 items-center justify-center rounded-full transition;
+  }
+
+  .app-sidebar-notifications-back:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .app-sidebar-notifications-back-icon {
+    @apply h-5 w-5;
   }
 
   .app-sidebar-notifications-close {
@@ -1128,6 +1145,52 @@ body {
   .app-sidebar-notifications-empty {
     color: rgba(148, 163, 184, 0.82);
     @apply py-8 text-sm;
+  }
+
+  .app-sidebar-notifications-priority {
+    border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+    @apply mt-6 pb-5;
+  }
+
+  .app-sidebar-notifications-priority-trigger {
+    @apply flex w-full items-center justify-between gap-3 text-left;
+  }
+
+  .app-sidebar-notifications-priority-main {
+    @apply flex min-w-0 items-center gap-3;
+  }
+
+  .app-sidebar-notification-priority-title {
+    color: #f8fafc;
+    @apply text-sm font-semibold leading-5;
+  }
+
+  .app-sidebar-notification-priority-name {
+    color: rgba(226, 232, 240, 0.88);
+    @apply mt-0.5 text-sm font-medium leading-5;
+  }
+
+  .app-sidebar-notification-priority-meta {
+    @apply flex shrink-0 items-center gap-3;
+  }
+
+  .app-sidebar-notification-priority-dot {
+    background: #2f80ff;
+    box-shadow: 0 0 0 4px rgba(47, 128, 255, 0.12);
+    @apply h-2.5 w-2.5 rounded-full;
+  }
+
+  .app-sidebar-notification-priority-chevron {
+    color: rgba(226, 232, 240, 0.72);
+    @apply h-5 w-5;
+  }
+
+  .app-sidebar-notifications-section-block {
+    @apply space-y-4;
+  }
+
+  .app-sidebar-notifications-section-list {
+    @apply space-y-4;
   }
 
   .app-sidebar-notification-item {
@@ -1183,6 +1246,27 @@ body {
 
   .app-sidebar-notification-badge-icon {
     @apply h-3.5 w-3.5;
+  }
+
+  .app-sidebar-notifications-detail {
+    @apply mt-6 flex flex-1 flex-col overflow-y-auto pr-1;
+  }
+
+  .app-sidebar-notifications-detail-card {
+    border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+    @apply pb-6;
+  }
+
+  .app-sidebar-notifications-detail-main {
+    @apply flex items-center gap-3;
+  }
+
+  .app-sidebar-notifications-recommendations {
+    @apply mt-6 space-y-4;
+  }
+
+  .app-sidebar-notifications-recommendation-list {
+    @apply space-y-4;
   }
 
   .app-sidebar-more-list {
