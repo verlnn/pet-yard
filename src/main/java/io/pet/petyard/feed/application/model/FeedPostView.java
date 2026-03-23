@@ -12,6 +12,7 @@ public record FeedPostView(
     String imageAspectRatio,
     long pawCount,
     boolean pawedByMe,
+    long commentCount,
     Instant createdAt,
     List<String> hashtags
 ) {

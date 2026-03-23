@@ -120,6 +120,7 @@ public class FeedApplicationService {
         Map<Long, List<FeedPostImage>> imagesByPost = loadFeedPostImagePort.findByPostIds(postIds);
         Map<Long, Long> pawCountsByPost = loadFeedPostPawPort.countByPostIds(postIds);
         Set<Long> pawedPostIds = new HashSet<>(loadFeedPostPawPort.findPawedPostIds(viewerUserId, postIds));
+        Map<Long, Long> commentCountsByPost = loadFeedPostCommentPort.countByPostIds(postIds);
         Map<Long, List<String>> tagsByPost = loadFeedPostHashtagPort.findTagNamesByPostIds(postIds);
         List<FeedPostView> result = new ArrayList<>();
         for (FeedPost post : posts) {
@@ -138,6 +139,7 @@ public class FeedApplicationService {
                 post.getImageAspectRatio(),
                 pawCountsByPost.getOrDefault(post.getId(), 0L),
                 pawedPostIds.contains(post.getId()),
+                commentCountsByPost.getOrDefault(post.getId(), 0L),
                 post.getCreatedAt(),
                 tags
             ));
@@ -297,6 +299,7 @@ public class FeedApplicationService {
             saved.getImageAspectRatio(),
             0,
             false,
+            0,
             saved.getCreatedAt(),
             normalizedTags
         );

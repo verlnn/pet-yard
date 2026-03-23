@@ -38,7 +38,7 @@ export function FeedGridItem({ post, onSelect }: FeedGridItemProps) {
           </span>
           <span className="inline-flex items-center gap-2 text-base font-semibold">
             <MessageCircle className="h-5 w-5 fill-current" />
-            <span>{(post as FeedPost & { commentCount?: number }).commentCount?.toLocaleString("ko-KR") ?? "0"}</span>
+            <span>{post.commentCount.toLocaleString("ko-KR")}</span>
           </span>
         </div>
       </div>

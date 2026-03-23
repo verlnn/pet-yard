@@ -24,6 +24,8 @@ public record FeedPostResponse(
     long pawCount,
     @Schema(description = "현재 사용자 발자국 여부", example = "false")
     boolean pawedByMe,
+    @Schema(description = "댓글 수", example = "3")
+    long commentCount,
     @Schema(description = "생성 시각")
     Instant createdAt,
     @Schema(description = "해시태그 목록")
@@ -39,6 +41,7 @@ public record FeedPostResponse(
             post.imageAspectRatio(),
             post.pawCount(),
             post.pawedByMe(),
+            post.commentCount(),
             post.createdAt(),
             post.hashtags()
         );
