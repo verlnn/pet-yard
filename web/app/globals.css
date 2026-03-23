@@ -3055,7 +3055,7 @@ body {
   }
 
   .onboarding-profile-choice-grid {
-    @apply grid grid-cols-2 gap-2;
+    @apply mt-1 grid grid-cols-2 gap-2;
   }
 
   .onboarding-profile-choice-button {
