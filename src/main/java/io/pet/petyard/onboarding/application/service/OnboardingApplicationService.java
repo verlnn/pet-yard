@@ -15,6 +15,7 @@ import io.pet.petyard.auth.oauth.OAuthClient;
 import io.pet.petyard.auth.oauth.OAuthUserInfo;
 import io.pet.petyard.common.ApiException;
 import io.pet.petyard.common.ErrorCode;
+import io.pet.petyard.common.storage.LocalFileStorage;
 import io.pet.petyard.onboarding.application.port.in.OAuthCallbackUseCase;
 import io.pet.petyard.onboarding.application.port.in.OAuthStartUseCase;
 import io.pet.petyard.onboarding.application.port.in.SignupCompleteUseCase;
@@ -77,6 +78,7 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
     private final Clock clock;
     private final ObjectMapper objectMapper;
     private final Map<AuthProvider, OAuthClient> oauthClients;
+    private final LocalFileStorage localFileStorage;
 
     public OnboardingApplicationService(LoadSignupSessionPort loadSignupSessionPort,
                                         SaveSignupSessionPort saveSignupSessionPort,
@@ -94,7 +96,8 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
                                         JwtTokenProvider tokenProvider,
                                         Clock clock,
                                         ObjectMapper objectMapper,
-                                        List<OAuthClient> oauthClients) {
+                                        List<OAuthClient> oauthClients,
+                                        LocalFileStorage localFileStorage) {
         this.loadSignupSessionPort = loadSignupSessionPort;
         this.saveSignupSessionPort = saveSignupSessionPort;
         this.loadAuthIdentityPort = loadAuthIdentityPort;
@@ -112,6 +115,7 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
         this.clock = clock;
         this.objectMapper = objectMapper;
         this.oauthClients = oauthClients.stream().collect(Collectors.toMap(OAuthClient::provider, client -> client));
+        this.localFileStorage = localFileStorage;
     }
 
     @Transactional
@@ -290,6 +294,7 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
             command.ownerNm(),
             command.ownerBirth()
         );
+        String photoUrl = localFileStorage.resolvePetImage(session.getUserId(), command.photoUrl(), null);
 
         PetProfile profile = new PetProfile(
             session.getUserId(),
@@ -301,7 +306,7 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
             result.gender(),
             result.neutered(),
             null,
-            command.photoUrl(),
+            photoUrl,
             command.weightKg() == null ? null : java.math.BigDecimal.valueOf(command.weightKg()),
             command.vaccinationComplete(),
             command.walkSafetyChecked()

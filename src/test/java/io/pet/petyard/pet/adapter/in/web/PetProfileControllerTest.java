@@ -16,6 +16,7 @@ import io.pet.petyard.common.ApiException;
 import io.pet.petyard.common.ErrorCode;
 import io.pet.petyard.common.adapter.in.web.GlobalExceptionHandler;
 import io.pet.petyard.common.application.service.ErrorLogService;
+import io.pet.petyard.common.storage.LocalFileStorage;
 import io.pet.petyard.pet.application.port.out.LoadPetProfilePort;
 import io.pet.petyard.pet.application.port.out.SavePetProfilePort;
 import io.pet.petyard.pet.application.service.AnimalRegistrationResult;
@@ -63,6 +64,7 @@ class PetProfileControllerTest {
     @MockitoBean private SaveUserPort saveUserPort;
     @MockitoBean private LoadUserProfileSettingsPort loadUserProfileSettingsPort;
     @MockitoBean private SaveUserProfileSettingsPort saveUserProfileSettingsPort;
+    @MockitoBean private LocalFileStorage localFileStorage;
     @MockitoBean private ErrorLogService errorLogService;
 
     @Test

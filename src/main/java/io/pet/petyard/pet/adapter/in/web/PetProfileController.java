@@ -7,6 +7,7 @@ import io.pet.petyard.auth.domain.UserTier;
 import io.pet.petyard.auth.domain.model.User;
 import io.pet.petyard.common.ApiException;
 import io.pet.petyard.common.ErrorCode;
+import io.pet.petyard.common.storage.LocalFileStorage;
 import io.pet.petyard.pet.application.port.out.LoadPetProfilePort;
 import io.pet.petyard.pet.application.port.out.SavePetProfilePort;
 import io.pet.petyard.pet.application.service.AnimalRegistrationResult;
@@ -51,6 +52,7 @@ public class PetProfileController {
     private final SaveUserPort saveUserPort;
     private final LoadUserProfileSettingsPort loadUserProfileSettingsPort;
     private final SaveUserProfileSettingsPort saveUserProfileSettingsPort;
+    private final LocalFileStorage localFileStorage;
 
     public PetProfileController(LoadPetProfilePort loadPetProfilePort,
                                 SavePetProfilePort savePetProfilePort,
@@ -58,7 +60,8 @@ public class PetProfileController {
                                 LoadUserPort loadUserPort,
                                 SaveUserPort saveUserPort,
                                 LoadUserProfileSettingsPort loadUserProfileSettingsPort,
-                                SaveUserProfileSettingsPort saveUserProfileSettingsPort) {
+                                SaveUserProfileSettingsPort saveUserProfileSettingsPort,
+                                LocalFileStorage localFileStorage) {
         this.loadPetProfilePort = loadPetProfilePort;
         this.savePetProfilePort = savePetProfilePort;
         this.registrationService = registrationService;
@@ -66,6 +69,7 @@ public class PetProfileController {
         this.saveUserPort = saveUserPort;
         this.loadUserProfileSettingsPort = loadUserProfileSettingsPort;
         this.saveUserProfileSettingsPort = saveUserProfileSettingsPort;
+        this.localFileStorage = localFileStorage;
     }
 
     @PostMapping("/verify")
@@ -119,6 +123,7 @@ public class PetProfileController {
             request.ownerNm(),
             request.ownerBirth()
         );
+        String photoUrl = localFileStorage.resolvePetImage(principal.userId(), request.photoUrl(), null);
         PetProfile profile = new PetProfile(
             principal.userId(),
             result.name(),
@@ -129,7 +134,7 @@ public class PetProfileController {
             result.gender(),
             result.neutered(),
             request.intro(),
-            request.photoUrl(),
+            photoUrl,
             request.weightKg() == null ? null : BigDecimal.valueOf(request.weightKg()),
             request.vaccinationComplete(),
             request.walkSafetyChecked()
@@ -171,6 +176,7 @@ public class PetProfileController {
                                      @Valid @RequestBody PetProfileRequest request) {
         PetProfile profile = loadPetProfilePort.findByIdAndUserId(id, principal.userId())
             .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST));
+        String photoUrl = localFileStorage.resolvePetImage(principal.userId(), request.photoUrl(), profile.getPhotoUrl());
 
         Boolean neutered = Boolean.TRUE.equals(profile.getNeutered()) ? Boolean.TRUE : request.neutered();
         profile.updateFrom(
@@ -182,7 +188,7 @@ public class PetProfileController {
             profile.getGender(),
             neutered,
             request.intro(),
-            request.photoUrl(),
+            photoUrl,
             request.weightKg() == null ? null : BigDecimal.valueOf(request.weightKg()),
             request.vaccinationComplete(),
             request.walkSafetyChecked()

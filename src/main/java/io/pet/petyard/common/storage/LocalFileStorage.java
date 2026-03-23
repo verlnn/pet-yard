@@ -9,9 +9,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.Base64;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
@@ -25,6 +29,8 @@ public class LocalFileStorage {
 
     private static final Logger log = LoggerFactory.getLogger(LocalFileStorage.class);
     private static final Set<String> ALLOWED_EXTENSIONS = Set.of("jpg", "jpeg", "png", "webp", "gif");
+    private static final Pattern DATA_URL_PATTERN =
+        Pattern.compile("^data:(image/[a-zA-Z0-9.+-]+);base64,(.+)$", Pattern.DOTALL);
 
     private final FileStorageProperties properties;
 
@@ -70,6 +76,74 @@ public class LocalFileStorage {
             aspectRatio,
             aspectRatioValue);
         return publicPath;
+    }
+
+    public String resolvePetImage(Long userId, String incomingPhotoUrl, String existingPhotoUrl) {
+        String normalizedIncoming = normalizeBlank(incomingPhotoUrl);
+        String normalizedExisting = normalizeBlank(existingPhotoUrl);
+
+        if (normalizedIncoming == null) {
+            deleteManagedPetImage(normalizedExisting);
+            return null;
+        }
+        if (normalizedIncoming.equals(normalizedExisting)) {
+            return normalizedIncoming;
+        }
+        if (isDataUrlImage(normalizedIncoming)) {
+            String savedPhotoUrl = savePetImage(userId, normalizedIncoming);
+            deleteManagedPetImage(normalizedExisting);
+            return savedPhotoUrl;
+        }
+
+        if (normalizedExisting != null && !normalizedExisting.equals(normalizedIncoming)) {
+            deleteManagedPetImage(normalizedExisting);
+        }
+        return normalizedIncoming;
+    }
+
+    public String savePetImage(Long userId, String dataUrl) {
+        if (userId == null) {
+            throw new ApiException(ErrorCode.BAD_REQUEST);
+        }
+
+        Matcher matcher = DATA_URL_PATTERN.matcher(normalizeBlank(dataUrl) == null ? "" : dataUrl.trim());
+        if (!matcher.matches()) {
+            throw new ApiException(ErrorCode.INVALID_FILE_TYPE);
+        }
+
+        String mimeType = matcher.group(1).toLowerCase(Locale.ROOT);
+        String payload = matcher.group(2);
+        String extension = resolveExtensionFromMimeType(mimeType);
+        String filename = UUID.randomUUID() + "." + extension;
+        Path rootDir = Path.of(properties.uploadDir()).toAbsolutePath().normalize();
+        Path petDir = rootDir.resolve("pets").resolve(String.valueOf(userId));
+        Path target = petDir.resolve(filename).normalize();
+
+        try {
+            Files.createDirectories(petDir);
+            byte[] imageBytes = Base64.getMimeDecoder().decode(payload);
+            Files.write(target, imageBytes, StandardOpenOption.CREATE_NEW);
+        } catch (IllegalArgumentException ex) {
+            throw new ApiException(ErrorCode.INVALID_FILE_TYPE);
+        } catch (IOException ex) {
+            throw new ApiException(ErrorCode.FILE_UPLOAD_FAILED);
+        }
+
+        String publicPath = properties.publicUrlPrefix() + "/pets/" + userId + "/" + filename;
+        log.info("반려동물 이미지 저장 완료: userId={}, 저장경로={}, 공개경로={}", userId, target, publicPath);
+        return publicPath;
+    }
+
+    public void deleteManagedPetImage(String photoUrl) {
+        Path target = resolveManagedPetPath(photoUrl);
+        if (target == null) {
+            return;
+        }
+        try {
+            Files.deleteIfExists(target);
+        } catch (IOException ex) {
+            log.warn("반려동물 이미지 삭제 실패: photoUrl={}, path={}", photoUrl, target, ex);
+        }
     }
 
     private boolean shouldCrop(String aspectRatio, Double aspectRatioValue) {
@@ -153,5 +227,52 @@ public class LocalFileStorage {
             throw new ApiException(ErrorCode.INVALID_FILE_TYPE);
         }
         return extension;
+    }
+
+    private boolean isDataUrlImage(String value) {
+        return value != null && DATA_URL_PATTERN.matcher(value).matches();
+    }
+
+    private String resolveExtensionFromMimeType(String mimeType) {
+        return switch (mimeType) {
+            case "image/jpeg", "image/jpg" -> "jpg";
+            case "image/png" -> "png";
+            case "image/webp" -> "webp";
+            case "image/gif" -> "gif";
+            default -> throw new ApiException(ErrorCode.INVALID_FILE_TYPE);
+        };
+    }
+
+    private Path resolveManagedPetPath(String photoUrl) {
+        String normalizedPhotoUrl = normalizeBlank(photoUrl);
+        if (normalizedPhotoUrl == null) {
+            return null;
+        }
+
+        String publicPrefix = properties.publicUrlPrefix();
+        String petPrefix = publicPrefix + "/pets/";
+        if (!normalizedPhotoUrl.startsWith(petPrefix)) {
+            return null;
+        }
+
+        String relativePath = normalizedPhotoUrl.substring(publicPrefix.length());
+        if (relativePath.startsWith("/")) {
+            relativePath = relativePath.substring(1);
+        }
+
+        Path rootDir = Path.of(properties.uploadDir()).toAbsolutePath().normalize();
+        Path target = rootDir.resolve(relativePath).normalize();
+        if (!target.startsWith(rootDir)) {
+            return null;
+        }
+        return target;
+    }
+
+    private String normalizeBlank(String value) {
+        if (value == null) {
+            return null;
+        }
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 }
