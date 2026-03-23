@@ -144,14 +144,35 @@ class OnboardingApplicationServiceTest {
         SignupSession session = tokenSession(11L, "signup-token", SignupStep.PROFILE, SignupStatus.ONBOARDING);
         given(loadSignupSessionPort.findByToken("signup-token")).willReturn(Optional.of(session));
         given(loadUserProfilePort.existsByNickname("멍냥집사")).willReturn(false);
+        given(loadUserPort.findById(11L)).willReturn(Optional.of(user(11L, "owner@petyard.com", UserTier.TIER_0, AccountStatus.PENDING_ONBOARDING)));
+        given(loadUserPort.existsByUsername("owner.test")).willReturn(false);
         given(loadRegionPort.findByCode("99999")).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> service.saveProfile(new SignupProfileCommand(
-            "signup-token", "멍냥집사", "99999", null, false, true
+            "signup-token", "멍냥집사", "Owner.Test", "99999", null, false, true
         )))
             .isInstanceOf(ApiException.class)
             .extracting("errorCode")
             .isEqualTo(ErrorCode.BAD_REQUEST);
+    }
+
+    @Test
+    @DisplayName("프로필 저장은 username 중복 시 실패한다")
+    void saveProfileRejectsDuplicateUsername() {
+        SignupSession session = tokenSession(11L, "signup-token", SignupStep.PROFILE, SignupStatus.ONBOARDING);
+        User user = user(11L, "owner@petyard.com", UserTier.TIER_0, AccountStatus.PENDING_ONBOARDING);
+
+        given(loadSignupSessionPort.findByToken("signup-token")).willReturn(Optional.of(session));
+        given(loadUserProfilePort.existsByNickname("멍냥집사")).willReturn(false);
+        given(loadUserPort.findById(11L)).willReturn(Optional.of(user));
+        given(loadUserPort.existsByUsername("taken.user")).willReturn(true);
+
+        assertThatThrownBy(() -> service.saveProfile(new SignupProfileCommand(
+            "signup-token", "멍냥집사", "Taken.User", "11010", null, false, true
+        )))
+            .isInstanceOf(ApiException.class)
+            .extracting("errorCode")
+            .isEqualTo(ErrorCode.USERNAME_ALREADY_TAKEN);
     }
 
     @Test
@@ -210,7 +231,7 @@ class OnboardingApplicationServiceTest {
     }
 
     private User user(long id, String email, UserTier tier, AccountStatus status) {
-        User user = new User(email, null, tier, status);
+        User user = new User(email, null, "user." + id, tier, status);
         ReflectionTestUtils.setField(user, "id", id);
         return user;
     }

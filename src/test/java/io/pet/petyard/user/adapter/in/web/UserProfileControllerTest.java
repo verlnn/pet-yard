@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import io.pet.petyard.auth.adapter.in.web.AuthApiExceptionHandler;
 import io.pet.petyard.auth.application.port.out.LoadUserPort;
+import io.pet.petyard.auth.application.port.out.SaveUserPort;
 import io.pet.petyard.auth.domain.AccountStatus;
 import io.pet.petyard.auth.domain.UserTier;
 import io.pet.petyard.auth.domain.model.User;
@@ -62,6 +63,7 @@ class UserProfileControllerTest {
     private ObjectMapper objectMapper;
 
     @MockitoBean private LoadUserPort loadUserPort;
+    @MockitoBean private SaveUserPort saveUserPort;
     @MockitoBean private LoadUserProfilePort loadUserProfilePort;
     @MockitoBean private LoadUserProfileSettingsPort loadUserProfileSettingsPort;
     @MockitoBean private SaveUserProfileSettingsPort saveUserProfileSettingsPort;
@@ -86,6 +88,7 @@ class UserProfileControllerTest {
 
         mockMvc.perform(get("/api/users/me/profile").with(authPrincipalRequest()))
             .andExpect(status().isOk())
+            .andExpect(jsonPath("$.username").value("user.11"))
             .andExpect(jsonPath("$.nickname").value("멍냥집사"))
             .andExpect(jsonPath("$.regionName").value("부암동"))
             .andExpect(jsonPath("$.primaryPetId").value(7))
@@ -100,9 +103,25 @@ class UserProfileControllerTest {
         mockMvc.perform(patch("/api/users/me/profile")
                 .with(authPrincipalRequest())
                 .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(new UserProfileSettingsRequest(bio, "UNSPECIFIED", null))))
+                .content(objectMapper.writeValueAsString(new UserProfileSettingsRequest("owner.test", bio, "UNSPECIFIED", null))))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value("BAD_REQUEST"));
+    }
+
+    @Test
+    @DisplayName("공개 ID가 중복되면 400을 반환한다")
+    void updateProfileRejectsDuplicateUsername() throws Exception {
+        given(loadUserPort.findById(11L)).willReturn(Optional.of(activeUser(11L)));
+        given(loadUserProfilePort.findByUserId(11L)).willReturn(Optional.of(new UserProfile(11L, "멍냥집사", null, "/profile.jpg", false, true)));
+        given(loadUserPort.existsByUsername("taken.user")).willReturn(true);
+
+        mockMvc.perform(patch("/api/users/me/profile")
+                .with(authPrincipalRequest())
+                .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new UserProfileSettingsRequest("Taken.User", "소개", "UNSPECIFIED", null))))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.code").value("BAD_REQUEST"))
+            .andExpect(jsonPath("$.message").value("이미 사용 중인 공개 ID입니다"));
     }
 
     private Authentication authPrincipal() {
@@ -120,7 +139,7 @@ class UserProfileControllerTest {
     }
 
     private User activeUser(long userId) {
-        User user = new User("owner@petyard.com", "hash", UserTier.TIER_1, AccountStatus.ACTIVE);
+        User user = new User("owner@petyard.com", "hash", "user." + userId, UserTier.TIER_1, AccountStatus.ACTIVE);
         org.springframework.test.util.ReflectionTestUtils.setField(user, "id", userId);
         org.springframework.test.util.ReflectionTestUtils.setField(user, "createdAt", Instant.parse("2026-03-01T00:00:00Z"));
         org.springframework.test.util.ReflectionTestUtils.setField(user, "lastLoginAt", Instant.parse("2026-03-23T03:00:00Z"));

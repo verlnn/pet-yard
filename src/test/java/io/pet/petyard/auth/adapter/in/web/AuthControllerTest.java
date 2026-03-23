@@ -66,13 +66,15 @@ class AuthControllerTest {
     @DisplayName("회원가입 성공 시 이메일과 만료 시각을 반환한다")
     void signupReturnsExpiry() throws Exception {
         given(signUpUseCase.signup(any()))
-            .willReturn(new SignUpUseCase.SignupResult(11L, "owner@petyard.com", java.time.Instant.parse("2026-03-23T03:44:00Z")));
+            .willReturn(new SignUpUseCase.SignupResult(11L, "owner@petyard.com", "petyard.owner",
+                java.time.Instant.parse("2026-03-23T03:44:00Z")));
 
         mockMvc.perform(post("/api/auth/signup")
                 .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(new SignupRequest("owner@petyard.com", "pass1234"))))
+                .content(objectMapper.writeValueAsString(new SignupRequest("PetYard.Owner", "owner@petyard.com", "pass1234"))))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.email").value("owner@petyard.com"))
+            .andExpect(jsonPath("$.username").value("petyard.owner"))
             .andExpect(jsonPath("$.expiresAt").value("2026-03-23T03:44:00Z"));
     }
 
@@ -81,7 +83,7 @@ class AuthControllerTest {
     void signupValidationFailureReturns400() throws Exception {
         mockMvc.perform(post("/api/auth/signup")
                 .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(new SignupRequest("", ""))))
+                .content(objectMapper.writeValueAsString(new SignupRequest("", "", ""))))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value("BAD_REQUEST"));
     }

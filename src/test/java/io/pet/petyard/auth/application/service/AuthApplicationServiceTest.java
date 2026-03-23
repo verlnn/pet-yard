@@ -93,6 +93,7 @@ class AuthApplicationServiceTest {
     @DisplayName("회원가입은 대기 사용자와 인증 코드를 저장하고 메일을 보낸다")
     void signupCreatesPendingUserAndVerification() {
         given(loadUserPort.existsByEmail("owner@petyard.com")).willReturn(false);
+        given(loadUserPort.existsByUsername("petyard.owner")).willReturn(false);
         given(loadAuthIdentityPort.findByEmail("owner@petyard.com")).willReturn(Optional.empty());
         given(passwordEncoder.encode("plain-password")).willReturn("encoded-password");
         given(otpGenerator.generate("owner@petyard.com")).willReturn("123456");
@@ -103,10 +104,11 @@ class AuthApplicationServiceTest {
             return user;
         });
 
-        var result = service.signup(new SignUpCommand("owner@petyard.com", "plain-password"));
+        var result = service.signup(new SignUpCommand("owner@petyard.com", "plain-password", "PetYard.Owner"));
 
         assertThat(result.userId()).isEqualTo(11L);
         assertThat(result.email()).isEqualTo("owner@petyard.com");
+        assertThat(result.username()).isEqualTo("petyard.owner");
         verify(saveAuthIdentityPort).save(any(AuthIdentity.class));
         verify(saveEmailVerificationPort).save(any(EmailVerification.class));
         verify(emailSender).send(any(), any(), any());
@@ -180,8 +182,21 @@ class AuthApplicationServiceTest {
             .isEqualTo(ErrorCode.VERIFICATION_EXTEND_RATE_LIMIT);
     }
 
+    @Test
+    @DisplayName("회원가입은 이미 사용 중인 username이면 거부한다")
+    void signupRejectsDuplicateUsername() {
+        given(loadUserPort.existsByEmail("owner@petyard.com")).willReturn(false);
+        given(loadAuthIdentityPort.findByEmail("owner@petyard.com")).willReturn(Optional.empty());
+        given(loadUserPort.existsByUsername("taken.user")).willReturn(true);
+
+        assertThatThrownBy(() -> service.signup(new SignUpCommand("owner@petyard.com", "plain-password", "Taken.User")))
+            .isInstanceOf(ApiException.class)
+            .extracting("errorCode")
+            .isEqualTo(ErrorCode.USERNAME_ALREADY_TAKEN);
+    }
+
     private User user(long id, String email, AccountStatus status, UserTier tier, String passwordHash) {
-        User user = new User(email, passwordHash, tier, status);
+        User user = new User(email, passwordHash, "user." + id, tier, status);
         ReflectionTestUtils.setField(user, "id", id);
         return user;
     }

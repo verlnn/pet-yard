@@ -57,11 +57,12 @@ class SignupControllerTest {
     @DisplayName("온보딩 진행 상태 조회는 현재 step을 반환한다")
     void progressReturnsStep() throws Exception {
         given(signupProgressUseCase.progress(any()))
-            .willReturn(new SignupProgressUseCase.SignupProgressResult("PROFILE", "2026-03-23T03:55:00Z", false, null, null));
+            .willReturn(new SignupProgressUseCase.SignupProgressResult("PROFILE", "2026-03-23T03:55:00Z", false, null, "owner.test", null));
 
         mockMvc.perform(get("/api/auth/signup/progress").header("X-Signup-Token", "signup-token"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.step").value("PROFILE"));
+            .andExpect(jsonPath("$.step").value("PROFILE"))
+            .andExpect(jsonPath("$.username").value("owner.test"));
     }
 
     @Test
