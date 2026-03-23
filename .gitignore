@@ -45,9 +45,9 @@ out/
 # Local overrides
 /src/main/resources/application-local.yaml
 
-upload/images/feed/*.jpeg
-upload/images/feed/*.jpg
-upload/images/feed/*.png
+upload/images/**/*.jpeg
+upload/images/**/*.jpg
+upload/images/**/*.png
 
 .env.release
 /web/.env.local
