@@ -2881,6 +2881,7 @@ body {
     @apply h-2 w-2 rounded-full bg-moss;
   }
 
+
   .onboarding-pet-notice {
     @apply rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600;
   }
@@ -3217,6 +3218,29 @@ body {
 
   [data-theme="dark"] .onboarding-pet-details-card-scroll {
     background: transparent;
+  }
+
+  [data-theme="dark"] .onboarding-pet-photo-card {
+    background: var(--color-surface);
+    border-color: var(--color-border);
+    box-shadow: var(--shadow-soft-token);
+  }
+
+  [data-theme="dark"] .onboarding-pet-photo-card-preview {
+    background: rgba(250, 250, 250, 0.04);
+  }
+
+  [data-theme="dark"] .onboarding-pet-photo-card:hover .onboarding-pet-photo-card-preview {
+    background: rgba(250, 250, 250, 0.08);
+  }
+
+  [data-theme="dark"] .onboarding-pet-photo-card-title {
+    color: var(--color-text);
+  }
+
+  [data-theme="dark"] .onboarding-pet-photo-card-help,
+  [data-theme="dark"] .onboarding-pet-photo-card-meta {
+    color: var(--color-text-muted);
   }
 
   [data-theme="dark"] .onboarding-profile-field-success {
