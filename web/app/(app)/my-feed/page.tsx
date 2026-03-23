@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, MoreHorizontal, X } from "lucide-react";
 import { FeedDetailPhotoPanel } from "@/components/feed/detail/FeedDetailPhotoPanel";
 import { FeedDetailSidebar } from "@/components/feed/detail/FeedDetailSidebar";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { FeedProfileHeader } from "@/components/feed/FeedProfileHeader";
 import { FeedGrid } from "@/components/feed/FeedGrid";
@@ -76,6 +77,75 @@ const readFileAsDataUrl = (file: File) =>
   });
 
 type ProfilePageProfile = MyProfileResponse | PublicProfileResponse;
+
+function PublicProfileHeader({ profile, postCount }: { profile?: PublicProfileResponse | null; postCount: number }) {
+  const primaryPet = profile?.pets?.find((pet) => pet.id === profile?.primaryPetId) ?? profile?.pets?.[0];
+  const profileUsername = profile?.username?.trim() || "username";
+  const profileDisplayName = profile?.nickname?.trim() || "멍냥마당";
+
+  return (
+    <section className="feed-profile-header">
+      <div className="feed-profile-header-layout">
+        <div className="feed-profile-header-identity">
+          <div className="feed-profile-header-avatar-shell">
+            <Avatar className="feed-profile-header-avatar">
+              {profile?.profileImageUrl ? (
+                <AvatarImage src={profile.profileImageUrl} alt={profile.nickname} />
+              ) : (
+                <AvatarFallback>{profile?.nickname?.[0] ?? "MY"}</AvatarFallback>
+              )}
+            </Avatar>
+            {primaryPet ? (
+              <span className="feed-profile-header-primary-pet" aria-hidden="true">
+                {primaryPet.photoUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={primaryPet.photoUrl} alt={primaryPet.name} className="feed-profile-header-primary-pet-image" />
+                ) : (
+                  <span className="feed-profile-header-primary-pet-fallback">{primaryPet.name[0] ?? "펫"}</span>
+                )}
+              </span>
+            ) : null}
+          </div>
+
+          <div className="feed-profile-header-copy">
+            <div className="feed-profile-header-heading-row">
+              <div className="feed-profile-header-title-group">
+                <p className="feed-profile-header-title">{profileUsername}</p>
+                <p className="feed-profile-header-display-name">{profileDisplayName}</p>
+              </div>
+            </div>
+
+            <div className="feed-profile-header-stats">
+              <span className="feed-profile-header-stat">
+                <strong className="feed-profile-header-stat-value">{postCount}</strong>
+                <span className="feed-profile-header-stat-label">게시물</span>
+              </span>
+              <span className="feed-profile-header-stat">
+                <strong className="feed-profile-header-stat-value">{profile?.petCount ?? 0}</strong>
+                <span className="feed-profile-header-stat-label">반려동물</span>
+              </span>
+              <span className="feed-profile-header-stat">
+                <strong className="feed-profile-header-stat-value">{profile?.regionName ?? "미설정"}</strong>
+                <span className="feed-profile-header-stat-label">지역</span>
+              </span>
+            </div>
+
+            <div className="feed-profile-header-meta">
+              <p className="feed-profile-header-subtitle">
+                {profile?.bio?.trim()
+                  ? profile.bio
+                  : primaryPet?.name
+                  ? `${primaryPet.name}와 함께하는 일상`
+                  : "반려동물과의 기록을 남겨보세요."}
+              </p>
+              {primaryPet?.breed && <p className="feed-profile-header-meta-line">{primaryPet.breed}</p>}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
 
 export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: string }) {
   const router = useRouter();
@@ -482,13 +552,19 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
         )}
 
         <div className="space-y-6">
-          <FeedProfileHeader
-            profile={profile}
-            postCount={posts.length}
-            onNewPost={isOwnProfile ? handleRequestNewPost : undefined}
-            onProfileImageClick={isOwnProfile ? () => setProfileImageAlertOpen(true) : undefined}
-            editable={isOwnProfile}
-          />
+          {isOwnProfile ? (
+            <FeedProfileHeader
+              profile={profile as MyProfileResponse | null}
+              postCount={posts.length}
+              onNewPost={handleRequestNewPost}
+              onProfileImageClick={() => setProfileImageAlertOpen(true)}
+            />
+          ) : (
+            <PublicProfileHeader
+              profile={profile as PublicProfileResponse | null}
+              postCount={posts.length}
+            />
+          )}
 
           {isOwnProfile ? (
             <div className="my-feed-tab-list">
@@ -508,15 +584,15 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
           {(isOwnProfile ? activeTab === "posts" : true) && (
             <>
               {grid.length === 0 && !loading ? (
-                <EmptyFeedState
-                  onNewPost={isOwnProfile ? handleRequestNewPost : undefined}
-                  title={isOwnProfile ? "첫 기록을 남겨보세요" : "아직 공개된 게시물이 없어요"}
-                  description={
-                    isOwnProfile
-                      ? "사진과 짧은 기록만 남겨도 멍냥마당의 아카이브가 시작됩니다."
-                      : "이 사용자가 공개한 게시물이 아직 없습니다."
-                  }
-                />
+                isOwnProfile ? (
+                  <EmptyFeedState onNewPost={handleRequestNewPost} />
+                ) : (
+                  <Card className="gradient-shell">
+                    <CardContent className="py-12 text-center text-sm text-[var(--color-text-muted)]">
+                      이 사용자가 공개한 게시물이 아직 없습니다.
+                    </CardContent>
+                  </Card>
+                )
               ) : (
                 <FeedGrid posts={grid} onSelect={setSelectedPost} />
               )}
