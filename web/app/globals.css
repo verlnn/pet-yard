@@ -3042,7 +3042,7 @@ body {
   }
 
   .onboarding-profile-help-block {
-    @apply -mt-2 space-y-1.5;
+    @apply space-y-1.5;
   }
 
   .onboarding-profile-help-toggle {
