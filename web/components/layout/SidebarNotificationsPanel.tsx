@@ -37,6 +37,9 @@ function formatRelative(value: string) {
     return "";
   }
   const diffMinutes = Math.round((target.getTime() - Date.now()) / 60000);
+  if (Math.abs(diffMinutes) < 1) {
+    return "지금";
+  }
   if (Math.abs(diffMinutes) < 60) {
     return relativeTimeFormat.format(diffMinutes, "minute");
   }

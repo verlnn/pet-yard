@@ -45,6 +45,7 @@ export function FeedClient() {
   const [selectedPostCommentSubmitting, setSelectedPostCommentSubmitting] = useState(false);
   const [selectedReplyTargetComment, setSelectedReplyTargetComment] = useState<FeedPostComment | null>(null);
   const [selectedCommentPawLoadingId, setSelectedCommentPawLoadingId] = useState<number | null>(null);
+  const [selectedCommentDeletingId, setSelectedCommentDeletingId] = useState<number | null>(null);
   const [selectedPostPawLoading, setSelectedPostPawLoading] = useState(false);
   const [commentFocusToken, setCommentFocusToken] = useState(0);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
@@ -387,6 +388,33 @@ export function FeedClient() {
     }
   };
 
+  const handleDeleteSelectedComment = async (comment: FeedPostComment) => {
+    if (!accessToken || selectedCommentDeletingId === comment.id || !selectedPost) {
+      return;
+    }
+    setSelectedCommentDeletingId(comment.id);
+    setSelectedPostCommentsError(null);
+    try {
+      await authApi.deleteFeedPostComment(accessToken, comment.id);
+      const removedIds = new Set(
+        selectedPostComments
+          .filter((item) => item.id === comment.id || item.parentCommentId === comment.id)
+          .map((item) => item.id)
+      );
+      const removedCount = removedIds.size;
+      setSelectedPostComments((previous) => previous.filter((item) => !removedIds.has(item.id)));
+      setSelectedPost((previous) => previous ? {
+        ...previous,
+        commentCount: Math.max(0, previous.commentCount - removedCount)
+      } : previous);
+      setSelectedReplyTargetComment((previous) => previous && removedIds.has(previous.id) ? null : previous);
+    } catch (error) {
+      setSelectedPostCommentsError(error instanceof Error ? error.message : "댓글을 삭제하지 못했습니다.");
+    } finally {
+      setSelectedCommentDeletingId(null);
+    }
+  };
+
   if (!accessToken) {
     return (
       <section className="home-feed-shell">
@@ -509,6 +537,7 @@ export function FeedClient() {
                 <FeedDetailSidebar
                   post={selectedPost}
                   maxHeight={selectedPostPhotoSize.height || 480}
+                  currentUserId={viewerUserId}
                   onTogglePaw={handleToggleSelectedPostPaw}
                   pawLoading={selectedPostPawLoading}
                   comments={selectedPostComments}
@@ -522,8 +551,10 @@ export function FeedClient() {
                   replyTargetUsername={selectedReplyTargetComment?.authorUsername ?? selectedReplyTargetComment?.authorNickname ?? null}
                   onCancelReply={() => setSelectedReplyTargetComment(null)}
                   pawingCommentId={selectedCommentPawLoadingId}
+                  deletingCommentId={selectedCommentDeletingId}
                   onReplyComment={handleReplyToSelectedComment}
                   onToggleCommentPaw={handleToggleSelectedCommentPaw}
+                  onDeleteComment={handleDeleteSelectedComment}
                 />
               </div>
             </motion.div>

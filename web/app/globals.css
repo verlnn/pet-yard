@@ -1859,7 +1859,7 @@ body {
   }
 
   .feed-detail-comment-item {
-    @apply flex items-start gap-3 py-1 text-sm leading-6;
+    @apply relative flex items-start gap-3 py-1 text-sm leading-6;
   }
 
   .feed-detail-comment-item-nested {
@@ -1904,6 +1904,47 @@ body {
 
   .feed-detail-comment-reply-trigger {
     @apply transition hover:text-white/80;
+  }
+
+  .feed-detail-comment-more-shell {
+    @apply relative;
+  }
+
+  .feed-detail-comment-more-trigger {
+    color: rgba(255, 255, 255, 0.44);
+    opacity: 0;
+    @apply inline-flex h-5 w-5 items-center justify-center rounded-md transition;
+  }
+
+  .feed-detail-comment-item:hover .feed-detail-comment-more-trigger,
+  .feed-detail-comment-more-trigger-active {
+    opacity: 1;
+  }
+
+  .feed-detail-comment-more-trigger:hover {
+    color: rgba(255, 255, 255, 0.78);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .feed-detail-comment-more-icon {
+    @apply h-4 w-4;
+  }
+
+  .feed-detail-comment-more-menu {
+    @apply absolute left-0 top-[calc(100%+8px)] z-10 flex min-w-[124px] flex-col overflow-hidden rounded-xl border border-white/10 bg-[#1f2126] shadow-[0_18px_40px_rgba(0,0,0,0.42)];
+  }
+
+  .feed-detail-comment-more-item {
+    color: rgba(255, 255, 255, 0.82);
+    @apply px-4 py-3 text-left text-sm font-medium transition hover:bg-white/5 disabled:opacity-60;
+  }
+
+  .feed-detail-comment-more-item + .feed-detail-comment-more-item {
+    @apply border-t border-white/10;
+  }
+
+  .feed-detail-comment-more-item-danger {
+    color: #ff6b6b;
   }
 
   .feed-detail-comment-paw-button {

@@ -470,6 +470,14 @@ export const authApi = {
       }
     });
   },
+  deleteFeedPostComment(accessToken: string, commentId: number) {
+    return request<void>(`/api/feeds/comments/${commentId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+  },
   registerGuardian(accessToken: string, targetUserId: number) {
     return request<GuardianRegistrationResponse>(`/api/users/${targetUserId}/guardians`, {
       method: "POST",

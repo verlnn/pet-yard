@@ -261,6 +261,20 @@ public class FeedController {
     }
 
     @RequirePermission(Permission.FEED_CREATE)
+    @DeleteMapping("/comments/{commentId}")
+    @Operation(summary = "댓글 삭제", description = "현재 로그인 사용자가 작성한 댓글을 삭제합니다.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "삭제 성공"),
+        @ApiResponse(responseCode = "400", description = "대상 댓글이 없거나 잘못된 요청",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "403", description = "본인 댓글이 아님",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public void deleteComment(@AuthenticationPrincipal AuthPrincipal principal, @PathVariable Long commentId) {
+        feedCommentApplicationService.deleteComment(principal.userId(), commentId);
+    }
+
+    @RequirePermission(Permission.FEED_CREATE)
     @DeleteMapping("/{id}")
     @Operation(summary = "게시물 삭제", description = "현재 로그인 사용자가 작성한 게시물을 삭제합니다.")
     @ApiResponses({

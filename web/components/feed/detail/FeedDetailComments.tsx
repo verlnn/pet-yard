@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { PawPrint } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { MoreHorizontal, PawPrint } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { FeedPostComment } from "@/src/features/auth/types/authTypes";
 
@@ -10,9 +10,12 @@ interface FeedDetailCommentsProps {
   comments?: FeedPostComment[];
   loading?: boolean;
   errorMessage?: string | null;
+  currentUserId?: number | null;
   pawingCommentId?: number | null;
+  deletingCommentId?: number | null;
   onReply?: (comment: FeedPostComment) => void;
   onTogglePaw?: (comment: FeedPostComment) => void;
+  onDelete?: (comment: FeedPostComment) => void;
 }
 
 const relativeTimeFormat = new Intl.RelativeTimeFormat("ko", { numeric: "auto" });
@@ -23,6 +26,9 @@ function formatCommentRelativeTime(value: string) {
     return "";
   }
   const diffMinutes = Math.round((target.getTime() - Date.now()) / 60000);
+  if (Math.abs(diffMinutes) < 1) {
+    return "지금";
+  }
   if (Math.abs(diffMinutes) < 60) {
     return relativeTimeFormat.format(diffMinutes, "minute");
   }
@@ -38,11 +44,15 @@ export function FeedDetailComments({
   comments = [],
   loading = false,
   errorMessage = null,
+  currentUserId = null,
   pawingCommentId = null,
+  deletingCommentId = null,
   onReply,
-  onTogglePaw
+  onTogglePaw,
+  onDelete
 }: FeedDetailCommentsProps) {
   const [expandedParentIds, setExpandedParentIds] = useState<number[]>([]);
+  const [openMenuCommentId, setOpenMenuCommentId] = useState<number | null>(null);
 
   const { rootComments, repliesByParentId } = useMemo(() => {
     const roots: FeedPostComment[] = [];
@@ -66,6 +76,12 @@ export function FeedDetailComments({
         : [...previous, commentId]
     );
   };
+
+  useEffect(() => {
+    if (deletingCommentId != null) {
+      setOpenMenuCommentId(null);
+    }
+  }, [deletingCommentId]);
 
   const renderComment = (comment: FeedPostComment, nested = false) => (
     <div key={comment.id} className={`feed-detail-comment-item ${nested ? "feed-detail-comment-item-nested" : ""}`}>
@@ -95,6 +111,37 @@ export function FeedDetailComments({
           <button type="button" className="feed-detail-comment-reply-trigger" onClick={() => onReply?.(comment)}>
             답글 달기
           </button>
+          {currentUserId === comment.authorId ? (
+            <div className="feed-detail-comment-more-shell">
+              <button
+                type="button"
+                className={`feed-detail-comment-more-trigger ${openMenuCommentId === comment.id ? "feed-detail-comment-more-trigger-active" : ""}`}
+                aria-label="댓글 더보기"
+                onClick={() => setOpenMenuCommentId((previous) => previous === comment.id ? null : comment.id)}
+              >
+                <MoreHorizontal className="feed-detail-comment-more-icon" />
+              </button>
+              {openMenuCommentId === comment.id ? (
+                <div className="feed-detail-comment-more-menu">
+                  <button
+                    type="button"
+                    className="feed-detail-comment-more-item feed-detail-comment-more-item-danger"
+                    onClick={() => onDelete?.(comment)}
+                    disabled={deletingCommentId === comment.id}
+                  >
+                    {deletingCommentId === comment.id ? "삭제 중..." : "삭제"}
+                  </button>
+                  <button
+                    type="button"
+                    className="feed-detail-comment-more-item"
+                    onClick={() => setOpenMenuCommentId(null)}
+                  >
+                    취소
+                  </button>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
         </div>
       </div>
       <button

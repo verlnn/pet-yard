@@ -1,6 +1,7 @@
 package io.pet.petyard.feed.adapter.out.persistence;
 
 import io.pet.petyard.feed.application.port.out.LoadFeedPostCommentPort;
+import io.pet.petyard.feed.application.port.out.DeleteFeedPostCommentPort;
 import io.pet.petyard.feed.application.port.out.SaveFeedPostCommentPort;
 import io.pet.petyard.feed.domain.model.FeedPostComment;
 
@@ -12,7 +13,7 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FeedPostCommentPersistenceAdapter implements LoadFeedPostCommentPort, SaveFeedPostCommentPort {
+public class FeedPostCommentPersistenceAdapter implements LoadFeedPostCommentPort, SaveFeedPostCommentPort, DeleteFeedPostCommentPort {
 
     private final FeedPostCommentRepository repository;
 
@@ -31,6 +32,11 @@ public class FeedPostCommentPersistenceAdapter implements LoadFeedPostCommentPor
     }
 
     @Override
+    public List<FeedPostComment> findByParentCommentId(Long parentCommentId) {
+        return repository.findByParentCommentId(parentCommentId);
+    }
+
+    @Override
     public Map<Long, Long> countByPostIds(Collection<Long> postIds) {
         Map<Long, Long> counts = new LinkedHashMap<>();
         repository.countGroupedByPostIds(postIds).forEach(row -> counts.put((Long) row[0], (Long) row[1]));
@@ -40,5 +46,13 @@ public class FeedPostCommentPersistenceAdapter implements LoadFeedPostCommentPor
     @Override
     public FeedPostComment save(FeedPostComment comment) {
         return repository.save(comment);
+    }
+
+    @Override
+    public void deleteByIds(Collection<Long> commentIds) {
+        if (commentIds.isEmpty()) {
+            return;
+        }
+        repository.deleteByIdIn(commentIds);
     }
 }

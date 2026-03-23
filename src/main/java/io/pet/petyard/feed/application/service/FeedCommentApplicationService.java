@@ -5,6 +5,7 @@ import io.pet.petyard.auth.domain.model.User;
 import io.pet.petyard.common.ApiException;
 import io.pet.petyard.common.ErrorCode;
 import io.pet.petyard.feed.application.model.FeedPostCommentView;
+import io.pet.petyard.feed.application.port.out.DeleteFeedPostCommentPort;
 import io.pet.petyard.feed.application.port.out.DeleteFeedPostCommentPawPort;
 import io.pet.petyard.feed.application.port.out.LoadFeedPostCommentPort;
 import io.pet.petyard.feed.application.port.out.LoadFeedPostCommentPawPort;
@@ -36,6 +37,7 @@ public class FeedCommentApplicationService {
 
     private final LoadFeedPostPort loadFeedPostPort;
     private final LoadFeedPostCommentPort loadFeedPostCommentPort;
+    private final DeleteFeedPostCommentPort deleteFeedPostCommentPort;
     private final SaveFeedPostCommentPort saveFeedPostCommentPort;
     private final LoadFeedPostCommentPawPort loadFeedPostCommentPawPort;
     private final SaveFeedPostCommentPawPort saveFeedPostCommentPawPort;
@@ -48,6 +50,7 @@ public class FeedCommentApplicationService {
 
     public FeedCommentApplicationService(LoadFeedPostPort loadFeedPostPort,
                                          LoadFeedPostCommentPort loadFeedPostCommentPort,
+                                         DeleteFeedPostCommentPort deleteFeedPostCommentPort,
                                          SaveFeedPostCommentPort saveFeedPostCommentPort,
                                          LoadFeedPostCommentPawPort loadFeedPostCommentPawPort,
                                          SaveFeedPostCommentPawPort saveFeedPostCommentPawPort,
@@ -59,6 +62,7 @@ public class FeedCommentApplicationService {
                                          SaveUserNotificationPort saveUserNotificationPort) {
         this.loadFeedPostPort = loadFeedPostPort;
         this.loadFeedPostCommentPort = loadFeedPostCommentPort;
+        this.deleteFeedPostCommentPort = deleteFeedPostCommentPort;
         this.saveFeedPostCommentPort = saveFeedPostCommentPort;
         this.loadFeedPostCommentPawPort = loadFeedPostCommentPawPort;
         this.saveFeedPostCommentPawPort = saveFeedPostCommentPawPort;
@@ -105,6 +109,22 @@ public class FeedCommentApplicationService {
             .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST));
         deleteFeedPostCommentPawPort.deleteByCommentIdAndUserId(commentId, userId);
         return toViews(userId, List.of(comment)).getFirst();
+    }
+
+    @Transactional
+    public void deleteComment(Long userId, Long commentId) {
+        FeedPostComment comment = loadFeedPostCommentPort.findById(commentId)
+            .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST));
+        if (!userId.equals(comment.getUserId())) {
+            throw new ApiException(ErrorCode.FORBIDDEN);
+        }
+        List<Long> replyIds = loadFeedPostCommentPort.findByParentCommentId(commentId).stream()
+            .map(FeedPostComment::getId)
+            .toList();
+        java.util.LinkedHashSet<Long> commentIdsToDelete = new java.util.LinkedHashSet<>();
+        commentIdsToDelete.addAll(replyIds);
+        commentIdsToDelete.add(commentId);
+        deleteFeedPostCommentPort.deleteByIds(commentIdsToDelete);
     }
 
     private FeedPost ensurePostExists(Long postId) {

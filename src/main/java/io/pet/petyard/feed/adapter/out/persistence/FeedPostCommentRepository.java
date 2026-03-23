@@ -21,6 +21,10 @@ public interface FeedPostCommentRepository extends JpaRepository<FeedPostComment
 
     java.util.Optional<FeedPostComment> findById(Long id);
 
+    List<FeedPostComment> findByParentCommentId(Long parentCommentId);
+
+    void deleteByIdIn(Collection<Long> ids);
+
     @Query("""
         select c.postId, count(c)
         from FeedPostComment c

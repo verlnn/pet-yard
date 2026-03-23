@@ -8,6 +8,7 @@ import type { FeedPost, FeedPostComment } from "@/src/features/auth/types/authTy
 interface FeedDetailSidebarProps {
   post: FeedPost;
   maxHeight: number;
+  currentUserId?: number | null;
   onTogglePaw: () => void;
   pawLoading?: boolean;
   comments?: FeedPostComment[];
@@ -21,13 +22,16 @@ interface FeedDetailSidebarProps {
   replyTargetUsername?: string | null;
   onCancelReply?: () => void;
   pawingCommentId?: number | null;
+  deletingCommentId?: number | null;
   onReplyComment?: (comment: FeedPostComment) => void;
   onToggleCommentPaw?: (comment: FeedPostComment) => void;
+  onDeleteComment?: (comment: FeedPostComment) => void;
 }
 
 export function FeedDetailSidebar({
   post,
   maxHeight,
+  currentUserId = null,
   onTogglePaw,
   pawLoading = false,
   comments = [],
@@ -41,8 +45,10 @@ export function FeedDetailSidebar({
   replyTargetUsername,
   onCancelReply,
   pawingCommentId = null,
+  deletingCommentId = null,
   onReplyComment,
-  onToggleCommentPaw
+  onToggleCommentPaw,
+  onDeleteComment
 }: FeedDetailSidebarProps) {
   return (
     <div
@@ -58,9 +64,12 @@ export function FeedDetailSidebar({
           comments={comments}
           loading={commentsLoading}
           errorMessage={commentsErrorMessage}
+          currentUserId={currentUserId}
           pawingCommentId={pawingCommentId}
+          deletingCommentId={deletingCommentId}
           onReply={onReplyComment}
           onTogglePaw={onToggleCommentPaw}
+          onDelete={onDeleteComment}
         />
       </div>
       <FeedDetailActionBar

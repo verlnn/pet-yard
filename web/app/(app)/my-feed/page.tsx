@@ -223,6 +223,7 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
   const [selectedPostCommentSubmitting, setSelectedPostCommentSubmitting] = useState(false);
   const [selectedReplyTargetComment, setSelectedReplyTargetComment] = useState<FeedPostComment | null>(null);
   const [selectedCommentPawLoadingId, setSelectedCommentPawLoadingId] = useState<number | null>(null);
+  const [selectedCommentDeletingId, setSelectedCommentDeletingId] = useState<number | null>(null);
   const [commentFocusToken, setCommentFocusToken] = useState(0);
   const [guardianLoading, setGuardianLoading] = useState(false);
   const [guardianUnregisterAlertOpen, setGuardianUnregisterAlertOpen] = useState(false);
@@ -658,6 +659,40 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
     }
   };
 
+  const handleDeleteComment = async (comment: FeedPostComment) => {
+    if (!accessToken || selectedCommentDeletingId === comment.id || !selectedPost) {
+      return;
+    }
+    setSelectedCommentDeletingId(comment.id);
+    setSelectedPostCommentsError(null);
+    try {
+      await authApi.deleteFeedPostComment(accessToken, comment.id);
+      const removedIds = new Set(
+        selectedPostComments
+          .filter((item) => item.id === comment.id || item.parentCommentId === comment.id)
+          .map((item) => item.id)
+      );
+      const removedCount = removedIds.size;
+      setSelectedPostComments((previous) => previous.filter((item) => !removedIds.has(item.id)));
+      setPosts((previous) =>
+        previous.map((post) =>
+          post.id === selectedPost.id
+            ? { ...post, commentCount: Math.max(0, ((post as FeedPost & { commentCount?: number }).commentCount ?? 0) - removedCount) }
+            : post
+        )
+      );
+      setSelectedPost((previous) => previous ? {
+        ...previous,
+        commentCount: Math.max(0, previous.commentCount - removedCount)
+      } : previous);
+      setSelectedReplyTargetComment((previous) => previous && removedIds.has(previous.id) ? null : previous);
+    } catch (error) {
+      setSelectedPostCommentsError(error instanceof Error ? error.message : "댓글을 삭제하지 못했습니다.");
+    } finally {
+      setSelectedCommentDeletingId(null);
+    }
+  };
+
   const primaryPet = profile?.pets?.find((pet) => pet.id === profile?.primaryPetId) ?? profile?.pets?.[0];
   const handleRequestNewPost = () => {
     if (loading) {
@@ -1055,6 +1090,7 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
               <FeedDetailSidebar
                 post={selectedPost}
                 maxHeight={selectedPostPhotoSize.height || 480}
+                currentUserId={profile?.userId ?? null}
                 onTogglePaw={handleTogglePaw}
                 pawLoading={pawLoading}
                 comments={selectedPostComments}
@@ -1068,8 +1104,10 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
                 replyTargetUsername={selectedReplyTargetComment?.authorUsername ?? selectedReplyTargetComment?.authorNickname ?? null}
                 onCancelReply={() => setSelectedReplyTargetComment(null)}
                 pawingCommentId={selectedCommentPawLoadingId}
+                deletingCommentId={selectedCommentDeletingId}
                 onReplyComment={handleReplyToComment}
                 onToggleCommentPaw={handleToggleCommentPaw}
+                onDeleteComment={handleDeleteComment}
               />
             </div>
             {isOwnProfile && deleteConfirmOpen && (
