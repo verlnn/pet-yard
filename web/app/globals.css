@@ -780,7 +780,7 @@ body {
   .feed-profile-header-primary-action,
   .feed-profile-header-message-action {
     border-radius: 10px !important;
-    min-width: 156px;
+    min-width: 176px;
     @apply h-12 flex-1 gap-2 px-6;
   }
 
