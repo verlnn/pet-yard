@@ -12,6 +12,7 @@ import io.pet.petyard.pet.application.port.out.LoadPetProfilePort;
 import io.pet.petyard.pet.domain.model.PetProfile;
 import io.pet.petyard.region.application.port.out.LoadRegionPort;
 import io.pet.petyard.user.domain.UserProfileGender;
+import io.pet.petyard.user.application.port.out.LoadGuardianRegistrationPort;
 import io.pet.petyard.user.application.port.out.LoadUserProfilePort;
 import io.pet.petyard.user.application.port.out.LoadUserProfileSettingsPort;
 import io.pet.petyard.user.application.port.out.SaveUserProfileSettingsPort;
@@ -45,6 +46,7 @@ public class UserProfileController {
 
     private final LoadUserPort loadUserPort;
     private final LoadUserProfilePort loadUserProfilePort;
+    private final LoadGuardianRegistrationPort loadGuardianRegistrationPort;
     private final LoadUserProfileSettingsPort loadUserProfileSettingsPort;
     private final SaveUserProfileSettingsPort saveUserProfileSettingsPort;
     private final SaveUserPort saveUserPort;
@@ -53,6 +55,7 @@ public class UserProfileController {
 
     public UserProfileController(LoadUserPort loadUserPort,
                                  LoadUserProfilePort loadUserProfilePort,
+                                 LoadGuardianRegistrationPort loadGuardianRegistrationPort,
                                  LoadUserProfileSettingsPort loadUserProfileSettingsPort,
                                  SaveUserProfileSettingsPort saveUserProfileSettingsPort,
                                  SaveUserPort saveUserPort,
@@ -60,6 +63,7 @@ public class UserProfileController {
                                  LoadPetProfilePort loadPetProfilePort) {
         this.loadUserPort = loadUserPort;
         this.loadUserProfilePort = loadUserProfilePort;
+        this.loadGuardianRegistrationPort = loadGuardianRegistrationPort;
         this.loadUserProfileSettingsPort = loadUserProfileSettingsPort;
         this.saveUserProfileSettingsPort = saveUserProfileSettingsPort;
         this.saveUserPort = saveUserPort;
@@ -242,6 +246,7 @@ public class UserProfileController {
             user.getTier().name(),
             user.getCreatedAt(),
             user.getLastLoginAt(),
+            loadGuardianRegistrationPort.countByTargetUserId(user.getId()),
             petResponses.size(),
             petResponses
         );

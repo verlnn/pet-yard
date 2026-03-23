@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface GuardianRegistrationRepository extends JpaRepository<GuardianRegistration, Long> {
     boolean existsByGuardianUserIdAndTargetUserId(Long guardianUserId, Long targetUserId);
+    long countByTargetUserId(Long targetUserId);
 
     @Query("""
         select g.targetUserId

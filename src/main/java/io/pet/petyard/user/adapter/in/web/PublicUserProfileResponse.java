@@ -21,6 +21,8 @@ public record PublicUserProfileResponse(
     String bio,
     @Schema(description = "대표 반려동물 id", nullable = true)
     Long primaryPetId,
+    @Schema(description = "집사 등록 수", example = "12")
+    long guardianCount,
     @Schema(description = "등록된 반려동물 수", example = "2")
     int petCount,
     @Schema(description = "등록된 반려동물 목록")

@@ -31,6 +31,11 @@ public class GuardianRegistrationPersistenceAdapter
     }
 
     @Override
+    public long countByTargetUserId(Long targetUserId) {
+        return repository.countByTargetUserId(targetUserId);
+    }
+
+    @Override
     public void save(Long guardianUserId, Long targetUserId) {
         repository.save(new GuardianRegistration(guardianUserId, targetUserId));
     }

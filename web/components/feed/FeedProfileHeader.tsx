@@ -96,8 +96,8 @@ function FeedProfileIdentity({ profile, primaryPet, postCount, onProfileImageCli
 
         <div className="feed-profile-header-stats">
           <FeedProfileStat label="게시물" value={postCount} />
+          <FeedProfileStat label="집사들" value={profile?.guardianCount ?? 0} />
           <FeedProfileStat label="반려동물" value={profile?.petCount ?? 0} />
-          <FeedProfileStat label="지역" value={profile?.regionName ?? "미설정"} />
         </div>
 
         <div className="feed-profile-header-meta">

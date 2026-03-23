@@ -10,6 +10,7 @@ import io.pet.petyard.pet.adapter.in.web.PetProfileResponse;
 import io.pet.petyard.pet.application.port.out.LoadPetProfilePort;
 import io.pet.petyard.pet.domain.model.PetProfile;
 import io.pet.petyard.region.application.port.out.LoadRegionPort;
+import io.pet.petyard.user.application.port.out.LoadGuardianRegistrationPort;
 import io.pet.petyard.user.application.port.out.LoadUserProfilePort;
 import io.pet.petyard.user.application.port.out.LoadUserProfileSettingsPort;
 import io.pet.petyard.user.domain.model.UserProfile;
@@ -35,17 +36,20 @@ public class PublicUserProfileController {
 
     private final LoadUserPort loadUserPort;
     private final LoadUserProfilePort loadUserProfilePort;
+    private final LoadGuardianRegistrationPort loadGuardianRegistrationPort;
     private final LoadUserProfileSettingsPort loadUserProfileSettingsPort;
     private final LoadRegionPort loadRegionPort;
     private final LoadPetProfilePort loadPetProfilePort;
 
     public PublicUserProfileController(LoadUserPort loadUserPort,
                                        LoadUserProfilePort loadUserProfilePort,
+                                       LoadGuardianRegistrationPort loadGuardianRegistrationPort,
                                        LoadUserProfileSettingsPort loadUserProfileSettingsPort,
                                        LoadRegionPort loadRegionPort,
                                        LoadPetProfilePort loadPetProfilePort) {
         this.loadUserPort = loadUserPort;
         this.loadUserProfilePort = loadUserProfilePort;
+        this.loadGuardianRegistrationPort = loadGuardianRegistrationPort;
         this.loadUserProfileSettingsPort = loadUserProfileSettingsPort;
         this.loadRegionPort = loadRegionPort;
         this.loadPetProfilePort = loadPetProfilePort;
@@ -103,6 +107,7 @@ public class PublicUserProfileController {
             profile.getProfileImageUrl(),
             settings == null ? null : settings.getBio(),
             primaryPetId,
+            loadGuardianRegistrationPort.countByTargetUserId(user.getId()),
             pets.size(),
             pets
         );

@@ -115,6 +115,7 @@ export interface MyProfileResponse {
   tier: string;
   joinedAt: string;
   lastLoginAt?: string | null;
+  guardianCount: number;
   petCount: number;
   pets: PetProfile[];
 }
@@ -127,6 +128,7 @@ export interface PublicProfileResponse {
   profileImageUrl?: string | null;
   bio?: string | null;
   primaryPetId?: number | null;
+  guardianCount: number;
   petCount: number;
   pets: PetProfile[];
 }

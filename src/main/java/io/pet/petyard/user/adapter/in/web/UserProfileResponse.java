@@ -30,6 +30,8 @@ public record UserProfileResponse(
     Instant joinedAt,
     @Schema(description = "최근 로그인 시각", nullable = true)
     Instant lastLoginAt,
+    @Schema(description = "집사 등록 수", example = "12")
+    long guardianCount,
     @Schema(description = "등록된 반려동물 수", example = "2")
     int petCount,
     @Schema(description = "등록된 반려동물 목록")

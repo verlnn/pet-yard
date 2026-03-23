@@ -21,6 +21,7 @@ import io.pet.petyard.pet.application.port.out.LoadPetProfilePort;
 import io.pet.petyard.pet.domain.PetGender;
 import io.pet.petyard.pet.domain.PetSpecies;
 import io.pet.petyard.pet.domain.model.PetProfile;
+import io.pet.petyard.user.application.port.out.LoadGuardianRegistrationPort;
 import io.pet.petyard.user.application.port.out.LoadUserProfilePort;
 import io.pet.petyard.user.application.port.out.LoadUserProfileSettingsPort;
 import io.pet.petyard.user.application.port.out.SaveUserProfileSettingsPort;
@@ -65,6 +66,7 @@ class UserProfileControllerTest {
     @MockitoBean private LoadUserPort loadUserPort;
     @MockitoBean private SaveUserPort saveUserPort;
     @MockitoBean private LoadUserProfilePort loadUserProfilePort;
+    @MockitoBean private LoadGuardianRegistrationPort loadGuardianRegistrationPort;
     @MockitoBean private LoadUserProfileSettingsPort loadUserProfileSettingsPort;
     @MockitoBean private SaveUserProfileSettingsPort saveUserProfileSettingsPort;
     @MockitoBean private LoadRegionPort loadRegionPort;
@@ -80,6 +82,7 @@ class UserProfileControllerTest {
         settings.updateGender(UserProfileGender.UNSPECIFIED);
         settings.updatePrimaryPetId(7L);
         given(loadUserProfileSettingsPort.findByUserId(11L)).willReturn(Optional.of(settings));
+        given(loadGuardianRegistrationPort.countByTargetUserId(11L)).willReturn(4L);
         given(loadRegionPort.findByCode("11010")).willReturn(Optional.of(region("11010", "부암동", "DONG", "11000")));
         given(loadPetProfilePort.findByUserId(11L)).willReturn(List.of(new PetProfile(
             11L, "보리", PetSpecies.DOG, "푸들", LocalDate.of(2021, 5, 1), null, PetGender.MALE,
@@ -90,6 +93,7 @@ class UserProfileControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.username").value("user.11"))
             .andExpect(jsonPath("$.nickname").value("멍냥집사"))
+            .andExpect(jsonPath("$.guardianCount").value(4))
             .andExpect(jsonPath("$.regionName").value("부암동"))
             .andExpect(jsonPath("$.primaryPetId").value(7))
             .andExpect(jsonPath("$.pets[0].name").value("보리"));

@@ -16,6 +16,7 @@ import io.pet.petyard.common.application.service.ErrorLogService;
 import io.pet.petyard.pet.application.port.out.LoadPetProfilePort;
 import io.pet.petyard.region.application.port.out.LoadRegionPort;
 import io.pet.petyard.support.WebMvcSliceTestConfig;
+import io.pet.petyard.user.application.port.out.LoadGuardianRegistrationPort;
 import io.pet.petyard.user.application.port.out.LoadUserProfilePort;
 import io.pet.petyard.user.application.port.out.LoadUserProfileSettingsPort;
 import io.pet.petyard.user.domain.model.UserProfile;
@@ -41,6 +42,7 @@ class PublicUserProfileControllerTest {
 
     @MockitoBean private LoadUserPort loadUserPort;
     @MockitoBean private LoadUserProfilePort loadUserProfilePort;
+    @MockitoBean private LoadGuardianRegistrationPort loadGuardianRegistrationPort;
     @MockitoBean private LoadUserProfileSettingsPort loadUserProfileSettingsPort;
     @MockitoBean private LoadRegionPort loadRegionPort;
     @MockitoBean private LoadPetProfilePort loadPetProfilePort;
@@ -52,11 +54,13 @@ class PublicUserProfileControllerTest {
         given(loadUserPort.findByUsername("owner.test")).willReturn(Optional.of(activeUser(11L, "owner.test")));
         given(loadUserProfilePort.findByUserId(11L)).willReturn(Optional.of(new UserProfile(11L, "멍냥집사", null, "/profile.jpg", false, true)));
         given(loadUserProfileSettingsPort.findByUserId(11L)).willReturn(Optional.empty());
+        given(loadGuardianRegistrationPort.countByTargetUserId(11L)).willReturn(3L);
         given(loadPetProfilePort.findByUserId(11L)).willReturn(List.of());
 
         mockMvc.perform(get("/api/users/Owner.Test/profile"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.username").value("owner.test"))
+            .andExpect(jsonPath("$.guardianCount").value(3))
             .andExpect(jsonPath("$.nickname").value("멍냥집사"));
     }
 

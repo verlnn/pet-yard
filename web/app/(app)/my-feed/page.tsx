@@ -121,12 +121,12 @@ function PublicProfileHeader({ profile, postCount }: { profile?: PublicProfileRe
                 <span className="feed-profile-header-stat-label">게시물</span>
               </span>
               <span className="feed-profile-header-stat">
-                <strong className="feed-profile-header-stat-value">{profile?.petCount ?? 0}</strong>
-                <span className="feed-profile-header-stat-label">반려동물</span>
+                <strong className="feed-profile-header-stat-value">{profile?.guardianCount ?? 0}</strong>
+                <span className="feed-profile-header-stat-label">집사들</span>
               </span>
               <span className="feed-profile-header-stat">
-                <strong className="feed-profile-header-stat-value">{profile?.regionName ?? "미설정"}</strong>
-                <span className="feed-profile-header-stat-label">지역</span>
+                <strong className="feed-profile-header-stat-value">{profile?.petCount ?? 0}</strong>
+                <span className="feed-profile-header-stat-label">반려동물</span>
               </span>
             </div>
 
