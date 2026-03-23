@@ -3209,6 +3209,16 @@ body {
     color: var(--color-text-muted);
   }
 
+  [data-theme="dark"] .onboarding-pet-details-card {
+    background: var(--color-surface);
+    border-color: var(--color-border);
+    box-shadow: var(--shadow-soft-token);
+  }
+
+  [data-theme="dark"] .onboarding-pet-details-card-scroll {
+    background: transparent;
+  }
+
   [data-theme="dark"] .onboarding-profile-field-success {
     color: #86efac;
   }
