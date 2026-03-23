@@ -71,13 +71,13 @@ export default function OnboardingConsentsPage() {
         error={error}
       >
         <div className="space-y-3">
-          <label className="flex items-center gap-2 text-sm text-slate-600">
+          <label className="onboarding-consents-all-label">
             <input type="checkbox" checked={allChecked} onChange={(event) => toggleAll(event.target.checked)} />
             전체 동의
           </label>
-          <div className="space-y-2 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <div className="onboarding-consents-list space-y-2">
             {terms.map((item) => (
-              <label key={item.code} className="flex items-center justify-between text-sm text-slate-600">
+              <label key={item.code} className="onboarding-consents-item">
                 <span>
                   {item.title} {item.mandatory ? "(필수)" : "(선택)"}
                 </span>

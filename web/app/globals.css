@@ -2886,6 +2886,18 @@ body {
     @apply rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600;
   }
 
+  .onboarding-consents-all-label {
+    @apply flex items-center gap-2 text-sm font-semibold text-slate-700;
+  }
+
+  .onboarding-consents-list {
+    @apply rounded-2xl border border-slate-200 bg-slate-50 p-4;
+  }
+
+  .onboarding-consents-item {
+    @apply flex items-center justify-between text-sm text-slate-600;
+  }
+
   .onboarding-profile-form {
     @apply space-y-6;
   }
@@ -3245,6 +3257,16 @@ body {
 
   [data-theme="dark"] .onboarding-pet-photo-card-empty {
     color: var(--color-text-muted);
+  }
+
+  [data-theme="dark"] .onboarding-consents-all-label,
+  [data-theme="dark"] .onboarding-consents-item {
+    color: var(--color-text);
+  }
+
+  [data-theme="dark"] .onboarding-consents-list {
+    background: var(--color-surface);
+    border-color: var(--color-border);
   }
 
   [data-theme="dark"] .onboarding-profile-field-success {
