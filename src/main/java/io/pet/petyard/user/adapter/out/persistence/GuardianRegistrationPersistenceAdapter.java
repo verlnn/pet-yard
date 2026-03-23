@@ -7,6 +7,7 @@ import io.pet.petyard.user.domain.model.GuardianRegistration;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
@@ -21,27 +22,27 @@ public class GuardianRegistrationPersistenceAdapter
     }
 
     @Override
-    public boolean existsByGuardianUserIdAndTargetUserId(Long guardianUserId, Long targetUserId) {
-        return repository.existsByGuardianUserIdAndTargetUserId(guardianUserId, targetUserId);
+    public Optional<GuardianRegistration> findRelationship(Long userId, Long otherUserId) {
+        return repository.findRelationship(userId, otherUserId);
     }
 
     @Override
-    public List<Long> findRegisteredTargetUserIds(Long guardianUserId, Collection<Long> targetUserIds) {
-        return repository.findTargetUserIdsByGuardianUserIdAndTargetUserIdIn(guardianUserId, targetUserIds);
+    public List<GuardianRegistration> findRelationships(Long userId, Collection<Long> otherUserIds) {
+        return repository.findRelationships(userId, otherUserIds);
     }
 
     @Override
-    public long countByTargetUserId(Long targetUserId) {
-        return repository.countByTargetUserId(targetUserId);
+    public long countConnectedByUserId(Long userId) {
+        return repository.countConnectedByUserId(userId);
     }
 
     @Override
-    public void save(Long guardianUserId, Long targetUserId) {
-        repository.save(new GuardianRegistration(guardianUserId, targetUserId));
+    public GuardianRegistration save(GuardianRegistration guardianRegistration) {
+        return repository.save(guardianRegistration);
     }
 
     @Override
-    public void delete(Long guardianUserId, Long targetUserId) {
-        repository.deleteByGuardianUserIdAndTargetUserId(guardianUserId, targetUserId);
+    public void delete(Long userId, Long otherUserId) {
+        repository.deleteRelationship(userId, otherUserId);
     }
 }

@@ -82,7 +82,7 @@ class UserProfileControllerTest {
         settings.updateGender(UserProfileGender.UNSPECIFIED);
         settings.updatePrimaryPetId(7L);
         given(loadUserProfileSettingsPort.findByUserId(11L)).willReturn(Optional.of(settings));
-        given(loadGuardianRegistrationPort.countByTargetUserId(11L)).willReturn(4L);
+        given(loadGuardianRegistrationPort.countConnectedByUserId(11L)).willReturn(4L);
         given(loadRegionPort.findByCode("11010")).willReturn(Optional.of(region("11010", "부암동", "DONG", "11000")));
         given(loadPetProfilePort.findByUserId(11L)).willReturn(List.of(new PetProfile(
             11L, "보리", PetSpecies.DOG, "푸들", LocalDate.of(2021, 5, 1), null, PetGender.MALE,

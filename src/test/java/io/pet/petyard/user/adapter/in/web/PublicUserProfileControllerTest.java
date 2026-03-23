@@ -19,6 +19,7 @@ import io.pet.petyard.support.WebMvcSliceTestConfig;
 import io.pet.petyard.user.application.port.out.LoadGuardianRegistrationPort;
 import io.pet.petyard.user.application.port.out.LoadUserProfilePort;
 import io.pet.petyard.user.application.port.out.LoadUserProfileSettingsPort;
+import io.pet.petyard.user.application.service.GuardianRegistrationService;
 import io.pet.petyard.user.domain.model.UserProfile;
 import java.time.Instant;
 import java.util.List;
@@ -46,6 +47,7 @@ class PublicUserProfileControllerTest {
     @MockitoBean private LoadUserProfileSettingsPort loadUserProfileSettingsPort;
     @MockitoBean private LoadRegionPort loadRegionPort;
     @MockitoBean private LoadPetProfilePort loadPetProfilePort;
+    @MockitoBean private GuardianRegistrationService guardianRegistrationService;
     @MockitoBean private ErrorLogService errorLogService;
 
     @Test
@@ -54,7 +56,7 @@ class PublicUserProfileControllerTest {
         given(loadUserPort.findByUsername("owner.test")).willReturn(Optional.of(activeUser(11L, "owner.test")));
         given(loadUserProfilePort.findByUserId(11L)).willReturn(Optional.of(new UserProfile(11L, "멍냥집사", null, "/profile.jpg", false, true)));
         given(loadUserProfileSettingsPort.findByUserId(11L)).willReturn(Optional.empty());
-        given(loadGuardianRegistrationPort.countByTargetUserId(11L)).willReturn(3L);
+        given(loadGuardianRegistrationPort.countConnectedByUserId(11L)).willReturn(3L);
         given(loadPetProfilePort.findByUserId(11L)).willReturn(List.of());
 
         mockMvc.perform(get("/api/users/Owner.Test/profile"))

@@ -3,6 +3,7 @@ package io.pet.petyard.user.adapter.in.web;
 import io.pet.petyard.auth.application.port.out.LoadUserPort;
 import io.pet.petyard.auth.domain.Username;
 import io.pet.petyard.auth.domain.model.User;
+import io.pet.petyard.auth.security.AuthPrincipal;
 import io.pet.petyard.auth.security.ErrorResponse;
 import io.pet.petyard.common.ApiException;
 import io.pet.petyard.common.ErrorCode;
@@ -13,6 +14,8 @@ import io.pet.petyard.region.application.port.out.LoadRegionPort;
 import io.pet.petyard.user.application.port.out.LoadGuardianRegistrationPort;
 import io.pet.petyard.user.application.port.out.LoadUserProfilePort;
 import io.pet.petyard.user.application.port.out.LoadUserProfileSettingsPort;
+import io.pet.petyard.user.application.service.GuardianRegistrationService;
+import io.pet.petyard.user.domain.GuardianRelationStatus;
 import io.pet.petyard.user.domain.model.UserProfile;
 import io.pet.petyard.user.domain.model.UserProfileSettings;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,12 +25,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -40,19 +43,22 @@ public class PublicUserProfileController {
     private final LoadUserProfileSettingsPort loadUserProfileSettingsPort;
     private final LoadRegionPort loadRegionPort;
     private final LoadPetProfilePort loadPetProfilePort;
+    private final GuardianRegistrationService guardianRegistrationService;
 
     public PublicUserProfileController(LoadUserPort loadUserPort,
                                        LoadUserProfilePort loadUserProfilePort,
                                        LoadGuardianRegistrationPort loadGuardianRegistrationPort,
                                        LoadUserProfileSettingsPort loadUserProfileSettingsPort,
                                        LoadRegionPort loadRegionPort,
-                                       LoadPetProfilePort loadPetProfilePort) {
+                                       LoadPetProfilePort loadPetProfilePort,
+                                       GuardianRegistrationService guardianRegistrationService) {
         this.loadUserPort = loadUserPort;
         this.loadUserProfilePort = loadUserProfilePort;
         this.loadGuardianRegistrationPort = loadGuardianRegistrationPort;
         this.loadUserProfileSettingsPort = loadUserProfileSettingsPort;
         this.loadRegionPort = loadRegionPort;
         this.loadPetProfilePort = loadPetProfilePort;
+        this.guardianRegistrationService = guardianRegistrationService;
     }
 
     @GetMapping("/{username}/profile")
@@ -64,6 +70,7 @@ public class PublicUserProfileController {
             content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public PublicUserProfileResponse profile(
+        @AuthenticationPrincipal AuthPrincipal principal,
         @Parameter(description = "공개 사용자 ID", example = "meongnyang.owner")
         @PathVariable String username
     ) {
@@ -98,6 +105,9 @@ public class PublicUserProfileController {
             : settings.getPrimaryPetId() != null
             ? settings.getPrimaryPetId()
             : (pets.size() == 1 ? pets.getFirst().id() : null);
+        GuardianRelationStatus relationStatus = principal == null
+            ? GuardianRelationStatus.NONE
+            : guardianRegistrationService.getRelationStatus(principal.userId(), user.getId());
 
         return new PublicUserProfileResponse(
             user.getId(),
@@ -107,7 +117,8 @@ public class PublicUserProfileController {
             profile.getProfileImageUrl(),
             settings == null ? null : settings.getBio(),
             primaryPetId,
-            loadGuardianRegistrationPort.countByTargetUserId(user.getId()),
+            relationStatus,
+            loadGuardianRegistrationPort.countConnectedByUserId(user.getId()),
             pets.size(),
             pets
         );

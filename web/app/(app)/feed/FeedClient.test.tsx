@@ -53,7 +53,9 @@ function post(id: number): HomeFeedPost {
   return {
     id,
     authorId: id,
+    authorUsername: `user.${id}`,
     authorNickname: `user-${id}`,
+    guardianRelationStatus: "NONE",
     guardianRegisteredByMe: false,
     commentCount: 0,
     pawCount: 0,

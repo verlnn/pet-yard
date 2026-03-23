@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 
 import io.pet.petyard.pet.adapter.in.web.PetProfileResponse;
+import io.pet.petyard.user.domain.GuardianRelationStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "내 프로필 상세 응답")
@@ -30,7 +31,9 @@ public record UserProfileResponse(
     Instant joinedAt,
     @Schema(description = "최근 로그인 시각", nullable = true)
     Instant lastLoginAt,
-    @Schema(description = "집사 등록 수", example = "12")
+    @Schema(description = "현재 사용자의 집사 관계 상태", example = "NONE")
+    GuardianRelationStatus guardianRelationStatus,
+    @Schema(description = "연결된 집사 수", example = "12")
     long guardianCount,
     @Schema(description = "등록된 반려동물 수", example = "2")
     int petCount,

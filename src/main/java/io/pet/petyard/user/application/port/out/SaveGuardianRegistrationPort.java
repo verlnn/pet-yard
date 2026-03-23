@@ -1,5 +1,7 @@
 package io.pet.petyard.user.application.port.out;
 
+import io.pet.petyard.user.domain.model.GuardianRegistration;
+
 public interface SaveGuardianRegistrationPort {
-    void save(Long guardianUserId, Long targetUserId);
+    GuardianRegistration save(GuardianRegistration guardianRegistration);
 }

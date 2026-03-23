@@ -5,6 +5,7 @@ import io.pet.petyard.auth.guard.RequirePermission;
 import io.pet.petyard.auth.security.AuthPrincipal;
 import io.pet.petyard.auth.security.ErrorResponse;
 import io.pet.petyard.user.application.service.GuardianRegistrationService;
+import io.pet.petyard.user.domain.GuardianRelationStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/users")
-@Tag(name = "Guardian Registration", description = "회원 간 집사 등록/해제 API")
+@Tag(name = "Guardian Registration", description = "회원 간 집사 요청/수락/해제 API")
 @SecurityRequirement(name = "bearerAuth")
 public class GuardianRegistrationController {
 
@@ -35,33 +36,37 @@ public class GuardianRegistrationController {
 
     @RequirePermission(Permission.FEED_CREATE)
     @PostMapping("/{targetUserId}/guardians")
-    @Operation(summary = "집사 등록", description = "다른 회원을 집사 등록 상태로 저장합니다.")
+    @Operation(summary = "집사 요청 또는 수락", description = "상대에게 집사 요청을 보내거나, 받은 요청을 수락합니다.")
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "집사 등록 성공",
+        @ApiResponse(responseCode = "200", description = "집사 요청/수락 성공",
             content = @Content(schema = @Schema(implementation = GuardianRegistrationResponse.class))),
-        @ApiResponse(responseCode = "400", description = "자기 자신 등록 시도 또는 대상 회원 없음",
+        @ApiResponse(responseCode = "400", description = "자기 자신 요청 시도, 대상 회원 없음, 비인가적 요청 빈도",
             content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    public GuardianRegistrationResponse register(@AuthenticationPrincipal AuthPrincipal principal,
-                                                 @Parameter(description = "집사 등록 대상 회원 식별자", example = "11")
-                                                 @PathVariable Long targetUserId) {
-        boolean guardianRegisteredByMe = guardianRegistrationService.register(principal.userId(), targetUserId);
-        return new GuardianRegistrationResponse(targetUserId, guardianRegisteredByMe);
+    public GuardianRegistrationResponse requestOrAccept(@AuthenticationPrincipal AuthPrincipal principal,
+                                                        @Parameter(description = "집사 요청 대상 회원 식별자", example = "11")
+                                                        @PathVariable Long targetUserId) {
+        GuardianRelationStatus relationStatus = guardianRegistrationService.requestOrAccept(principal.userId(), targetUserId);
+        return new GuardianRegistrationResponse(
+            targetUserId,
+            relationStatus,
+            relationStatus == GuardianRelationStatus.CONNECTED
+        );
     }
 
     @RequirePermission(Permission.FEED_CREATE)
     @DeleteMapping("/{targetUserId}/guardians")
-    @Operation(summary = "집사 해제", description = "다른 회원에 대한 집사 등록 상태를 제거합니다.")
+    @Operation(summary = "집사 관계 제거", description = "보낸 요청을 취소하거나 받은 요청을 거절하고, 연결된 집사 관계를 해제합니다.")
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "집사 해제 성공",
+        @ApiResponse(responseCode = "200", description = "집사 관계 제거 성공",
             content = @Content(schema = @Schema(implementation = GuardianRegistrationResponse.class))),
         @ApiResponse(responseCode = "400", description = "자기 자신 해제 시도 또는 대상 회원 없음",
             content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    public GuardianRegistrationResponse unregister(@AuthenticationPrincipal AuthPrincipal principal,
-                                                   @Parameter(description = "집사 해제 대상 회원 식별자", example = "11")
-                                                   @PathVariable Long targetUserId) {
-        boolean guardianRegisteredByMe = guardianRegistrationService.unregister(principal.userId(), targetUserId);
-        return new GuardianRegistrationResponse(targetUserId, guardianRegisteredByMe);
+    public GuardianRegistrationResponse remove(@AuthenticationPrincipal AuthPrincipal principal,
+                                               @Parameter(description = "집사 관계 제거 대상 회원 식별자", example = "11")
+                                               @PathVariable Long targetUserId) {
+        GuardianRelationStatus relationStatus = guardianRegistrationService.remove(principal.userId(), targetUserId);
+        return new GuardianRegistrationResponse(targetUserId, relationStatus, false);
     }
 }

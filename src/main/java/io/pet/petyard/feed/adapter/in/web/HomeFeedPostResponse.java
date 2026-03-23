@@ -39,7 +39,9 @@ public record HomeFeedPostResponse(
     String authorNickname,
     @Schema(description = "작성자 프로필 이미지 URL", nullable = true)
     String authorProfileImageUrl,
-    @Schema(description = "현재 사용자의 집사 등록 여부", example = "false")
+    @Schema(description = "현재 사용자의 집사 관계 상태", example = "NONE")
+    String guardianRelationStatus,
+    @Schema(description = "현재 사용자의 집사 연결 여부", example = "false")
     boolean guardianRegisteredByMe,
     @Schema(description = "댓글 수", example = "3")
     long commentCount
@@ -61,6 +63,7 @@ public record HomeFeedPostResponse(
             post.author().username(),
             post.author().nickname(),
             post.author().profileImageUrl(),
+            post.author().guardianRelationStatus(),
             post.author().guardianRegisteredByMe(),
             post.reaction().commentCount()
         );

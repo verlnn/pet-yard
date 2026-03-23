@@ -28,6 +28,10 @@ import io.pet.petyard.feed.domain.model.FeedPost;
 import io.pet.petyard.feed.domain.model.FeedPostImage;
 import io.pet.petyard.user.application.port.out.LoadGuardianRegistrationPort;
 import io.pet.petyard.user.application.port.out.LoadUserProfilePort;
+import io.pet.petyard.user.application.service.GuardianRegistrationService;
+import io.pet.petyard.user.domain.GuardianRelationStatus;
+import io.pet.petyard.user.domain.GuardianRegistrationStatus;
+import io.pet.petyard.user.domain.model.GuardianRegistration;
 import io.pet.petyard.user.domain.model.UserProfile;
 
 import java.time.Instant;
@@ -61,6 +65,7 @@ class FeedApplicationServiceTest {
     @Mock private LoadFeedPostCommentPort loadFeedPostCommentPort;
     @Mock private LoadUserProfilePort loadUserProfilePort;
     @Mock private LoadGuardianRegistrationPort loadGuardianRegistrationPort;
+    @Mock private GuardianRegistrationService guardianRegistrationService;
     @Mock private LoadUserPort loadUserPort;
 
     private FeedApplicationService service;
@@ -81,6 +86,7 @@ class FeedApplicationServiceTest {
             loadFeedPostCommentPort,
             loadUserProfilePort,
             loadGuardianRegistrationPort,
+            guardianRegistrationService,
             loadUserPort,
             new FeedProperties(10, 20)
         );
@@ -126,7 +132,7 @@ class FeedApplicationServiceTest {
             user(21L, "guardian.one"),
             user(22L, "guardian.two")
         ));
-        when(loadGuardianRegistrationPort.findRegisteredTargetUserIds(eq(55L), anyCollection())).thenReturn(List.of());
+        when(loadGuardianRegistrationPort.findRelationships(eq(55L), anyCollection())).thenReturn(List.of());
 
         HomeFeedSlice result = service.listHomeFeed(55L, null, null, 2);
 
@@ -158,7 +164,9 @@ class FeedApplicationServiceTest {
             user(21L, "meong.owner"),
             user(22L, "nyang.owner")
         ));
-        when(loadGuardianRegistrationPort.findRegisteredTargetUserIds(eq(77L), anyCollection())).thenReturn(List.of(21L));
+        GuardianRegistration acceptedRelationship = relationship(21L, 77L, GuardianRegistrationStatus.ACCEPTED);
+        when(loadGuardianRegistrationPort.findRelationships(eq(77L), anyCollection())).thenReturn(List.of(acceptedRelationship));
+        when(guardianRegistrationService.toRelationStatus(77L, acceptedRelationship)).thenReturn(GuardianRelationStatus.CONNECTED);
 
         HomeFeedSlice result = service.listHomeFeed(77L, null, null, 2);
 
@@ -199,5 +207,13 @@ class FeedApplicationServiceTest {
         User user = new User(username + "@example.com", "encoded", username, UserTier.TIER_1, AccountStatus.ACTIVE);
         ReflectionTestUtils.setField(user, "id", id);
         return user;
+    }
+
+    private static GuardianRegistration relationship(Long guardianUserId, Long targetUserId, GuardianRegistrationStatus status) {
+        GuardianRegistration relationship = new GuardianRegistration(guardianUserId, targetUserId);
+        if (status == GuardianRegistrationStatus.ACCEPTED) {
+            relationship.accept();
+        }
+        return relationship;
     }
 }

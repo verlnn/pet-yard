@@ -17,7 +17,12 @@ import { FeedPostPermissionDialog } from "@/components/feed/FeedPostPermissionDi
 import { AppAlertDialog } from "@/components/ui/AppAlertDialog";
 import { getBoxSize, getTargetRatio } from "@/components/feed/imageSizing";
 import { authApi } from "@/src/features/auth/api/authApi";
-import type { FeedPost, MyProfileResponse, PublicProfileResponse } from "@/src/features/auth/types/authTypes";
+import type {
+  FeedPost,
+  GuardianRelationStatus,
+  MyProfileResponse,
+  PublicProfileResponse
+} from "@/src/features/auth/types/authTypes";
 import { buildProfileRoute } from "@/src/lib/routes";
 import { useRouter } from "next/navigation";
 
@@ -78,10 +83,30 @@ const readFileAsDataUrl = (file: File) =>
 
 type ProfilePageProfile = MyProfileResponse | PublicProfileResponse;
 
-function PublicProfileHeader({ profile, postCount }: { profile?: PublicProfileResponse | null; postCount: number }) {
+function getGuardianActionLabel(status: GuardianRelationStatus) {
+  if (status === "CONNECTED") return "집사 해제";
+  if (status === "OUTGOING_REQUESTED") return "요청됨";
+  if (status === "INCOMING_REQUESTED") return "집사 요청 수락";
+  return "집사 요청";
+}
+
+function PublicProfileHeader({
+  profile,
+  postCount,
+  guardianLoading,
+  onGuardianAction
+}: {
+  profile?: PublicProfileResponse | null;
+  postCount: number;
+  guardianLoading: boolean;
+  onGuardianAction: () => void;
+}) {
   const primaryPet = profile?.pets?.find((pet) => pet.id === profile?.primaryPetId) ?? profile?.pets?.[0];
   const profileUsername = profile?.username?.trim() || "username";
   const profileDisplayName = profile?.nickname?.trim() || "멍냥마당";
+  const guardianRelationStatus = profile?.guardianRelationStatus ?? "NONE";
+  const guardianActionLabel = getGuardianActionLabel(guardianRelationStatus);
+  const guardianActionDisabled = guardianLoading || guardianRelationStatus === "OUTGOING_REQUESTED";
 
   return (
     <section className="feed-profile-header">
@@ -142,6 +167,17 @@ function PublicProfileHeader({ profile, postCount }: { profile?: PublicProfileRe
             </div>
           </div>
         </div>
+        <div className="feed-profile-header-actions">
+          <Button
+            type="button"
+            variant={guardianRelationStatus === "CONNECTED" ? "secondary" : "default"}
+            className={guardianRelationStatus === "CONNECTED" ? "feed-profile-header-secondary-action" : "feed-profile-header-primary-action"}
+            onClick={onGuardianAction}
+            disabled={guardianActionDisabled}
+          >
+            {guardianActionLabel}
+          </Button>
+        </div>
       </div>
     </section>
   );
@@ -168,6 +204,9 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
   const [postActionMenuOpen, setPostActionMenuOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [pawLoading, setPawLoading] = useState(false);
+  const [guardianLoading, setGuardianLoading] = useState(false);
+  const [guardianUnregisterAlertOpen, setGuardianUnregisterAlertOpen] = useState(false);
+  const [guardianErrorMessage, setGuardianErrorMessage] = useState<string | null>(null);
   const postActionMenuRef = useRef<HTMLDivElement | null>(null);
   const profileImageInputRef = useRef<HTMLInputElement | null>(null);
   const [profileImageAlertOpen, setProfileImageAlertOpen] = useState(false);
@@ -521,8 +560,92 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
     setProfileImageAlertOpen(false);
   };
 
+  const handleGuardianAction = async () => {
+    if (!accessToken || isOwnProfile || !profile) {
+      return;
+    }
+    if (profile.guardianRelationStatus === "CONNECTED") {
+      setGuardianUnregisterAlertOpen(true);
+      return;
+    }
+    if (profile.guardianRelationStatus === "OUTGOING_REQUESTED") {
+      return;
+    }
+
+    setGuardianLoading(true);
+    try {
+      const response = await authApi.registerGuardian(accessToken, profile.userId);
+      setProfile((prev) => {
+        if (!prev || !("guardianRelationStatus" in prev)) {
+          return prev;
+        }
+        const nextGuardianCount = response.guardianRelationStatus === "CONNECTED"
+          && prev.guardianRelationStatus !== "CONNECTED"
+          ? prev.guardianCount + 1
+          : prev.guardianCount;
+        return {
+          ...prev,
+          guardianRelationStatus: response.guardianRelationStatus,
+          guardianCount: nextGuardianCount
+        };
+      });
+      setGuardianErrorMessage(null);
+    } catch (error) {
+      setGuardianErrorMessage(error instanceof Error ? error.message : "집사 요청 처리에 실패했습니다.");
+    } finally {
+      setGuardianLoading(false);
+    }
+  };
+
+  const handleConfirmGuardianRemove = async () => {
+    if (!accessToken || isOwnProfile || !profile) {
+      return;
+    }
+
+    setGuardianLoading(true);
+    try {
+      const response = await authApi.unregisterGuardian(accessToken, profile.userId);
+      setProfile((prev) => {
+        if (!prev || !("guardianRelationStatus" in prev)) {
+          return prev;
+        }
+        const nextGuardianCount = prev.guardianRelationStatus === "CONNECTED" && prev.guardianCount > 0
+          ? prev.guardianCount - 1
+          : prev.guardianCount;
+        return {
+          ...prev,
+          guardianRelationStatus: response.guardianRelationStatus,
+          guardianCount: nextGuardianCount
+        };
+      });
+      setGuardianUnregisterAlertOpen(false);
+      setGuardianErrorMessage(null);
+    } catch (error) {
+      setGuardianErrorMessage(error instanceof Error ? error.message : "집사 관계를 해제하지 못했습니다.");
+    } finally {
+      setGuardianLoading(false);
+    }
+  };
+
   return (
     <>
+      <AppAlertDialog
+        open={guardianErrorMessage !== null}
+        title="집사 요청을 처리하지 못했어요"
+        description={guardianErrorMessage ?? ""}
+        actions={[{ label: "확인", onClick: () => setGuardianErrorMessage(null), tone: "accent" }]}
+        onClose={() => setGuardianErrorMessage(null)}
+      />
+      <AppAlertDialog
+        open={guardianUnregisterAlertOpen}
+        title={`${profile?.nickname ?? "이 사용자"}님과 맺은 집사 관계를 해제하시겠어요?`}
+        actionsClassName="app-alert-dialog-actions-vertical"
+        actions={[
+          { label: "집사 해제", onClick: handleConfirmGuardianRemove, tone: "danger" },
+          { label: "취소", onClick: () => setGuardianUnregisterAlertOpen(false) }
+        ]}
+        onClose={() => setGuardianUnregisterAlertOpen(false)}
+      />
       <AppAlertDialog
         open={profileImageAlertOpen}
         title="프로필 사진 바꾸기"
@@ -563,6 +686,8 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
             <PublicProfileHeader
               profile={profile as PublicProfileResponse | null}
               postCount={posts.length}
+              guardianLoading={guardianLoading}
+              onGuardianAction={handleGuardianAction}
             />
           )}
 

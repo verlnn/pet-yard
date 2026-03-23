@@ -30,6 +30,7 @@ public enum ErrorCode {
     NICKNAME_ALREADY_TAKEN("BAD_REQUEST", "이미 사용 중인 닉네임입니다"),
     USERNAME_ALREADY_TAKEN("BAD_REQUEST", "이미 사용 중인 공개 ID입니다"),
     INVALID_USERNAME("BAD_REQUEST", "공개 ID 형식이 올바르지 않습니다"),
+    GUARDIAN_REQUEST_RATE_LIMIT("BAD_REQUEST", "비인가적인 활동이 감지되었습니다"),
     PET_REGISTRATION_VERIFY_FAILED("BAD_REQUEST", "반려견 등록 정보를 확인할 수 없습니다"),
     PET_REGISTRATION_NOT_APPROVED("BAD_REQUEST", "반려견 등록 정보가 승인 상태가 아닙니다"),
     REQUIRED_TERMS_MISSING("BAD_REQUEST", "필수 약관 동의가 필요합니다"),

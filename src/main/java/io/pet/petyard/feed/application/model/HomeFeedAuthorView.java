@@ -5,6 +5,7 @@ public record HomeFeedAuthorView(
     String username,
     String nickname,
     String profileImageUrl,
+    String guardianRelationStatus,
     boolean guardianRegisteredByMe
 ) {
 }

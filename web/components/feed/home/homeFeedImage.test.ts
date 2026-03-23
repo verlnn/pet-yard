@@ -13,7 +13,9 @@ function post(overrides: Partial<HomeFeedPost> = {}): HomeFeedPost {
   return {
     id: 1,
     authorId: 1,
+    authorUsername: "user.1",
     authorNickname: "user-1",
+    guardianRelationStatus: "NONE",
     guardianRegisteredByMe: false,
     commentCount: 0,
     pawCount: 0,

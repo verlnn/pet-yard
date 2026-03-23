@@ -72,7 +72,7 @@ class FeedControllerTest {
                     "산책 기록",
                     Instant.parse("2026-03-23T03:20:00Z"),
                     List.of("산책"),
-                    new HomeFeedAuthorView(11L, "meongnyang.owner", "멍냥집사", "/profile.jpg", false),
+                    new HomeFeedAuthorView(11L, "meongnyang.owner", "멍냥집사", "/profile.jpg", "NONE", false),
                     new HomeFeedMediaView("/thumb.jpg", List.of("/thumb.jpg"), List.of(), 1.0, "1:1"),
                     new HomeFeedReactionView(3L, true, 2L)
                 )),

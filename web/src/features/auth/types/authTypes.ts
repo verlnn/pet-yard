@@ -115,6 +115,7 @@ export interface MyProfileResponse {
   tier: string;
   joinedAt: string;
   lastLoginAt?: string | null;
+  guardianRelationStatus: GuardianRelationStatus;
   guardianCount: number;
   petCount: number;
   pets: PetProfile[];
@@ -128,6 +129,7 @@ export interface PublicProfileResponse {
   profileImageUrl?: string | null;
   bio?: string | null;
   primaryPetId?: number | null;
+  guardianRelationStatus: GuardianRelationStatus;
   guardianCount: number;
   petCount: number;
   pets: PetProfile[];
@@ -162,6 +164,7 @@ export interface HomeFeedPost extends FeedPost {
   authorUsername?: string | null;
   authorNickname: string;
   authorProfileImageUrl?: string | null;
+  guardianRelationStatus: GuardianRelationStatus;
   guardianRegisteredByMe: boolean;
   commentCount: number;
 }
@@ -193,7 +196,14 @@ export interface FeedPostComment {
   authorProfileImageUrl?: string | null;
 }
 
+export type GuardianRelationStatus =
+  | "NONE"
+  | "OUTGOING_REQUESTED"
+  | "INCOMING_REQUESTED"
+  | "CONNECTED";
+
 export interface GuardianRegistrationResponse {
   targetUserId: number;
+  guardianRelationStatus: GuardianRelationStatus;
   guardianRegisteredByMe: boolean;
 }

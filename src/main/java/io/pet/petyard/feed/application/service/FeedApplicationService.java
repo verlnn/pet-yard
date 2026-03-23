@@ -28,6 +28,8 @@ import io.pet.petyard.user.application.port.out.LoadGuardianRegistrationPort;
 import io.pet.petyard.feed.domain.model.FeedPost;
 import io.pet.petyard.feed.domain.model.FeedPostImage;
 import io.pet.petyard.user.application.port.out.LoadUserProfilePort;
+import io.pet.petyard.user.application.service.GuardianRegistrationService;
+import io.pet.petyard.user.domain.GuardianRelationStatus;
 import io.pet.petyard.user.domain.model.UserProfile;
 
 import java.util.ArrayList;
@@ -65,6 +67,7 @@ public class FeedApplicationService {
     private final LoadFeedPostCommentPort loadFeedPostCommentPort;
     private final LoadUserProfilePort loadUserProfilePort;
     private final LoadGuardianRegistrationPort loadGuardianRegistrationPort;
+    private final GuardianRegistrationService guardianRegistrationService;
     private final LoadUserPort loadUserPort;
     private final FeedProperties feedProperties;
 
@@ -81,6 +84,7 @@ public class FeedApplicationService {
                                   LoadFeedPostCommentPort loadFeedPostCommentPort,
                                   LoadUserProfilePort loadUserProfilePort,
                                   LoadGuardianRegistrationPort loadGuardianRegistrationPort,
+                                  GuardianRegistrationService guardianRegistrationService,
                                   LoadUserPort loadUserPort,
                                   FeedProperties feedProperties) {
         this.loadFeedPostPort = loadFeedPostPort;
@@ -96,6 +100,7 @@ public class FeedApplicationService {
         this.loadFeedPostCommentPort = loadFeedPostCommentPort;
         this.loadUserProfilePort = loadUserProfilePort;
         this.loadGuardianRegistrationPort = loadGuardianRegistrationPort;
+        this.guardianRegistrationService = guardianRegistrationService;
         this.loadUserPort = loadUserPort;
         this.feedProperties = feedProperties;
     }
@@ -175,12 +180,18 @@ public class FeedApplicationService {
         Map<Long, User> usersById = loadUserPort.findByIds(authorIds)
             .stream()
             .collect(java.util.stream.Collectors.toMap(User::getId, user -> user));
-        Set<Long> guardianRegisteredAuthorIds = new HashSet<>(
-            loadGuardianRegistrationPort.findRegisteredTargetUserIds(
+        Map<Long, GuardianRelationStatus> relationStatusByAuthorId = loadGuardianRegistrationPort.findRelationships(
                 userId,
                 authorIds.stream().toList()
             )
-        );
+            .stream()
+            .collect(java.util.stream.Collectors.toMap(
+                relationship -> relationship.getGuardianUserId().equals(userId)
+                    ? relationship.getTargetUserId()
+                    : relationship.getGuardianUserId(),
+                relationship -> guardianRegistrationService.toRelationStatus(userId, relationship),
+                (left, right) -> left
+            ));
         trace = trace.markRelatedDataLoaded();
 
         List<HomeFeedPostView> result = new ArrayList<>();
@@ -189,6 +200,7 @@ public class FeedApplicationService {
             List<String> imageUrls = postImages.stream().map(FeedPostImage::getImageUrl).toList();
             UserProfile authorProfile = profilesByUserId.get(post.getUserId());
             User author = usersById.get(post.getUserId());
+            GuardianRelationStatus relationStatus = relationStatusByAuthorId.getOrDefault(post.getUserId(), GuardianRelationStatus.NONE);
             result.add(new HomeFeedPostView(
                 post.getId(),
                 post.getContent(),
@@ -199,7 +211,8 @@ public class FeedApplicationService {
                     author == null ? null : author.getUsername(),
                     authorProfile == null ? "멍냥마당" : authorProfile.getNickname(),
                     authorProfile == null ? null : authorProfile.getProfileImageUrl(),
-                    guardianRegisteredAuthorIds.contains(post.getUserId())
+                    relationStatus.name(),
+                    relationStatus == GuardianRelationStatus.CONNECTED
                 ),
                 new HomeFeedMediaView(
                     imageUrls.isEmpty() ? null : imageUrls.getFirst(),

@@ -1,6 +1,7 @@
 package io.pet.petyard.user.adapter.in.web;
 
 import io.pet.petyard.pet.adapter.in.web.PetProfileResponse;
+import io.pet.petyard.user.domain.GuardianRelationStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
@@ -21,7 +22,9 @@ public record PublicUserProfileResponse(
     String bio,
     @Schema(description = "대표 반려동물 id", nullable = true)
     Long primaryPetId,
-    @Schema(description = "집사 등록 수", example = "12")
+    @Schema(description = "현재 사용자의 집사 관계 상태", example = "OUTGOING_REQUESTED")
+    GuardianRelationStatus guardianRelationStatus,
+    @Schema(description = "연결된 집사 수", example = "12")
     long guardianCount,
     @Schema(description = "등록된 반려동물 수", example = "2")
     int petCount,

@@ -87,7 +87,7 @@ export function HomeFeedSidebar({ posts }: HomeFeedSidebarProps) {
                   </p>
                 </div>
               </Link>
-              <button type="button" className="home-feed-sidebar-link">집사 등록</button>
+              <button type="button" className="home-feed-sidebar-link">집사 요청</button>
             </div>
           ))}
         </div>

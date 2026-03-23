@@ -7,7 +7,7 @@ import { MessageCircle, MoreHorizontal, PawPrint, Send } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AppAlertDialog } from "@/components/ui/AppAlertDialog";
 import { authApi } from "@/src/features/auth/api/authApi";
-import type { HomeFeedPost } from "@/src/features/auth/types/authTypes";
+import type { GuardianRelationStatus, HomeFeedPost } from "@/src/features/auth/types/authTypes";
 import {
   getHomeFeedImageLoadingStrategy,
   getPreferredHomeFeedImageUrl,
@@ -69,13 +69,16 @@ export const HomeFeedPostCard = memo(function HomeFeedPostCard({
   const [pawedByMe, setPawedByMe] = useState(post.pawedByMe);
   const [pawCount, setPawCount] = useState(post.pawCount);
   const [pawLoading, setPawLoading] = useState(false);
+  const [guardianRelationStatus, setGuardianRelationStatus] = useState<GuardianRelationStatus>(post.guardianRelationStatus);
   const [guardianRegisteredByMe, setGuardianRegisteredByMe] = useState(post.guardianRegisteredByMe);
   const [guardianLoading, setGuardianLoading] = useState(false);
   const [guardianUnregisterAlertOpen, setGuardianUnregisterAlertOpen] = useState(false);
+  const [guardianErrorMessage, setGuardianErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     setPawedByMe(post.pawedByMe);
     setPawCount(post.pawCount);
+    setGuardianRelationStatus(post.guardianRelationStatus);
     setGuardianRegisteredByMe(post.guardianRegisteredByMe);
   }, [post]);
 
@@ -95,42 +98,64 @@ export const HomeFeedPostCard = memo(function HomeFeedPostCard({
     }
   };
 
-  const updateGuardianRegistration = async (nextRegistered: boolean) => {
+  const updateGuardianRegistration = async (action: "request" | "remove") => {
     if (guardianLoading) {
       return;
     }
     setGuardianLoading(true);
     try {
-      const response = nextRegistered
+      const response = action === "request"
         ? await authApi.registerGuardian(accessToken, post.authorId)
         : await authApi.unregisterGuardian(accessToken, post.authorId);
+      setGuardianRelationStatus(response.guardianRelationStatus);
       setGuardianRegisteredByMe(response.guardianRegisteredByMe);
+      setGuardianErrorMessage(null);
+    } catch (error) {
+      setGuardianErrorMessage(error instanceof Error ? error.message : "집사 요청 처리에 실패했습니다.");
     } finally {
       setGuardianLoading(false);
     }
   };
 
   const handleGuardianButtonClick = async () => {
-    if (guardianRegisteredByMe) {
+    if (guardianRelationStatus === "CONNECTED") {
       setGuardianUnregisterAlertOpen(true);
       return;
     }
-    await updateGuardianRegistration(true);
+    if (guardianRelationStatus === "OUTGOING_REQUESTED") {
+      return;
+    }
+    await updateGuardianRegistration("request");
   };
 
   const handleConfirmGuardianUnregister = async () => {
-    await updateGuardianRegistration(false);
+    await updateGuardianRegistration("remove");
     setGuardianUnregisterAlertOpen(false);
   };
 
   const shouldShowGuardianButton = viewerUserId !== null && viewerUserId !== post.authorId;
   const authorProfileHref = buildProfileRoute(post.authorUsername);
+  const guardianButtonLabel = guardianRelationStatus === "CONNECTED"
+    ? "집사 해제"
+    : guardianRelationStatus === "OUTGOING_REQUESTED"
+    ? "요청됨"
+    : guardianRelationStatus === "INCOMING_REQUESTED"
+    ? "집사 요청 수락"
+    : "집사 요청";
+  const guardianButtonDisabled = guardianLoading || guardianRelationStatus === "OUTGOING_REQUESTED";
 
   return (
     <article className="home-feed-post-card">
       <AppAlertDialog
+        open={guardianErrorMessage !== null}
+        title="집사 요청을 처리하지 못했어요"
+        description={guardianErrorMessage ?? ""}
+        actions={[{ label: "확인", onClick: () => setGuardianErrorMessage(null), tone: "accent" }]}
+        onClose={() => setGuardianErrorMessage(null)}
+      />
+      <AppAlertDialog
         open={guardianUnregisterAlertOpen}
-        title={`@${post.authorNickname}님의 집사 등록을 해제하시겠어요?`}
+        title={`@${post.authorNickname}님과 맺은 집사 관계를 해제하시겠어요?`}
         visual={(
           <Avatar className="size-16 border-0 bg-[#f25d95] p-1.5 text-white">
             {post.authorProfileImageUrl ? (
@@ -169,9 +194,9 @@ export const HomeFeedPostCard = memo(function HomeFeedPostCard({
               type="button"
               className={`home-feed-post-guardian-button ${guardianRegisteredByMe ? "home-feed-post-guardian-button-active" : ""}`}
               onClick={handleGuardianButtonClick}
-              disabled={guardianLoading}
+              disabled={guardianButtonDisabled}
             >
-              {guardianRegisteredByMe ? "집사 해제" : "집사 등록"}
+              {guardianButtonLabel}
             </button>
           ) : null}
           <button type="button" className="home-feed-post-menu" aria-label="더보기">
@@ -214,6 +239,7 @@ export const HomeFeedPostCard = memo(function HomeFeedPostCard({
                 ...post,
                 pawedByMe,
                 pawCount,
+                guardianRelationStatus,
                 guardianRegisteredByMe
               })
             }
@@ -237,6 +263,7 @@ export const HomeFeedPostCard = memo(function HomeFeedPostCard({
                 ...post,
                 pawedByMe,
                 pawCount,
+                guardianRelationStatus,
                 guardianRegisteredByMe
               })
             }

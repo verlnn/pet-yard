@@ -11,6 +11,7 @@ import io.pet.petyard.pet.adapter.in.web.PetProfileResponse;
 import io.pet.petyard.pet.application.port.out.LoadPetProfilePort;
 import io.pet.petyard.pet.domain.model.PetProfile;
 import io.pet.petyard.region.application.port.out.LoadRegionPort;
+import io.pet.petyard.user.domain.GuardianRelationStatus;
 import io.pet.petyard.user.domain.UserProfileGender;
 import io.pet.petyard.user.application.port.out.LoadGuardianRegistrationPort;
 import io.pet.petyard.user.application.port.out.LoadUserProfilePort;
@@ -246,7 +247,8 @@ public class UserProfileController {
             user.getTier().name(),
             user.getCreatedAt(),
             user.getLastLoginAt(),
-            loadGuardianRegistrationPort.countByTargetUserId(user.getId()),
+            GuardianRelationStatus.NONE,
+            loadGuardianRegistrationPort.countConnectedByUserId(user.getId()),
             petResponses.size(),
             petResponses
         );
