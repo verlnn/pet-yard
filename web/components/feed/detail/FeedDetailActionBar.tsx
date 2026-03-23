@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { MessageCircle, PawPrint, Send } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface FeedDetailActionBarProps {
   createdAt: string;
@@ -16,6 +17,9 @@ interface FeedDetailActionBarProps {
   onCommentButtonClick?: () => void;
   focusCommentToken?: number;
   commentPlaceholder?: string;
+  commenterUsername?: string | null;
+  commenterProfileImageUrl?: string | null;
+  commenterPrimaryPetImageUrl?: string | null;
 }
 
 export function FeedDetailActionBar({
@@ -30,9 +34,13 @@ export function FeedDetailActionBar({
   commentSubmitting = false,
   onCommentButtonClick,
   focusCommentToken = 0,
-  commentPlaceholder = "댓글을 남겨보세요."
+  commentPlaceholder = "댓글 달기...",
+  commenterUsername,
+  commenterProfileImageUrl,
+  commenterPrimaryPetImageUrl
 }: FeedDetailActionBarProps) {
   const commentInputRef = useRef<HTMLInputElement | null>(null);
+  const commentComposerUsername = commenterUsername?.trim() || "username";
 
   useEffect(() => {
     if (!focusCommentToken) {
@@ -82,7 +90,22 @@ export function FeedDetailActionBar({
       </div>
       <div className="feed-detail-comment-composer">
         <div className="feed-detail-comment-composer-inner">
-          <MessageCircle className="feed-detail-comment-icon" />
+          <div className="feed-detail-comment-author-shell">
+            <Avatar className="feed-detail-comment-avatar">
+              {commenterProfileImageUrl ? (
+                <AvatarImage src={commenterProfileImageUrl} alt={commentComposerUsername} />
+              ) : (
+                <AvatarFallback>{commentComposerUsername[0] ?? "멍"}</AvatarFallback>
+              )}
+            </Avatar>
+            {commenterPrimaryPetImageUrl ? (
+              <span className="feed-detail-comment-pet-badge" aria-hidden="true">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={commenterPrimaryPetImageUrl} alt="" className="feed-detail-comment-pet-badge-image" />
+              </span>
+            ) : null}
+          </div>
+          <span className="feed-detail-comment-username">{commentComposerUsername}</span>
           <input
             ref={commentInputRef}
             type="text"

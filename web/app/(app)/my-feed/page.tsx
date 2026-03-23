@@ -199,6 +199,7 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
   const router = useRouter();
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [profile, setProfile] = useState<ProfilePageProfile | null>(null);
+  const [viewerProfile, setViewerProfile] = useState<MyProfileResponse | null>(null);
   const [posts, setPosts] = useState<FeedPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -240,8 +241,9 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
     if (!accessToken) return;
     const load = async () => {
       setLoading(true);
-      try {
+    try {
         const myProfile = await authApi.getMyProfile(accessToken);
+        setViewerProfile(myProfile);
         const normalizedUsername = usernameParam?.trim();
         const shouldShowOwnProfile = !normalizedUsername || normalizedUsername === myProfile.username;
         setIsOwnProfile(shouldShowOwnProfile);
@@ -261,6 +263,7 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
         setError(null);
       } catch (err) {
         setError(err instanceof Error ? err.message : "피드를 불러오지 못했습니다.");
+        setViewerProfile(null);
       } finally {
         setLoading(false);
       }
@@ -627,6 +630,7 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
   };
 
   const primaryPet = profile?.pets?.find((pet) => pet.id === profile?.primaryPetId) ?? profile?.pets?.[0];
+  const viewerPrimaryPet = viewerProfile?.pets?.find((pet) => pet.id === viewerProfile?.primaryPetId) ?? viewerProfile?.pets?.[0];
 
   const handleRequestNewPost = () => {
     if (loading) {
@@ -1034,6 +1038,9 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
                 onCommentSubmit={handleSubmitSelectedPostComment}
                 commentSubmitting={selectedPostCommentSubmitting}
                 focusCommentToken={commentFocusToken}
+                commenterUsername={viewerProfile?.username}
+                commenterProfileImageUrl={viewerProfile?.profileImageUrl}
+                commenterPrimaryPetImageUrl={viewerPrimaryPet?.photoUrl}
               />
             </div>
             {isOwnProfile && deleteConfirmOpen && (

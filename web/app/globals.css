@@ -2456,14 +2456,30 @@ body {
     @apply flex items-center gap-3 rounded-full border px-4 py-2.5;
   }
 
-  .feed-detail-comment-icon {
+  .feed-detail-comment-author-shell {
+    @apply relative shrink-0;
+  }
+
+  .feed-detail-comment-avatar {
+    @apply h-8 w-8;
+  }
+
+  .feed-detail-comment-pet-badge {
+    @apply absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center overflow-hidden rounded-full border border-[#222324] bg-[#222324];
+  }
+
+  .feed-detail-comment-pet-badge-image {
+    @apply h-full w-full object-cover;
+  }
+
+  .feed-detail-comment-username {
     color: #ffffff;
-    @apply h-4 w-4 shrink-0;
+    @apply shrink-0 text-sm font-semibold;
   }
 
   .feed-detail-comment-input {
     color: #ffffff;
-    @apply w-full bg-transparent text-sm outline-none placeholder:text-white/45;
+    @apply min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-white/45;
   }
 
   .feed-detail-comment-submit {
