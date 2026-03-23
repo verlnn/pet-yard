@@ -43,6 +43,11 @@ export interface SignupStepResponse {
   nextStep: string;
 }
 
+export interface SignupUsernameCheckResponse {
+  username: string;
+  available: boolean;
+}
+
 export interface SignupCompleteResponse {
   accessToken: string;
   refreshToken: string;

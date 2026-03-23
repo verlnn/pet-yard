@@ -208,6 +208,22 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
 
     @Transactional
     @Override
+    public SignupUsernameValidationResult validateUsername(SignupUsernameValidationCommand command) {
+        SignupSession session = findActiveSession(command.signupToken());
+        ensureStep(session, SignupStep.PROFILE);
+
+        String normalizedUsername = parseUsername(command.username());
+        User user = loadUserPort.findById(session.getUserId())
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+        if (!normalizedUsername.equals(user.getUsername()) && loadUserPort.existsByUsername(normalizedUsername)) {
+            throw new ApiException(ErrorCode.USERNAME_ALREADY_TAKEN);
+        }
+
+        return new SignupUsernameValidationResult(normalizedUsername);
+    }
+
+    @Transactional
+    @Override
     public SignupProfileResult saveProfile(SignupProfileCommand command) {
         SignupSession session = findActiveSession(command.signupToken());
         ensureStep(session, SignupStep.PROFILE);
@@ -365,6 +381,14 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
         }
     }
 
+    private String parseUsername(String raw) {
+        try {
+            return Username.fromRaw(raw).value();
+        } catch (IllegalArgumentException exception) {
+            throw new ApiException(ErrorCode.INVALID_USERNAME);
+        }
+    }
+
     private OAuthClient resolveClient(AuthProvider provider) {
         OAuthClient client = oauthClients.get(provider);
         if (client == null) {
@@ -415,14 +439,6 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
             return result;
         } catch (Exception ex) {
             return java.util.Collections.emptyMap();
-        }
-    }
-
-    private String parseUsername(String raw) {
-        try {
-            return Username.fromRaw(raw).value();
-        } catch (IllegalArgumentException exception) {
-            throw new ApiException(ErrorCode.INVALID_USERNAME);
         }
     }
 

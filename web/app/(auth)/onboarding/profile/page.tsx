@@ -20,6 +20,10 @@ export default function OnboardingProfilePage() {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [nickname, setNickname] = useState("");
   const [username, setUsername] = useState("");
+  const [verifiedUsername, setVerifiedUsername] = useState("");
+  const [usernameChecking, setUsernameChecking] = useState(false);
+  const [usernameCheckMessage, setUsernameCheckMessage] = useState<string | null>(null);
+  const [usernameCheckError, setUsernameCheckError] = useState(false);
   const [cityCode, setCityCode] = useState("");
   const [districtCode, setDistrictCode] = useState("");
   const [dongCode, setDongCode] = useState("");
@@ -140,8 +144,49 @@ export default function OnboardingProfilePage() {
   const selectedDistrict = districts.find((district) => district.code === districtCode);
   const selectedDong = dongs.find((dong) => dong.code === dongCode);
 
-  const isProfileStepComplete = nickname.trim().length > 0 && username.trim().length > 0;
+  const normalizedUsername = username.trim().toLowerCase();
+  const isUsernameVerified = normalizedUsername.length > 0 && verifiedUsername === normalizedUsername;
+  const isProfileStepComplete = nickname.trim().length > 0 && username.trim().length > 0 && isUsernameVerified;
   const isRegionStepComplete = Boolean(cityCode && districtCode && dongCode);
+
+  const handleUsernameChange = (value: string) => {
+    setUsername(value);
+    setVerifiedUsername("");
+    setUsernameCheckMessage(null);
+    setUsernameCheckError(false);
+  };
+
+  const handleUsernameCheck = async () => {
+    if (!signupToken) {
+      return;
+    }
+
+    const candidate = username.trim();
+    if (!candidate) {
+      setVerifiedUsername("");
+      setUsernameCheckMessage("공개 ID를 먼저 입력해 주세요.");
+      setUsernameCheckError(true);
+      return;
+    }
+
+    setUsernameChecking(true);
+    setUsernameCheckMessage(null);
+    setUsernameCheckError(false);
+
+    try {
+      const response = await authApi.signupProfileUsernameCheck(signupToken, candidate);
+      setUsername(response.username);
+      setVerifiedUsername(response.username);
+      setUsernameCheckMessage("사용 가능한 공개 ID입니다.");
+      setUsernameCheckError(false);
+    } catch (err) {
+      setVerifiedUsername("");
+      setUsernameCheckMessage(err instanceof Error ? err.message : "공개 ID 확인에 실패했습니다.");
+      setUsernameCheckError(true);
+    } finally {
+      setUsernameChecking(false);
+    }
+  };
 
   const handleProfileImageSelect = (file: File | null) => {
     if (!file) return;
@@ -163,8 +208,12 @@ export default function OnboardingProfilePage() {
   };
 
   const handleProfileStepNext = () => {
-    if (!isProfileStepComplete) {
+    if (!nickname.trim() || !username.trim()) {
       setError("닉네임과 공개 ID를 입력해 주세요.");
+      return;
+    }
+    if (!isUsernameVerified) {
+      setError("공개 ID 확인하기를 완료해 주세요.");
       return;
     }
     setError(null);
@@ -243,10 +292,15 @@ export default function OnboardingProfilePage() {
               <OnboardingProfileBasicsStep
                 nickname={nickname}
                 username={username}
+                usernameVerified={isUsernameVerified}
+                usernameChecking={usernameChecking}
+                usernameCheckMessage={usernameCheckMessage}
+                usernameCheckError={usernameCheckError}
                 profileImageUrl={profileImageUrl}
                 profileImageError={profileImageError}
                 onNicknameChange={setNickname}
-                onUsernameChange={setUsername}
+                onUsernameChange={handleUsernameChange}
+                onUsernameCheck={handleUsernameCheck}
                 onImageSelect={handleProfileImageSelect}
                 onImageRemove={() => setProfileImageUrl("")}
                 onNext={handleProfileStepNext}

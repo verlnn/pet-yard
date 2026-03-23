@@ -2943,6 +2943,29 @@ body {
     @apply w-full rounded-2xl border border-slate-200/70 bg-white/90 px-4 py-3.5 text-sm text-slate-900 shadow-[0_14px_30px_-24px_rgba(15,23,42,0.25)] transition placeholder:text-slate-400 focus:border-ink/30 focus:outline-none focus:ring-4 focus:ring-ink/10;
   }
 
+  .onboarding-profile-username-row {
+    @apply flex items-center gap-2;
+  }
+
+  .onboarding-profile-username-input {
+    @apply min-w-0 flex-1;
+  }
+
+  .onboarding-profile-username-check-button {
+    background: var(--color-button-secondary-bg);
+    color: var(--color-button-secondary-text);
+    border-color: var(--color-button-secondary-border);
+    @apply shrink-0 rounded-2xl border px-4 py-3 text-sm font-semibold transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-45;
+  }
+
+  .onboarding-profile-field-success {
+    @apply text-xs font-medium text-emerald-600;
+  }
+
+  .onboarding-profile-field-error {
+    @apply text-xs font-medium text-rose-500;
+  }
+
   .onboarding-profile-combobox {
     @apply space-y-2;
   }
@@ -3145,6 +3168,16 @@ body {
 
   [data-theme="dark"] .onboarding-profile-input::placeholder {
     color: #64748b;
+  }
+
+  [data-theme="dark"] .onboarding-profile-username-check-button {
+    background: #222324;
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #e2e8f0;
+  }
+
+  [data-theme="dark"] .onboarding-profile-field-success {
+    color: #86efac;
   }
 
   [data-theme="dark"] .onboarding-profile-help-list {

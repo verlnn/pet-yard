@@ -19,6 +19,7 @@ import type {
   SignupProgressResponse,
   SignupResponse,
   SignupStepResponse,
+  SignupUsernameCheckResponse,
   TermsResponse,
   TokenResponse,
   VerificationExpiryResponse
@@ -201,6 +202,15 @@ export const authApi = {
         "Content-Type": "application/json"
       },
       body: JSON.stringify(payload)
+    });
+  },
+  signupProfileUsernameCheck(signupToken: string, username: string) {
+    return request<SignupUsernameCheckResponse>("/api/auth/signup/profile/username-check", {
+      method: "POST",
+      headers: {
+        "X-Signup-Token": signupToken
+      },
+      body: JSON.stringify({ username })
     });
   },
   signupConsents(signupToken: string, consents: Array<{ code: string; agreed: boolean }>) {

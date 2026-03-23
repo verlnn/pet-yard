@@ -94,6 +94,22 @@ public class SignupController {
         return new SignupStepResponse(result.nextStep());
     }
 
+    @PostMapping("/profile/username-check")
+    @Operation(summary = "온보딩 공개 ID 확인", description = "공개 ID 형식과 중복 여부를 확인합니다.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "확인 성공",
+            content = @Content(schema = @Schema(implementation = SignupUsernameCheckResponse.class))),
+        @ApiResponse(responseCode = "400", description = "잘못된 공개 ID 또는 이미 사용 중인 공개 ID",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public SignupUsernameCheckResponse checkUsername(@RequestHeader(SIGNUP_TOKEN_HEADER) String signupToken,
+                                                     @Valid @RequestBody SignupUsernameCheckRequest request) {
+        SignupProfileUseCase.SignupUsernameValidationResult result = signupProfileUseCase.validateUsername(
+            new SignupProfileUseCase.SignupUsernameValidationCommand(signupToken, request.username())
+        );
+        return new SignupUsernameCheckResponse(result.username(), true);
+    }
+
     @PostMapping("/consents")
     @Operation(summary = "온보딩 약관 동의 저장", description = "약관 동의 상태를 저장하고 다음 단계로 진행합니다.")
     public SignupStepResponse consents(@RequestHeader(SIGNUP_TOKEN_HEADER) String signupToken,

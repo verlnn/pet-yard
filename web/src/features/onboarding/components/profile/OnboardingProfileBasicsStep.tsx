@@ -6,10 +6,15 @@ import { useState } from "react";
 type OnboardingProfileBasicsStepProps = {
   nickname: string;
   username: string;
+  usernameVerified: boolean;
+  usernameChecking: boolean;
+  usernameCheckMessage: string | null;
+  usernameCheckError: boolean;
   profileImageUrl: string;
   profileImageError: string | null;
   onNicknameChange: (value: string) => void;
   onUsernameChange: (value: string) => void;
+  onUsernameCheck: () => void;
   onImageSelect: (file: File | null) => void;
   onImageRemove: () => void;
   onNext: () => void;
@@ -19,10 +24,15 @@ type OnboardingProfileBasicsStepProps = {
 export default function OnboardingProfileBasicsStep({
   nickname,
   username,
+  usernameVerified,
+  usernameChecking,
+  usernameCheckMessage,
+  usernameCheckError,
   profileImageUrl,
   profileImageError,
   onNicknameChange,
   onUsernameChange,
+  onUsernameCheck,
   onImageSelect,
   onImageRemove,
   onNext,
@@ -46,18 +56,34 @@ export default function OnboardingProfileBasicsStep({
 
         <label className="onboarding-profile-field">
           공개 ID
-          <input
-            className="onboarding-profile-input"
-            value={username}
-            onChange={(event) => onUsernameChange(event.target.value)}
-            placeholder="meongnyang.owner"
-            autoCapitalize="none"
-            autoCorrect="off"
-            spellCheck={false}
-            maxLength={30}
-            required
-          />
+          <div className="onboarding-profile-username-row">
+            <input
+              className="onboarding-profile-input onboarding-profile-username-input"
+              value={username}
+              onChange={(event) => onUsernameChange(event.target.value)}
+              placeholder="meongnyang.owner"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              maxLength={30}
+              required
+            />
+            <button
+              type="button"
+              className="onboarding-profile-username-check-button"
+              onClick={onUsernameCheck}
+              disabled={usernameChecking || username.trim().length === 0}
+            >
+              {usernameChecking ? "확인 중..." : usernameVerified ? "확인 완료" : "확인하기"}
+            </button>
+          </div>
         </label>
+
+        {usernameCheckMessage ? (
+          <p className={usernameCheckError ? "onboarding-profile-field-error" : "onboarding-profile-field-success"}>
+            {usernameCheckMessage}
+          </p>
+        ) : null}
 
         <div className="onboarding-profile-help-block">
           <button
