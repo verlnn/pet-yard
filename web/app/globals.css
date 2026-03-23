@@ -3045,6 +3045,10 @@ body {
     @apply space-y-1.5;
   }
 
+  .onboarding-profile-step-content > .onboarding-profile-help-block {
+    margin-top: 0;
+  }
+
   .onboarding-profile-help-toggle {
     @apply inline-flex items-center gap-2 text-xs font-medium text-slate-500 transition hover:text-slate-700;
   }
