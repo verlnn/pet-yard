@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { MessageCircle, MoreHorizontal, PawPrint, Send } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -22,6 +22,8 @@ interface HomeFeedPostCardProps {
   eagerImage?: boolean;
   onOpenComments: (post: HomeFeedPost) => void;
 }
+
+const GUARDIAN_REQUEST_CANCEL_COOLDOWN_MS = 2000;
 
 const formatRelativeTime = (value?: string) => {
   if (!value) {
@@ -74,6 +76,8 @@ export const HomeFeedPostCard = memo(function HomeFeedPostCard({
   const [guardianLoading, setGuardianLoading] = useState(false);
   const [guardianUnregisterAlertOpen, setGuardianUnregisterAlertOpen] = useState(false);
   const [guardianErrorMessage, setGuardianErrorMessage] = useState<string | null>(null);
+  const [guardianRequestCooldown, setGuardianRequestCooldown] = useState(false);
+  const guardianCooldownTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     setPawedByMe(post.pawedByMe);
@@ -81,6 +85,25 @@ export const HomeFeedPostCard = memo(function HomeFeedPostCard({
     setGuardianRelationStatus(post.guardianRelationStatus);
     setGuardianRegisteredByMe(post.guardianRegisteredByMe);
   }, [post]);
+
+  useEffect(() => {
+    return () => {
+      if (guardianCooldownTimeoutRef.current) {
+        clearTimeout(guardianCooldownTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const startGuardianRequestCooldown = () => {
+    if (guardianCooldownTimeoutRef.current) {
+      clearTimeout(guardianCooldownTimeoutRef.current);
+    }
+    setGuardianRequestCooldown(true);
+    guardianCooldownTimeoutRef.current = setTimeout(() => {
+      setGuardianRequestCooldown(false);
+      guardianCooldownTimeoutRef.current = null;
+    }, GUARDIAN_REQUEST_CANCEL_COOLDOWN_MS);
+  };
 
   const handleTogglePaw = async () => {
     if (pawLoading) {
@@ -104,12 +127,16 @@ export const HomeFeedPostCard = memo(function HomeFeedPostCard({
     }
     setGuardianLoading(true);
     try {
+      const shouldStartCooldown = action === "remove" && guardianRelationStatus === "OUTGOING_REQUESTED";
       const response = action === "request"
         ? await authApi.registerGuardian(accessToken, post.authorId)
         : await authApi.unregisterGuardian(accessToken, post.authorId);
       setGuardianRelationStatus(response.guardianRelationStatus);
       setGuardianRegisteredByMe(response.guardianRegisteredByMe);
       setGuardianErrorMessage(null);
+      if (shouldStartCooldown) {
+        startGuardianRequestCooldown();
+      }
     } catch (error) {
       setGuardianErrorMessage(error instanceof Error ? error.message : "집사 요청 처리에 실패했습니다.");
     } finally {
@@ -118,6 +145,9 @@ export const HomeFeedPostCard = memo(function HomeFeedPostCard({
   };
 
   const handleGuardianButtonClick = async () => {
+    if (guardianRequestCooldown) {
+      return;
+    }
     if (guardianRelationStatus === "CONNECTED") {
       setGuardianUnregisterAlertOpen(true);
       return;
@@ -138,12 +168,14 @@ export const HomeFeedPostCard = memo(function HomeFeedPostCard({
   const authorProfileHref = buildProfileRoute(post.authorUsername);
   const guardianButtonLabel = guardianRelationStatus === "CONNECTED"
     ? "집사 해제"
+    : guardianRequestCooldown
+    ? "요청 취소됨"
     : guardianRelationStatus === "OUTGOING_REQUESTED"
     ? "요청 취소"
     : guardianRelationStatus === "INCOMING_REQUESTED"
     ? "집사 요청 수락"
     : "집사 요청";
-  const guardianButtonDisabled = guardianLoading;
+  const guardianButtonDisabled = guardianLoading || guardianRequestCooldown;
 
   return (
     <article className="home-feed-post-card">
@@ -193,11 +225,12 @@ export const HomeFeedPostCard = memo(function HomeFeedPostCard({
           {shouldShowGuardianButton ? (
             <button
               type="button"
-              className={`home-feed-post-guardian-button ${guardianRegisteredByMe ? "home-feed-post-guardian-button-active" : ""}`}
+              className={`home-feed-post-guardian-button ${guardianRegisteredByMe ? "home-feed-post-guardian-button-active" : ""} ${guardianRequestCooldown ? "guardian-request-cooldown" : ""}`}
               onClick={handleGuardianButtonClick}
               disabled={guardianButtonDisabled}
             >
-              {guardianButtonLabel}
+              {guardianRequestCooldown ? <span className="guardian-request-cooldown-bar" aria-hidden="true" /> : null}
+              <span className="guardian-request-cooldown-label">{guardianButtonLabel}</span>
             </button>
           ) : null}
           <button type="button" className="home-feed-post-menu" aria-label="더보기">

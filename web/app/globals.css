@@ -781,13 +781,27 @@ body {
   .feed-profile-header-message-action {
     border-radius: 10px !important;
     min-width: 250px;
-    @apply h-12 flex-1 gap-2 px-6;
+    @apply relative h-12 flex-1 gap-2 overflow-hidden px-6;
   }
 
   .feed-profile-header-primary-action {
     background: #2563eb !important;
     color: #f8fbff !important;
     @apply hover:opacity-95;
+  }
+
+  .guardian-request-cooldown {
+    @apply cursor-not-allowed;
+  }
+
+  .guardian-request-cooldown-bar {
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.16) 20%, rgba(255, 255, 255, 0.4) 50%, rgba(255, 255, 255, 0.16) 80%, transparent 100%);
+    animation: guardian-request-cooldown-slide 2s linear forwards;
+    @apply absolute inset-y-0 left-[-48%] w-[52%];
+  }
+
+  .guardian-request-cooldown-label {
+    @apply relative z-10;
   }
 
   .app-layout {
@@ -1893,7 +1907,7 @@ body {
   .home-feed-post-guardian-button {
     color: #dbeafe;
     background: #2563eb;
-    @apply inline-flex h-9 items-center rounded-lg px-3 text-xs font-semibold transition hover:opacity-95;
+    @apply relative inline-flex h-9 items-center overflow-hidden rounded-lg px-3 text-xs font-semibold transition hover:opacity-95;
   }
 
   .home-feed-post-guardian-button-active {
@@ -3305,8 +3319,18 @@ body {
     background: var(--color-surface);
   }
 
-  [data-theme="dark"] .pets-registration-card {
+[data-theme="dark"] .pets-registration-card {
     background: var(--color-surface);
     border-color: var(--color-border);
+  }
+}
+
+@keyframes guardian-request-cooldown-slide {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(300%);
   }
 }

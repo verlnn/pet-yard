@@ -28,6 +28,7 @@ import { useRouter } from "next/navigation";
 
 const MAX_IMAGE_SIZE = 3 * 1024 * 1024;
 const MAX_IMAGES = 15;
+const GUARDIAN_REQUEST_CANCEL_COOLDOWN_MS = 2000;
 const FEED_DETAIL_SHELL_TRANSITION = {
   duration: 0.4,
   ease: [0.22, 1.5, 0.36, 1] as const
@@ -94,19 +95,21 @@ function PublicProfileHeader({
   profile,
   postCount,
   guardianLoading,
+  guardianRequestCooldown,
   onGuardianAction
 }: {
   profile?: PublicProfileResponse | null;
   postCount: number;
   guardianLoading: boolean;
+  guardianRequestCooldown: boolean;
   onGuardianAction: () => void;
 }) {
   const primaryPet = profile?.pets?.find((pet) => pet.id === profile?.primaryPetId) ?? profile?.pets?.[0];
   const profileUsername = profile?.username?.trim() || "username";
   const profileDisplayName = profile?.nickname?.trim() || "멍냥마당";
   const guardianRelationStatus = profile?.guardianRelationStatus ?? "NONE";
-  const guardianActionLabel = getGuardianActionLabel(guardianRelationStatus);
-  const guardianActionDisabled = guardianLoading;
+  const guardianActionLabel = guardianRequestCooldown ? "요청 취소됨" : getGuardianActionLabel(guardianRelationStatus);
+  const guardianActionDisabled = guardianLoading || guardianRequestCooldown;
 
   return (
     <section className="feed-profile-header">
@@ -171,11 +174,12 @@ function PublicProfileHeader({
           <Button
             type="button"
             variant={guardianRelationStatus === "CONNECTED" ? "secondary" : "default"}
-            className={guardianRelationStatus === "CONNECTED" ? "feed-profile-header-secondary-action" : "feed-profile-header-primary-action"}
+            className={`${guardianRelationStatus === "CONNECTED" ? "feed-profile-header-secondary-action" : "feed-profile-header-primary-action"} ${guardianRequestCooldown ? "guardian-request-cooldown" : ""}`}
             onClick={onGuardianAction}
             disabled={guardianActionDisabled}
           >
-            {guardianActionLabel}
+            {guardianRequestCooldown ? <span className="guardian-request-cooldown-bar" aria-hidden="true" /> : null}
+            <span className="guardian-request-cooldown-label">{guardianActionLabel}</span>
           </Button>
           <Button
             type="button"
@@ -214,6 +218,8 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
   const [guardianLoading, setGuardianLoading] = useState(false);
   const [guardianUnregisterAlertOpen, setGuardianUnregisterAlertOpen] = useState(false);
   const [guardianErrorMessage, setGuardianErrorMessage] = useState<string | null>(null);
+  const [guardianRequestCooldown, setGuardianRequestCooldown] = useState(false);
+  const guardianCooldownTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const postActionMenuRef = useRef<HTMLDivElement | null>(null);
   const profileImageInputRef = useRef<HTMLInputElement | null>(null);
   const [profileImageAlertOpen, setProfileImageAlertOpen] = useState(false);
@@ -283,6 +289,25 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
     window.addEventListener("resize", updateViewportSize);
     return () => window.removeEventListener("resize", updateViewportSize);
   }, []);
+
+  useEffect(() => {
+    return () => {
+      if (guardianCooldownTimeoutRef.current) {
+        clearTimeout(guardianCooldownTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const startGuardianRequestCooldown = () => {
+    if (guardianCooldownTimeoutRef.current) {
+      clearTimeout(guardianCooldownTimeoutRef.current);
+    }
+    setGuardianRequestCooldown(true);
+    guardianCooldownTimeoutRef.current = setTimeout(() => {
+      setGuardianRequestCooldown(false);
+      guardianCooldownTimeoutRef.current = null;
+    }, GUARDIAN_REQUEST_CANCEL_COOLDOWN_MS);
+  };
 
   const grid = useMemo(() => posts, [posts]);
   const selectedPostIndex = useMemo(
@@ -571,6 +596,9 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
     if (!accessToken || isOwnProfile || !profile) {
       return;
     }
+    if (guardianRequestCooldown) {
+      return;
+    }
     if (profile.guardianRelationStatus === "CONNECTED") {
       setGuardianUnregisterAlertOpen(true);
       return;
@@ -612,6 +640,7 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
 
     setGuardianLoading(true);
     try {
+      const shouldStartCooldown = profile.guardianRelationStatus === "OUTGOING_REQUESTED";
       const response = await authApi.unregisterGuardian(accessToken, profile.userId);
       setProfile((prev) => {
         if (!prev || !("guardianRelationStatus" in prev)) {
@@ -626,6 +655,9 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
           guardianCount: nextGuardianCount
         };
       });
+      if (shouldStartCooldown) {
+        startGuardianRequestCooldown();
+      }
       setGuardianUnregisterAlertOpen(false);
       setGuardianErrorMessage(null);
     } catch (error) {
@@ -695,6 +727,7 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
               profile={profile as PublicProfileResponse | null}
               postCount={posts.length}
               guardianLoading={guardianLoading}
+              guardianRequestCooldown={guardianRequestCooldown}
               onGuardianAction={handleGuardianAction}
             />
           )}
