@@ -72,6 +72,13 @@ const genderOptions = [
   { value: "UNSPECIFIED", label: "선택 안 함" }
 ] as const;
 
+const dispatchProfileRefresh = () => {
+  if (typeof window === "undefined") {
+    return;
+  }
+  window.dispatchEvent(new Event("petyard:profile-refresh"));
+};
+
 interface SettingsPageContentProps {
   activeSection: SettingsSectionKey;
 }
@@ -185,6 +192,7 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
       setBio(response.bio ?? "");
       setGender((response.gender as (typeof genderOptions)[number]["value"] | null) ?? "PRIVATE");
       setPrimaryPetId(response.primaryPetId ? String(response.primaryPetId) : "none");
+      dispatchProfileRefresh();
       setSaveMessage("변경사항이 저장되었습니다.");
     } catch (error) {
       setSaveMessage(error instanceof Error ? error.message : "변경사항 저장에 실패했습니다.");
