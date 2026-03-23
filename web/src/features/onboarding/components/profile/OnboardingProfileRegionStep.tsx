@@ -43,7 +43,7 @@ export default function OnboardingProfileRegionStep({
 }: OnboardingProfileRegionStepProps) {
   return (
     <>
-      <div className="onboarding-profile-step-content">
+      <div className="onboarding-profile-step-content onboarding-profile-step-content-spaced">
         <label className="onboarding-profile-field-block onboarding-profile-region-block">
           지역 선택
           <div className="onboarding-profile-region-grid">

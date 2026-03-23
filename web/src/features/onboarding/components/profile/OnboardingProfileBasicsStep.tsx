@@ -32,7 +32,7 @@ export default function OnboardingProfileBasicsStep({
 
   return (
     <>
-      <div className="onboarding-profile-step-content">
+      <div className="onboarding-profile-step-content onboarding-profile-step-content-basics">
         <label className="onboarding-profile-field">
           닉네임
           <input

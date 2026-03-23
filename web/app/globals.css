@@ -2919,7 +2919,16 @@ body {
   }
 
   .onboarding-profile-step-content {
-    @apply space-y-4;
+    @apply flex flex-col;
+  }
+
+  .onboarding-profile-step-content-spaced {
+    @apply gap-4;
+  }
+
+  .onboarding-profile-step-content-basics > .onboarding-profile-field + .onboarding-profile-field,
+  .onboarding-profile-step-content-basics > .onboarding-profile-help-block + .onboarding-profile-field-block {
+    margin-top: 1rem;
   }
 
   .onboarding-profile-field {
@@ -3043,10 +3052,6 @@ body {
 
   .onboarding-profile-help-block {
     @apply space-y-1.5;
-  }
-
-  .onboarding-profile-step-content > .onboarding-profile-help-block {
-    margin-top: 0;
   }
 
   .onboarding-profile-help-toggle {

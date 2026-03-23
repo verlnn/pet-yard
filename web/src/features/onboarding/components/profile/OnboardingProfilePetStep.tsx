@@ -23,7 +23,7 @@ export default function OnboardingProfilePetStep({
 
   return (
     <>
-      <div className="onboarding-profile-step-content">
+      <div className="onboarding-profile-step-content onboarding-profile-step-content-spaced">
         <div className="onboarding-profile-field-block">
           반려동물 유무
           <div className="onboarding-profile-choice-grid">
