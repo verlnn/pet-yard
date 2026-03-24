@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Camera, Plus, Settings } from "lucide-react";
+import { useState } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -19,7 +20,7 @@ interface FeedProfileHeaderProps {
 
 export function FeedProfileHeader({ profile, postCount, onNewPost, onProfileImageClick, onPetsClick }: FeedProfileHeaderProps) {
   const primaryPet = profile?.pets?.find((pet) => pet.id === profile?.primaryPetId) ?? profile?.pets?.[0];
-  const [showGuardianCard, setShowGuardianCard] = React.useState(false);
+  const [showGuardianCard, setShowGuardianCard] = useState(false);
   const guardianList = [
     { username: "mxszuis__z", name: "mxszuis__z" },
     { username: "7ciderr", name: "7ciderr" },
