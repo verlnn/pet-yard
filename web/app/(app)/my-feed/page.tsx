@@ -6,7 +6,7 @@ import { Bookmark, Camera, ChevronLeft, ChevronRight, Grid, MoreHorizontal, PawP
 
 import { FeedDetailPhotoPanel } from "@/components/feed/detail/FeedDetailPhotoPanel";
 import { FeedDetailSidebar } from "@/components/feed/detail/FeedDetailSidebar";
-import { Button } from "@/components/ui/button";
+import { CommonButton } from "@/components/ui/CommonButton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { FeedProfileHeader } from "@/components/feed/FeedProfileHeader";
@@ -203,7 +203,7 @@ function PublicProfileHeader({
           </div>
         </div>
         <div className="feed-profile-header-actions">
-          <Button
+          <CommonButton
             type="button"
             variant={guardianRelationStatus === "CONNECTED" ? "secondary" : "default"}
             className={`${guardianRelationStatus === "CONNECTED" ? "feed-profile-header-secondary-action" : "feed-profile-header-primary-action"} ${guardianRequestCooldown ? "guardian-request-cooldown" : ""}`}
@@ -212,14 +212,14 @@ function PublicProfileHeader({
           >
             {guardianRequestCooldown ? <span className="guardian-request-cooldown-bar" aria-hidden="true" /> : null}
             <span className="guardian-request-cooldown-label">{guardianActionLabel}</span>
-          </Button>
-          <Button
+          </CommonButton>
+          <CommonButton
             type="button"
             variant="secondary"
             className="feed-profile-header-message-action"
           >
             메시지 보내기
-          </Button>
+          </CommonButton>
         </div>
       </div>
     </section>
@@ -1205,9 +1205,9 @@ function ProfileEmptyState({ onCreate }: ProfileEmptyStateProps) {
       <p className="profile-empty-state-body">
         사진을 공유하면 회원님의 프로필에 보여집니다.
       </p>
-      <Button variant="default" className="profile-empty-state-button" onClick={onCreate}>
+      <CommonButton variant="default" className="profile-empty-state-button" onClick={onCreate}>
         첫 사진 공유하기
-      </Button>
+      </CommonButton>
     </div>
   );
 }
@@ -1229,9 +1229,9 @@ function ProfilePetsSection({ pets, onCreate }: ProfilePetsSectionProps) {
           <p className="profile-pets-empty-body">
             등록한 반려동물 정보는 프로필 카드에 계속 보여집니다.
           </p>
-          <Button variant="default" className="profile-pets-empty-action" onClick={onCreate}>
+          <CommonButton variant="default" className="profile-pets-empty-action" onClick={onCreate}>
             반려동물 등록하기
-          </Button>
+          </CommonButton>
         </CardContent>
       </Card>
     );

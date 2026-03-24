@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Plus, X } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { CommonButton } from "@/components/ui/CommonButton";
 import { PostComposerSidebar } from "@/components/feed/PostComposerSidebar";
 import { FeedImageOverlayControls } from "@/components/feed/image-composer/FeedImageOverlayControls";
 import { FeedImageStage } from "@/components/feed/image-composer/FeedImageStage";
@@ -129,9 +129,9 @@ export function NewPostModal({
             <X className="feed-new-post-modal-close-icon" />
           </button>
           <p className="feed-new-post-modal-title">새 게시물 만들기</p>
-          <Button onClick={onSubmit} disabled={submitting} size="sm">
+          <CommonButton onClick={onSubmit} disabled={submitting} size="sm">
             {submitting ? "공유 중..." : "공유"}
-          </Button>
+          </CommonButton>
         </div>
         <div className="feed-new-post-modal-body">
           <div className="feed-new-post-modal-stage-panel">

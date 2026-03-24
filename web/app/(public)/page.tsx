@@ -9,7 +9,7 @@ import { SectionShell } from "@/components/site/section-shell";
 import { SiteNav } from "@/components/site/nav";
 import { WalkCard } from "@/components/site/walk-card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { CommonButton } from "@/components/ui/CommonButton";
 import { Card, CardContent } from "@/components/ui/card";
 import { boardingRequests, feedPosts, knowledgeCards, walkEvents } from "@/lib/mock";
 
@@ -32,13 +32,13 @@ export default function HomePage() {
               연결되고, 안전 정책과 신고 시스템으로 신뢰를 지켜요.
             </p>
             <div className="flex flex-wrap gap-3">
-              <Button size="lg">
+              <CommonButton size="lg">
                 오늘의 피드 보기 <ArrowRight className="h-4 w-4" />
-              </Button>
+              </CommonButton>
               <Link href="/walks">
-                <Button variant="secondary" size="lg">
+                <CommonButton variant="secondary" size="lg">
                   산책 매칭 열기
-                </Button>
+                </CommonButton>
               </Link>
             </div>
             <div className="flex flex-wrap gap-4 text-sm text-[var(--color-text-muted)]">
@@ -110,7 +110,7 @@ export default function HomePage() {
           </div>
           <div className="mt-6">
             <Link href="/feed">
-              <Button variant="secondary">피드 전체 보기</Button>
+              <CommonButton variant="secondary">피드 전체 보기</CommonButton>
             </Link>
           </div>
         </SectionShell>
@@ -142,9 +142,9 @@ export default function HomePage() {
                   매칭에는 신고와 제재 정책이 적용됩니다.
                 </p>
               </div>
-              <Button variant="accent" size="lg">
+              <CommonButton variant="accent" size="lg">
                 안전 정책 보기
-              </Button>
+              </CommonButton>
             </div>
           </div>
         </section>

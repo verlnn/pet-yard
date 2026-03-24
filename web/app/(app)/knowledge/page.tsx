@@ -3,7 +3,7 @@ import { BookOpenCheck, Info } from "lucide-react";
 import { KnowledgeCardView } from "@/components/site/knowledge-card";
 import { SectionShell } from "@/components/site/section-shell";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { CommonButton } from "@/components/ui/CommonButton";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
@@ -49,7 +49,7 @@ export default function KnowledgePage() {
                 </SelectContent>
               </Select>
             </div>
-            <Button size="lg">검색하기</Button>
+            <CommonButton size="lg">검색하기</CommonButton>
           </CardContent>
         </Card>
 
@@ -74,14 +74,14 @@ export default function KnowledgePage() {
               </p>
             </div>
             <div className="flex gap-3">
-              <Button variant="secondary">
+              <CommonButton variant="secondary">
                 <BookOpenCheck className="h-4 w-4" />
                 검진 체크리스트
-              </Button>
-              <Button variant="secondary">
+              </CommonButton>
+              <CommonButton variant="secondary">
                 <Info className="h-4 w-4" />
                 주의사항 보기
-              </Button>
+              </CommonButton>
             </div>
           </CardContent>
         </Card>

@@ -8,7 +8,7 @@ import Image from "next/image";
 import { Bell, Compass, HeartHandshake, MapPin, PawPrint, Shield } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { CommonButton } from "@/components/ui/CommonButton";
 import { AppAlertDialog } from "@/components/ui/AppAlertDialog";
 import { Badge } from "@/components/ui/badge";
 import { authApi } from "@/src/features/auth/api/authApi";
@@ -113,18 +113,18 @@ export function SiteNav() {
           <Badge variant="soft" className="hidden md:inline-flex">
             산책 매칭 12건
           </Badge>
-          <Button variant="ghost" size="sm" aria-label="알림">
+          <CommonButton variant="ghost" size="sm" aria-label="알림">
             <Bell className="h-4 w-4" />
-          </Button>
+          </CommonButton>
           {hasToken && (
-            <Button variant="secondary" size="sm" onClick={() => setLogoutConfirmOpen(true)}>
+            <CommonButton variant="secondary" size="sm" onClick={() => setLogoutConfirmOpen(true)}>
               로그아웃
-            </Button>
+            </CommonButton>
           )}
           <Link href={profileHref}>
-            <Button variant="secondary" size="sm">
+            <CommonButton variant="secondary" size="sm">
               내 프로필
-            </Button>
+            </CommonButton>
           </Link>
         </div>
         </div>

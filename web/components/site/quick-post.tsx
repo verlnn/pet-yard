@@ -5,7 +5,7 @@ import { ImageIcon, Tag } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Button } from "@/components/ui/button";
+import { CommonButton } from "@/components/ui/CommonButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -61,16 +61,16 @@ export function QuickPost() {
           <Input placeholder="#태그" {...form.register("tags")} />
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button type="button" variant="secondary" size="sm">
+          <CommonButton type="button" variant="secondary" size="sm">
             <ImageIcon className="h-4 w-4" /> 사진 추가
-          </Button>
-          <Button type="button" variant="secondary" size="sm">
+          </CommonButton>
+          <CommonButton type="button" variant="secondary" size="sm">
             <Tag className="h-4 w-4" /> 태그 추천
-          </Button>
+          </CommonButton>
         </div>
-        <Button onClick={onSubmit} className="w-full">
+        <CommonButton onClick={onSubmit} className="w-full">
           기록 공유하기
-        </Button>
+        </CommonButton>
       </CardContent>
     </Card>
   );

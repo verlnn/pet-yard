@@ -2,7 +2,7 @@
 
 import { ImagePlus } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { CommonButton } from "@/components/ui/CommonButton";
 
 interface EmptyFeedStateProps {
   onNewPost: () => void;
@@ -19,10 +19,10 @@ export function EmptyFeedState({ onNewPost }: EmptyFeedStateProps) {
         사진과 짧은 기록만 남겨도 멍냥마당의 아카이브가 시작됩니다.
       </p>
       <div className="feed-empty-state-actions">
-        <Button onClick={onNewPost}>첫 게시물 올리기</Button>
-        <Button variant="secondary" onClick={onNewPost}>
+        <CommonButton onClick={onNewPost}>첫 게시물 올리기</CommonButton>
+        <CommonButton variant="secondary" onClick={onNewPost}>
           업로드 가이드 보기
-        </Button>
+        </CommonButton>
       </div>
       <div className="feed-empty-state-preview-grid">
         {Array.from({ length: 6 }).map((_, index) => (

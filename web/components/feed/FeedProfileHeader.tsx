@@ -4,8 +4,8 @@ import Link from "next/link";
 import { Camera, Plus, Settings } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import type { MyProfileResponse } from "@/src/features/auth/types/authTypes";
+import {CommonButton} from "@/components/ui/CommonButton";
 
 interface FeedProfileHeaderProps {
   profile?: MyProfileResponse | null;
@@ -118,14 +118,14 @@ function FeedProfileIdentity({ profile, primaryPet, postCount, onProfileImageCli
 function FeedProfileActions({ onNewPost }: Pick<FeedProfileHeaderProps, "onNewPost">) {
   return (
     <div className="feed-profile-header-actions">
-      <Button variant="secondary" className="feed-profile-header-secondary-action" asChild>
+      <CommonButton variant="secondary" className="feed-profile-header-secondary-action" asChild>
         <Link href="/accounts/edit">
           프로필 편집
         </Link>
-      </Button>
-      <Button onClick={onNewPost} className="feed-profile-header-primary-action">
+      </CommonButton>
+      <CommonButton onClick={onNewPost} className="feed-profile-header-primary-action">
         <Plus className="h-4 w-4" /> 새 게시물
-      </Button>
+      </CommonButton>
     </div>
   );
 }

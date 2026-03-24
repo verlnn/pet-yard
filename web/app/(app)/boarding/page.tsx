@@ -3,7 +3,7 @@ import { ShieldCheck, Star } from "lucide-react";
 import { BoardingCard } from "@/components/site/boarding-card";
 import { SectionShell } from "@/components/site/section-shell";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { CommonButton } from "@/components/ui/CommonButton";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { boardingRequests } from "@/lib/mock";
@@ -26,7 +26,7 @@ export default function BoardingPage() {
               <p className="text-xs text-[var(--color-text-muted)]">지역</p>
               <Input placeholder="동네를 입력" />
             </div>
-            <Button size="lg">검색하기</Button>
+            <CommonButton size="lg">검색하기</CommonButton>
           </CardContent>
         </Card>
 

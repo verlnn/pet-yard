@@ -2,7 +2,7 @@
 
 import type { Dispatch, SetStateAction } from "react";
 
-import { Button } from "@/components/ui/button";
+import { CommonButton } from "@/components/ui/CommonButton";
 import type { PetBreed, PetRegistrationVerificationResponse } from "@/src/features/auth/types/authTypes";
 import type { PetFormState, PetVerificationState } from "@/src/features/pets/components/petFormTypes";
 
@@ -99,13 +99,13 @@ export function PetAddSection({
         ) : null}
         {verificationError ? <p className="pets-form-error pets-form-error-spaced">{verificationError}</p> : null}
         <div className="pets-registration-action-row">
-          <Button onClick={onVerifyRegistration} disabled={verifying || verified}>
+          <CommonButton onClick={onVerifyRegistration} disabled={verifying || verified}>
             {verifying ? "인증 중..." : verified ? "인증 완료" : "등록번호 인증"}
-          </Button>
+          </CommonButton>
           {verified ? (
-            <Button variant="secondary" onClick={onResetVerification}>
+            <CommonButton variant="secondary" onClick={onResetVerification}>
               다시 인증
-            </Button>
+            </CommonButton>
           ) : null}
         </div>
         {verified ? (
@@ -259,9 +259,9 @@ export function PetAddSection({
               </label>
             </div>
             {petImageError ? <p className="pets-form-error">{petImageError}</p> : null}
-            <Button onClick={onPetSubmit} disabled={savingPet}>
+            <CommonButton onClick={onPetSubmit} disabled={savingPet}>
               {savingPet ? "저장 중..." : "반려동물 등록"}
-            </Button>
+            </CommonButton>
           </div>
         ) : null}
       </div>

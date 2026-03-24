@@ -2,7 +2,7 @@ import { MapPin, Timer } from "lucide-react";
 
 import { SectionShell } from "@/components/site/section-shell";
 import { WalkCard } from "@/components/site/walk-card";
-import { Button } from "@/components/ui/button";
+import { CommonButton } from "@/components/ui/CommonButton";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -54,7 +54,7 @@ export default function WalksPage() {
                 </SelectContent>
               </Select>
             </div>
-            <Button size="lg">검색하기</Button>
+            <CommonButton size="lg">검색하기</CommonButton>
           </CardContent>
         </Card>
 
@@ -79,14 +79,14 @@ export default function WalksPage() {
               </p>
             </div>
             <div className="flex gap-3">
-              <Button variant="secondary">
+              <CommonButton variant="secondary">
                 <MapPin className="h-4 w-4" />
                 장소 가이드
-              </Button>
-              <Button variant="secondary">
+              </CommonButton>
+              <CommonButton variant="secondary">
                 <Timer className="h-4 w-4" />
                 일정 체크
-              </Button>
+              </CommonButton>
             </div>
           </CardContent>
         </Card>
