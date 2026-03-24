@@ -35,6 +35,8 @@ export default function OnboardingProfilePage() {
   const [marketingOptIn, setMarketingOptIn] = useState(false);
   const [hasPetChoice, setHasPetChoice] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(false);
+  const [progressLoaded, setProgressLoaded] = useState(false);
+  const [progressError, setProgressError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -45,6 +47,43 @@ export default function OnboardingProfilePage() {
     }
     setSignupToken(token);
   }, [router]);
+
+  useEffect(() => {
+    if (!signupToken || progressLoaded) {
+      return;
+    }
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const response = await authApi.signupProgress(signupToken);
+        if (cancelled) return;
+
+        const normalizedUsername = response.username?.trim().toLowerCase() ?? "";
+        setNickname((prev) => prev || response.nickname ?? "");
+        setUsername((prev) => prev || response.username ?? "");
+        setVerifiedUsername((prev) => prev || normalizedUsername);
+        setProfileImageUrl((prev) => prev || response.profileImageUrl ?? "");
+        if (response.hasPet === true || response.hasPet === false) {
+          setHasPetChoice(response.hasPet);
+        }
+        setProgressError(null);
+      } catch (err) {
+        if (cancelled) return;
+        const message = err instanceof Error ? err.message : "진행 중인 회원가입 정보를 불러오지 못했습니다.";
+        setProgressError(message);
+        setError(message);
+      } finally {
+        if (!cancelled) {
+          setProgressLoaded(true);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [progressLoaded, signupToken]);
 
   useEffect(() => {
     const loadCities = async () => {
