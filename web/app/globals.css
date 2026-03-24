@@ -916,15 +916,17 @@ body {
     align-items: center;
     justify-content: space-between;
     margin-bottom: 0.5rem;
+    text-align: center;
   }
 
   .guardian-card-header p {
     font-size: 1rem;
     font-weight: 600;
+    flex: 1;
   }
  
   .guardian-card-close {
-    @apply flex h-8 w-8 items-center justify-center text-xl font-semibold;
+    @apply flex h-10 w-10 items-center justify-center text-xl font-semibold;
     border: none;
     background: transparent;
   }
