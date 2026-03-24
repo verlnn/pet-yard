@@ -659,19 +659,22 @@ body {
   }
 
   .profile-empty-state {
-    @apply flex flex-col items-center gap-3 rounded-[32px] border border-white/10 bg-[#04060f] px-8 py-12 text-center;
+    @apply flex flex-col items-center gap-3 rounded-[32px] border px-8 py-12 text-center;
+    border-color: var(--color-border);
+    background: var(--color-surface);
   }
 
   .profile-empty-state-icon {
-    @apply flex h-16 w-16 items-center justify-center rounded-full border border-white/20 bg-transparent;
+    @apply flex h-16 w-16 items-center justify-center rounded-full border bg-transparent;
+    border-color: var(--color-border);
   }
 
   .profile-empty-state-title {
-    @apply font-display text-2xl font-semibold tracking-tight text-white;
+    @apply font-display text-2xl font-semibold tracking-tight;
   }
 
   .profile-empty-state-body {
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--color-text-muted);
     @apply text-sm leading-relaxed;
   }
 
