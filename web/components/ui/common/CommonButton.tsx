@@ -11,6 +11,7 @@ interface CommonButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement
   fontColor?: string;
   href?: Parameters<typeof Link>[0]["href"];
   icon?: React.ReactNode;
+  text?: React.ReactNode;
 }
 
 const sizeClassName: Record<CommonButtonSize, string> = {
@@ -44,11 +45,13 @@ function CommonButton({
     ...(style ?? {})
   };
 
+  const content = text ?? children;
+
   if (href) {
     return (
       <Link href={href} className={finalClassName} style={finalStyle}>
         {icon && <span className="flex items-center justify-center">{icon}</span>}
-        {children}
+        {content}
       </Link>
     );
   }
@@ -62,7 +65,7 @@ function CommonButton({
       {...rest}
     >
       {icon && <span className="flex items-center justify-center">{icon}</span>}
-      {children}
+      {content}
     </button>
   );
 }
