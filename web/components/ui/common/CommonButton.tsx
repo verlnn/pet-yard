@@ -9,7 +9,7 @@ interface CommonButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement
   size?: CommonButtonSize;
   color?: string;
   fontColor?: string;
-  href?: string;
+  href?: Parameters<typeof Link>[0]["href"];
   icon?: React.ReactNode;
 }
 
