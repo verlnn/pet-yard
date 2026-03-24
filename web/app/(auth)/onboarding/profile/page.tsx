@@ -61,9 +61,9 @@ export default function OnboardingProfilePage() {
 
         const normalizedUsername = response.username?.trim().toLowerCase() ?? "";
         setNickname((prev) => prev || response.nickname ?? "");
-        setUsername((prev) => prev || response.username ?? "");
+        setUsername((prev) => prev || (response.username ?? ""));
         setVerifiedUsername((prev) => prev || normalizedUsername);
-        setProfileImageUrl((prev) => prev || response.profileImageUrl ?? "");
+        setProfileImageUrl((prev) => prev || (response.profileImageUrl ?? ""));
         if (response.hasPet === true || response.hasPet === false) {
           setHasPetChoice(response.hasPet);
         }
