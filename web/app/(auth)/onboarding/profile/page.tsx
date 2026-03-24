@@ -60,7 +60,7 @@ export default function OnboardingProfilePage() {
         if (cancelled) return;
 
         const normalizedUsername = response.username?.trim().toLowerCase() ?? "";
-        setNickname((prev) => prev || response.nickname ?? "");
+        setNickname((prev) => prev || (response.nickname ?? ""));
         setUsername((prev) => prev || (response.username ?? ""));
         setVerifiedUsername((prev) => prev || normalizedUsername);
         setProfileImageUrl((prev) => prev || (response.profileImageUrl ?? ""));
