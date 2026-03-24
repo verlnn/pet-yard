@@ -35,7 +35,7 @@ function CommonButton({
   ...rest
 }: CommonButtonProps) {
   const finalClassName = cn(
-    "relative h-12 min-w-[250px] flex-1 inline-flex items-center justify-center gap-2 overflow-hidden rounded-[10px] px-6 font-semibold transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border)] disabled:pointer-events-none disabled:opacity-50",
+    "inline-flex items-center justify-center gap-2 rounded-full text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border)] disabled:pointer-events-none disabled:opacity-50 bg-[var(--color-button-secondary-bg)] text-[var(--color-button-secondary-text)] ring-1 ring-[var(--color-button-secondary-border)] hover:opacity-90",
     sizeClassName[size],
     className
   );
