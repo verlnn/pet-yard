@@ -753,7 +753,7 @@ body {
   }
 
   .profile-pets-empty-icon {
-    @apply flex h-16 w-16 items-center justify-center rounded-full border border-white/20 bg-transparent text-white;
+    @apply flex h-16 w-16 items-center justify-center rounded-full bg-transparent text-white;
   }
 
   .profile-pets-empty-title {
