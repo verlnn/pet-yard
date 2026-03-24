@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { MyProfileResponse } from "@/src/features/auth/types/authTypes";
-import { cn } from "@/lib/utils";
 import { CommonButton } from "@/components/ui/CommonButton";
 
 interface FeedProfileHeaderProps {
