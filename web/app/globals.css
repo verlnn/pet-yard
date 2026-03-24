@@ -675,16 +675,15 @@ body {
     color: #ffffff;
   }
 
-  .my-feed-tab-active::after {
-    content: "";
+  .my-feed-tab-indicator {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
     bottom: -6px;
     width: 28px;
     height: 2px;
-    background: #ffffff;
     border-radius: 999px;
+    background: #ffffff;
   }
 
   .feed-profile-header {

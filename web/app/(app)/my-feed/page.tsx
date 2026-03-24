@@ -41,6 +41,29 @@ const tabs = [
   { id: "tagged", label: "태그됨", Icon: Tag }
 ] as const;
 
+interface TabItemProps {
+  label: string;
+  Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  active: boolean;
+  onSelect: () => void;
+}
+
+function TabItem({ label, Icon, active, onSelect }: TabItemProps) {
+  return (
+    <button
+      type="button"
+      className={`my-feed-tab ${active ? "my-feed-tab-active" : ""}`}
+      aria-label={label}
+      aria-pressed={active}
+      onClick={onSelect}
+    >
+      <Icon className="my-feed-tab-icon" aria-hidden />
+      <span className="sr-only">{label}</span>
+      {active && <span className="my-feed-tab-indicator" aria-hidden />}
+    </button>
+  );
+}
+
 type TabId = (typeof tabs)[number]["id"];
 type ComposerImage = {
   id: string;
@@ -882,17 +905,13 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
           {isOwnProfile ? (
             <div className="my-feed-tab-list" role="tablist">
               {tabs.map(({ id, label, Icon }) => (
-                <button
+                <TabItem
                   key={id}
-                  type="button"
-                  aria-label={label}
-                  aria-pressed={activeTab === id}
-                  onClick={() => setActiveTab(id)}
-                  className={`my-feed-tab ${activeTab === id ? "my-feed-tab-active" : ""}`}
-                >
-                  <Icon className="my-feed-tab-icon" aria-hidden />
-                  <span className="sr-only">{label}</span>
-                </button>
+                  label={label}
+                  Icon={Icon}
+                  active={activeTab === id}
+                  onSelect={() => setActiveTab(id)}
+                />
               ))}
             </div>
           ) : null}
