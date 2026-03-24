@@ -15,10 +15,10 @@ interface CommonButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement
 }
 
 const sizeClassName: Record<CommonButtonSize, string> = {
-  small: "h-9 min-w-auto px-3 text-xs",
+  small: "h-9 min-w-[160px] px-3 text-xs",
   medium: "",
   large: "",
-  wide: "h-11 px-8 text-sm tracking-[0.3em]"
+  wide: "!h-11 px-8 text-sm tracking-[0.3em]"
 };
 
 function CommonButton({
@@ -35,16 +35,20 @@ function CommonButton({
   ...rest
 }: CommonButtonProps) {
   const finalClassName = cn(
-    "inline-flex items-center justify-center gap-2 rounded-full text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border)] disabled:pointer-events-none disabled:opacity-50 bg-[var(--color-button-secondary-bg)] text-[var(--color-button-secondary-text)] ring-1 ring-[var(--color-button-secondary-border)] hover:opacity-90",
+    "relative h-12 min-w-[250px] flex-1 inline-flex items-center justify-center gap-2 overflow-hidden rounded-[10px] px-6 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border)] disabled:pointer-events-none disabled:opacity-50 bg-[var(--color-button-secondary-bg)] text-[var(--color-button-secondary-text)] ring-1 ring-[var(--color-button-secondary-border)] hover:opacity-90",
     sizeClassName[size],
     className
   );
 
   const finalStyle = {
-    backgroundColor: color ?? "var(--color-button-secondary-bg)",
-    color: fontColor ?? "var(--color-button-secondary-text)",
     ...(style ?? {})
   };
+  if (color) {
+    finalStyle.backgroundColor = color;
+  }
+  if (fontColor) {
+    finalStyle.color = fontColor;
+  }
 
   const content = text ?? children;
 
