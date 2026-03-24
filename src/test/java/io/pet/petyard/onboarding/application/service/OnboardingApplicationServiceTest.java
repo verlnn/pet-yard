@@ -234,7 +234,6 @@ class OnboardingApplicationServiceTest {
     void completePersistsAllData() throws Exception {
         SignupSession session = tokenSession("signup-token", SignupStep.COMPLETE, SignupStatus.ONBOARDING);
         Map<String, Object> metadata = new HashMap<>();
-        metadata.put("email", "owner@petyard.com");
         metadata.put("nickname", "멍냥집사");
         metadata.put("username", "owner.test");
         metadata.put("regionCode", "11010");
