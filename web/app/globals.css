@@ -647,42 +647,125 @@ body {
   }
 
   .my-feed-tab-list {
-    @apply flex w-full border-b border-white/20;
+    @apply relative flex w-full gap-3 border-b border-white/20;
   }
 
   .my-feed-tab {
-    @apply relative flex-1 flex items-center justify-center border-0 bg-transparent text-white/70 transition-colors pb-3;
+    @apply relative flex-1 flex items-center justify-center border-0 bg-transparent text-white/60 transition-colors duration-200 ease-out py-3 pb-6;
+  }
+
+  .my-feed-tab:hover {
+    color: #ffffff;
   }
 
   .my-feed-tab-icon {
     @apply h-6 w-6;
   }
 
+  .my-feed-tab-indicator {
+    @apply absolute bg-white rounded-full transition-all duration-200 ease-out;
+    left: 1.25rem;
+    right: 1.25rem;
+    bottom: 1px;
+    height: 2px;
+    z-index: 10;
+  }
+
   .profile-empty-state {
-    @apply flex flex-col items-center gap-3 rounded-[32px] px-8 py-12 text-center;
-    background: var(--color-surface);
+    @apply mx-auto flex w-full max-w-2xl flex-col items-center gap-3 rounded-[32px] border border-white/10 px-8 py-16 text-center shadow-[0_20px_45px_-35px_rgba(0,0,0,0.65)];
+    background: color-mix(in srgb, var(--color-surface) 90%, transparent);
   }
 
   .profile-empty-state-icon {
-    @apply flex h-16 w-16 items-center justify-center rounded-full border bg-transparent;
-    border-color: var(--color-border);
+    @apply flex h-16 w-16 items-center justify-center rounded-full border border-white/30 bg-transparent text-white;
   }
 
   .profile-empty-state-title {
-    @apply font-display text-2xl font-semibold tracking-tight;
+    @apply font-display text-2xl font-semibold tracking-tight text-white;
   }
 
   .profile-empty-state-body {
-    color: var(--color-text-muted);
-    @apply text-sm leading-relaxed;
+    @apply text-sm leading-relaxed text-[var(--color-text-muted)];
   }
 
   .profile-empty-state-button {
-    @apply mt-2 rounded-full px-4 py-2 text-sm font-semibold;
+    @apply mt-2 rounded-full px-5 py-2 text-sm font-semibold;
   }
 
-  .my-feed-tab-active {
-    color: #ffffff;
+  .profile-pets-section {
+    @apply space-y-4;
+  }
+
+  .profile-pets-grid {
+    @apply grid gap-4 md:grid-cols-2;
+  }
+
+  .profile-pet-card {
+    @apply overflow-hidden rounded-[28px];
+  }
+
+  .profile-pet-card-content {
+    @apply flex items-start gap-4;
+  }
+
+  .profile-pet-card-figure {
+    @apply h-20 w-20 flex-shrink-0 overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)];
+  }
+
+  .profile-pet-card-photo {
+    @apply h-full w-full object-cover;
+  }
+
+  .profile-pet-card-placeholder {
+    @apply h-full w-full flex items-center justify-center rounded-2xl border border-dashed border-white/30 text-white/60;
+  }
+
+  .profile-pet-card-info {
+    @apply flex flex-1 flex-col gap-1;
+  }
+
+  .profile-pet-name-row {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  .profile-pet-name {
+    @apply font-display text-lg font-semibold text-white;
+  }
+
+  .profile-pet-species {
+    @apply rounded-full border border-white/20 px-3 py-0.5 text-[0.65rem] uppercase tracking-[0.18em] text-white/70;
+  }
+
+  .profile-pet-breed {
+    @apply text-sm text-[var(--color-text-muted)];
+  }
+
+  .profile-pet-meta {
+    @apply flex flex-wrap items-center gap-3 text-[0.65rem] uppercase text-[var(--color-text-muted)];
+  }
+
+  .profile-pet-meta span {
+    @apply tracking-[0.2em];
+  }
+
+  .profile-pets-empty-state {
+    @apply flex flex-col items-center gap-3 px-6 py-10 text-center;
+  }
+
+  .profile-pets-empty-icon {
+    @apply flex h-16 w-16 items-center justify-center rounded-full border border-white/20 bg-transparent text-white;
+  }
+
+  .profile-pets-empty-title {
+    @apply font-display text-xl font-semibold text-white;
+  }
+
+  .profile-pets-empty-body {
+    @apply text-sm text-[var(--color-text-muted)];
+  }
+
+  .profile-pets-empty-action {
+    @apply w-full max-w-xs rounded-full px-3 py-2 text-sm font-semibold;
   }
 
 

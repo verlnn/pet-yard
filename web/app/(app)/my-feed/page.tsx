@@ -22,9 +22,10 @@ import type {
   FeedPostComment,
   GuardianRelationStatus,
   MyProfileResponse,
+  PetProfile,
   PublicProfileResponse
 } from "@/src/features/auth/types/authTypes";
-import { buildProfileRoute } from "@/src/lib/routes";
+import { buildProfileRoute, ROUTES } from "@/src/lib/routes";
 import { useRouter } from "next/navigation";
 
 const MAX_IMAGE_SIZE = 3 * 1024 * 1024;
@@ -65,7 +66,7 @@ function TabItem({ label, Icon, active, onSelect }: TabItemProps) {
       {active && (
         <motion.span
           layoutId="tab-indicator"
-          className="absolute left-4 right-4 bottom-0 h-[2px] rounded-full bg-white"
+          className="my-feed-tab-indicator"
           transition={{ type: "spring", stiffness: 500, damping: 35 }}
         />
       )}
@@ -735,6 +736,10 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
     setPostPermissionDialogOpen(true);
   };
 
+  const handleGoAddPet = () => {
+    router.push(ROUTES.accountPetsNew);
+  };
+
   const handleProfileImageFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     event.target.value = "";
@@ -909,7 +914,7 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
             />
           )}
 
-          {isOwnProfile ? (
+          {isOwnProfile && (
             <div className="my-feed-tab-list" role="tablist">
               {tabs.map(({ id, label, Icon }) => (
                 <TabItem
@@ -921,32 +926,38 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
                 />
               ))}
             </div>
-          ) : null}
-
-          {(isOwnProfile ? activeTab === "posts" : true) && (
-            <>
-              {grid.length === 0 && !loading ? (
-                isOwnProfile ? (
-                  <ProfileEmptyState onCreate={handleRequestNewPost} />
-                ) : (
-                  <Card className="gradient-shell">
-                    <CardContent className="py-12 text-center text-sm text-[var(--color-text-muted)]">
-                      이 사용자가 공개한 게시물이 아직 없습니다.
-                    </CardContent>
-                  </Card>
-                )
-              ) : (
-                <FeedGrid posts={grid} onSelect={handleSelectPost} />
-              )}
-            </>
           )}
 
-          {isOwnProfile && activeTab !== "posts" && (
-            <Card className="gradient-shell">
-              <CardContent className="py-12 text-center text-sm text-[var(--color-text-muted)]">
-                준비 중인 영역입니다.
-              </CardContent>
-            </Card>
+          {isOwnProfile && activeTab === "pets" ? (
+            <ProfilePetsSection pets={profile?.pets ?? []} onCreate={handleGoAddPet} />
+          ) : (
+            <>
+              {(isOwnProfile ? activeTab === "posts" : true) && (
+                <>
+                  {grid.length === 0 && !loading ? (
+                    isOwnProfile ? (
+                      <ProfileEmptyState onCreate={handleRequestNewPost} />
+                    ) : (
+                      <Card className="gradient-shell">
+                        <CardContent className="py-12 text-center text-sm text-[var(--color-text-muted)]">
+                          이 사용자가 공개한 게시물이 아직 없습니다.
+                        </CardContent>
+                      </Card>
+                    )
+                  ) : (
+                    <FeedGrid posts={grid} onSelect={handleSelectPost} />
+                  )}
+                </>
+              )}
+
+              {isOwnProfile && activeTab !== "posts" && (
+                <Card className="gradient-shell">
+                  <CardContent className="py-12 text-center text-sm text-[var(--color-text-muted)]">
+                    준비 중인 영역입니다.
+                  </CardContent>
+                </Card>
+              )}
+            </>
           )}
         </div>
       </section>
@@ -1200,3 +1211,102 @@ function ProfileEmptyState({ onCreate }: ProfileEmptyStateProps) {
     </div>
   );
 }
+
+interface ProfilePetsSectionProps {
+  pets: PetProfile[];
+  onCreate: () => void;
+}
+
+function ProfilePetsSection({ pets, onCreate }: ProfilePetsSectionProps) {
+  if (pets.length === 0) {
+    return (
+      <Card className="gradient-shell">
+        <CardContent className="profile-pets-empty-state">
+          <div className="profile-pets-empty-icon">
+            <PawPrint className="h-6 w-6" />
+          </div>
+          <p className="profile-pets-empty-title">반려동물을 등록하고 대표 사진을 설정해 보세요.</p>
+          <p className="profile-pets-empty-body">
+            등록한 반려동물 정보는 프로필 카드에 계속 보여집니다.
+          </p>
+          <Button variant="default" className="profile-pets-empty-action" onClick={onCreate}>
+            반려동물 등록하기
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <section className="profile-pets-section">
+      <div className="profile-pets-grid">
+        {pets.map((pet) => {
+          const ageText = getAgeText(pet.birthDate);
+          const genderText = pet.gender ? genderLabel[pet.gender] ?? pet.gender : null;
+          const weightText = pet.weightKg != null ? `${pet.weightKg}kg` : null;
+          const neuteredText =
+            pet.neutered === true ? "중성화 완료" : pet.neutered === false ? "중성화 미확인" : null;
+          const metaPieces = [ageText, genderText, weightText, neuteredText].filter(Boolean) as string[];
+
+          return (
+            <Card key={pet.id} className="profile-pet-card gradient-shell">
+              <CardContent className="profile-pet-card-content">
+                <div className="profile-pet-card-figure">
+                  {pet.photoUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={pet.photoUrl} alt={pet.name} className="profile-pet-card-photo" />
+                  ) : (
+                    <div className="profile-pet-card-placeholder">
+                      <PawPrint className="h-6 w-6" />
+                    </div>
+                  )}
+                </div>
+                <div className="profile-pet-card-info">
+                  <div className="profile-pet-name-row">
+                    <p className="profile-pet-name">{pet.name}</p>
+                    <span className="profile-pet-species">
+                      {speciesLabel[pet.species] ?? pet.species ?? "반려동물"}
+                    </span>
+                  </div>
+                  <p className="profile-pet-breed">{pet.breed ?? "품종 미설정"}</p>
+                  {metaPieces.length > 0 && (
+                    <div className="profile-pet-meta">
+                      {metaPieces.map((piece) => (
+                        <span key={piece}>{piece}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+const speciesLabel: Record<string, string> = {
+  DOG: "강아지",
+  CAT: "고양이",
+  OTHER: "기타"
+};
+
+const genderLabel: Record<string, string> = {
+  MALE: "수컷",
+  FEMALE: "암컷",
+  UNKNOWN: "모름"
+};
+
+const getAgeText = (birthDate?: string | null) => {
+  if (!birthDate) return null;
+  const parsed = new Date(birthDate);
+  if (Number.isNaN(parsed.getTime())) return null;
+  const today = new Date();
+  let years = today.getFullYear() - parsed.getFullYear();
+  const monthDiff = today.getMonth() - parsed.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < parsed.getDate())) {
+    years -= 1;
+  }
+  return `${years}살`;
+};
