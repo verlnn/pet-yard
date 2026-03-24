@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Bookmark, ChevronLeft, ChevronRight, Grid, MoreHorizontal, Tag, X } from "lucide-react";
+import { motion } from "framer-motion";
 
 import { FeedDetailPhotoPanel } from "@/components/feed/detail/FeedDetailPhotoPanel";
 import { FeedDetailSidebar } from "@/components/feed/detail/FeedDetailSidebar";
@@ -65,6 +66,35 @@ function TabItem({ label, Icon, active, onSelect }: TabItemProps) {
 }
 
 type TabId = (typeof tabs)[number]["id"];
+
+interface TabItemProps {
+  label: string;
+  Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  active: boolean;
+  onSelect: () => void;
+}
+
+function TabItem({ label, Icon, active, onSelect }: TabItemProps) {
+  return (
+    <button
+      type="button"
+      className={`my-feed-tab ${active ? "text-white" : "text-white/60 hover:text-white"}`}
+      aria-label={label}
+      aria-pressed={active}
+      onClick={onSelect}
+    >
+      <Icon className="my-feed-tab-icon" aria-hidden />
+      <span className="sr-only">{label}</span>
+      {active && (
+        <motion.span
+          layoutId="tab-indicator"
+          className="absolute left-4 right-4 bottom-0 h-[2px] rounded-full bg-white"
+          transition={{ type: "spring", stiffness: 500, damping: 35 }}
+        />
+      )}
+    </button>
+  );
+}
 type ComposerImage = {
   id: string;
   name: string;

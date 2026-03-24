@@ -647,14 +647,12 @@ body {
   }
 
   .my-feed-tab-list {
-    @apply flex justify-center gap-8;
+    @apply flex justify-around;
     border-bottom: 1px solid rgba(255, 255, 255, 0.18);
-    position: relative;
   }
 
   .my-feed-tab {
-    @apply inline-flex h-12 w-12 items-center justify-center border-0 bg-transparent text-white/70 transition-colors;
-    position: relative;
+    @apply relative flex h-12 w-12 items-center justify-center border-0 bg-transparent text-white/70 transition-colors;
   }
 
   .my-feed-tab-icon {
@@ -665,16 +663,6 @@ body {
     color: #ffffff;
   }
 
-  .my-feed-tab-indicator {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: -1px;
-    width: 28px;
-    height: 3px;
-    border-radius: 999px;
-    background: #ffffff;
-  }
 
   .feed-profile-header {
     @apply py-2;
