@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Bookmark, ChevronLeft, ChevronRight, Grid, MoreHorizontal, Tag, X } from "lucide-react";
+import { Bookmark, Camera, ChevronLeft, ChevronRight, Grid, MoreHorizontal, Tag, X } from "lucide-react";
 
 import { FeedDetailPhotoPanel } from "@/components/feed/detail/FeedDetailPhotoPanel";
 import { FeedDetailSidebar } from "@/components/feed/detail/FeedDetailSidebar";
@@ -926,7 +926,7 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
             <>
               {grid.length === 0 && !loading ? (
                 isOwnProfile ? (
-                  <EmptyFeedState onNewPost={handleRequestNewPost} />
+                  <ProfileEmptyState onCreate={handleRequestNewPost} />
                 ) : (
                   <Card className="gradient-shell">
                     <CardContent className="py-12 text-center text-sm text-[var(--color-text-muted)]">
@@ -1178,4 +1178,24 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
 
 export default function MyFeedPage() {
   return <ProfileFeedPageClient />;
+}
+interface ProfileEmptyStateProps {
+  onCreate: () => void;
+}
+
+function ProfileEmptyState({ onCreate }: ProfileEmptyStateProps) {
+  return (
+    <div className="profile-empty-state">
+      <div className="profile-empty-state-icon">
+        <Camera className="h-6 w-6" />
+      </div>
+      <p className="profile-empty-state-title">사진 공유</p>
+      <p className="profile-empty-state-body">
+        사진을 공유하면 회원님의 프로필에 보여집니다.
+      </p>
+      <Button variant="default" className="profile-empty-state-button" onClick={onCreate}>
+        첫 사진 공유하기
+      </Button>
+    </div>
+  );
 }

@@ -658,6 +658,27 @@ body {
     @apply h-6 w-6;
   }
 
+  .profile-empty-state {
+    @apply flex flex-col items-center gap-3 rounded-[32px] border border-white/10 bg-[#04060f] px-8 py-12 text-center;
+  }
+
+  .profile-empty-state-icon {
+    @apply flex h-16 w-16 items-center justify-center rounded-full border border-white/20 bg-transparent;
+  }
+
+  .profile-empty-state-title {
+    @apply font-display text-2xl font-semibold tracking-tight text-white;
+  }
+
+  .profile-empty-state-body {
+    color: rgba(255, 255, 255, 0.7);
+    @apply text-sm leading-relaxed;
+  }
+
+  .profile-empty-state-button {
+    @apply mt-2 rounded-full px-4 py-2 text-sm font-semibold;
+  }
+
   .my-feed-tab-active {
     color: #ffffff;
   }
