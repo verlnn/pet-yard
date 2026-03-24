@@ -3,18 +3,22 @@
 import Link from "next/link";
 import { Camera, Plus, Settings } from "lucide-react";
 
+import { cn } from "@/lib/utils";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { MyProfileResponse } from "@/src/features/auth/types/authTypes";
-import {CommonButton} from "@/components/ui/CommonButton";
+import { cn } from "@/lib/utils";
+import { CommonButton } from "@/components/ui/CommonButton";
 
 interface FeedProfileHeaderProps {
   profile?: MyProfileResponse | null;
   postCount: number;
   onNewPost: () => void;
   onProfileImageClick?: () => void;
+  onPetsClick?: () => void;
 }
 
-export function FeedProfileHeader({ profile, postCount, onNewPost, onProfileImageClick }: FeedProfileHeaderProps) {
+export function FeedProfileHeader({ profile, postCount, onNewPost, onProfileImageClick, onPetsClick }: FeedProfileHeaderProps) {
   const primaryPet = profile?.pets?.find((pet) => pet.id === profile?.primaryPetId) ?? profile?.pets?.[0];
 
   return (
@@ -97,7 +101,7 @@ function FeedProfileIdentity({ profile, primaryPet, postCount, onProfileImageCli
         <div className="feed-profile-header-stats">
           <FeedProfileStat label="게시물" value={postCount} />
           <FeedProfileStat label="집사들" value={profile?.guardianCount ?? 0} />
-          <FeedProfileStat label="반려동물" value={profile?.petCount ?? 0} />
+          <FeedProfileStat label="반려동물" value={profile?.petCount ?? 0} onClick={onPetsClick} />
         </div>
 
         <div className="feed-profile-header-meta">
@@ -133,13 +137,23 @@ function FeedProfileActions({ onNewPost }: Pick<FeedProfileHeaderProps, "onNewPo
 interface FeedProfileStatProps {
   label: string;
   value: string | number;
+  onClick?: () => void;
 }
 
-function FeedProfileStat({ label, value }: FeedProfileStatProps) {
+function FeedProfileStat({ label, value, onClick }: FeedProfileStatProps) {
+  const Comp = onClick ? "button" : "span";
+
   return (
-    <span className="feed-profile-header-stat">
+    <Comp
+      type={onClick ? "button" : undefined}
+      className={cn(
+        "feed-profile-header-stat",
+        onClick ? "feed-profile-header-stat-clickable" : ""
+      )}
+      onClick={onClick}
+    >
       <strong className="feed-profile-header-stat-value">{value}</strong>
       <span className="feed-profile-header-stat-label">{label}</span>
-    </span>
+    </Comp>
   );
 }

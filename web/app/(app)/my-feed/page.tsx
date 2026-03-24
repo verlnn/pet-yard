@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type RefObject } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Bookmark, Camera, ChevronLeft, ChevronRight, Grid, MoreHorizontal, PawPrint, Tag, X } from "lucide-react";
 
@@ -258,6 +258,11 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
   const [selectedCommentDeletingId, setSelectedCommentDeletingId] = useState<number | null>(null);
   const [commentFocusToken, setCommentFocusToken] = useState(0);
   const [guardianLoading, setGuardianLoading] = useState(false);
+  const petsSectionRef = useRef<HTMLElement>(null);
+  const handlePetsStatClick = () => {
+    setActiveTab("pets");
+    petsSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
   const [guardianUnregisterAlertOpen, setGuardianUnregisterAlertOpen] = useState(false);
   const [guardianErrorMessage, setGuardianErrorMessage] = useState<string | null>(null);
   const [guardianRequestCooldown, setGuardianRequestCooldown] = useState(false);
@@ -899,12 +904,13 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
 
         <div className="space-y-6">
           {isOwnProfile ? (
-            <FeedProfileHeader
-              profile={profile as MyProfileResponse | null}
-              postCount={posts.length}
-              onNewPost={handleRequestNewPost}
-              onProfileImageClick={() => setProfileImageAlertOpen(true)}
-            />
+          <FeedProfileHeader
+            profile={profile as MyProfileResponse | null}
+            postCount={posts.length}
+            onNewPost={handleRequestNewPost}
+            onProfileImageClick={() => setProfileImageAlertOpen(true)}
+            onPetsClick={handlePetsStatClick}
+          />
           ) : (
             <PublicProfileHeader
               profile={profile as PublicProfileResponse | null}
@@ -930,7 +936,11 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
           )}
 
           {isOwnProfile && activeTab === "pets" ? (
-            <ProfilePetsSection pets={profile?.pets ?? []} onCreate={handleGoAddPet} />
+            <ProfilePetsSection
+              pets={profile?.pets ?? []}
+              onCreate={handleGoAddPet}
+              sectionRef={petsSectionRef}
+            />
           ) : (
             <>
               {(isOwnProfile ? activeTab === "posts" : true) && (
@@ -1202,70 +1212,69 @@ export default function MyFeedPage() {
 interface ProfilePetsSectionProps {
   pets: PetProfile[];
   onCreate: () => void;
+  sectionRef?: RefObject<HTMLElement>;
 }
 
-function ProfilePetsSection({ pets, onCreate }: ProfilePetsSectionProps) {
-  if (pets.length === 0) {
-    return (
-      <Card className="gradient-shell" style={{ borderColor: "#000000" }}>
-        <CardContent className="profile-pets-empty-state">
-          <EmptyStateCard
-            icon={<PawPrint className="h-6 w-6" />}
-            title="반려동물을 등록하고 대표 사진을 설정해 보세요."
-            body="등록한 반려동물 정보는 프로필 카드에 계속 보여집니다."
-            buttonLabel="반려동물 등록하기"
-            onButtonClick={onCreate}
-          />
-        </CardContent>
-      </Card>
-    );
-  }
-
+function ProfilePetsSection({ pets, onCreate, sectionRef }: ProfilePetsSectionProps) {
   return (
-    <section className="profile-pets-section">
-      <div className="profile-pets-grid">
-        {pets.map((pet) => {
-          const ageText = getAgeText(pet.birthDate);
-          const genderText = pet.gender ? genderLabel[pet.gender] ?? pet.gender : null;
-          const weightText = pet.weightKg != null ? `${pet.weightKg}kg` : null;
-          const neuteredText =
-            pet.neutered === true ? "중성화 완료" : pet.neutered === false ? "중성화 미확인" : null;
-          const metaPieces = [ageText, genderText, weightText, neuteredText].filter(Boolean) as string[];
+    <section className="profile-pets-section" ref={sectionRef}>
+      {pets.length === 0 ? (
+        <Card className="gradient-shell" style={{ borderColor: "#000000" }}>
+          <CardContent className="profile-pets-empty-state">
+            <EmptyStateCard
+              icon={<PawPrint className="h-6 w-6" />}
+              title="반려동물을 등록하고 대표 사진을 설정해 보세요."
+              body="등록한 반려동물 정보는 프로필 카드에 계속 보여집니다."
+              buttonLabel="반려동물 등록하기"
+              onButtonClick={onCreate}
+            />
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="profile-pets-grid">
+          {pets.map((pet) => {
+            const ageText = getAgeText(pet.birthDate);
+            const genderText = pet.gender ? genderLabel[pet.gender] ?? pet.gender : null;
+            const weightText = pet.weightKg != null ? `${pet.weightKg}kg` : null;
+            const neuteredText =
+              pet.neutered === true ? "중성화 완료" : pet.neutered === false ? "중성화 미확인" : null;
+            const metaPieces = [ageText, genderText, weightText, neuteredText].filter(Boolean) as string[];
 
-          return (
-            <Card key={pet.id} className="profile-pet-card gradient-shell">
-              <CardContent className="profile-pet-card-content">
-                <div className="profile-pet-card-figure">
-                  {pet.photoUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={pet.photoUrl} alt={pet.name} className="profile-pet-card-photo" />
-                  ) : (
-                    <div className="profile-pet-card-placeholder">
-                      <PawPrint className="h-6 w-6" />
-                    </div>
-                  )}
-                </div>
-                <div className="profile-pet-card-info">
-                  <div className="profile-pet-name-row">
-                    <p className="profile-pet-name">{pet.name}</p>
-                    <span className="profile-pet-species">
-                      {speciesLabel[pet.species] ?? pet.species ?? "반려동물"}
-                    </span>
+            return (
+              <Card key={pet.id} className="profile-pet-card gradient-shell">
+                <CardContent className="profile-pet-card-content">
+                  <div className="profile-pet-card-figure">
+                    {pet.photoUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={pet.photoUrl} alt={pet.name} className="profile-pet-card-photo" />
+                    ) : (
+                      <div className="profile-pet-card-placeholder">
+                        <PawPrint className="h-6 w-6" />
+                      </div>
+                    )}
                   </div>
-                  <p className="profile-pet-breed">{pet.breed ?? "품종 미설정"}</p>
-                  {metaPieces.length > 0 && (
-                    <div className="profile-pet-meta">
-                      {metaPieces.map((piece) => (
-                        <span key={piece}>{piece}</span>
-                      ))}
+                  <div className="profile-pet-card-info">
+                    <div className="profile-pet-name-row">
+                      <p className="profile-pet-name">{pet.name}</p>
+                      <span className="profile-pet-species">
+                        {speciesLabel[pet.species] ?? pet.species ?? "반려동물"}
+                      </span>
                     </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
+                    <p className="profile-pet-breed">{pet.breed ?? "품종 미설정"}</p>
+                    {metaPieces.length > 0 && (
+                      <div className="profile-pet-meta">
+                        {metaPieces.map((piece) => (
+                          <span key={piece}>{piece}</span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }

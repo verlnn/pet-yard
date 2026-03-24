@@ -871,6 +871,10 @@ body {
     @apply flex items-baseline gap-2;
   }
 
+  .feed-profile-header-stat-clickable {
+    cursor: pointer;
+  }
+
   .feed-profile-header-stat-value {
     color: var(--color-text);
     @apply text-xl font-semibold;
