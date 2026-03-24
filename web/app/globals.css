@@ -750,6 +750,7 @@ body {
 
   .profile-pets-empty-state {
     @apply flex flex-col items-center gap-3 px-6 py-10 text-center;
+    border-color: transparent;
   }
 
   .profile-pets-empty-icon {
