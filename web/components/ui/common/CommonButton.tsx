@@ -17,7 +17,7 @@ interface CommonButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement
 const sizeClassName: Record<CommonButtonSize, string> = {
   small: "h-9 min-w-[160px] px-3 text-xs",
   medium: "",
-  large: "h-12",
+  large: "h-11",
   wide: "!h-11 px-8 text-sm tracking-[0.3em]"
 };
 
