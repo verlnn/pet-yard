@@ -46,9 +46,7 @@ function CommonButton({
   if (color) {
     finalStyle.backgroundColor = color;
   }
-  if (fontColor) {
-    finalStyle.color = fontColor;
-  }
+  finalStyle.color = fontColor ?? "var(--color-button-secondary-text, #000)";
 
   const content = text ?? children;
 
