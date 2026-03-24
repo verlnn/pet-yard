@@ -63,6 +63,7 @@ jwt:
 onboarding:
   session:
     ttl-minutes: 10
+    cleanup-interval-ms: 60000
 
 animal:
   registration:
