@@ -27,6 +27,7 @@ function CommonButton({
   fontColor,
   href,
   icon,
+  text,
   className,
   children,
   style,
