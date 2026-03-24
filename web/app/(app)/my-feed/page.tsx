@@ -1220,7 +1220,7 @@ interface ProfilePetsSectionProps {
 function ProfilePetsSection({ pets, onCreate }: ProfilePetsSectionProps) {
   if (pets.length === 0) {
     return (
-      <Card className="gradient-shell">
+      <Card className="gradient-shell" style={{ borderColor: "#000000" }}>
         <CardContent className="profile-pets-empty-state">
           <div className="profile-pets-empty-icon">
             <PawPrint className="h-6 w-6" />
