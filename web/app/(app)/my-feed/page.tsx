@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, MoreHorizontal, X } from "lucide-react";
+import { Bookmark, ChevronLeft, ChevronRight, Grid, MoreHorizontal, Tag, X } from "lucide-react";
 
 import { FeedDetailPhotoPanel } from "@/components/feed/detail/FeedDetailPhotoPanel";
 import { FeedDetailSidebar } from "@/components/feed/detail/FeedDetailSidebar";
@@ -36,9 +36,9 @@ const FEED_DETAIL_SHELL_TRANSITION = {
 };
 
 const tabs = [
-  { id: "posts", label: "게시물" },
-  { id: "saved", label: "저장됨" },
-  { id: "tagged", label: "태그됨" }
+  { id: "posts", label: "게시물", Icon: Grid },
+  { id: "saved", label: "저장됨", Icon: Bookmark },
+  { id: "tagged", label: "태그됨", Icon: Tag }
 ] as const;
 
 type TabId = (typeof tabs)[number]["id"];
@@ -880,16 +880,19 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
           )}
 
           {isOwnProfile ? (
-            <div className="my-feed-tab-list">
-              {tabs.map((tab) => (
-                <Button
-                  key={tab.id}
-                  variant={activeTab === tab.id ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setActiveTab(tab.id)}
+            <div className="my-feed-tab-list" role="tablist">
+              {tabs.map(({ id, label, Icon }) => (
+                <button
+                  key={id}
+                  type="button"
+                  aria-label={label}
+                  aria-pressed={activeTab === id}
+                  onClick={() => setActiveTab(id)}
+                  className={`my-feed-tab ${activeTab === id ? "my-feed-tab-active" : ""}`}
                 >
-                  {tab.label}
-                </Button>
+                  <Icon className="my-feed-tab-icon" aria-hidden />
+                  <span className="sr-only">{label}</span>
+                </button>
               ))}
             </div>
           ) : null}
