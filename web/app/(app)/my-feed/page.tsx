@@ -9,6 +9,7 @@ import { FeedDetailSidebar } from "@/components/feed/detail/FeedDetailSidebar";
 import { CommonButton } from "@/components/ui/CommonButton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
+import { EmptyStateCard } from "@/components/ui/EmptyStateCard";
 import { FeedProfileHeader } from "@/components/feed/FeedProfileHeader";
 import { FeedGrid } from "@/components/feed/FeedGrid";
 import { EmptyFeedState } from "@/components/feed/EmptyFeedState";
@@ -936,7 +937,13 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
                 <>
                   {grid.length === 0 && !loading ? (
                     isOwnProfile ? (
-                      <ProfileEmptyState onCreate={handleRequestNewPost} />
+                      <EmptyStateCard
+                        icon={<Camera className="h-6 w-6" />}
+                        title="사진 공유"
+                        body="사진을 공유하면 회원님의 프로필에 보여집니다."
+                        buttonLabel="첫 사진 공유하기"
+                        onButtonClick={handleRequestNewPost}
+                      />
                     ) : (
                       <Card className="gradient-shell">
                         <CardContent className="py-12 text-center text-sm text-[var(--color-text-muted)]">
@@ -1191,26 +1198,6 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
 export default function MyFeedPage() {
   return <ProfileFeedPageClient />;
 }
-interface ProfileEmptyStateProps {
-  onCreate: () => void;
-}
-
-function ProfileEmptyState({ onCreate }: ProfileEmptyStateProps) {
-  return (
-    <div className="profile-empty-state">
-      <div className="profile-empty-state-icon">
-        <Camera className="h-6 w-6" />
-      </div>
-      <p className="profile-empty-state-title">사진 공유</p>
-      <p className="profile-empty-state-body">
-        사진을 공유하면 회원님의 프로필에 보여집니다.
-      </p>
-      <CommonButton variant="default" className="profile-empty-state-button" onClick={onCreate}>
-        첫 사진 공유하기
-      </CommonButton>
-    </div>
-  );
-}
 
 interface ProfilePetsSectionProps {
   pets: PetProfile[];
@@ -1222,16 +1209,13 @@ function ProfilePetsSection({ pets, onCreate }: ProfilePetsSectionProps) {
     return (
       <Card className="gradient-shell" style={{ borderColor: "#000000" }}>
         <CardContent className="profile-pets-empty-state">
-          <div className="profile-pets-empty-icon">
-            <PawPrint className="h-6 w-6" />
-          </div>
-          <p className="profile-pets-empty-title">반려동물을 등록하고 대표 사진을 설정해 보세요.</p>
-          <p className="profile-pets-empty-body">
-            등록한 반려동물 정보는 프로필 카드에 계속 보여집니다.
-          </p>
-          <CommonButton variant="default" className="profile-pets-empty-action" onClick={onCreate}>
-            반려동물 등록하기
-          </CommonButton>
+          <EmptyStateCard
+            icon={<PawPrint className="h-6 w-6" />}
+            title="반려동물을 등록하고 대표 사진을 설정해 보세요."
+            body="등록한 반려동물 정보는 프로필 카드에 계속 보여집니다."
+            buttonLabel="반려동물 등록하기"
+            onButtonClick={onCreate}
+          />
         </CardContent>
       </Card>
     );
