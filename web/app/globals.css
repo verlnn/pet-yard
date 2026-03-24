@@ -648,12 +648,11 @@ body {
 
   .my-feed-tab-list {
     @apply flex justify-center gap-8;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: none;
   }
 
   .my-feed-tab {
     @apply inline-flex h-12 w-12 items-center justify-center border-0 bg-transparent text-white/70 transition-colors;
+    position: relative;
   }
 
   .my-feed-tab-icon {
@@ -662,6 +661,18 @@ body {
 
   .my-feed-tab-active {
     color: #ffffff;
+  }
+
+  .my-feed-tab-active::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: -6px;
+    width: 28px;
+    height: 2px;
+    background: #ffffff;
+    border-radius: 999px;
   }
 
   .feed-profile-header {
