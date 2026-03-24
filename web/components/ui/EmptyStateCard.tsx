@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import CommonButton from "@/components/ui/CommonButton";
+import {CommonButton} from "@/components/ui/CommonButton";
 
 interface EmptyStateCardProps {
   icon: React.ReactNode;
