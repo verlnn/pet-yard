@@ -220,6 +220,17 @@ export interface GuardianRegistrationResponse {
   guardianRegisteredByMe: boolean;
 }
 
+export interface GuardianSummary {
+  userId: number;
+  username: string;
+  nickname: string;
+  profileImageUrl?: string | null;
+}
+
+export interface PublicGuardiansResponse {
+  guardians: GuardianSummary[];
+}
+
 export type UserNotificationType =
   | "GUARDIAN_REQUEST"
   | "GUARDIAN_REQUEST_ACCEPTED"

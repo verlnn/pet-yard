@@ -26,6 +26,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -74,15 +78,7 @@ public class PublicUserProfileController {
         @Parameter(description = "공개 사용자 ID", example = "meongnyang.owner")
         @PathVariable String username
     ) {
-        String normalizedUsername;
-        try {
-            normalizedUsername = Username.fromRaw(username).value();
-        } catch (IllegalArgumentException exception) {
-            throw new ApiException(ErrorCode.USER_NOT_FOUND);
-        }
-
-        User user = loadUserPort.findByUsername(normalizedUsername)
-            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+        User user = resolvePublicUser(username);
 
         UserProfile profile = loadUserProfilePort.findByUserId(user.getId())
             .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
@@ -109,8 +105,8 @@ public class PublicUserProfileController {
             ? GuardianRelationStatus.NONE
             : guardianRegistrationService.getRelationStatus(principal.userId(), user.getId());
 
-        return new PublicUserProfileResponse(
-            user.getId(),
+    return new PublicUserProfileResponse(
+        user.getId(),
             user.getUsername(),
             profile.getNickname(),
             regionName,
@@ -122,6 +118,38 @@ public class PublicUserProfileController {
             pets.size(),
             pets
         );
+    }
+
+    @GetMapping("/{username}/guardians")
+    @Operation(summary = "집사 리스트 조회", description = "지정한 사용자 ID의 집사 목록을 조회합니다.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "조회 성공",
+            content = @Content(schema = @Schema(implementation = PublicUserGuardiansResponse.class))),
+        @ApiResponse(responseCode = "400", description = "사용자 없음",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public PublicUserGuardiansResponse guardians(
+        @Parameter(description = "공개 사용자 ID", example = "meongnyang.owner")
+        @PathVariable String username
+    ) {
+        User user = resolvePublicUser(username);
+        List<Long> guardianIds = loadGuardianRegistrationPort.findAcceptedGuardiansByTargetUserId(user.getId());
+        List<UserProfile> guardianProfiles = guardianIds.isEmpty()
+            ? List.of()
+            : loadUserProfilePort.findByUserIds(guardianIds);
+        Map<Long, UserProfile> profileMap = guardianProfiles.stream()
+            .collect(Collectors.toMap(UserProfile::getUserId, profile -> profile));
+
+        Set<User> guardianUsers = guardianIds.isEmpty()
+            ? Set.of()
+            : loadUserPort.findByIds(guardianIds);
+        Map<Long, User> userMap = guardianUsers.stream()
+            .collect(Collectors.toMap(User::getId, Function.identity()));
+
+        List<GuardianItem> guardians = guardianIds.stream()
+            .map(guardianId -> toGuardianItem(guardianId, userMap.get(guardianId), profileMap.get(guardianId)))
+            .toList();
+        return new PublicUserGuardiansResponse(guardians);
     }
 
     private PetProfileResponse toPetResponse(PetProfile pet) {
@@ -140,5 +168,23 @@ public class PublicUserProfileController {
             pet.getVaccinationComplete(),
             pet.getWalkSafetyChecked()
         );
+    }
+
+    private User resolvePublicUser(String username) {
+        String normalizedUsername;
+        try {
+            normalizedUsername = Username.fromRaw(username).value();
+        } catch (IllegalArgumentException exception) {
+            throw new ApiException(ErrorCode.USER_NOT_FOUND);
+        }
+        return loadUserPort.findByUsername(normalizedUsername)
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    private GuardianItem toGuardianItem(Long guardianId, User user, UserProfile profile) {
+        String guardianUsername = user != null ? user.getUsername() : String.valueOf(guardianId);
+        String guardianNickname = profile != null ? profile.getNickname() : guardianUsername;
+        String guardianImage = profile != null ? profile.getProfileImageUrl() : null;
+        return new GuardianItem(guardianId, guardianUsername, guardianNickname, guardianImage);
     }
 }

@@ -9,6 +9,7 @@ import type {
   FeedPostComment,
   HomeFeedPage,
   GuardianRegistrationResponse,
+  PublicGuardiansResponse,
   UserNotification,
   UserNotificationActionResponse,
   UserNotificationUnreadCountResponse,
@@ -502,6 +503,12 @@ export const authApi = {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }
+    });
+  },
+  getPublicProfileGuardians(username: string) {
+    const encodedUsername = encodeURIComponent(username);
+    return request<PublicGuardiansResponse>(`/api/users/${encodedUsername}/guardians`, {
+      method: "GET"
     });
   },
   getNotifications(accessToken: string) {

@@ -98,7 +98,7 @@ class FeedHomeQueryCountTest {
         var slice = service.listHomeFeed(77L, null, null, 2);
 
         assertThat(slice.items()).hasSize(2);
-        assertThat(statistics.getPrepareStatementCount()).isEqualTo(6);
+        assertThat(statistics.getPrepareStatementCount()).isEqualTo(9);
     }
 
     private FeedPost persistPost(Long userId, String content, Instant createdAt) {

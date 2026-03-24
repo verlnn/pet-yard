@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { Camera, Plus, Settings, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import type { MyProfileResponse } from "@/src/features/auth/types/authTypes";
+import { authApi } from "@/src/features/auth/api/authApi";
+import type { GuardianSummary, MyProfileResponse } from "@/src/features/auth/types/authTypes";
 import { CommonButton } from "@/components/ui/CommonButton";
 
 interface FeedProfileHeaderProps {
@@ -21,25 +22,60 @@ interface FeedProfileHeaderProps {
 export function FeedProfileHeader({ profile, postCount, onNewPost, onProfileImageClick, onPetsClick }: FeedProfileHeaderProps) {
   const primaryPet = profile?.pets?.find((pet) => pet.id === profile?.primaryPetId) ?? profile?.pets?.[0];
   const [showGuardianCard, setShowGuardianCard] = useState(false);
-  const guardianList = [
-    { username: "mxszuis__z", name: "mxszuis__z" },
-    { username: "7ciderr", name: "7ciderr" },
-    { username: "seo_jh_03", name: "서재형" },
-    { username: "arti_jun_", name: "이준호" },
-    { username: "kgr03kgr", name: "김강래" }
-  ];
+  const [guardians, setGuardians] = useState<GuardianSummary[]>([]);
+  const [guardiansLoading, setGuardiansLoading] = useState(false);
+  const [guardiansError, setGuardiansError] = useState<string | null>(null);
+  const dismissGuardianCard = useCallback(() => {
+    setShowGuardianCard(false);
+    setGuardians([]);
+    setGuardiansLoading(false);
+    setGuardiansError(null);
+  }, []);
 
   useEffect(() => {
     if (!showGuardianCard) return undefined;
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setShowGuardianCard(false);
+        dismissGuardianCard();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [showGuardianCard]);
+  }, [showGuardianCard, dismissGuardianCard]);
+
+  useEffect(() => {
+    if (!showGuardianCard || !profile?.username) {
+      return undefined;
+    }
+
+    let active = true;
+    setGuardiansLoading(true);
+    setGuardiansError(null);
+
+    authApi
+      .getPublicProfileGuardians(profile.username)
+      .then((response) => {
+        if (active) {
+          setGuardians(response.guardians);
+        }
+      })
+      .catch((error) => {
+        if (active) {
+          setGuardians([]);
+          setGuardiansError(error instanceof Error ? error.message : "집사 목록을 불러오지 못했습니다.");
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setGuardiansLoading(false);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [showGuardianCard, profile?.username]);
 
   return (
     <section className="feed-profile-header">
@@ -55,32 +91,64 @@ export function FeedProfileHeader({ profile, postCount, onNewPost, onProfileImag
         <FeedProfileActions onNewPost={onNewPost} />
       </div>
       {showGuardianCard && (
-        <div className="guardian-card-overlay">
-          <div className="guardian-card">
+        <div
+          className="guardian-card-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label="집사 목록"
+          onClick={dismissGuardianCard}
+        >
+          <div className="guardian-card" role="document" onClick={(event) => event.stopPropagation()}>
             <div className="guardian-card-header">
               <p>집사들</p>
               <button
                 type="button"
                 className="guardian-card-close"
-                onClick={() => setShowGuardianCard(false)}
+                onClick={dismissGuardianCard}
                 aria-label="집사 카드 닫기"
               >
-                <X className="h-5 w-5" />
+                <X className="h-6 w-6" />
               </button>
             </div>
             <div className="guardian-card-body">
               <input className="guardian-card-search" placeholder="검색" />
-              <ul className="guardian-card-list">
-                {guardianList.map((guardian) => (
-                  <li key={guardian.username}>
-                    <div>
-                      <strong>{guardian.username}</strong>
-                      <p>{guardian.name}</p>
-                    </div>
-                    <button type="button">삭제</button>
-                  </li>
-                ))}
-              </ul>
+              {guardiansError && (
+                <p className="guardian-card-error" role="alert">
+                  {guardiansError}
+                </p>
+              )}
+              {guardiansLoading ? (
+                <p className="guardian-card-loading">집사 목록을 불러오는 중입니다.</p>
+              ) : (
+                <ul className="guardian-card-list">
+                  {guardians.length === 0 ? (
+                    <li className="guardian-card-empty">
+                      <p>아직 연결된 집사들이 없습니다.</p>
+                      <span>집사 요청을 보내보세요.</span>
+                    </li>
+                  ) : (
+                    guardians.map((guardian) => (
+                      <li key={guardian.userId}>
+                        <div className="guardian-card-list-item">
+                          <Avatar className="guardian-card-list-avatar">
+                            {guardian.profileImageUrl ? (
+                              <AvatarImage src={guardian.profileImageUrl} alt={guardian.nickname} />
+                            ) : (
+                              <AvatarFallback>
+                                {(guardian.nickname?.[0] ?? guardian.username?.[0])?.toUpperCase() ?? "G"}
+                              </AvatarFallback>
+                            )}
+                          </Avatar>
+                          <div className="guardian-card-list-copy">
+                            <strong>{guardian.username}</strong>
+                            <span>{guardian.nickname}</span>
+                          </div>
+                        </div>
+                      </li>
+                    ))
+                  )}
+                </ul>
+              )}
             </div>
           </div>
         </div>
