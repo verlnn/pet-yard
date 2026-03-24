@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Bookmark, ChevronLeft, ChevronRight, Grid, MoreHorizontal, Tag, X } from "lucide-react";
-import { motion } from "framer-motion";
 
 import { FeedDetailPhotoPanel } from "@/components/feed/detail/FeedDetailPhotoPanel";
 import { FeedDetailSidebar } from "@/components/feed/detail/FeedDetailSidebar";
@@ -41,29 +40,6 @@ const tabs = [
   { id: "saved", label: "저장됨", Icon: Bookmark },
   { id: "tagged", label: "태그됨", Icon: Tag }
 ] as const;
-
-interface TabItemProps {
-  label: string;
-  Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
-  active: boolean;
-  onSelect: () => void;
-}
-
-function TabItem({ label, Icon, active, onSelect }: TabItemProps) {
-  return (
-    <button
-      type="button"
-      className={`my-feed-tab ${active ? "my-feed-tab-active" : ""}`}
-      aria-label={label}
-      aria-pressed={active}
-      onClick={onSelect}
-    >
-      <Icon className="my-feed-tab-icon" aria-hidden />
-      <span className="sr-only">{label}</span>
-      {active && <span className="my-feed-tab-indicator" aria-hidden />}
-    </button>
-  );
-}
 
 type TabId = (typeof tabs)[number]["id"];
 
