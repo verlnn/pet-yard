@@ -924,7 +924,9 @@ body {
   }
  
   .guardian-card-close {
-    @apply flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-[rgba(255,255,255,0.1)] text-xl font-semibold;
+    @apply flex h-8 w-8 items-center justify-center text-xl font-semibold;
+    border: none;
+    background: transparent;
   }
 
   .guardian-card-body {
