@@ -651,7 +651,7 @@ body {
   }
 
   .my-feed-tab {
-    @apply relative flex-1 flex items-center justify-center border-0 bg-transparent text-white/70 transition-colors;
+    @apply relative flex-1 flex items-center justify-center border-0 bg-transparent text-white/70 transition-colors pb-3;
   }
 
   .my-feed-tab-icon {
