@@ -9,7 +9,7 @@ import { FeedDetailSidebar } from "@/components/feed/detail/FeedDetailSidebar";
 import { CommonButton } from "@/components/ui/CommonButton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
-import { EmptyStateCard } from "@/components/ui/EmptyStateCard";
+import EmptyStateCard from "@/components/ui/EmptyStateCard";
 import { FeedProfileHeader } from "@/components/feed/FeedProfileHeader";
 import { FeedGrid } from "@/components/feed/FeedGrid";
 import { EmptyFeedState } from "@/components/feed/EmptyFeedState";
