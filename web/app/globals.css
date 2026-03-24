@@ -648,18 +648,8 @@ body {
 
   .my-feed-tab-list {
     @apply flex justify-center gap-8;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
     position: relative;
-  }
-
-  .my-feed-tab-list::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: -1px;
-    width: calc(100% - 8px);
-    height: 1px;
-    background: rgba(255, 255, 255, 0.2);
   }
 
   .my-feed-tab {
@@ -679,9 +669,9 @@ body {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    bottom: -6px;
+    bottom: -1px;
     width: 28px;
-    height: 2px;
+    height: 3px;
     border-radius: 999px;
     background: #ffffff;
   }
