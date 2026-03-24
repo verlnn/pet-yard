@@ -1212,7 +1212,7 @@ export default function MyFeedPage() {
 interface ProfilePetsSectionProps {
   pets: PetProfile[];
   onCreate: () => void;
-  sectionRef?: RefObject<HTMLElement>;
+  sectionRef?: RefObject<HTMLElement | null>;
 }
 
 function ProfilePetsSection({ pets, onCreate, sectionRef }: ProfilePetsSectionProps) {
