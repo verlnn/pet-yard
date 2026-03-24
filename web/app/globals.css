@@ -647,12 +647,11 @@ body {
   }
 
   .my-feed-tab-list {
-    @apply flex justify-around gap-2;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+    @apply flex w-full border-b border-white/20;
   }
 
   .my-feed-tab {
-    @apply relative flex h-12 w-12 items-center justify-center border-0 bg-transparent text-white/70 transition-colors;
+    @apply relative flex-1 flex items-center justify-center border-0 bg-transparent text-white/70 transition-colors;
   }
 
   .my-feed-tab-icon {
