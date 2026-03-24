@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Bookmark, Camera, ChevronLeft, ChevronRight, Grid, MoreHorizontal, Paw, Tag, X } from "lucide-react";
+import { Bookmark, Camera, ChevronLeft, ChevronRight, Grid, MoreHorizontal, PawPrint, Tag, X } from "lucide-react";
 
 import { FeedDetailPhotoPanel } from "@/components/feed/detail/FeedDetailPhotoPanel";
 import { FeedDetailSidebar } from "@/components/feed/detail/FeedDetailSidebar";
@@ -37,7 +37,7 @@ const FEED_DETAIL_SHELL_TRANSITION = {
 
 const tabs = [
   { id: "posts", label: "게시물", Icon: Grid },
-  { id: "pets", label: "반려동물", Icon: Paw },
+  { id: "pets", label: "반려동물", Icon: PawPrint },
   { id: "saved", label: "저장됨", Icon: Bookmark },
   { id: "tagged", label: "태그됨", Icon: Tag }
 ] as const;
