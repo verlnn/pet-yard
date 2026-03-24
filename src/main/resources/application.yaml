@@ -56,6 +56,10 @@ jwt:
   access-ttl-seconds: ${JWT_ACCESS_TTL:3600}
   refresh-ttl-seconds: ${JWT_REFRESH_TTL:1209600}
 
+onboarding:
+  session:
+    ttl-minutes: 10
+
 logging:
   level:
     root: INFO

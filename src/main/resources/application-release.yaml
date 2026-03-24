@@ -60,6 +60,10 @@ jwt:
   access-ttl-seconds: ${JWT_ACCESS_TTL}
   refresh-ttl-seconds: ${JWT_REFRESH_TTL}
 
+onboarding:
+  session:
+    ttl-minutes: 10
+
 animal:
   registration:
     service-key: ${ANIMAL_SERVICE_KEY}
