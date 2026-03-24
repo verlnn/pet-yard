@@ -12,4 +12,5 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, Long> 
     boolean existsByNickname(String nickname);
     Optional<UserProfile> findByUserId(Long userId);
     List<UserProfile> findByUserIdIn(Collection<Long> userIds);
+    void deleteByUserIdIn(Collection<Long> userIds);
 }

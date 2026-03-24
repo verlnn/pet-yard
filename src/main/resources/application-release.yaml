@@ -62,8 +62,8 @@ jwt:
 
 onboarding:
   session:
-    ttl-minutes: 10
-    cleanup-interval-ms: 60000
+    ttl-minutes: ${ONBOARDING_SESSION_TTL_M:10}
+    cleanup-interval-ms: ${ONBOARDING_SESSION_CLEAN_MS:60000}
 
 animal:
   registration:
