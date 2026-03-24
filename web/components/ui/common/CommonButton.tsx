@@ -41,8 +41,8 @@ function CommonButton({
   );
 
   const finalStyle = {
-    backgroundColor: color,
-    color: fontColor,
+    backgroundColor: color ?? "var(--color-button-secondary-bg)",
+    color: fontColor ?? "var(--color-button-secondary-text)",
     ...(style ?? {})
   };
 
