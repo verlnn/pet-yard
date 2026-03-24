@@ -898,6 +898,70 @@ body {
     @apply flex flex-col gap-3 md:flex-row lg:justify-end;
   }
 
+  .guardian-card-overlay {
+    @apply fixed inset-0 z-50 flex items-center justify-center bg-[rgba(15,23,42,0.72)];
+  }
+
+  .guardian-card {
+    width: min(380px, 90vw);
+    background: var(--color-surface);
+    border-radius: 24px;
+    padding: 1rem;
+    box-shadow: 0 40px 80px -40px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .guardian-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+
+  .guardian-card-header p {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .guardian-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .guardian-card-search {
+    width: 100%;
+    padding: 0.45rem 0.75rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--color-text);
+  }
+
+  .guardian-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 320px;
+    overflow-y: auto;
+  }
+
+  .guardian-card-list li {
+    @apply flex items-center justify-between gap-4 rounded-2xl px-3 py-2 bg-[rgba(255,255,255,0.02)];
+  }
+
+  .guardian-card-list li strong {
+    @apply text-sm font-semibold;
+  }
+
+  .guardian-card-list li p {
+    @apply text-xs text-[var(--color-text-muted)];
+  }
+
+  .guardian-card-list button {
+    @apply rounded-full border border-white/20 px-3 py-1 text-xs;
+  }
+
   .feed-profile-header-secondary-action,
   .feed-profile-header-primary-action,
   .feed-profile-header-message-action {
