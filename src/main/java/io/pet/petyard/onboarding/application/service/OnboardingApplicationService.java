@@ -16,6 +16,7 @@ import io.pet.petyard.auth.oauth.OAuthUserInfo;
 import io.pet.petyard.common.ApiException;
 import io.pet.petyard.common.ErrorCode;
 import io.pet.petyard.common.storage.LocalFileStorage;
+import io.pet.petyard.onboarding.OnboardingSessionProperties;
 import io.pet.petyard.onboarding.application.port.in.OAuthCallbackUseCase;
 import io.pet.petyard.onboarding.application.port.in.OAuthStartUseCase;
 import io.pet.petyard.onboarding.application.port.in.SignupCompleteUseCase;
@@ -43,8 +44,10 @@ import io.pet.petyard.user.application.port.out.LoadUserProfilePort;
 import io.pet.petyard.user.application.port.out.SaveUserProfilePort;
 import io.pet.petyard.user.domain.model.UserProfile;
 
+import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -58,8 +61,6 @@ import tools.jackson.databind.ObjectMapper;
 @Service
 public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCallbackUseCase, SignupProgressUseCase,
     SignupProfileUseCase, SignupConsentsUseCase, SignupPetUseCase, SignupCompleteUseCase {
-
-    private static final int SESSION_TTL_MINUTES = 10;
 
     private final LoadSignupSessionPort loadSignupSessionPort;
     private final SaveSignupSessionPort saveSignupSessionPort;
@@ -78,6 +79,7 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
     private final Clock clock;
     private final ObjectMapper objectMapper;
     private final Map<AuthProvider, OAuthClient> oauthClients;
+    private final OnboardingSessionProperties sessionProperties;
     private final LocalFileStorage localFileStorage;
 
     public OnboardingApplicationService(LoadSignupSessionPort loadSignupSessionPort,
@@ -97,6 +99,7 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
                                         Clock clock,
                                         ObjectMapper objectMapper,
                                         List<OAuthClient> oauthClients,
+                                        OnboardingSessionProperties sessionProperties,
                                         LocalFileStorage localFileStorage) {
         this.loadSignupSessionPort = loadSignupSessionPort;
         this.saveSignupSessionPort = saveSignupSessionPort;
@@ -115,6 +118,7 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
         this.clock = clock;
         this.objectMapper = objectMapper;
         this.oauthClients = oauthClients.stream().collect(Collectors.toMap(OAuthClient::provider, client -> client));
+        this.sessionProperties = sessionProperties;
         this.localFileStorage = localFileStorage;
     }
 
@@ -126,7 +130,7 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
 
         String state = UUID.randomUUID().toString();
         Instant now = clock.instant();
-        Instant expiresAt = now.plusSeconds(SESSION_TTL_MINUTES * 60L);
+        Instant expiresAt = now.plusSeconds(sessionProperties.getTtlMinutes() * 60L);
 
         SignupSession session = new SignupSession(provider, state, SignupStep.OAUTH, SignupStatus.OAUTH_PENDING, expiresAt);
         saveSignupSessionPort.save(session);
@@ -171,7 +175,7 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
                 String refreshToken = tokenProvider.createRefreshToken();
                 return new OAuthCallbackResult("LOGIN", null, null, accessToken, refreshToken);
             }
-            return createOnboardingSession(session, user, userInfo);
+            return startOnboardingSession(session, provider, userInfo);
         }
 
         if (userInfo.email() != null) {
@@ -183,26 +187,22 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
             }
         }
 
-        User user = new User(userInfo.email(), null, temporaryUsername(), UserTier.TIER_0, AccountStatus.PENDING_ONBOARDING);
-        saveUserPort.save(user);
-
-        saveAuthIdentityPort.save(new AuthIdentity(user.getId(), provider, userInfo.providerUserId(), userInfo.email()));
-
-        return createOnboardingSession(session, user, userInfo);
+        return startOnboardingSession(session, provider, userInfo);
     }
 
     @Transactional(readOnly = true)
     @Override
     public SignupProgressResult progress(SignupProgressQuery query) {
         SignupSession session = findActiveSession(query.signupToken());
-        Map<String, String> metadata = decodeMetadata(session.getMetadata());
+        SignupSessionMetadata metadata = loadMetadata(session);
+        boolean hasPet = Boolean.TRUE.equals(metadata.getHasPet()) || metadata.getPet() != null;
         return new SignupProgressResult(
             session.getStep().name(),
             session.getExpiresAt().toString(),
-            loadUserProfilePort.findByUserId(session.getUserId()).map(UserProfile::hasPet).orElse(false),
-            metadata.get("nickname"),
-            metadata.get("username"),
-            metadata.get("profileImageUrl")
+            hasPet,
+            metadata.getNickname(),
+            metadata.getUsername(),
+            metadata.getProfileImageUrl()
         );
     }
 
@@ -213,9 +213,7 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
         ensureStep(session, SignupStep.PROFILE);
 
         String normalizedUsername = parseUsername(command.username());
-        User user = loadUserPort.findById(session.getUserId())
-            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
-        if (!normalizedUsername.equals(user.getUsername()) && loadUserPort.existsByUsername(normalizedUsername)) {
+        if (loadUserPort.existsByUsername(normalizedUsername)) {
             throw new ApiException(ErrorCode.USERNAME_ALREADY_TAKEN);
         }
 
@@ -232,9 +230,7 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
             throw new ApiException(ErrorCode.NICKNAME_ALREADY_TAKEN);
         }
         String normalizedUsername = parseUsername(command.username());
-        User user = loadUserPort.findById(session.getUserId())
-            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
-        if (!normalizedUsername.equals(user.getUsername()) && loadUserPort.existsByUsername(normalizedUsername)) {
+        if (loadUserPort.existsByUsername(normalizedUsername)) {
             throw new ApiException(ErrorCode.USERNAME_ALREADY_TAKEN);
         }
         if (command.regionCode() != null && !command.regionCode().isBlank()
@@ -242,15 +238,17 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
             throw new ApiException(ErrorCode.BAD_REQUEST);
         }
 
-        user.setUsername(normalizedUsername);
-        saveUserPort.save(user);
-
-        UserProfile profile = new UserProfile(session.getUserId(), command.nickname(), command.regionCode(),
-            command.profileImageUrl(), command.marketingOptIn(), command.hasPet());
-        saveUserProfilePort.save(profile);
+        SignupSessionMetadata metadata = loadMetadata(session);
+        metadata.setNickname(command.nickname());
+        metadata.setUsername(normalizedUsername);
+        metadata.setRegionCode(command.regionCode());
+        metadata.setProfileImageUrl(command.profileImageUrl());
+        metadata.setMarketingOptIn(command.marketingOptIn());
+        metadata.setHasPet(command.hasPet());
 
         session.setStep(command.hasPet() ? SignupStep.PET : SignupStep.CONSENTS);
         session.setStatus(SignupStatus.ONBOARDING);
+        saveMetadata(session, metadata);
         saveSignupSessionPort.save(session);
 
         return new SignupProfileResult(session.getStep().name());
@@ -279,20 +277,14 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
             throw new ApiException(ErrorCode.REQUIRED_TERMS_MISSING);
         }
 
-        Instant now = clock.instant();
-        Map<String, Terms> termsMap = termsList.stream().collect(Collectors.toMap(Terms::getCode, t -> t));
-        for (ConsentItem item : command.consents()) {
-            if (!item.agreed()) {
-                continue;
-            }
-            Terms terms = termsMap.get(item.code());
-            if (terms == null) {
-                continue;
-            }
-            saveTermsAgreementPort.save(new TermsAgreement(session.getUserId(), terms.getId(), now));
-        }
+        SignupSessionMetadata metadata = loadMetadata(session);
+        metadata.setConsents(command.consents().stream()
+            .filter(ConsentItem::agreed)
+            .map(ConsentItem::code)
+            .toList());
 
         session.setStep(SignupStep.COMPLETE);
+        saveMetadata(session, metadata);
         saveSignupSessionPort.save(session);
 
         return new SignupConsentsResult(session.getStep().name());
@@ -310,27 +302,26 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
             command.ownerNm(),
             command.ownerBirth()
         );
-        String photoUrl = localFileStorage.resolvePetImage(session.getUserId(), command.photoUrl(), null);
-
-        PetProfile profile = new PetProfile(
-            session.getUserId(),
-            result.name(),
-            PetSpecies.DOG,
-            result.breed(),
-            result.birthDate(),
-            null,
-            result.gender(),
-            result.neutered(),
-            null,
-            photoUrl,
-            command.weightKg() == null ? null : java.math.BigDecimal.valueOf(command.weightKg()),
-            command.vaccinationComplete(),
-            command.walkSafetyChecked()
-        );
-        savePetProfilePort.save(profile);
-        promoteTierIfNeeded(session.getUserId());
-
         session.setStep(SignupStep.CONSENTS);
+        SignupSessionMetadata metadata = loadMetadata(session);
+        PetMetadata petMetadata = new PetMetadata();
+        petMetadata.setDogRegNo(command.dogRegNo());
+        petMetadata.setRfidCd(command.rfidCd());
+        petMetadata.setOwnerNm(command.ownerNm());
+        petMetadata.setOwnerBirth(command.ownerBirth());
+        petMetadata.setPhotoUrl(command.photoUrl());
+        petMetadata.setWeightKg(command.weightKg());
+        petMetadata.setVaccinationComplete(command.vaccinationComplete());
+        petMetadata.setWalkSafetyChecked(command.walkSafetyChecked());
+        petMetadata.setName(result.name());
+        petMetadata.setBreed(result.breed());
+        petMetadata.setBirthDate(result.birthDate().toString());
+        petMetadata.setGender(result.gender().name());
+        petMetadata.setNeutered(result.neutered());
+        metadata.setPet(petMetadata);
+        metadata.setHasPet(true);
+
+        saveMetadata(session, metadata);
         saveSignupSessionPort.save(session);
 
         return new SignupPetResult(session.getStep().name());
@@ -342,11 +333,79 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
         SignupSession session = findActiveSession(command.signupToken());
         ensureStep(session, SignupStep.COMPLETE);
 
-        User user = loadUserPort.findById(session.getUserId())
-            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
-        user.setStatus(AccountStatus.ACTIVE);
+        SignupSessionMetadata metadata = loadMetadata(session);
+        String username = metadata.getUsername();
+        if (username == null || username.isBlank()) {
+            throw new ApiException(ErrorCode.SIGNUP_STEP_INVALID);
+        }
+        String email = metadata.getEmail();
+        if (email == null) {
+            throw new ApiException(ErrorCode.BAD_REQUEST);
+        }
+        String providerValue = metadata.getProvider();
+        String providerUserId = metadata.getProviderUserId();
+        if (providerValue == null || providerUserId == null) {
+            throw new ApiException(ErrorCode.BAD_REQUEST);
+        }
+
+        User user = new User(email, null, username, UserTier.TIER_0, AccountStatus.ACTIVE);
         saveUserPort.save(user);
 
+        AuthProvider provider = resolveProvider(providerValue);
+        saveAuthIdentityPort.save(new AuthIdentity(user.getId(), provider, providerUserId, email));
+
+        UserProfile profile = new UserProfile(
+            user.getId(),
+            metadata.getNickname(),
+            metadata.getRegionCode(),
+            metadata.getProfileImageUrl(),
+            Boolean.TRUE.equals(metadata.getMarketingOptIn()),
+            Boolean.TRUE.equals(metadata.getHasPet())
+        );
+        saveUserProfilePort.save(profile);
+
+        java.util.List<String> consentCodes = metadata.getConsents();
+        if (consentCodes == null) {
+            consentCodes = java.util.List.of();
+        }
+        java.util.List<Terms> termsList = loadTermsPort.findByCodes(consentCodes);
+        java.util.Map<String, Terms> termMap = termsList.stream()
+            .collect(Collectors.toMap(Terms::getCode, t -> t));
+        Instant now = clock.instant();
+        for (String code : consentCodes) {
+            Terms terms = termMap.get(code);
+            if (terms == null) {
+                continue;
+            }
+            saveTermsAgreementPort.save(new TermsAgreement(user.getId(), terms.getId(), now));
+        }
+
+        if (Boolean.TRUE.equals(metadata.getHasPet()) && metadata.getPet() != null) {
+            PetMetadata petData = metadata.getPet();
+            LocalDate birthDate = LocalDate.parse(petData.getBirthDate());
+            String resolvedPhoto = petData.getPhotoUrl() == null
+                ? null
+                : localFileStorage.resolvePetImage(user.getId(), petData.getPhotoUrl(), null);
+            PetProfile petProfile = new PetProfile(
+                user.getId(),
+                petData.getName(),
+                PetSpecies.DOG,
+                petData.getBreed(),
+                birthDate,
+                null,
+                PetGender.valueOf(petData.getGender()),
+                Boolean.TRUE.equals(petData.getNeutered()),
+                null,
+                resolvedPhoto,
+                petData.getWeightKg() == null ? null : java.math.BigDecimal.valueOf(petData.getWeightKg()),
+                Boolean.TRUE.equals(petData.getVaccinationComplete()),
+                Boolean.TRUE.equals(petData.getWalkSafetyChecked())
+            );
+            savePetProfilePort.save(petProfile);
+            promoteTierIfNeeded(user.getId());
+        }
+
+        session.setUserId(user.getId());
         session.setStatus(SignupStatus.COMPLETED);
         saveSignupSessionPort.save(session);
 
@@ -355,12 +414,12 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
         return new SignupCompleteResult(accessToken, refreshToken);
     }
 
-    private OAuthCallbackResult createOnboardingSession(SignupSession session, User user, OAuthUserInfo userInfo) {
-        session.setUserId(user.getId());
+    private OAuthCallbackResult startOnboardingSession(SignupSession session, AuthProvider provider, OAuthUserInfo userInfo) {
+        SignupSessionMetadata metadata = createInitialMetadata(userInfo, provider);
         session.setStatus(SignupStatus.ONBOARDING);
         session.setStep(SignupStep.PROFILE);
         session.setSessionToken(UUID.randomUUID().toString());
-        session.setMetadata(encodeMetadata(userInfo));
+        saveMetadata(session, metadata);
         saveSignupSessionPort.save(session);
 
         return new OAuthCallbackResult("ONBOARDING", session.getSessionToken(), session.getStep().name(), null, null);
@@ -397,6 +456,14 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
         return client;
     }
 
+    private AuthProvider resolveProvider(String provider) {
+        try {
+            return AuthProvider.valueOf(provider);
+        } catch (IllegalArgumentException exception) {
+            throw new ApiException(ErrorCode.BAD_REQUEST);
+        }
+    }
+
     private void promoteTierIfNeeded(Long userId) {
         User user = loadUserPort.findById(userId)
             .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
@@ -406,39 +473,264 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
         }
     }
 
-    private String encodeMetadata(OAuthUserInfo userInfo) {
+    private SignupSessionMetadata loadMetadata(SignupSession session) {
+        String payload = session.getMetadata();
+        if (payload == null || payload.isBlank()) {
+            return new SignupSessionMetadata();
+        }
         try {
-            Map<String, Object> payload = new java.util.HashMap<>();
-            payload.put("email", userInfo.email());
-            payload.put("nickname", userInfo.nickname());
-            payload.put("username", suggestInitialUsername(userInfo, null));
-            payload.put("profileImageUrl", userInfo.profileImageUrl());
-            return objectMapper.writeValueAsString(payload);
+            SignupSessionMetadata metadata = objectMapper.readValue(payload, SignupSessionMetadata.class);
+            if (metadata.getConsents() == null) {
+                metadata.setConsents(new java.util.ArrayList<>());
+            }
+            return metadata;
         } catch (Exception ex) {
-            return null;
+            return new SignupSessionMetadata();
         }
     }
 
-    private Map<String, String> decodeMetadata(String metadata) {
-        if (metadata == null || metadata.isBlank()) {
-            return java.util.Collections.emptyMap();
-        }
+    private void saveMetadata(SignupSession session, SignupSessionMetadata metadata) {
         try {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> payload = objectMapper.readValue(metadata, Map.class);
-            Map<String, String> result = new java.util.HashMap<>();
-            if (payload.get("nickname") != null) {
-                result.put("nickname", payload.get("nickname").toString());
-            }
-            if (payload.get("username") != null) {
-                result.put("username", payload.get("username").toString());
-            }
-            if (payload.get("profileImageUrl") != null) {
-                result.put("profileImageUrl", payload.get("profileImageUrl").toString());
-            }
-            return result;
+            session.setMetadata(metadata == null ? null : objectMapper.writeValueAsString(metadata));
         } catch (Exception ex) {
-            return java.util.Collections.emptyMap();
+            session.setMetadata(null);
+        }
+    }
+
+    private SignupSessionMetadata createInitialMetadata(OAuthUserInfo userInfo, AuthProvider provider) {
+        SignupSessionMetadata metadata = new SignupSessionMetadata();
+        metadata.setEmail(userInfo.email());
+        metadata.setNickname(userInfo.nickname());
+        metadata.setUsername(suggestInitialUsername(userInfo, null));
+        metadata.setProfileImageUrl(userInfo.profileImageUrl());
+        metadata.setProvider(provider.name());
+        metadata.setProviderUserId(userInfo.providerUserId());
+        return metadata;
+    }
+
+    private static class SignupSessionMetadata {
+        private String email;
+        private String provider;
+        private String providerUserId;
+        private String nickname;
+        private String username;
+        private String profileImageUrl;
+        private String regionCode;
+        private Boolean marketingOptIn;
+        private Boolean hasPet;
+        private java.util.List<String> consents = new java.util.ArrayList<>();
+        private PetMetadata pet;
+
+        public SignupSessionMetadata() {}
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public String getProvider() {
+            return provider;
+        }
+
+        public void setProvider(String provider) {
+            this.provider = provider;
+        }
+
+        public String getProviderUserId() {
+            return providerUserId;
+        }
+
+        public void setProviderUserId(String providerUserId) {
+            this.providerUserId = providerUserId;
+        }
+
+        public String getNickname() {
+            return nickname;
+        }
+
+        public void setNickname(String nickname) {
+            this.nickname = nickname;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
+        }
+
+        public String getProfileImageUrl() {
+            return profileImageUrl;
+        }
+
+        public void setProfileImageUrl(String profileImageUrl) {
+            this.profileImageUrl = profileImageUrl;
+        }
+
+        public String getRegionCode() {
+            return regionCode;
+        }
+
+        public void setRegionCode(String regionCode) {
+            this.regionCode = regionCode;
+        }
+
+        public Boolean getMarketingOptIn() {
+            return marketingOptIn;
+        }
+
+        public void setMarketingOptIn(Boolean marketingOptIn) {
+            this.marketingOptIn = marketingOptIn;
+        }
+
+        public Boolean getHasPet() {
+            return hasPet;
+        }
+
+        public void setHasPet(Boolean hasPet) {
+            this.hasPet = hasPet;
+        }
+
+        public java.util.List<String> getConsents() {
+            return consents;
+        }
+
+        public void setConsents(java.util.List<String> consents) {
+            this.consents = consents;
+        }
+
+        public PetMetadata getPet() {
+            return pet;
+        }
+
+        public void setPet(PetMetadata pet) {
+            this.pet = pet;
+        }
+    }
+
+    private static class PetMetadata {
+        private String dogRegNo;
+        private String rfidCd;
+        private String ownerNm;
+        private String ownerBirth;
+        private String name;
+        private String breed;
+        private String birthDate;
+        private String gender;
+        private Boolean neutered;
+        private String photoUrl;
+        private Double weightKg;
+        private Boolean vaccinationComplete;
+        private Boolean walkSafetyChecked;
+
+        public PetMetadata() {}
+
+        public String getDogRegNo() {
+            return dogRegNo;
+        }
+
+        public void setDogRegNo(String dogRegNo) {
+            this.dogRegNo = dogRegNo;
+        }
+
+        public String getRfidCd() {
+            return rfidCd;
+        }
+
+        public void setRfidCd(String rfidCd) {
+            this.rfidCd = rfidCd;
+        }
+
+        public String getOwnerNm() {
+            return ownerNm;
+        }
+
+        public void setOwnerNm(String ownerNm) {
+            this.ownerNm = ownerNm;
+        }
+
+        public String getOwnerBirth() {
+            return ownerBirth;
+        }
+
+        public void setOwnerBirth(String ownerBirth) {
+            this.ownerBirth = ownerBirth;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getBreed() {
+            return breed;
+        }
+
+        public void setBreed(String breed) {
+            this.breed = breed;
+        }
+
+        public String getBirthDate() {
+            return birthDate;
+        }
+
+        public void setBirthDate(String birthDate) {
+            this.birthDate = birthDate;
+        }
+
+        public String getGender() {
+            return gender;
+        }
+
+        public void setGender(String gender) {
+            this.gender = gender;
+        }
+
+        public Boolean getNeutered() {
+            return neutered;
+        }
+
+        public void setNeutered(Boolean neutered) {
+            this.neutered = neutered;
+        }
+
+        public String getPhotoUrl() {
+            return photoUrl;
+        }
+
+        public void setPhotoUrl(String photoUrl) {
+            this.photoUrl = photoUrl;
+        }
+
+        public Double getWeightKg() {
+            return weightKg;
+        }
+
+        public void setWeightKg(Double weightKg) {
+            this.weightKg = weightKg;
+        }
+
+        public Boolean getVaccinationComplete() {
+            return vaccinationComplete;
+        }
+
+        public void setVaccinationComplete(Boolean vaccinationComplete) {
+            this.vaccinationComplete = vaccinationComplete;
+        }
+
+        public Boolean getWalkSafetyChecked() {
+            return walkSafetyChecked;
+        }
+
+        public void setWalkSafetyChecked(Boolean walkSafetyChecked) {
+            this.walkSafetyChecked = walkSafetyChecked;
         }
     }
 

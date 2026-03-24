@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 
@@ -19,6 +19,11 @@ interface AuthPageProps {
 
 function AuthPageContent({ initialMode = "login" }: AuthPageProps) {
   const [mode, setMode] = useState<AuthMode>(initialMode);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("signupToken");
+    }
+  }, []);
   const [socialError, setSocialError] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();

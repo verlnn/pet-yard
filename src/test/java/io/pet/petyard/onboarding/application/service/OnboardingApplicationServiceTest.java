@@ -3,7 +3,11 @@ package io.pet.petyard.onboarding.application.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import io.pet.petyard.auth.application.port.out.LoadAuthIdentityPort;
@@ -23,6 +27,7 @@ import io.pet.petyard.common.ErrorCode;
 import io.pet.petyard.common.storage.LocalFileStorage;
 import io.pet.petyard.onboarding.application.port.in.OAuthCallbackUseCase.OAuthCallbackCommand;
 import io.pet.petyard.onboarding.application.port.in.OAuthStartUseCase.OAuthStartCommand;
+import io.pet.petyard.onboarding.application.port.in.SignupCompleteUseCase.SignupCompleteCommand;
 import io.pet.petyard.onboarding.application.port.in.SignupConsentsUseCase.ConsentItem;
 import io.pet.petyard.onboarding.application.port.in.SignupConsentsUseCase.SignupConsentsCommand;
 import io.pet.petyard.onboarding.application.port.in.SignupPetUseCase.SignupPetCommand;
@@ -30,6 +35,7 @@ import io.pet.petyard.onboarding.application.port.in.SignupProfileUseCase.Signup
 import io.pet.petyard.onboarding.domain.SignupStatus;
 import io.pet.petyard.onboarding.domain.SignupStep;
 import io.pet.petyard.onboarding.domain.model.SignupSession;
+import io.pet.petyard.onboarding.OnboardingSessionProperties;
 import io.pet.petyard.onboarding.application.port.out.LoadSignupSessionPort;
 import io.pet.petyard.onboarding.application.port.out.SaveSignupSessionPort;
 import io.pet.petyard.pet.application.port.out.SavePetProfilePort;
@@ -44,8 +50,11 @@ import io.pet.petyard.user.application.port.out.LoadUserProfilePort;
 import io.pet.petyard.user.application.port.out.SaveUserProfilePort;
 import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneOffset;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -53,10 +62,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.test.util.ReflectionTestUtils;
 import tools.jackson.databind.ObjectMapper;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class OnboardingApplicationServiceTest {
 
     @Mock private LoadSignupSessionPort loadSignupSessionPort;
@@ -76,6 +88,7 @@ class OnboardingApplicationServiceTest {
     @Mock private OAuthClient kakaoClient;
     @Mock private LocalFileStorage localFileStorage;
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private Clock clock;
     private OnboardingApplicationService service;
 
@@ -83,6 +96,7 @@ class OnboardingApplicationServiceTest {
     void setUp() {
         clock = Clock.fixed(Instant.parse("2026-03-23T03:00:00Z"), ZoneOffset.UTC);
         given(kakaoClient.provider()).willReturn(AuthProvider.KAKAO);
+        OnboardingSessionProperties sessionProperties = new OnboardingSessionProperties();
         service = new OnboardingApplicationService(
             loadSignupSessionPort,
             saveSignupSessionPort,
@@ -99,8 +113,9 @@ class OnboardingApplicationServiceTest {
             loadRegionPort,
             tokenProvider,
             clock,
-            new ObjectMapper(),
+            objectMapper,
             List.of(kakaoClient),
+            sessionProperties,
             localFileStorage
         );
     }
@@ -144,10 +159,9 @@ class OnboardingApplicationServiceTest {
     @Test
     @DisplayName("프로필 저장은 존재하지 않는 지역 코드를 거부한다")
     void saveProfileRejectsUnknownRegion() {
-        SignupSession session = tokenSession(11L, "signup-token", SignupStep.PROFILE, SignupStatus.ONBOARDING);
+        SignupSession session = tokenSession("signup-token", SignupStep.PROFILE, SignupStatus.ONBOARDING);
         given(loadSignupSessionPort.findByToken("signup-token")).willReturn(Optional.of(session));
         given(loadUserProfilePort.existsByNickname("멍냥집사")).willReturn(false);
-        given(loadUserPort.findById(11L)).willReturn(Optional.of(user(11L, "owner@petyard.com", UserTier.TIER_0, AccountStatus.PENDING_ONBOARDING)));
         given(loadUserPort.existsByUsername("owner.test")).willReturn(false);
         given(loadRegionPort.findByCode("99999")).willReturn(Optional.empty());
 
@@ -162,12 +176,9 @@ class OnboardingApplicationServiceTest {
     @Test
     @DisplayName("프로필 저장은 username 중복 시 실패한다")
     void saveProfileRejectsDuplicateUsername() {
-        SignupSession session = tokenSession(11L, "signup-token", SignupStep.PROFILE, SignupStatus.ONBOARDING);
-        User user = user(11L, "owner@petyard.com", UserTier.TIER_0, AccountStatus.PENDING_ONBOARDING);
-
+        SignupSession session = tokenSession("signup-token", SignupStep.PROFILE, SignupStatus.ONBOARDING);
         given(loadSignupSessionPort.findByToken("signup-token")).willReturn(Optional.of(session));
         given(loadUserProfilePort.existsByNickname("멍냥집사")).willReturn(false);
-        given(loadUserPort.findById(11L)).willReturn(Optional.of(user));
         given(loadUserPort.existsByUsername("taken.user")).willReturn(true);
 
         assertThatThrownBy(() -> service.saveProfile(new SignupProfileCommand(
@@ -181,7 +192,7 @@ class OnboardingApplicationServiceTest {
     @Test
     @DisplayName("약관 저장은 필수 약관 미동의 시 실패한다")
     void saveConsentsRejectsMissingMandatoryTerms() {
-        SignupSession session = tokenSession(11L, "signup-token", SignupStep.CONSENTS, SignupStatus.ONBOARDING);
+        SignupSession session = tokenSession("signup-token", SignupStep.CONSENTS, SignupStatus.ONBOARDING);
         Terms mandatory = terms(1L, "SERVICE", true);
 
         given(loadSignupSessionPort.findByToken("signup-token")).willReturn(Optional.of(session));
@@ -197,10 +208,9 @@ class OnboardingApplicationServiceTest {
     }
 
     @Test
-    @DisplayName("반려동물 저장은 프로필 저장 후 TIER_0 사용자를 승급시킨다")
-    void savePetPersistsProfileAndPromotesTier() {
-        SignupSession session = tokenSession(11L, "signup-token", SignupStep.PET, SignupStatus.ONBOARDING);
-        User user = user(11L, "owner@petyard.com", UserTier.TIER_0, AccountStatus.PENDING_ONBOARDING);
+    @DisplayName("반려동물 저장은 세션 메타데이터에 정보를 적재하고 다음 단계로 이동한다")
+    void savePetStoresMetadataAndAdvancesStep() {
+        SignupSession session = tokenSession("signup-token", SignupStep.PET, SignupStatus.ONBOARDING);
 
         given(loadSignupSessionPort.findByToken("signup-token")).willReturn(Optional.of(session));
         given(animalRegistrationService.verify("DOG-123", "RFID-123", "홍길동", "19900101"))
@@ -208,27 +218,77 @@ class OnboardingApplicationServiceTest {
                 "DOG-123", "RFID-123", "보리", java.time.LocalDate.of(2021, 5, 1), PetGender.MALE,
                 "푸들", true, "기관", "02-0000-0000", "승인", "2024-01-01", "2024-01-02"
             ));
-        given(loadUserPort.findById(11L)).willReturn(Optional.of(user));
 
         var result = service.savePet(new SignupPetCommand(
             "signup-token", "DOG-123", "RFID-123", "홍길동", "19900101", "/pet.jpg", 4.5, true, true
         ));
 
         assertThat(result.nextStep()).isEqualTo("CONSENTS");
-        assertThat(user.getTier()).isEqualTo(UserTier.TIER_1);
         assertThat(session.getStep()).isEqualTo(SignupStep.CONSENTS);
+        assertThat(session.getMetadata()).contains("\"dogRegNo\":\"DOG-123\"");
+        verify(savePetProfilePort, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("회원가입 완료는 사용자/계정/약관/반려동물/토큰을 저장한다")
+    void completePersistsAllData() throws Exception {
+        SignupSession session = tokenSession("signup-token", SignupStep.COMPLETE, SignupStatus.ONBOARDING);
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put("email", "owner@petyard.com");
+        metadata.put("nickname", "멍냥집사");
+        metadata.put("username", "owner.test");
+        metadata.put("regionCode", "11010");
+        metadata.put("marketingOptIn", true);
+        metadata.put("hasPet", true);
+        metadata.put("profileImageUrl", "/profile.jpg");
+        metadata.put("provider", "KAKAO");
+        metadata.put("providerUserId", "provider-1");
+        metadata.put("consents", List.of("SERVICE"));
+        Map<String, Object> pet = new HashMap<>();
+        pet.put("name", "보리");
+        pet.put("breed", "푸들");
+        pet.put("birthDate", "2021-05-01");
+        pet.put("gender", "MALE");
+        pet.put("neutered", true);
+        pet.put("photoUrl", "data:image/png;base64,AAA");
+        pet.put("weightKg", 4.5);
+        pet.put("vaccinationComplete", true);
+        pet.put("walkSafetyChecked", true);
+        metadata.put("pet", pet);
+        session.setMetadata(objectMapper.writeValueAsString(metadata));
+
+        given(loadSignupSessionPort.findByToken("signup-token")).willReturn(Optional.of(session));
+        Terms terms = terms(1L, "SERVICE", true);
+        given(loadTermsPort.findByCodes(List.of("SERVICE"))).willReturn(List.of(terms));
+        lenient().when(localFileStorage.resolvePetImage(anyLong(), any(), any())).thenReturn("/pets/1.jpg");
+        given(tokenProvider.createAccessToken(anyLong(), any())).willReturn("access-token");
+        given(tokenProvider.createRefreshToken()).willReturn("refresh-token");
+        lenient().when(saveUserPort.save(any())).thenAnswer(invocation -> {
+            User saved = invocation.getArgument(0);
+            ReflectionTestUtils.setField(saved, "id", 42L);
+            given(loadUserPort.findById(42L)).willReturn(Optional.of(saved));
+            return saved;
+        });
+
+        var result = service.complete(new SignupCompleteCommand("signup-token"));
+
+        assertThat(result.accessToken()).isEqualTo("access-token");
+        assertThat(result.refreshToken()).isEqualTo("refresh-token");
+        verify(saveUserPort, times(2)).save(any());
+        verify(saveAuthIdentityPort).save(any());
+        verify(saveUserProfilePort).save(any());
+        verify(saveTermsAgreementPort).save(any());
         verify(savePetProfilePort).save(any());
-        verify(saveUserPort).save(user);
+        verify(localFileStorage).resolvePetImage(anyLong(), any(), any());
     }
 
     private SignupSession session(AuthProvider provider, String state, SignupStep step, SignupStatus status) {
         return new SignupSession(provider, state, step, status, Instant.parse("2026-03-23T03:10:00Z"));
     }
 
-    private SignupSession tokenSession(long userId, String token, SignupStep step, SignupStatus status) {
+    private SignupSession tokenSession(String token, SignupStep step, SignupStatus status) {
         SignupSession session = new SignupSession(AuthProvider.KAKAO, "oauth-state", step, status,
             Instant.parse("2026-03-23T03:10:00Z"));
-        session.setUserId(userId);
         session.setSessionToken(token);
         return session;
     }
