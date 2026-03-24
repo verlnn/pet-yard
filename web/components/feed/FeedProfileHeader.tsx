@@ -19,6 +19,14 @@ interface FeedProfileHeaderProps {
 
 export function FeedProfileHeader({ profile, postCount, onNewPost, onProfileImageClick, onPetsClick }: FeedProfileHeaderProps) {
   const primaryPet = profile?.pets?.find((pet) => pet.id === profile?.primaryPetId) ?? profile?.pets?.[0];
+  const [showGuardianCard, setShowGuardianCard] = React.useState(false);
+  const guardianList = [
+    { username: "mxszuis__z", name: "mxszuis__z" },
+    { username: "7ciderr", name: "7ciderr" },
+    { username: "seo_jh_03", name: "서재형" },
+    { username: "arti_jun_", name: "이준호" },
+    { username: "kgr03kgr", name: "김강래" }
+  ];
 
   return (
     <section className="feed-profile-header">
@@ -29,9 +37,36 @@ export function FeedProfileHeader({ profile, postCount, onNewPost, onProfileImag
           postCount={postCount}
           onProfileImageClick={onProfileImageClick}
           onPetsClick={onPetsClick}
+          onGuardiansClick={() => setShowGuardianCard(true)}
         />
         <FeedProfileActions onNewPost={onNewPost} />
       </div>
+      {showGuardianCard && (
+        <div className="guardian-card-overlay">
+          <div className="guardian-card">
+            <div className="guardian-card-header">
+              <p>집사들</p>
+              <button type="button" onClick={() => setShowGuardianCard(false)}>
+                ×
+              </button>
+            </div>
+            <div className="guardian-card-body">
+              <input className="guardian-card-search" placeholder="검색" />
+              <ul className="guardian-card-list">
+                {guardianList.map((guardian) => (
+                  <li key={guardian.username}>
+                    <div>
+                      <strong>{guardian.username}</strong>
+                      <p>{guardian.name}</p>
+                    </div>
+                    <button type="button">삭제</button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
@@ -42,6 +77,7 @@ interface FeedProfileIdentityProps {
   postCount: number;
   onProfileImageClick?: () => void;
   onPetsClick?: () => void;
+  onGuardiansClick?: () => void;
 }
 
 function FeedProfileIdentity({
@@ -49,7 +85,8 @@ function FeedProfileIdentity({
   primaryPet,
   postCount,
   onProfileImageClick,
-  onPetsClick
+  onPetsClick,
+  onGuardiansClick
 }: FeedProfileIdentityProps) {
   const profileUsername = profile?.username?.trim() || "username";
   const profileDisplayName = profile?.nickname?.trim() || "멍냥마당";
@@ -107,7 +144,11 @@ function FeedProfileIdentity({
 
         <div className="feed-profile-header-stats">
           <FeedProfileStat label="게시물" value={postCount} />
-          <FeedProfileStat label="집사들" value={profile?.guardianCount ?? 0} />
+          <FeedProfileStat
+            label="집사들"
+            value={profile?.guardianCount ?? 0}
+            onClick={onGuardiansClick}
+          />
           <FeedProfileStat label="반려동물" value={profile?.petCount ?? 0} onClick={onPetsClick} />
         </div>
 
