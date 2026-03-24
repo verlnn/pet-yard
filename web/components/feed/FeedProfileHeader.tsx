@@ -28,6 +28,7 @@ export function FeedProfileHeader({ profile, postCount, onNewPost, onProfileImag
           primaryPet={primaryPet}
           postCount={postCount}
           onProfileImageClick={onProfileImageClick}
+          onPetsClick={onPetsClick}
         />
         <FeedProfileActions onNewPost={onNewPost} />
       </div>
@@ -40,9 +41,16 @@ interface FeedProfileIdentityProps {
   primaryPet?: MyProfileResponse["pets"][number];
   postCount: number;
   onProfileImageClick?: () => void;
+  onPetsClick?: () => void;
 }
 
-function FeedProfileIdentity({ profile, primaryPet, postCount, onProfileImageClick }: FeedProfileIdentityProps) {
+function FeedProfileIdentity({
+  profile,
+  primaryPet,
+  postCount,
+  onProfileImageClick,
+  onPetsClick
+}: FeedProfileIdentityProps) {
   const profileUsername = profile?.username?.trim() || "username";
   const profileDisplayName = profile?.nickname?.trim() || "멍냥마당";
   const avatar = (
