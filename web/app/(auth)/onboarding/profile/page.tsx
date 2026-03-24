@@ -36,7 +36,6 @@ export default function OnboardingProfilePage() {
   const [hasPetChoice, setHasPetChoice] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [defaultsLoaded, setDefaultsLoaded] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("signupToken");
@@ -46,31 +45,6 @@ export default function OnboardingProfilePage() {
     }
     setSignupToken(token);
   }, [router]);
-
-  useEffect(() => {
-    if (!signupToken || defaultsLoaded) return;
-
-    const loadDefaults = async () => {
-      try {
-        const progress = await authApi.signupProgress(signupToken);
-        if (!nickname && progress.nickname) {
-          setNickname(progress.nickname);
-        }
-        if (!username && progress.username) {
-          setUsername(progress.username);
-        }
-        if (!profileImageUrl && progress.profileImageUrl) {
-          setProfileImageUrl(progress.profileImageUrl);
-        }
-      } catch {
-        // ignore
-      } finally {
-        setDefaultsLoaded(true);
-      }
-    };
-
-    loadDefaults();
-  }, [signupToken, defaultsLoaded, nickname, profileImageUrl, username]);
 
   useEffect(() => {
     const loadCities = async () => {

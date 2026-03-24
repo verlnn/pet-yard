@@ -62,7 +62,9 @@ jwt:
 
 onboarding:
   session:
+    # 세션 만료까지 얼마나 기다릴지 (환경 변수 값 또는 기본 10분)
     ttl-minutes: ${ONBOARDING_SESSION_TTL_M:10}
+    # 만료된 세션을 정리할 스케줄 주기 (밀리초 단위, 기본 60초)
     cleanup-interval-ms: ${ONBOARDING_SESSION_CLEAN_MS:60000}
 
 animal:

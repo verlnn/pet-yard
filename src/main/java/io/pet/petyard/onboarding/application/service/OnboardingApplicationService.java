@@ -338,14 +338,15 @@ public class OnboardingApplicationService implements OAuthStartUseCase, OAuthCal
         if (username == null || username.isBlank()) {
             throw new ApiException(ErrorCode.SIGNUP_STEP_INVALID);
         }
-        String email = metadata.getEmail();
+        String emailValue = metadata.getEmail();
+        String email = (emailValue == null || emailValue.isBlank()) ? null : emailValue;
         String providerValue = metadata.getProvider();
         String providerUserId = metadata.getProviderUserId();
         if (providerValue == null || providerUserId == null) {
             throw new ApiException(ErrorCode.BAD_REQUEST);
         }
 
-        User user = new User(metadata.getEmail(), null, username, UserTier.TIER_0, AccountStatus.ACTIVE);
+        User user = new User(email, null, username, UserTier.TIER_0, AccountStatus.ACTIVE);
         saveUserPort.save(user);
 
         AuthProvider provider = resolveProvider(providerValue);

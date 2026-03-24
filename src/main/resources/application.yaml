@@ -58,7 +58,9 @@ jwt:
 
 onboarding:
   session:
+    # 세션이 자동 만료되기까지 대기하는 시간 (분 단위)
     ttl-minutes: 10
+    # 만료된 세션과 연결된 데이터를 삭제하기 위한 스케줄링 간격 (밀리초)
     cleanup-interval-ms: 60000
 
 logging:
