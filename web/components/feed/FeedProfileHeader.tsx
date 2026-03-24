@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Camera, Plus, Settings } from "lucide-react";
+import { Camera, Plus, Settings, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { cn } from "@/lib/utils";
@@ -65,7 +65,7 @@ export function FeedProfileHeader({ profile, postCount, onNewPost, onProfileImag
                 onClick={() => setShowGuardianCard(false)}
                 aria-label="집사 카드 닫기"
               >
-                ×
+                <X className="h-5 w-5" />
               </button>
             </div>
             <div className="guardian-card-body">
