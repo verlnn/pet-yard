@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Camera, Plus, Settings } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -29,6 +29,18 @@ export function FeedProfileHeader({ profile, postCount, onNewPost, onProfileImag
     { username: "kgr03kgr", name: "김강래" }
   ];
 
+  useEffect(() => {
+    if (!showGuardianCard) return undefined;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setShowGuardianCard(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showGuardianCard]);
+
   return (
     <section className="feed-profile-header">
       <div className="feed-profile-header-layout">
@@ -47,7 +59,12 @@ export function FeedProfileHeader({ profile, postCount, onNewPost, onProfileImag
           <div className="guardian-card">
             <div className="guardian-card-header">
               <p>집사들</p>
-              <button type="button" onClick={() => setShowGuardianCard(false)}>
+              <button
+                type="button"
+                className="guardian-card-close"
+                onClick={() => setShowGuardianCard(false)}
+                aria-label="집사 카드 닫기"
+              >
                 ×
               </button>
             </div>
