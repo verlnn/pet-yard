@@ -22,11 +22,15 @@ interface FeedProfileHeaderProps {
 export function FeedProfileHeader({ profile, postCount, onNewPost, onProfileImageClick, onPetsClick }: FeedProfileHeaderProps) {
   const primaryPet = profile?.pets?.find((pet) => pet.id === profile?.primaryPetId) ?? profile?.pets?.[0];
   const [showGuardianCard, setShowGuardianCard] = useState(false);
+  const [guardianSearchInput, setGuardianSearchInput] = useState("");
+  const [guardianSearchQuery, setGuardianSearchQuery] = useState("");
   const [guardians, setGuardians] = useState<GuardianSummary[]>([]);
   const [guardiansLoading, setGuardiansLoading] = useState(false);
   const [guardiansError, setGuardiansError] = useState<string | null>(null);
   const dismissGuardianCard = useCallback(() => {
     setShowGuardianCard(false);
+    setGuardianSearchInput("");
+    setGuardianSearchQuery("");
     setGuardians([]);
     setGuardiansLoading(false);
     setGuardiansError(null);
@@ -45,6 +49,18 @@ export function FeedProfileHeader({ profile, postCount, onNewPost, onProfileImag
   }, [showGuardianCard, dismissGuardianCard]);
 
   useEffect(() => {
+    if (!showGuardianCard) {
+      return undefined;
+    }
+
+    const timeout = window.setTimeout(() => {
+      setGuardianSearchQuery(guardianSearchInput.trim());
+    }, 800);
+
+    return () => window.clearTimeout(timeout);
+  }, [guardianSearchInput, showGuardianCard]);
+
+  useEffect(() => {
     if (!showGuardianCard || !profile?.username) {
       return undefined;
     }
@@ -54,7 +70,7 @@ export function FeedProfileHeader({ profile, postCount, onNewPost, onProfileImag
     setGuardiansError(null);
 
     authApi
-      .getPublicProfileGuardians(profile.username)
+      .getPublicProfileGuardians(profile.username, guardianSearchQuery)
       .then((response) => {
         if (active) {
           setGuardians(response.guardians);
@@ -75,7 +91,7 @@ export function FeedProfileHeader({ profile, postCount, onNewPost, onProfileImag
     return () => {
       active = false;
     };
-  }, [showGuardianCard, profile?.username]);
+  }, [showGuardianCard, profile?.username, guardianSearchQuery]);
 
   return (
     <section className="feed-profile-header">
@@ -112,7 +128,12 @@ export function FeedProfileHeader({ profile, postCount, onNewPost, onProfileImag
             </div>
             <div className="guardian-card-body">
               <div className="guardian-card-search-section">
-                <input className="guardian-card-search" placeholder="검색" />
+                <input
+                  className="guardian-card-search"
+                  placeholder="검색"
+                  value={guardianSearchInput}
+                  onChange={(event) => setGuardianSearchInput(event.target.value)}
+                />
               </div>
               <div className="guardian-card-list-section">
                 {guardiansError && (
@@ -121,13 +142,15 @@ export function FeedProfileHeader({ profile, postCount, onNewPost, onProfileImag
                   </p>
                 )}
                 {guardiansLoading ? (
-                  <p className="guardian-card-loading">집사 목록을 불러오는 중입니다.</p>
+                  <div className="guardian-card-loading-panel" aria-live="polite">
+                    <p className="guardian-card-loading">집사 목록을 불러오는 중입니다.</p>
+                  </div>
                 ) : (
                   <ul className="guardian-card-list">
                     {guardians.length === 0 ? (
                       <li className="guardian-card-empty">
-                        <p>아직 연결된 집사들이 없습니다.</p>
-                        <span>집사 요청을 보내보세요.</span>
+                        <p>{guardianSearchQuery ? "검색 결과가 없습니다." : "아직 연결된 집사들이 없습니다."}</p>
+                        <span>{guardianSearchQuery ? "다른 이름이나 공개 ID로 다시 검색해보세요." : "집사 요청을 보내보세요."}</span>
                       </li>
                     ) : (
                       guardians.map((guardian) => (

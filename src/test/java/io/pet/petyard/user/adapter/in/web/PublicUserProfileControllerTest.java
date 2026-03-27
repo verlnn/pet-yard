@@ -89,6 +89,27 @@ class PublicUserProfileControllerTest {
             .andExpect(jsonPath("$.guardians[1].username").value("guardian.two"));
     }
 
+    @Test
+    @DisplayName("집사 목록 조회는 검색어로 username과 nickname을 필터링한다")
+    void guardiansFiltersByQuery() throws Exception {
+        given(loadUserPort.findByUsername("owner.test")).willReturn(Optional.of(activeUser(11L, "owner.test")));
+        given(loadGuardianRegistrationPort.findConnectedGuardianUserIds(11L)).willReturn(List.of(31L, 22L));
+        given(loadUserPort.findByIds(List.of(31L, 22L))).willReturn(Set.of(
+            activeUser(22L, "guardian.two"),
+            activeUser(31L, "guardian.one")
+        ));
+        given(loadUserProfilePort.findByUserIds(List.of(31L, 22L))).willReturn(List.of(
+            new UserProfile(22L, "둘째집사", null, "/guardian-2.jpg", false, true),
+            new UserProfile(31L, "첫째집사", null, "/guardian-1.jpg", false, true)
+        ));
+
+        mockMvc.perform(get("/api/users/owner.test/guardians").queryParam("query", "둘째"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.guardians.length()").value(1))
+            .andExpect(jsonPath("$.guardians[0].userId").value(22))
+            .andExpect(jsonPath("$.guardians[0].username").value("guardian.two"));
+    }
+
     private User activeUser(long userId, String username) {
         User user = new User("owner@petyard.com", "hash", username, UserTier.TIER_1, AccountStatus.ACTIVE);
         ReflectionTestUtils.setField(user, "id", userId);

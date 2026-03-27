@@ -945,6 +945,7 @@ body {
 
   .guardian-card-list-section {
     padding-top: 1rem;
+    min-height: 320px;
   }
 
   .guardian-card-search {
@@ -966,6 +967,15 @@ body {
     font-size: 0.95rem;
     color: var(--color-text-muted);
     text-align: center;
+  }
+
+  .guardian-card-loading-panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 320px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.03);
   }
 
   .guardian-card-list {

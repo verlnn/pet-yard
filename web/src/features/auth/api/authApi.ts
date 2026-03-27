@@ -510,9 +510,16 @@ export const authApi = {
       }
     });
   },
-  getPublicProfileGuardians(username: string) {
+  getPublicProfileGuardians(username: string, query?: string) {
     const encodedUsername = encodeURIComponent(username);
-    return request<PublicGuardiansResponse>(`/api/users/${encodedUsername}/guardians`, {
+    const params = new URLSearchParams();
+    if (query && query.trim()) {
+      params.set("query", query.trim());
+    }
+    const url = params.size
+      ? `/api/users/${encodedUsername}/guardians?${params.toString()}`
+      : `/api/users/${encodedUsername}/guardians`;
+    return request<PublicGuardiansResponse>(url, {
       method: "GET"
     });
   },

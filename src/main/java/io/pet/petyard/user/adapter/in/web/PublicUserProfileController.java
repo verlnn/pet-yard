@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -130,7 +131,9 @@ public class PublicUserProfileController {
     })
     public PublicUserGuardiansResponse guardians(
         @Parameter(description = "공개 사용자 ID", example = "meongnyang.owner")
-        @PathVariable String username
+        @PathVariable String username,
+        @Parameter(description = "집사 검색어", example = "guardian")
+        @RequestParam(required = false) String query
     ) {
         User user = resolvePublicUser(username);
         List<Long> guardianIds = loadGuardianRegistrationPort.findConnectedGuardianUserIds(user.getId());
@@ -148,6 +151,7 @@ public class PublicUserProfileController {
 
         List<GuardianItem> guardians = guardianIds.stream()
             .map(guardianId -> toGuardianItem(guardianId, userMap.get(guardianId), profileMap.get(guardianId)))
+            .filter(guardian -> matchesQuery(guardian, query))
             .toList();
         return new PublicUserGuardiansResponse(guardians);
     }
@@ -186,5 +190,15 @@ public class PublicUserProfileController {
         String guardianNickname = profile != null ? profile.getNickname() : guardianUsername;
         String guardianImage = profile != null ? profile.getProfileImageUrl() : null;
         return new GuardianItem(guardianId, guardianUsername, guardianNickname, guardianImage);
+    }
+
+    private boolean matchesQuery(GuardianItem guardian, String query) {
+        if (query == null || query.isBlank()) {
+            return true;
+        }
+
+        String normalizedQuery = query.trim().toLowerCase();
+        return guardian.username().toLowerCase().contains(normalizedQuery)
+            || guardian.nickname().toLowerCase().contains(normalizedQuery);
     }
 }
