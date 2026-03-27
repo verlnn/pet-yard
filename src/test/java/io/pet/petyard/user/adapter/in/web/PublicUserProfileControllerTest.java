@@ -24,6 +24,7 @@ import io.pet.petyard.user.domain.model.UserProfile;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -64,6 +65,28 @@ class PublicUserProfileControllerTest {
             .andExpect(jsonPath("$.username").value("owner.test"))
             .andExpect(jsonPath("$.guardianCount").value(3))
             .andExpect(jsonPath("$.nickname").value("멍냥집사"));
+    }
+
+    @Test
+    @DisplayName("집사 목록 조회는 연결된 양방향 관계를 기준으로 응답한다")
+    void guardiansReturnsConnectedUsers() throws Exception {
+        given(loadUserPort.findByUsername("owner.test")).willReturn(Optional.of(activeUser(11L, "owner.test")));
+        given(loadGuardianRegistrationPort.findConnectedGuardianUserIds(11L)).willReturn(List.of(31L, 22L));
+        given(loadUserPort.findByIds(List.of(31L, 22L))).willReturn(Set.of(
+            activeUser(22L, "guardian.two"),
+            activeUser(31L, "guardian.one")
+        ));
+        given(loadUserProfilePort.findByUserIds(List.of(31L, 22L))).willReturn(List.of(
+            new UserProfile(22L, "둘째집사", null, "/guardian-2.jpg", false, true),
+            new UserProfile(31L, "첫째집사", null, "/guardian-1.jpg", false, true)
+        ));
+
+        mockMvc.perform(get("/api/users/owner.test/guardians"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.guardians[0].userId").value(31))
+            .andExpect(jsonPath("$.guardians[0].username").value("guardian.one"))
+            .andExpect(jsonPath("$.guardians[1].userId").value(22))
+            .andExpect(jsonPath("$.guardians[1].username").value("guardian.two"));
     }
 
     private User activeUser(long userId, String username) {

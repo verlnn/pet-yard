@@ -50,11 +50,14 @@ public interface GuardianRegistrationRepository extends JpaRepository<GuardianRe
     void deleteRelationship(@Param("userId") Long userId, @Param("otherUserId") Long otherUserId);
 
     @Query("""
-        select g.guardianUserId
+        select case
+            when g.guardianUserId = :userId then g.targetUserId
+            else g.guardianUserId
+        end
         from GuardianRegistration g
-        where g.targetUserId = :targetUserId
-          and g.status = io.pet.petyard.user.domain.GuardianRegistrationStatus.ACCEPTED
-        order by g.respondedAt desc
+        where g.status = io.pet.petyard.user.domain.GuardianRegistrationStatus.ACCEPTED
+          and (g.guardianUserId = :userId or g.targetUserId = :userId)
+        order by g.respondedAt desc, g.createdAt desc, g.id desc
         """)
-    List<Long> findAcceptedGuardiansByTargetUserId(@Param("targetUserId") Long targetUserId);
+    List<Long> findConnectedGuardianUserIds(@Param("userId") Long userId);
 }

@@ -37,8 +37,8 @@ public class GuardianRegistrationPersistenceAdapter
     }
 
     @Override
-    public List<Long> findAcceptedGuardiansByTargetUserId(Long targetUserId) {
-        return repository.findAcceptedGuardiansByTargetUserId(targetUserId);
+    public List<Long> findConnectedGuardianUserIds(Long userId) {
+        return repository.findConnectedGuardianUserIds(userId);
     }
 
     @Override

@@ -133,7 +133,7 @@ public class PublicUserProfileController {
         @PathVariable String username
     ) {
         User user = resolvePublicUser(username);
-        List<Long> guardianIds = loadGuardianRegistrationPort.findAcceptedGuardiansByTargetUserId(user.getId());
+        List<Long> guardianIds = loadGuardianRegistrationPort.findConnectedGuardianUserIds(user.getId());
         List<UserProfile> guardianProfiles = guardianIds.isEmpty()
             ? List.of()
             : loadUserProfilePort.findByUserIds(guardianIds);
