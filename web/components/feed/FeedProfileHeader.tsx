@@ -111,44 +111,48 @@ export function FeedProfileHeader({ profile, postCount, onNewPost, onProfileImag
               </button>
             </div>
             <div className="guardian-card-body">
-              <input className="guardian-card-search" placeholder="검색" />
-              {guardiansError && (
-                <p className="guardian-card-error" role="alert">
-                  {guardiansError}
-                </p>
-              )}
-              {guardiansLoading ? (
-                <p className="guardian-card-loading">집사 목록을 불러오는 중입니다.</p>
-              ) : (
-                <ul className="guardian-card-list">
-                  {guardians.length === 0 ? (
-                    <li className="guardian-card-empty">
-                      <p>아직 연결된 집사들이 없습니다.</p>
-                      <span>집사 요청을 보내보세요.</span>
-                    </li>
-                  ) : (
-                    guardians.map((guardian) => (
-                      <li key={guardian.userId}>
-                        <div className="guardian-card-list-item">
-                          <Avatar className="guardian-card-list-avatar">
-                            {guardian.profileImageUrl ? (
-                              <AvatarImage src={guardian.profileImageUrl} alt={guardian.nickname} />
-                            ) : (
-                              <AvatarFallback>
-                                {(guardian.nickname?.[0] ?? guardian.username?.[0])?.toUpperCase() ?? "G"}
-                              </AvatarFallback>
-                            )}
-                          </Avatar>
-                          <div className="guardian-card-list-copy">
-                            <strong>{guardian.username}</strong>
-                            <span>{guardian.nickname}</span>
-                          </div>
-                        </div>
+              <div className="guardian-card-search-section">
+                <input className="guardian-card-search" placeholder="검색" />
+              </div>
+              <div className="guardian-card-list-section">
+                {guardiansError && (
+                  <p className="guardian-card-error" role="alert">
+                    {guardiansError}
+                  </p>
+                )}
+                {guardiansLoading ? (
+                  <p className="guardian-card-loading">집사 목록을 불러오는 중입니다.</p>
+                ) : (
+                  <ul className="guardian-card-list">
+                    {guardians.length === 0 ? (
+                      <li className="guardian-card-empty">
+                        <p>아직 연결된 집사들이 없습니다.</p>
+                        <span>집사 요청을 보내보세요.</span>
                       </li>
-                    ))
-                  )}
-                </ul>
-              )}
+                    ) : (
+                      guardians.map((guardian) => (
+                        <li key={guardian.userId}>
+                          <div className="guardian-card-list-item">
+                            <Avatar className="guardian-card-list-avatar">
+                              {guardian.profileImageUrl ? (
+                                <AvatarImage src={guardian.profileImageUrl} alt={guardian.nickname} />
+                              ) : (
+                                <AvatarFallback>
+                                  {(guardian.nickname?.[0] ?? guardian.username?.[0])?.toUpperCase() ?? "G"}
+                                </AvatarFallback>
+                              )}
+                            </Avatar>
+                            <div className="guardian-card-list-copy">
+                              <strong>{guardian.username}</strong>
+                              <span>{guardian.nickname}</span>
+                            </div>
+                          </div>
+                        </li>
+                      ))
+                    )}
+                  </ul>
+                )}
+              </div>
             </div>
           </div>
         </div>
