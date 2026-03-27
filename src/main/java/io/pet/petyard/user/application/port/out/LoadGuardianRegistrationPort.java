@@ -9,4 +9,5 @@ public interface LoadGuardianRegistrationPort {
     Optional<GuardianRegistration> findRelationship(Long userId, Long otherUserId);
     List<GuardianRegistration> findRelationships(Long userId, Collection<Long> otherUserIds);
     long countConnectedByUserId(Long userId);
+    List<Long> findAcceptedGuardiansByTargetUserId(Long targetUserId);
 }

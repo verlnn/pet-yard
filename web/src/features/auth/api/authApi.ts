@@ -57,6 +57,11 @@ function setAuthHeader(init: RequestInit | undefined, accessToken: string) {
   init.headers = headers;
 }
 
+function hasAuthHeader(init?: RequestInit): boolean {
+  const headers = new Headers(init?.headers ?? {});
+  return headers.has("Authorization");
+}
+
 async function refreshTokens(): Promise<TokenResponse> {
   if (!refreshInFlight) {
     const refreshToken = localStorage.getItem("refreshToken");
@@ -84,7 +89,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   });
 
   if (!response.ok) {
-    if (response.status === 401 && path !== REFRESH_PATH) {
+    if (response.status === 401 && path !== REFRESH_PATH && hasAuthHeader(init)) {
       try {
         const tokens = await refreshTokens();
         localStorage.setItem("accessToken", tokens.accessToken);

@@ -37,6 +37,11 @@ public class GuardianRegistrationPersistenceAdapter
     }
 
     @Override
+    public List<Long> findAcceptedGuardiansByTargetUserId(Long targetUserId) {
+        return repository.findAcceptedGuardiansByTargetUserId(targetUserId);
+    }
+
+    @Override
     public GuardianRegistration save(GuardianRegistration guardianRegistration) {
         return repository.save(guardianRegistration);
     }
