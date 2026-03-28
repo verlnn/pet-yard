@@ -49,5 +49,8 @@ upload/images/**/*.jpeg
 upload/images/**/*.jpg
 upload/images/**/*.png
 
+# Claude
+docs/claude_docs/outputs/
+
 .env.release
 /web/.env.local
