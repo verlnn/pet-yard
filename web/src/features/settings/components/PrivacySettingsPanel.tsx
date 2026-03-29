@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Lock, LockOpen } from "lucide-react";
 
 import { authApi } from "@/src/features/auth/api/authApi";
+import { PrivacyInfoSection } from "./PrivacyInfoSection";
+import { PrivacyLoadingSkeleton } from "./PrivacyLoadingSkeleton";
+import { PrivacyToggleCard } from "./PrivacyToggleCard";
 
 export function PrivacySettingsPanel() {
   const [accessToken, setAccessToken] = useState<string | null>(null);
@@ -49,57 +51,26 @@ export function PrivacySettingsPanel() {
     }
   };
 
-  if (loading) {
-    return (
-      <>
-        <div className="settings-page-content-header">
-          <h2 className="settings-page-content-title">계정 공개 범위</h2>
-        </div>
-        <div className="settings-page-editor-card">
-          <p className="settings-page-field-helper">불러오는 중...</p>
-        </div>
-      </>
-    );
-  }
-
   return (
     <>
       <div className="settings-page-content-header">
         <h2 className="settings-page-content-title">계정 공개 범위</h2>
+        <p className="settings-page-field-helper">나의 게시물과 프로필을 볼 수 있는 사람을 설정합니다.</p>
       </div>
 
-      <div className="settings-page-preference-card">
-        <div className="settings-page-preference-copy">
-          <div className="privacy-panel-title-row">
-            {isPrivate ? (
-              <Lock className="privacy-panel-lock-icon" aria-hidden="true" />
-            ) : (
-              <LockOpen className="privacy-panel-lock-icon privacy-panel-lock-icon-open" aria-hidden="true" />
-            )}
-            <p className="settings-page-preference-title">비공개 계정</p>
-          </div>
-          <p className="settings-page-preference-description">
-            {isPrivate
-              ? "현재 계정이 비공개 상태입니다. 집사 관계인 사용자만 게시물과 프로필을 볼 수 있습니다."
-              : "현재 계정이 공개 상태입니다. 모든 사용자가 게시물과 프로필을 볼 수 있습니다."}
-          </p>
-          {error ? (
-            <p className="privacy-panel-error">{error}</p>
-          ) : null}
-        </div>
-
-        <button
-          type="button"
-          role="switch"
-          aria-checked={isPrivate ?? false}
-          aria-label="비공개 계정 토글"
-          className={`settings-page-switch ${isPrivate ? "settings-page-switch-active" : ""}`}
-          onClick={handleToggle}
-          disabled={saving || isPrivate === null}
-        >
-          <span className="settings-page-switch-thumb" />
-        </button>
-      </div>
+      {loading ? (
+        <PrivacyLoadingSkeleton />
+      ) : (
+        <>
+          <PrivacyToggleCard
+            isPrivate={isPrivate ?? false}
+            saving={saving}
+            onToggle={handleToggle}
+          />
+          {error ? <p className="privacy-panel-error">{error}</p> : null}
+          {isPrivate !== null ? <PrivacyInfoSection isPrivate={isPrivate} /> : null}
+        </>
+      )}
     </>
   );
 }

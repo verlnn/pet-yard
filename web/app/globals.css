@@ -3979,6 +3979,64 @@ body {
     @apply text-xs mt-1;
   }
 
+  .privacy-panel-saving-badge {
+    background: var(--color-press-surface);
+    color: var(--color-text-muted);
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium;
+  }
+
+  .privacy-panel-saving-spinner {
+    @apply h-3 w-3 animate-spin;
+  }
+
+  /* Privacy info section */
+  .privacy-info-section {
+    border-color: var(--color-border);
+    background: var(--color-surface-muted);
+    @apply mt-4 rounded-[24px] border p-5 space-y-3;
+  }
+
+  .privacy-info-section-title {
+    color: var(--color-text-subtle);
+    @apply text-xs font-semibold uppercase tracking-wider;
+  }
+
+  .privacy-info-list {
+    @apply space-y-3;
+  }
+
+  .privacy-info-item {
+    @apply flex items-start gap-3;
+  }
+
+  .privacy-info-item-icon {
+    @apply h-4 w-4 mt-0.5 shrink-0;
+  }
+
+  .privacy-info-item-icon--private {
+    color: var(--color-text);
+  }
+
+  .privacy-info-item-icon--public {
+    color: var(--color-text-subtle);
+  }
+
+  .privacy-info-item-text {
+    color: var(--color-text-muted);
+    @apply text-sm leading-6;
+  }
+
+  /* Privacy skeleton */
+  .privacy-skeleton-card {
+    background: var(--color-press-surface);
+    @apply h-24 rounded-[28px] animate-pulse;
+  }
+
+  .privacy-skeleton-info {
+    background: var(--color-press-surface);
+    @apply h-36 mt-4 rounded-[24px] animate-pulse;
+  }
+
   @media (max-width: 1023px) {
     .settings-page-layout {
       @apply grid-cols-1;
@@ -4097,6 +4155,21 @@ body {
 
   [data-theme="dark"] .settings-page-switch-active .settings-page-switch-thumb {
     background: #0b0d10;
+  }
+
+  [data-theme="dark"] .privacy-info-section {
+    border-color: rgba(255, 255, 255, 0.08);
+    background: #111111;
+  }
+
+  [data-theme="dark"] .privacy-panel-saving-badge {
+    background: #222324;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  [data-theme="dark"] .privacy-skeleton-card,
+  [data-theme="dark"] .privacy-skeleton-info {
+    background: #1a1a1a;
   }
 
   [data-theme="dark"] .pets-summary-card-content,
