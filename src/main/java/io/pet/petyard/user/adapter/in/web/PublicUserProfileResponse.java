@@ -29,6 +29,8 @@ public record PublicUserProfileResponse(
     @Schema(description = "등록된 반려동물 수", example = "2")
     int petCount,
     @Schema(description = "등록된 반려동물 목록")
-    List<PetProfileResponse> pets
+    List<PetProfileResponse> pets,
+    @Schema(description = "비공개 계정 여부", example = "false")
+    boolean isPrivate
 ) {
 }

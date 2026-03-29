@@ -97,31 +97,38 @@ public class PublicUserProfileController {
                 .orElse(null);
         }
 
-        List<PetProfileResponse> pets = loadPetProfilePort.findByUserId(user.getId()).stream()
-            .map(this::toPetResponse)
-            .toList();
-
-        Long primaryPetId = settings == null
-            ? (pets.size() == 1 ? pets.getFirst().id() : null)
-            : settings.getPrimaryPetId() != null
-            ? settings.getPrimaryPetId()
-            : (pets.size() == 1 ? pets.getFirst().id() : null);
-        GuardianRelationStatus relationStatus = principal == null
+        Long viewerId = principal == null ? null : principal.userId();
+        GuardianRelationStatus relationStatus = viewerId == null
             ? GuardianRelationStatus.NONE
-            : guardianRegistrationService.getRelationStatus(principal.userId(), user.getId());
+            : guardianRegistrationService.getRelationStatus(viewerId, user.getId());
 
-    return new PublicUserProfileResponse(
-        user.getId(),
+        boolean canView = getPublicUserProfileUseCase.canViewContent(viewerId, user.getId());
+
+        List<PetProfileResponse> pets = canView
+            ? loadPetProfilePort.findByUserId(user.getId()).stream().map(this::toPetResponse).toList()
+            : List.of();
+
+        Long primaryPetId = canView
+            ? (settings == null
+                ? (pets.size() == 1 ? pets.getFirst().id() : null)
+                : settings.getPrimaryPetId() != null
+                ? settings.getPrimaryPetId()
+                : (pets.size() == 1 ? pets.getFirst().id() : null))
+            : null;
+
+        return new PublicUserProfileResponse(
+            user.getId(),
             user.getUsername(),
             profile.getNickname(),
             regionName,
             profile.getProfileImageUrl(),
-            settings == null ? null : settings.getBio(),
+            canView ? (settings == null ? null : settings.getBio()) : null,
             primaryPetId,
             relationStatus,
             loadGuardianRegistrationPort.countConnectedByUserId(user.getId()),
-            pets.size(),
-            pets
+            canView ? pets.size() : 0,
+            pets,
+            profile.isPrivate()
         );
     }
 
