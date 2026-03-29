@@ -916,6 +916,40 @@ body {
     @apply flex flex-col gap-3 md:flex-row lg:justify-end;
   }
 
+  .private-profile-blocked-view {
+    background: var(--color-surface);
+    border-color: var(--color-border);
+    box-shadow: var(--shadow-card-token);
+    @apply flex flex-col items-center gap-4 rounded-[28px] border px-6 py-16 text-center;
+  }
+
+  .private-profile-blocked-icon-shell {
+    background: var(--color-hover-surface);
+    @apply flex h-16 w-16 items-center justify-center rounded-full;
+  }
+
+  .private-profile-blocked-icon {
+    color: var(--color-text-muted);
+    @apply h-7 w-7;
+  }
+
+  .private-profile-blocked-title {
+    color: var(--color-text);
+    @apply text-lg font-semibold;
+  }
+
+  .private-profile-blocked-description {
+    color: var(--color-text-muted);
+    @apply max-w-[320px] text-sm leading-6;
+  }
+
+  .private-profile-blocked-action {
+    background: var(--color-button-bg);
+    color: var(--color-button-text);
+    box-shadow: var(--shadow-soft-token);
+    @apply inline-flex items-center justify-center rounded-2xl px-6 py-3 text-sm font-semibold transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
   .guardian-card-overlay {
     @apply fixed inset-0 z-50 flex items-center justify-center bg-[rgba(15,23,42,0.72)];
   }

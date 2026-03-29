@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState, type ChangeEvent, type RefObject 
 import { AnimatePresence, motion } from "framer-motion";
 import { Bookmark, Camera, ChevronLeft, ChevronRight, Grid, Lock, LockOpen, MoreHorizontal, PawPrint, Tag, X } from "lucide-react";
 
+import { PrivateProfileBlockedView } from "@/components/feed/PrivateProfileBlockedView";
 import { FeedDetailPhotoPanel } from "@/components/feed/detail/FeedDetailPhotoPanel";
 import { FeedDetailSidebar } from "@/components/feed/detail/FeedDetailSidebar";
 import { CommonButton } from "@/components/ui/CommonButton";
@@ -942,7 +943,14 @@ export function ProfileFeedPageClient({ usernameParam }: { usernameParam?: strin
             </div>
           )}
 
-          {isOwnProfile && activeTab === "pets" ? (
+          {!isOwnProfile && (profile as PublicProfileResponse | null)?.isPrivate
+            && (profile as PublicProfileResponse | null)?.guardianRelationStatus !== "CONNECTED" ? (
+            <PrivateProfileBlockedView
+              guardianRelationStatus={(profile as PublicProfileResponse).guardianRelationStatus}
+              guardianLoading={guardianLoading}
+              onGuardianAction={handleGuardianAction}
+            />
+          ) : isOwnProfile && activeTab === "pets" ? (
             <ProfilePetsSection
               pets={profile?.pets ?? []}
               onCreate={handleGoAddPet}
