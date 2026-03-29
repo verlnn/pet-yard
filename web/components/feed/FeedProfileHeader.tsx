@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Camera, Plus, Settings, X } from "lucide-react";
+import { Camera, Lock, LockOpen, Plus, Settings, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 import { cn } from "@/lib/utils";
@@ -247,7 +247,20 @@ function FeedProfileIdentity({
       <div className="feed-profile-header-copy">
         <div className="feed-profile-header-heading-row">
           <div className="feed-profile-header-title-group">
-            <p className="feed-profile-header-title">{profileUsername}</p>
+            <div className="feed-profile-header-username-row">
+              <p className="feed-profile-header-title">{profileUsername}</p>
+              <Link
+                href="/accounts/privacy"
+                className="feed-profile-header-privacy-link"
+                aria-label={profile?.isPrivate ? "비공개 계정 — 비공개 설정으로 이동" : "공개 계정 — 비공개 설정으로 이동"}
+              >
+                {profile?.isPrivate ? (
+                  <Lock className="feed-profile-header-privacy-icon" aria-hidden="true" />
+                ) : (
+                  <LockOpen className="feed-profile-header-privacy-icon feed-profile-header-privacy-icon-open" aria-hidden="true" />
+                )}
+              </Link>
+            </div>
             <p className="feed-profile-header-display-name">{profileDisplayName}</p>
           </div>
           <Link href="/accounts/edit" className="feed-profile-header-settings-link" aria-label="프로필 설정">

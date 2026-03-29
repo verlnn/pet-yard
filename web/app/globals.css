@@ -844,6 +844,24 @@ body {
     @apply min-w-0 space-y-1;
   }
 
+  .feed-profile-header-username-row {
+    @apply flex items-center gap-2;
+  }
+
+  .feed-profile-header-privacy-link {
+    color: var(--color-text-muted);
+    @apply inline-flex shrink-0 items-center rounded-full p-1 transition hover:bg-[var(--color-hover-surface)];
+  }
+
+  .feed-profile-header-privacy-icon {
+    color: var(--color-text-primary);
+    @apply h-4 w-4 shrink-0;
+  }
+
+  .feed-profile-header-privacy-icon-open {
+    color: var(--color-text-muted);
+  }
+
   .feed-profile-header-title {
     @apply truncate font-display text-3xl font-semibold tracking-[-0.04em];
   }

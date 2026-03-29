@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type RefObject } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Bookmark, Camera, ChevronLeft, ChevronRight, Grid, MoreHorizontal, PawPrint, Tag, X } from "lucide-react";
+import { Bookmark, Camera, ChevronLeft, ChevronRight, Grid, Lock, LockOpen, MoreHorizontal, PawPrint, Tag, X } from "lucide-react";
 
 import { FeedDetailPhotoPanel } from "@/components/feed/detail/FeedDetailPhotoPanel";
 import { FeedDetailSidebar } from "@/components/feed/detail/FeedDetailSidebar";
@@ -171,7 +171,14 @@ function PublicProfileHeader({
           <div className="feed-profile-header-copy">
             <div className="feed-profile-header-heading-row">
               <div className="feed-profile-header-title-group">
-                <p className="feed-profile-header-title">{profileUsername}</p>
+                <div className="feed-profile-header-username-row">
+                  <p className="feed-profile-header-title">{profileUsername}</p>
+                  {profile?.isPrivate ? (
+                    <Lock className="feed-profile-header-privacy-icon" aria-label="비공개 계정" />
+                  ) : (
+                    <LockOpen className="feed-profile-header-privacy-icon feed-profile-header-privacy-icon-open" aria-label="공개 계정" />
+                  )}
+                </div>
                 <p className="feed-profile-header-display-name">{profileDisplayName}</p>
               </div>
             </div>
