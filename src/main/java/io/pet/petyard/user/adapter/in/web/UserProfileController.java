@@ -250,7 +250,8 @@ public class UserProfileController {
             GuardianRelationStatus.NONE,
             loadGuardianRegistrationPort.countConnectedByUserId(user.getId()),
             petResponses.size(),
-            petResponses
+            petResponses,
+            profile.isPrivate()
         );
     }
 }
