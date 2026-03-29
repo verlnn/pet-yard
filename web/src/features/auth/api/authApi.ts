@@ -510,6 +510,15 @@ export const authApi = {
       }
     });
   },
+  updateAccountPrivacy(accessToken: string, isPrivate: boolean) {
+    return request<void>("/api/v1/users/me/privacy", {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      },
+      body: JSON.stringify({ isPrivate })
+    });
+  },
   getPublicProfileGuardians(username: string, query?: string) {
     const encodedUsername = encodeURIComponent(username);
     const params = new URLSearchParams();

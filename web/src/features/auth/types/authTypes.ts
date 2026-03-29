@@ -124,6 +124,7 @@ export interface MyProfileResponse {
   guardianCount: number;
   petCount: number;
   pets: PetProfile[];
+  isPrivate: boolean;
 }
 
 export interface PublicProfileResponse {
@@ -138,6 +139,7 @@ export interface PublicProfileResponse {
   guardianCount: number;
   petCount: number;
   pets: PetProfile[];
+  isPrivate: boolean;
 }
 
 export interface FeedPost {
