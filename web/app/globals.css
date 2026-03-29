@@ -3909,6 +3909,24 @@ body {
     @apply translate-x-6;
   }
 
+  .privacy-panel-title-row {
+    @apply flex items-center gap-2;
+  }
+
+  .privacy-panel-lock-icon {
+    color: var(--color-text-primary);
+    @apply h-5 w-5 shrink-0;
+  }
+
+  .privacy-panel-lock-icon-open {
+    color: var(--color-text-muted);
+  }
+
+  .privacy-panel-error {
+    color: var(--color-ember-500, #ef4444);
+    @apply text-xs mt-1;
+  }
+
   @media (max-width: 1023px) {
     .settings-page-layout {
       @apply grid-cols-1;

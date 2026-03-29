@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Bell, ChevronDown, Lock, PawPrint, Search, ShieldAlert, UserRound, X } from "lucide-react";
 
 import { PetSettingsPanel } from "@/src/features/pets/components/PetSettingsPanel";
+import { PrivacySettingsPanel } from "@/src/features/settings/components/PrivacySettingsPanel";
 import { authApi } from "@/src/features/auth/api/authApi";
 import type { MyProfileResponse } from "@/src/features/auth/types/authTypes";
 import { ROUTES } from "@/src/lib/routes";
@@ -129,6 +130,7 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
     settingsSections.flatMap((section) => section.items).find((item) => item.key === activeSection)?.label ?? "프로필 편집";
   const isPetSection = activeSection === "pet-add" || activeSection === "pet-manage";
   const isProfileSection = activeSection === "profile";
+  const isPrivacySection = activeSection === "privacy";
   const normalizedSearchQuery = searchQuery.trim().toLowerCase();
   const isSearching = normalizedSearchQuery.length > 0;
   const usernameChanged = (profile?.username ?? "") !== username.trim().toLowerCase();
@@ -284,6 +286,8 @@ export function SettingsPageContent({ activeSection }: SettingsPageContentProps)
         <div className="settings-page-content">
           {isPetSection ? (
             <PetSettingsPanel mode={activeSection === "pet-add" ? "add" : "manage"} />
+          ) : isPrivacySection ? (
+            <PrivacySettingsPanel />
           ) : !isProfileSection ? (
             <>
               <div className="settings-page-content-header">
