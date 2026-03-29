@@ -219,3 +219,35 @@ npx tsc --noEmit
 - `/docs/claude_docs/codex_docs/frontend/docs/routing-guard.md` — 라우팅 가드
 - `/docs/claude_docs/codex_docs/frontend/docs/signup-ui-flow.md` — 온보딩 UI 흐름
 - `/docs/claude_docs/codex_docs/backend/docs/api/api-spec.md` — API 명세
+
+
+## 작업 커밋 규칙
+
+작업을 진행할 경우 아래 규칙에 따라 세세하게 커밋해줘.
+
+### 커밋 단위
+- 하나의 기능/수정/추가 단위로 커밋을 분리해줘.
+- 여러 변경사항을 한 번에 커밋하지 말고, 논리적 단위로 나눠줘.
+
+### 커밋 메시지 형식
+타입: 작업 내용 (한글)
+
+예시)
+feat: 계정 비공개 설정 API 추가
+fix: JPQL 괄호 버그 수정 - PENDING 집사 피드 접근 차단
+refactor: 비공개 접근 제어 로직 Service 레이어로 이동
+test: 비공개 프로필 Controller 테스트 추가
+chore: 비공개 조회 최적화 인덱스 마이그레이션 추가
+
+### 타입 종류
+- feat: 새로운 기능 추가
+- fix: 버그 수정
+- refactor: 코드 구조 개선 (기능 변경 없음)
+- test: 테스트 추가 및 수정
+- chore: 설정, 마이그레이션, 빌드 관련
+- docs: 문서 수정
+
+### 커밋 시점
+- 파일 작성 완료 시 즉시 커밋
+- 테스트 통과 후 커밋
+- 리팩토링 완료 후 커밋
