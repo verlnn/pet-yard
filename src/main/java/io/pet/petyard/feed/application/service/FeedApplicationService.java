@@ -121,6 +121,15 @@ public class FeedApplicationService {
         if (viewerUserId == null) {
             return Collections.emptyList();
         }
+        if (!targetUserId.equals(viewerUserId)) {
+            UserProfile targetProfile = loadUserProfilePort.findByUserId(targetUserId).orElse(null);
+            if (targetProfile != null && targetProfile.isPrivate()) {
+                List<Long> connectedIds = loadGuardianRegistrationPort.findConnectedGuardianUserIds(targetUserId);
+                if (!connectedIds.contains(viewerUserId)) {
+                    return Collections.emptyList();
+                }
+            }
+        }
         List<FeedPost> posts = loadFeedPostPort.findByUserId(targetUserId);
         if (posts.isEmpty()) {
             return Collections.emptyList();
