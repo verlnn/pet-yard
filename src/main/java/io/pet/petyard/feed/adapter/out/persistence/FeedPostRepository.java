@@ -1,6 +1,8 @@
 package io.pet.petyard.feed.adapter.out.persistence;
 
 import io.pet.petyard.feed.domain.model.FeedPost;
+import io.pet.petyard.user.domain.model.GuardianRegistration;
+import io.pet.petyard.user.domain.model.UserProfile;
 
 import java.time.Instant;
 import java.util.List;
@@ -19,18 +21,54 @@ public interface FeedPostRepository extends JpaRepository<FeedPost, Long> {
     @Query("""
         select p
         from FeedPost p
+        where p.userId = :viewerId
+           or not exists (
+               select up from UserProfile up
+               where up.userId = p.userId
+                 and up.isPrivate = true
+           )
+           or exists (
+               select gr from GuardianRegistration gr
+               where gr.status = 'ACCEPTED'
+                 and (
+                     (gr.guardianUserId = :viewerId and gr.targetUserId = p.userId)
+                     or (gr.targetUserId = :viewerId and gr.guardianUserId = p.userId)
+                 )
+           )
         order by p.createdAt desc, p.id desc
         """)
-    List<FeedPost> findHomeFeedFirstPage(Pageable pageable);
+    List<FeedPost> findHomeFeedFirstPageWithPrivacy(
+        @Param("viewerId") Long viewerId,
+        Pageable pageable
+    );
 
     @Query("""
         select p
         from FeedPost p
-        where (p.createdAt < :cursorCreatedAt)
-           or (p.createdAt = :cursorCreatedAt and p.id < :cursorId)
+        where (
+            p.userId = :viewerId
+            or not exists (
+                select up from UserProfile up
+                where up.userId = p.userId
+                  and up.isPrivate = true
+            )
+            or exists (
+                select gr from GuardianRegistration gr
+                where gr.status = 'ACCEPTED'
+                  and (
+                      (gr.guardianUserId = :viewerId and gr.targetUserId = p.userId)
+                      or (gr.targetUserId = :viewerId and gr.guardianUserId = p.userId)
+                  )
+            )
+        )
+        and (
+            (p.createdAt < :cursorCreatedAt)
+            or (p.createdAt = :cursorCreatedAt and p.id < :cursorId)
+        )
         order by p.createdAt desc, p.id desc
         """)
-    List<FeedPost> findHomeFeedPageAfterCursor(
+    List<FeedPost> findHomeFeedPageAfterCursorWithPrivacy(
+        @Param("viewerId") Long viewerId,
         @Param("cursorCreatedAt") Instant cursorCreatedAt,
         @Param("cursorId") Long cursorId,
         Pageable pageable

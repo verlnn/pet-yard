@@ -12,7 +12,7 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "user_profiles")
+@Table(name = "user_profiles", schema = "auth")
 public class UserProfile {
 
     @Id
@@ -34,6 +34,9 @@ public class UserProfile {
 
     @Column(nullable = false)
     private boolean hasPet;
+
+    @Column(nullable = false)
+    private boolean isPrivate;
 
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
@@ -91,5 +94,13 @@ public class UserProfile {
 
     public boolean hasPet() {
         return hasPet;
+    }
+
+    public boolean isPrivate() {
+        return isPrivate;
+    }
+
+    public void updatePrivacy(boolean isPrivate) {
+        this.isPrivate = isPrivate;
     }
 }

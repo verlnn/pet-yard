@@ -11,6 +11,7 @@ import io.pet.petyard.pet.adapter.in.web.PetProfileResponse;
 import io.pet.petyard.pet.application.port.out.LoadPetProfilePort;
 import io.pet.petyard.pet.domain.model.PetProfile;
 import io.pet.petyard.region.application.port.out.LoadRegionPort;
+import io.pet.petyard.user.application.port.in.GetPublicUserProfileUseCase;
 import io.pet.petyard.user.application.port.out.LoadGuardianRegistrationPort;
 import io.pet.petyard.user.application.port.out.LoadUserProfilePort;
 import io.pet.petyard.user.application.port.out.LoadUserProfileSettingsPort;
@@ -49,6 +50,7 @@ public class PublicUserProfileController {
     private final LoadRegionPort loadRegionPort;
     private final LoadPetProfilePort loadPetProfilePort;
     private final GuardianRegistrationService guardianRegistrationService;
+    private final GetPublicUserProfileUseCase getPublicUserProfileUseCase;
 
     public PublicUserProfileController(LoadUserPort loadUserPort,
                                        LoadUserProfilePort loadUserProfilePort,
@@ -56,7 +58,8 @@ public class PublicUserProfileController {
                                        LoadUserProfileSettingsPort loadUserProfileSettingsPort,
                                        LoadRegionPort loadRegionPort,
                                        LoadPetProfilePort loadPetProfilePort,
-                                       GuardianRegistrationService guardianRegistrationService) {
+                                       GuardianRegistrationService guardianRegistrationService,
+                                       GetPublicUserProfileUseCase getPublicUserProfileUseCase) {
         this.loadUserPort = loadUserPort;
         this.loadUserProfilePort = loadUserProfilePort;
         this.loadGuardianRegistrationPort = loadGuardianRegistrationPort;
@@ -64,6 +67,7 @@ public class PublicUserProfileController {
         this.loadRegionPort = loadRegionPort;
         this.loadPetProfilePort = loadPetProfilePort;
         this.guardianRegistrationService = guardianRegistrationService;
+        this.getPublicUserProfileUseCase = getPublicUserProfileUseCase;
     }
 
     @GetMapping("/{username}/profile")
@@ -130,12 +134,17 @@ public class PublicUserProfileController {
             content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public PublicUserGuardiansResponse guardians(
+        @AuthenticationPrincipal AuthPrincipal principal,
         @Parameter(description = "공개 사용자 ID", example = "meongnyang.owner")
         @PathVariable String username,
         @Parameter(description = "집사 검색어", example = "guardian")
         @RequestParam(required = false) String query
     ) {
         User user = resolvePublicUser(username);
+        Long viewerId = principal == null ? null : principal.userId();
+        if (!getPublicUserProfileUseCase.canViewContent(viewerId, user.getId())) {
+            return new PublicUserGuardiansResponse(List.of());
+        }
         List<Long> guardianIds = loadGuardianRegistrationPort.findConnectedGuardianUserIds(user.getId());
         List<UserProfile> guardianProfiles = guardianIds.isEmpty()
             ? List.of()

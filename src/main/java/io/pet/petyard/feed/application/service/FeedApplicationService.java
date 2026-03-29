@@ -118,6 +118,9 @@ public class FeedApplicationService {
 
     @Transactional(readOnly = true)
     public List<FeedPostView> listUserFeed(Long targetUserId, Long viewerUserId) {
+        if (viewerUserId == null) {
+            return Collections.emptyList();
+        }
         List<FeedPost> posts = loadFeedPostPort.findByUserId(targetUserId);
         if (posts.isEmpty()) {
             return Collections.emptyList();
@@ -157,7 +160,7 @@ public class FeedApplicationService {
     public HomeFeedSlice listHomeFeed(Long userId, Instant cursorCreatedAt, Long cursorId, Integer limit) {
         FeedHomeRequestTrace trace = FeedHomeRequestTrace.start();
         int pageSize = feedProperties.resolvePageSize(limit);
-        List<FeedPost> posts = loadFeedPostPort.findHomeFeedPage(cursorCreatedAt, cursorId, pageSize + 1);
+        List<FeedPost> posts = loadFeedPostPort.findHomeFeedPage(cursorCreatedAt, cursorId, pageSize + 1, userId);
         trace = trace.markPostsLoaded();
         if (posts.isEmpty()) {
             log.info(

@@ -98,21 +98,21 @@ class FeedApplicationServiceTest {
     @ParameterizedTest
     @MethodSource("defaultLimitInputs")
     void usesConfiguredDefaultLimitWhenRequestLimitIsMissingOrInvalid(Integer requestLimit) {
-        when(loadFeedPostPort.findHomeFeedPage(null, null, 11)).thenReturn(List.of());
+        when(loadFeedPostPort.findHomeFeedPage(null, null, 11, 11L)).thenReturn(List.of());
 
         HomeFeedSlice result = service.listHomeFeed(11L, null, null, requestLimit);
 
         assertThat(result.items()).isEmpty();
-        verify(loadFeedPostPort).findHomeFeedPage(null, null, 11);
+        verify(loadFeedPostPort).findHomeFeedPage(null, null, 11, 11L);
     }
 
     @Test
     void clampsRequestedLimitToConfiguredMaximum() {
-        when(loadFeedPostPort.findHomeFeedPage(null, null, 21)).thenReturn(List.of());
+        when(loadFeedPostPort.findHomeFeedPage(null, null, 21, 11L)).thenReturn(List.of());
 
         service.listHomeFeed(11L, null, null, 999);
 
-        verify(loadFeedPostPort).findHomeFeedPage(null, null, 21);
+        verify(loadFeedPostPort).findHomeFeedPage(null, null, 21, 11L);
     }
 
     @Test
@@ -121,7 +121,7 @@ class FeedApplicationServiceTest {
         FeedPost middle = post(300L, 22L, "middle", Instant.parse("2026-03-23T00:02:00Z"));
         FeedPost extra = post(299L, 23L, "extra", Instant.parse("2026-03-23T00:01:00Z"));
 
-        when(loadFeedPostPort.findHomeFeedPage(null, null, 3)).thenReturn(List.of(newest, middle, extra));
+        when(loadFeedPostPort.findHomeFeedPage(null, null, 3, 55L)).thenReturn(List.of(newest, middle, extra));
         when(loadFeedPostImagePort.findByPostIds(List.of(301L, 300L))).thenReturn(Map.of());
         when(loadFeedPostPawPort.countByPostIds(List.of(301L, 300L))).thenReturn(Map.of());
         when(loadFeedPostPawPort.findPawedPostIds(55L, List.of(301L, 300L))).thenReturn(List.of());
@@ -151,7 +151,7 @@ class FeedApplicationServiceTest {
         FeedPost first = post(101L, 21L, "first", Instant.parse("2026-03-23T00:03:00Z"));
         FeedPost second = post(100L, 22L, "second", Instant.parse("2026-03-23T00:02:00Z"));
 
-        when(loadFeedPostPort.findHomeFeedPage(null, null, 3)).thenReturn(List.of(first, second));
+        when(loadFeedPostPort.findHomeFeedPage(null, null, 3, 77L)).thenReturn(List.of(first, second));
         when(loadFeedPostImagePort.findByPostIds(List.of(101L, 100L))).thenReturn(Map.of(
             101L, List.of(new FeedPostImage(101L, "/a.jpg", null, 1.0, "1:1", 0))
         ));

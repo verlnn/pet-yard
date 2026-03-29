@@ -16,6 +16,9 @@ import io.pet.petyard.common.application.service.ErrorLogService;
 import io.pet.petyard.pet.application.port.out.LoadPetProfilePort;
 import io.pet.petyard.region.application.port.out.LoadRegionPort;
 import io.pet.petyard.support.WebMvcSliceTestConfig;
+import io.pet.petyard.auth.domain.UserTier;
+import io.pet.petyard.auth.security.AuthPrincipal;
+import io.pet.petyard.user.application.port.in.GetPublicUserProfileUseCase;
 import io.pet.petyard.user.application.port.out.LoadGuardianRegistrationPort;
 import io.pet.petyard.user.application.port.out.LoadUserProfilePort;
 import io.pet.petyard.user.application.port.out.LoadUserProfileSettingsPort;
@@ -30,6 +33,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -49,6 +53,7 @@ class PublicUserProfileControllerTest {
     @MockitoBean private LoadRegionPort loadRegionPort;
     @MockitoBean private LoadPetProfilePort loadPetProfilePort;
     @MockitoBean private GuardianRegistrationService guardianRegistrationService;
+    @MockitoBean private GetPublicUserProfileUseCase getPublicUserProfileUseCase;
     @MockitoBean private ErrorLogService errorLogService;
 
     @Test
@@ -71,6 +76,7 @@ class PublicUserProfileControllerTest {
     @DisplayName("집사 목록 조회는 연결된 양방향 관계를 기준으로 응답한다")
     void guardiansReturnsConnectedUsers() throws Exception {
         given(loadUserPort.findByUsername("owner.test")).willReturn(Optional.of(activeUser(11L, "owner.test")));
+        given(getPublicUserProfileUseCase.canViewContent(null, 11L)).willReturn(true);
         given(loadGuardianRegistrationPort.findConnectedGuardianUserIds(11L)).willReturn(List.of(31L, 22L));
         given(loadUserPort.findByIds(List.of(31L, 22L))).willReturn(Set.of(
             activeUser(22L, "guardian.two"),
@@ -93,6 +99,7 @@ class PublicUserProfileControllerTest {
     @DisplayName("집사 목록 조회는 검색어로 username과 nickname을 필터링한다")
     void guardiansFiltersByQuery() throws Exception {
         given(loadUserPort.findByUsername("owner.test")).willReturn(Optional.of(activeUser(11L, "owner.test")));
+        given(getPublicUserProfileUseCase.canViewContent(null, 11L)).willReturn(true);
         given(loadGuardianRegistrationPort.findConnectedGuardianUserIds(11L)).willReturn(List.of(31L, 22L));
         given(loadUserPort.findByIds(List.of(31L, 22L))).willReturn(Set.of(
             activeUser(22L, "guardian.two"),
@@ -108,6 +115,51 @@ class PublicUserProfileControllerTest {
             .andExpect(jsonPath("$.guardians.length()").value(1))
             .andExpect(jsonPath("$.guardians[0].userId").value(22))
             .andExpect(jsonPath("$.guardians[0].username").value("guardian.two"));
+    }
+
+    @Test
+    @DisplayName("비공개 계정의 집사 목록은 비로그인 사용자에게 빈 리스트를 반환한다")
+    void guardiansReturnsEmptyForUnauthenticatedOnPrivateProfile() throws Exception {
+        given(loadUserPort.findByUsername("private.user")).willReturn(Optional.of(activeUser(20L, "private.user")));
+        given(getPublicUserProfileUseCase.canViewContent(null, 20L)).willReturn(false);
+
+        mockMvc.perform(get("/api/users/private.user/guardians"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.guardians").isEmpty());
+    }
+
+    @Test
+    @DisplayName("비공개 계정의 집사 목록은 비집사 로그인 사용자에게 빈 리스트를 반환한다")
+    void guardiansReturnsEmptyForNonGuardianOnPrivateProfile() throws Exception {
+        given(loadUserPort.findByUsername("private.user")).willReturn(Optional.of(activeUser(20L, "private.user")));
+        given(getPublicUserProfileUseCase.canViewContent(99L, 20L)).willReturn(false);
+
+        mockMvc.perform(
+                get("/api/users/private.user/guardians")
+                    .principal(new TestingAuthenticationToken(new AuthPrincipal(99L, UserTier.TIER_1), null))
+            )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.guardians").isEmpty());
+    }
+
+    @Test
+    @DisplayName("비공개 계정의 집사 목록은 집사 관계인 사용자에게 정상 반환된다")
+    void guardiansReturnsListForAcceptedGuardian() throws Exception {
+        given(loadUserPort.findByUsername("private.user")).willReturn(Optional.of(activeUser(20L, "private.user")));
+        given(getPublicUserProfileUseCase.canViewContent(31L, 20L)).willReturn(true);
+        given(loadGuardianRegistrationPort.findConnectedGuardianUserIds(20L)).willReturn(List.of(31L));
+        given(loadUserPort.findByIds(List.of(31L))).willReturn(Set.of(activeUser(31L, "guardian.one")));
+        given(loadUserProfilePort.findByUserIds(List.of(31L))).willReturn(List.of(
+            new UserProfile(31L, "첫째집사", null, "/guardian-1.jpg", false, true)
+        ));
+
+        mockMvc.perform(
+                get("/api/users/private.user/guardians")
+                    .principal(new TestingAuthenticationToken(new AuthPrincipal(31L, UserTier.TIER_1), null))
+            )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.guardians.length()").value(1))
+            .andExpect(jsonPath("$.guardians[0].userId").value(31));
     }
 
     private User activeUser(long userId, String username) {
